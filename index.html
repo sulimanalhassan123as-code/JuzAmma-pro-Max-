@@ -61,11 +61,11 @@ body { font-family:'Poppins',sans-serif; background:var(--dark); color:var(--txt
 
 /* ── VIEW SYSTEM (same as working version) ─ */
 /* Default: all views hidden */
-.view { display:none; position:fixed; top:0; left:0; right:0; bottom:var(--nav); overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; background:var(--bg); }
+.view { display:none; position:fixed; top:0; left:0; right:0; bottom:var(--nav); overflow-y:auto; overflow-x:hidden; z-index:10; -webkit-overflow-scrolling:touch; background:var(--bg); }
 .view.active { display:block; }
 
 /* Home: full height flex column, dark bg */
-#home-view { display:none; flex-direction:column; overflow-y:auto; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:var(--dark); }
+#home-view { display:none; flex-direction:column; overflow-y:auto; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:var(--dark); z-index:10; }
 #home-view.active { display:flex; }
 
 /* Tasbih: full height flex column, very dark */
@@ -412,8 +412,8 @@ body { font-family:'Poppins',sans-serif; background:var(--dark); color:var(--txt
 .ni { min-width:52px; }
 
 /* ── THEME FAB (draggable) ────────────── */
-.tfab { position:fixed; right:14px; top:78px; z-index:300; width:43px; height:43px; border-radius:50%; background:var(--p); box-shadow:0 4px 14px rgba(0,0,0,.3); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.1rem; touch-action:none; }
-.tpanel { position:fixed; right:13px; top:130px; z-index:299; background:var(--dark2); border-radius:17px; padding:11px; display:flex; flex-direction:column; gap:7px; box-shadow:0 8px 28px rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.09); transform:scale(.7) translateY(-20px); opacity:0; transition:transform .25s cubic-bezier(.34,1.56,.64,1),opacity .2s; pointer-events:none; min-width:138px; }
+.tfab { position:fixed; right:14px; top:78px; z-index:9; width:43px; height:43px; border-radius:50%; background:var(--p); box-shadow:0 4px 14px rgba(0,0,0,.3); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.1rem; touch-action:none; }
+.tpanel { position:fixed; right:13px; top:130px; z-index:11; background:var(--dark2); border-radius:17px; padding:11px; display:flex; flex-direction:column; gap:7px; box-shadow:0 8px 28px rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.09); transform:scale(.7) translateY(-20px); opacity:0; transition:transform .25s cubic-bezier(.34,1.56,.64,1),opacity .2s; pointer-events:none; min-width:138px; }
 .tpanel.open { transform:scale(1) translateY(0); opacity:1; pointer-events:all; }
 .topt { display:flex; align-items:center; gap:9px; cursor:pointer; padding:5px 6px; border-radius:10px; transition:background .15s; }
 .topt:active { background:rgba(255,255,255,.07); }
@@ -430,7 +430,7 @@ body { font-family:'Poppins',sans-serif; background:var(--dark); color:var(--txt
 #install-btn button { background:var(--p); color:#fff; border:none; padding:9px 20px; border-radius:19px; font-size:.76rem; font-weight:700; cursor:pointer; font-family:'Poppins',sans-serif; }
 
 /* ── PRAYER TIMES WIDGET ── */
-.prayer-widget{background:linear-gradient(135deg,#0d2137,#1a3a5c);border:1px solid rgba(201,168,76,.3);border-radius:16px;margin:12px 14px;padding:14px;}
+.prayer-widget{background:linear-gradient(135deg,#0d2137,#1a3a5c);border:1px solid rgba(201,168,76,.3);border-radius:16px;margin:12px 14px 4px;padding:14px;position:relative;z-index:1;}
 .pw-header{font-size:.78rem;color:#c9a84c;font-weight:700;margin-bottom:10px;}
 .pw-times{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
 .pt-item{background:rgba(255,255,255,.05);border-radius:10px;padding:8px 4px;text-align:center;}
