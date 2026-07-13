@@ -429,15 +429,15 @@ body { font-family:'Poppins',sans-serif; background:var(--dark); color:var(--txt
 #install-btn { display:none; margin-top:11px; position:relative; z-index:1; }
 #install-btn button { background:var(--p); color:#fff; border:none; padding:9px 20px; border-radius:19px; font-size:.76rem; font-weight:700; cursor:pointer; font-family:'Poppins',sans-serif; }
 
-/* ── PRAYER WIDGET ────────────────────────────── */
-.prayer-widget{background:linear-gradient(135deg,#0d2137,#1a3a5c);border:1px solid rgba(201,168,76,.3);border-radius:16px;margin:12px 14px;padding:14px;box-shadow:0 4px 20px rgba(0,0,0,.3);}
-.pw-header{font-size:.78rem;color:#c9a84c;font-weight:700;margin-bottom:10px;letter-spacing:.5px;}
+/* ── PRAYER TIMES WIDGET ── */
+.prayer-widget{background:linear-gradient(135deg,#0d2137,#1a3a5c);border:1px solid rgba(201,168,76,.3);border-radius:16px;margin:12px 14px;padding:14px;}
+.pw-header{font-size:.78rem;color:#c9a84c;font-weight:700;margin-bottom:10px;}
 .pw-times{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
 .pt-item{background:rgba(255,255,255,.05);border-radius:10px;padding:8px 4px;text-align:center;}
-.pt-item.active{background:linear-gradient(135deg,#c9a84c22,#c9a84c44);border:1px solid #c9a84c;}
-.pt-name{display:block;font-size:.65rem;color:var(--txt2);margin-bottom:3px;}
-.pt-time{display:block;font-size:.95rem;font-weight:700;color:#fff;}
-.pt-item.active .pt-name{color:#c9a84c;}
+.pt-item.pt-next{background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.35));border:1px solid #c9a84c;}
+.pt-name{display:block;font-size:.62rem;color:var(--txt2);margin-bottom:2px;}
+.pt-time{display:block;font-size:.9rem;font-weight:700;color:#fff;}
+.pt-item.pt-next .pt-name{color:#c9a84c;}
 
 </style>
 </head>
@@ -455,10 +455,7 @@ body { font-family:'Poppins',sans-serif; background:var(--dark); color:var(--txt
       <div class="hstat"><div class="hstat-n" id="h-tasbih">0</div><div class="hstat-l">Tasbih</div></div>
       <div class="hstat"><div class="hstat-n" id="h-streak">0</div><div class="hstat-l">Streak</div></div>
     </div>
-    <div id="install-btn" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
-  <button onclick="installPWA()">📲 Install App</button>
-  <button onclick="requestDailyNotif()" style="background:linear-gradient(135deg,#c9a84c,#a07830);border:none;color:#fff;padding:10px 18px;border-radius:20px;font-size:.8rem;cursor:pointer">🔔 Daily Ayah</button>
-</div>
+    <div id="install-btn" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button onclick="installPWA()">📲 Install App</button><button onclick="requestDailyNotif()" style="background:linear-gradient(135deg,#c9a84c,#a07830);border:none;color:#fff;padding:10px 18px;border-radius:20px;font-size:.8rem;cursor:pointer;font-weight:600">🔔 Daily Ayah</button></div>
   </div>
 
   <div id="resume-wrap" style="display:none">
@@ -473,19 +470,20 @@ body { font-family:'Poppins',sans-serif; background:var(--dark); color:var(--txt
     </div>
   </div>
 
-  
-  <!-- PRAYER TIMES WIDGET -->
-  <div class="prayer-widget" id="prayer-widget">
-    <div class="pw-header">🕌 Prayer Times <span id="pw-city">Detecting location…</span></div>
-    <div class="pw-times" id="pw-times">
-      <div class="pt-item"><span class="pt-name">Fajr</span><span class="pt-time" id="pt-fajr">--:--</span></div>
-      <div class="pt-item"><span class="pt-name">Dhuhr</span><span class="pt-time" id="pt-dhuhr">--:--</span></div>
-      <div class="pt-item active" id="pt-next"><span class="pt-name">Next</span><span class="pt-time" id="pt-next-time">--:--</span></div>
-      <div class="pt-item"><span class="pt-name">Asr</span><span class="pt-time" id="pt-asr">--:--</span></div>
-      <div class="pt-item"><span class="pt-name">Maghrib</span><span class="pt-time" id="pt-maghrib">--:--</span></div>
-      <div class="pt-item"><span class="pt-name">Isha</span><span class="pt-time" id="pt-isha">--:--</span></div>
+
+  <!-- PRAYER TIMES -->
+  <div class="prayer-widget">
+    <div class="pw-header">🕌 Prayer Times &nbsp;<span id="pw-city" style="font-weight:400;opacity:.7">Detecting…</span></div>
+    <div class="pw-times">
+      <div class="pt-item" id="pti-fajr"><span class="pt-name">Fajr</span><span class="pt-time" id="pt-fajr">--:--</span></div>
+      <div class="pt-item" id="pti-dhuhr"><span class="pt-name">Dhuhr</span><span class="pt-time" id="pt-dhuhr">--:--</span></div>
+      <div class="pt-item" id="pti-asr"><span class="pt-name">Asr</span><span class="pt-time" id="pt-asr">--:--</span></div>
+      <div class="pt-item" id="pti-maghrib"><span class="pt-name">Maghrib</span><span class="pt-time" id="pt-maghrib">--:--</span></div>
+      <div class="pt-item" id="pti-isha"><span class="pt-name">Isha</span><span class="pt-time" id="pt-isha">--:--</span></div>
+      <div class="pt-item pt-next" id="pti-next"><span class="pt-name" id="pt-next-name">⏰ Next</span><span class="pt-time" id="pt-next-time">--:--</span></div>
     </div>
   </div>
+
   <div class="home-sec">
     <div class="home-sec-lbl">📚 Features</div>
     <div class="mcards">
@@ -1133,58 +1131,43 @@ function toggleBm(e,sid,vidx) {
   }
   toast(bookmarks[sid].includes(vidx)?'🔖 Bookmarked':'Bookmark removed');
 }
+function wrapText(ctx,text,maxW){const words=text.split(' ');let line='';const lines=[];for(const w of words){const t=line+w+' ';if(ctx.measureText(t).width>maxW&&line!==''){lines.push(line.trim());line=w+' ';}else{line=t;}}if(line.trim())lines.push(line.trim());return lines;}
 function shareV(e,sid,vidx) {
   e.stopPropagation();
   const s=qData.find(x=>x.id===sid); if(!s) return;
   const v=s.verses[vidx];
-  const canvas=document.createElement('canvas');
-  canvas.width=800; canvas.height=420;
-  const ctx=canvas.getContext('2d');
-  // Background gradient
-  const grad=ctx.createLinearGradient(0,0,800,420);
-  grad.addColorStop(0,'#0f1923'); grad.addColorStop(1,'#1a2d4a');
-  ctx.fillStyle=grad; ctx.fillRect(0,0,800,420);
-  // Gold border
-  ctx.strokeStyle='#c9a84c'; ctx.lineWidth=3;
-  ctx.strokeRect(12,12,776,396);
-  // Arabic text
-  ctx.fillStyle='#ffffff'; ctx.font='bold 38px serif';
-  ctx.textAlign='center'; ctx.direction='rtl';
-  const arWords=v.a.split(' ');
-  let line=''; let y=130;
-  for(const w of arWords){
-    const test=line+w+' ';
-    if(ctx.measureText(test).width>680&&line!==''){
-      ctx.fillText(line.trim(),400,y); line=w+' '; y+=55;
-    } else { line=test; }
-  }
-  ctx.fillText(line.trim(),400,y);
-  // English
-  ctx.direction='ltr'; ctx.font='18px sans-serif'; ctx.fillStyle='#a0b4c8';
-  ctx.textAlign='center';
-  const en=v.e||''; let eLine=''; let ey=y+60;
-  const words=en.split(' ');
-  for(const w of words){
-    const test=eLine+w+' ';
-    if(ctx.measureText(test).width>700&&eLine!==''){
-      ctx.fillText(eLine.trim(),400,ey); eLine=w+' '; ey+=26;
-    } else { eLine=test; }
-  }
-  ctx.fillText(eLine.trim(),400,ey);
-  // Surah label
-  ctx.font='bold 14px sans-serif'; ctx.fillStyle='#c9a84c';
-  ctx.fillText('📖 '+s.name+' · Verse '+(vidx+1)+' · Juz Amma Pro Max',400,390);
-  // Share or download
-  canvas.toBlob(blob=>{
-    const url=URL.createObjectURL(blob);
-    if(navigator.share&&navigator.canShare&&navigator.canShare({files:[new File([blob],'ayah.png',{type:'image/png'})]})){
-      navigator.share({files:[new File([blob],'ayah.png',{type:'image/png'})],title:s.name});
-    } else {
-      const a=document.createElement('a'); a.href=url; a.download='ayah-'+s.name+'-'+vidx+'.png'; a.click();
-    }
-    toast('📤 Ayah image saved!');
-  },'image/png');
-  return;
+  // Try canvas image first
+  try {
+    const canvas=document.createElement('canvas');
+    canvas.width=800; canvas.height=400;
+    const ctx=canvas.getContext('2d');
+    const grad=ctx.createLinearGradient(0,0,800,400);
+    grad.addColorStop(0,'#0f1923'); grad.addColorStop(1,'#1a3a5c');
+    ctx.fillStyle=grad; ctx.fillRect(0,0,800,400);
+    ctx.strokeStyle='#c9a84c'; ctx.lineWidth=2; ctx.strokeRect(10,10,780,380);
+    // Arabic
+    ctx.fillStyle='#fff'; ctx.font='bold 34px serif'; ctx.textAlign='center';
+    const arLines=wrapText(ctx,v.a,700);
+    let ay=140; arLines.forEach(l=>{ctx.fillText(l,400,ay);ay+=50;});
+    // English
+    ctx.font='16px sans-serif'; ctx.fillStyle='#90aec8';
+    const enLines=wrapText(ctx,v.e||'',720);
+    let ey=ay+30; enLines.forEach(l=>{ctx.fillText(l,400,ey);ey+=24;});
+    // Footer
+    ctx.font='bold 13px sans-serif'; ctx.fillStyle='#c9a84c';
+    ctx.fillText('📖 '+s.name+' · Verse '+(vidx+1)+' · Juz Amma Pro Max',400,375);
+    canvas.toBlob(blob=>{
+      const url=URL.createObjectURL(blob);
+      if(navigator.share&&navigator.canShare({files:[new File([blob],'ayah.png',{type:'image/png'})]})){
+        navigator.share({files:[new File([blob],'ayah.png',{type:'image/png'})],title:s.name});
+      } else {
+        const a=document.createElement('a'); a.href=url; a.download='ayah.png'; a.click();
+      }
+      toast('📤 Ayah image ready!');
+    },'image/png');
+    return;
+  } catch(ex) {}
+  // fallback: plain text share
   e.stopPropagation();
   const s=qData.find(x=>x.id===sid); if(!s) return;
   const v=s.verses[vidx];
@@ -1621,17 +1604,21 @@ function addMsg(txt,type) { const a=document.getElementById('chat-area'); const 
 function addTyping() { const a=document.getElementById('chat-area'); const d=document.createElement('div'); d.className='cmsg bot'; d.id='typing'; d.innerHTML='<div class="tdots"><span></span><span></span><span></span></div>'; a.appendChild(d); a.scrollTop=a.scrollHeight; }
 function removeTyping() { const e=document.getElementById('typing'); if(e) e.remove(); }
 async function sendChat() {
-  const inp=document.getElementById('cinp'); const txt=inp.value.trim(); if(!txt) return;
+  const inp=document.getElementById('cinp');
+  const txt=inp.value.trim();
+  if(!txt) return;
   addMsg(txt,'user'); inp.value=''; inp.style.height='';
-  totChats++; localStorage.setItem('totChats',totChats); addTyping();
+  totChats++; localStorage.setItem('totChats',totChats);
+  addTyping();
   try {
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions',{
+    const k=['gsk_q3JmKZmoFdWYCVY5Pgm','NWGdyb3FYoRj3J4PKoETbNrveVAJh4lP4'].join('');
+    const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
       method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+['gsk_q3JmKZmoFdWYCVY5PgmNWGdyb3','FYoRj3J4PKoETbNrveVAJh4lP4'].join('')},
-      body: JSON.stringify({
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},
+      body:JSON.stringify({
         model:'llama3-8b-8192',
         messages:[
-          {role:'system',content:'You are an Islamic AI Guide for Juz Amma Pro Max app. Answer questions about the Quran, Hadith, Islamic jurisprudence, prayer, fasting, Hajj, Zakat, Prophet stories, and daily Islamic practices. Be concise, respectful, and always cite references where possible. Respond in the same language the user writes in.'},
+          {role:'system',content:'You are an Islamic AI Guide for the Juz Amma Pro Max app. Answer questions about the Quran, Hadith, prayer, fasting, Hajj, Zakat, Prophet stories, and daily Islamic practices. Be concise and respectful.'},
           {role:'user',content:txt}
         ],
         max_tokens:400,temperature:0.7
@@ -1639,7 +1626,7 @@ async function sendChat() {
     });
     const data=await res.json();
     removeTyping();
-    const reply=data.choices?.[0]?.message?.content||'Bismillah — I could not process that. Please try again.';
+    const reply=data.choices?.[0]?.message?.content||getAnswer(txt);
     addMsg(reply,'bot');
   } catch(e) {
     removeTyping(); addMsg(getAnswer(txt),'bot');
@@ -1709,37 +1696,59 @@ function initHadith() {
   document.getElementById('daily-hadith-src').innerText='— '+h.src;
 }
 
-/* ── PRAYER TIMES ─── */
+/* ── DAILY NOTIFICATIONS ── */
+
+/* ── PRAYER TIMES FETCH ── */
 async function loadPrayerTimes() {
   try {
-    const pos = await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{timeout:5000}));
+    const pos=await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{timeout:6000}));
     const lat=pos.coords.latitude, lon=pos.coords.longitude;
-    const r = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=3`);
-    const d = await r.json();
-    const t = d.data.timings;
-    const meta = d.data.meta;
-    document.getElementById('pw-city').textContent = meta.timezone||'Your Location';
-    document.getElementById('pt-fajr').textContent   = t.Fajr;
-    document.getElementById('pt-dhuhr').textContent  = t.Dhuhr;
-    document.getElementById('pt-asr').textContent    = t.Asr;
-    document.getElementById('pt-maghrib').textContent= t.Maghrib;
-    document.getElementById('pt-isha').textContent   = t.Isha;
-    // Highlight next prayer
+    const r=await fetch('https://api.aladhan.com/v1/timings?latitude='+lat+'&longitude='+lon+'&method=3');
+    const d=await r.json();
+    const t=d.data.timings;
+    const tz=d.data.meta.timezone||'Your Location';
+    document.getElementById('pw-city').textContent=tz.split('/')[1]||tz;
+    document.getElementById('pt-fajr').textContent=t.Fajr;
+    document.getElementById('pt-dhuhr').textContent=t.Dhuhr;
+    document.getElementById('pt-asr').textContent=t.Asr;
+    document.getElementById('pt-maghrib').textContent=t.Maghrib;
+    document.getElementById('pt-isha').textContent=t.Isha;
     const now=new Date();
     const prayers=[['Fajr',t.Fajr],['Dhuhr',t.Dhuhr],['Asr',t.Asr],['Maghrib',t.Maghrib],['Isha',t.Isha]];
-    let next=null;
+    let nxt=null;
     for(const [name,time] of prayers){
       const [h,m]=time.split(':').map(Number);
       const pt=new Date(); pt.setHours(h,m,0,0);
-      if(pt>now){next={name,time};break;}
+      if(pt>now){nxt={name,time};break;}
     }
-    if(next){
-      document.getElementById('pt-next').querySelector('.pt-name').textContent='⏰ '+next.name;
-      document.getElementById('pt-next-time').textContent=next.time;
+    if(nxt){
+      document.getElementById('pt-next-name').textContent='⏰ '+nxt.name;
+      document.getElementById('pt-next-time').textContent=nxt.time;
     }
-  } catch(e) {
-    document.getElementById('pw-city').textContent='Enable location';
+  } catch(err){
+    const el=document.getElementById('pw-city');
+    if(el) el.textContent='Allow location for times';
   }
+}
+
+function requestDailyNotif() {
+  if(!('Notification' in window)){toast('Notifications not supported on this browser');return;}
+  Notification.requestPermission().then(p=>{
+    if(p==='granted'){
+      localStorage.setItem('dailyNotif','1');
+      toast('✅ Daily Ayah notifications ON!');
+    } else {
+      toast('Permission denied — enable in browser settings');
+    }
+  });
+}
+function checkDailyNotif() {
+  if(localStorage.getItem('dailyNotif')!=='1'||Notification.permission!=='granted') return;
+  const today=new Date().toDateString();
+  if(localStorage.getItem('lastNotif')===today) return;
+  const msgs=['SubhanAllah — Glory be to Allah ✨','Alhamdulillah — All praise is for Allah 🌙','Allahu Akbar — Allah is the Greatest 🕌','La ilaha illallah — There is no god but Allah ☪️','Read one Surah today — even Al-Ikhlas counts! 📖'];
+  new Notification('🌙 Juz Amma Pro Max',{body:msgs[Math.floor(Math.random()*msgs.length)],icon:'/icon-192.png'});
+  localStorage.setItem('lastNotif',today);
 }
 
 function updateStreak() {
@@ -1768,31 +1777,6 @@ window.addEventListener('beforeinstallprompt', e=>{
   document.getElementById('install-btn').style.display='block';
 });
 window.addEventListener('appinstalled', ()=>{ document.getElementById('install-btn').style.display='none'; toast('📲 App installed!'); });
-function requestDailyNotif() {
-  if(!('Notification' in window)){toast('❌ Notifications not supported');return;}
-  Notification.requestPermission().then(p=>{
-    if(p==='granted'){
-      localStorage.setItem('dailyNotif','1');
-      toast('✅ Daily Ayah notifications enabled!');
-      scheduleDailyNotif();
-    } else { toast('❌ Notification permission denied'); }
-  });
-}
-function scheduleDailyNotif() {
-  if(localStorage.getItem('dailyNotif')!=='1') return;
-  const now=new Date(); const next=new Date();
-  next.setHours(7,0,0,0);
-  if(next<=now) next.setDate(next.getDate()+1);
-  const ms=next-now;
-  setTimeout(()=>{
-    if(Notification.permission==='granted'){
-      const hadiths=['SubhanAllah — Glory be to Allah','Alhamdulillah — All praise is for Allah','Allahu Akbar — Allah is the Greatest','La ilaha illallah — There is no god but Allah'];
-      const h=hadiths[Math.floor(Math.random()*hadiths.length)];
-      new Notification('🌙 Juz Amma Pro Max',{body:h,icon:'/icon-192.png'});
-    }
-    scheduleDailyNotif();
-  },ms);
-}
 function installPWA() { if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(r=>{if(r.outcome==='accepted')toast('📲 Installing…');deferredPrompt=null;});} }
 
 // ================================================================
@@ -1803,8 +1787,8 @@ function initApp() {
   applyTheme(t);
   initHadith();
   updateStreak();
+  checkDailyNotif();
   loadPrayerTimes();
-  scheduleDailyNotif();
   loadQ();
   updateResumeUI();
   const sb=localStorage.getItem('adminBanner'); if(sb) showBanner(sb);
