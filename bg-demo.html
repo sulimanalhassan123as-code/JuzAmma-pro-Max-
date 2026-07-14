@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Background Demo — Juz Amma Pro Max</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;font-family:'Poppins',sans-serif;}
+
+/* ── THEME VARIABLES ── */
+body.opt1{
+  --bg:#F8FAFF; --card:#FFFFFF; --hdr:#FFFFFF;
+  --txt:#1a2340; --txt2:#6b7a99; --bdr:#E8EDF8;
+  --p:#10b981; --pd:#059669; --accent:#10b981;
+  --shadow:0 4px 20px rgba(0,0,0,0.07);
+  --badge-bg:#E8FFF5; --badge-txt:#059669;
+  --prayer-bg:linear-gradient(135deg,#10b981,#059669);
+  --streak-bg:#F0FDF9; --streak-bdr:#A7F3D0;
+  --soon-bg:#F8FAFF; --soon-bdr:#E8EDF8;
+}
+body.opt2{
+  --bg:#F2F4F8; --card:#FFFFFF; --hdr:#FFFFFF;
+  --txt:#1e2a3a; --txt2:#6b7a8d; --bdr:#DDE3EE;
+  --p:#3B82F6; --pd:#2563EB; --accent:#3B82F6;
+  --shadow:0 4px 20px rgba(0,0,0,0.08);
+  --badge-bg:#EFF6FF; --badge-txt:#2563EB;
+  --prayer-bg:linear-gradient(135deg,#3B82F6,#1d4ed8);
+  --streak-bg:#EFF6FF; --streak-bdr:#BFDBFE;
+  --soon-bg:#F2F4F8; --soon-bdr:#DDE3EE;
+}
+body.opt3{
+  --bg:#FDF6EC; --card:#FFFFFF; --hdr:#FFFFFF;
+  --txt:#2c1f0e; --txt2:#8a6a3a; --bdr:#EDD9B5;
+  --p:#D97706; --pd:#B45309; --accent:#D97706;
+  --shadow:0 4px 20px rgba(0,0,0,0.08);
+  --badge-bg:#FEF3C7; --badge-txt:#B45309;
+  --prayer-bg:linear-gradient(135deg,#D97706,#92400e);
+  --streak-bg:#FFFBEB; --streak-bdr:#FDE68A;
+  --soon-bg:#FDF6EC; --soon-bdr:#EDD9B5;
+}
+
+body{background:var(--bg);color:var(--txt);transition:background .35s,color .35s;}
+
+/* ── OPTION PICKER ── */
+.picker{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  background:var(--hdr);border-bottom:2px solid var(--bdr);
+  padding:10px 14px;box-shadow:var(--shadow);
+}
+.picker-label{font-size:.65rem;font-weight:700;color:var(--txt2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.picker-row{display:flex;gap:8px;}
+.opt-btn{
+  flex:1;padding:10px 6px;border-radius:14px;border:2.5px solid var(--bdr);
+  background:var(--card);cursor:pointer;font-family:'Poppins',sans-serif;
+  font-size:.72rem;font-weight:700;color:var(--txt2);
+  transition:all .2s;text-align:center;
+}
+.opt-btn.active{border-color:var(--p);color:var(--p);background:var(--badge-bg);}
+.opt-btn .opt-swatch{width:18px;height:18px;border-radius:50%;margin:0 auto 4px;}
+
+/* ── HEADER ── */
+.app-hdr{
+  background:var(--hdr);padding:72px 16px 12px;
+  border-bottom:1px solid var(--bdr);box-shadow:var(--shadow);
+  text-align:center;
+}
+.app-logo{font-size:1.8rem;margin-bottom:2px;}
+.app-title{font-size:1.15rem;font-weight:800;color:var(--txt);}
+.app-bism{font-family:'Amiri',serif;font-size:1rem;color:var(--txt2);margin-top:2px;}
+
+/* ── CONTENT ── */
+.content{padding:14px 14px 100px;overflow-y:auto;}
+
+/* ── PRAYER BANNER ── */
+.prayer-card{
+  background:var(--prayer-bg);
+  border-radius:20px;padding:18px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;color:#fff;
+  box-shadow:0 6px 24px rgba(0,0,0,0.15);
+}
+.prayer-left h4{font-size:.68rem;opacity:.8;text-transform:uppercase;letter-spacing:.8px;margin-bottom:2px;}
+.prayer-left .pname{font-size:1.5rem;font-weight:800;}
+.prayer-left .ptime{font-size:.8rem;opacity:.85;margin-top:2px;}
+.prayer-ico{font-size:2.8rem;}
+
+/* ── STREAK ── */
+.streak-card{
+  background:var(--streak-bg);border:1.5px solid var(--streak-bdr);
+  border-radius:18px;padding:14px 16px;margin-bottom:14px;
+}
+.streak-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.streak-title{font-size:.82rem;font-weight:700;color:var(--txt);}
+.streak-count{font-size:1.1rem;font-weight:800;color:var(--p);}
+.streak-bar{background:var(--bdr);border-radius:10px;height:7px;overflow:hidden;margin-bottom:8px;}
+.streak-fill{height:100%;border-radius:10px;background:var(--p);width:55%;}
+.streak-days{display:flex;gap:5px;}
+.sday{
+  flex:1;text-align:center;font-size:.6rem;font-weight:600;
+  padding:5px 2px;border-radius:8px;background:var(--bdr);color:var(--txt2);
+}
+.sday.done{background:var(--p);color:#fff;}
+.sday.today{outline:2px solid var(--p);}
+
+/* ── SECTION LABEL ── */
+.sec-label{
+  font-size:.68rem;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;color:var(--txt2);
+  padding:4px 2px;margin-bottom:10px;
+}
+
+/* ── CARD GRID ── */
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.ccard{
+  background:var(--card);border:1.5px solid var(--bdr);
+  border-radius:18px;padding:16px 12px;
+  cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;text-align:center;gap:6px;
+  box-shadow:var(--shadow);position:relative;overflow:hidden;
+  transition:transform .15s,box-shadow .15s;
+}
+.ccard:active{transform:scale(.96);}
+.ccard-ico{font-size:2rem;line-height:1;}
+.ccard-t{font-size:.82rem;font-weight:700;color:var(--txt);}
+.ccard-s{font-size:.67rem;color:var(--txt2);line-height:1.35;}
+.cbadge{
+  position:absolute;top:8px;right:8px;
+  font-size:.55rem;font-weight:800;padding:2px 7px;
+  border-radius:20px;text-transform:uppercase;letter-spacing:.4px;
+}
+.badge-new{background:var(--badge-bg);color:var(--badge-txt);}
+.badge-ai{background:#FEF3C7;color:#B45309;}
+.badge-soon{background:var(--bdr);color:var(--txt2);}
+.ccard.soon{opacity:.6;}
+.ccard.soon:active{transform:none;}
+
+/* ── HADITH CARD ── */
+.hadith-card{
+  background:var(--card);border:1.5px solid var(--bdr);
+  border-radius:18px;padding:16px 18px;
+  box-shadow:var(--shadow);margin-bottom:14px;
+}
+.hadith-lbl{font-size:.68rem;font-weight:700;color:var(--p);margin-bottom:6px;letter-spacing:.5px;}
+.hadith-txt{font-size:.82rem;color:var(--txt);line-height:1.6;font-style:italic;}
+.hadith-src{font-size:.68rem;color:var(--txt2);margin-top:6px;}
+
+/* ── BOTTOM NAV ── */
+.bnav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--hdr);border-top:1.5px solid var(--bdr);
+  display:flex;padding:8px 0 14px;
+  box-shadow:0 -4px 20px rgba(0,0,0,0.06);z-index:100;
+}
+.ni{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  gap:3px;cursor:pointer;color:var(--txt2);font-size:.58rem;font-weight:600;
+  transition:color .2s;-webkit-tap-highlight-color:transparent;
+}
+.ni.on{color:var(--p);}
+.ni-ico{font-size:1.25rem;line-height:1;}
+</style>
+</head>
+<body class="opt1">
+
+<!-- PICKER -->
+<div class="picker">
+  <div class="picker-label">👁 Choose Background Style</div>
+  <div class="picker-row">
+    <div class="opt-btn active" id="btn1" onclick="setOpt('opt1','btn1')">
+      <div class="opt-swatch" style="background:#F8FAFF;border:2px solid #10b981"></div>
+      Option 1<br><span style="font-size:.6rem;font-weight:400">Pure White · Green</span>
+    </div>
+    <div class="opt-btn" id="btn2" onclick="setOpt('opt2','btn2')">
+      <div class="opt-swatch" style="background:#F2F4F8;border:2px solid #3B82F6"></div>
+      Option 2<br><span style="font-size:.6rem;font-weight:400">Soft Grey · Blue</span>
+    </div>
+    <div class="opt-btn" id="btn3" onclick="setOpt('opt3','btn3')">
+      <div class="opt-swatch" style="background:#FDF6EC;border:2px solid #D97706"></div>
+      Option 3<br><span style="font-size:.6rem;font-weight:400">Warm Cream · Gold</span>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="app-hdr">
+  <div class="app-logo">🕌</div>
+  <div class="app-title">Juz Amma Pro Max</div>
+  <div class="app-bism">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- Prayer Banner -->
+  <div class="prayer-card">
+    <div class="prayer-left">
+      <h4>Next Prayer</h4>
+      <div class="pname">Maghrib</div>
+      <div class="ptime">⏰ 6:42 PM · In 1h 14m</div>
+    </div>
+    <div class="prayer-ico">🌅</div>
+  </div>
+
+  <!-- Streak -->
+  <div class="streak-card">
+    <div class="streak-top">
+      <div class="streak-title">🔥 Reading Streak</div>
+      <div class="streak-count">13 Days</div>
+    </div>
+    <div class="streak-bar"><div class="streak-fill"></div></div>
+    <div class="streak-days">
+      <div class="sday done">M</div>
+      <div class="sday done">T</div>
+      <div class="sday done">W</div>
+      <div class="sday done">T</div>
+      <div class="sday done">F</div>
+      <div class="sday done">S</div>
+      <div class="sday today">S</div>
+    </div>
+  </div>
+
+  <!-- Features Cards -->
+  <div class="sec-label">📚 Features</div>
+  <div class="cgrid">
+    <div class="ccard">
+      <div class="ccard-ico">📖</div>
+      <div class="ccard-t">Read & Listen</div>
+      <div class="ccard-s">All 37 Surahs</div>
+    </div>
+    <div class="ccard">
+      <div class="ccard-ico">🧠</div>
+      <div class="ccard-t">Memorize</div>
+      <div class="ccard-s">Reveal · Quiz</div>
+      <span class="cbadge badge-new">NEW</span>
+    </div>
+    <div class="ccard">
+      <div class="ccard-ico">🏔️</div>
+      <div class="ccard-t">Dhikr Journey</div>
+      <div class="ccard-s">SubhanAllah</div>
+    </div>
+    <div class="ccard">
+      <div class="ccard-ico">✨</div>
+      <div class="ccard-t">Islamic AI</div>
+      <div class="ccard-s">Ask anything</div>
+      <span class="cbadge badge-ai">AI</span>
+    </div>
+    <div class="ccard">
+      <div class="ccard-ico">🌟</div>
+      <div class="ccard-t">Prophets</div>
+      <div class="ccard-s">10 Stories</div>
+      <span class="cbadge badge-new">NEW</span>
+    </div>
+    <div class="ccard">
+      <div class="ccard-ico">🌙</div>
+      <div class="ccard-t">Night Radio</div>
+      <div class="ccard-s">Sleep to Quran</div>
+    </div>
+  </div>
+
+  <!-- Coming Soon -->
+  <div class="sec-label">🚀 Coming Soon</div>
+  <div class="cgrid">
+    <div class="ccard soon">
+      <div class="ccard-ico">📊</div>
+      <div class="ccard-t">Progress</div>
+      <div class="ccard-s">Charts & stats</div>
+      <span class="cbadge badge-soon">SOON</span>
+    </div>
+    <div class="ccard soon">
+      <div class="ccard-ico">🎙️</div>
+      <div class="ccard-t">Tajweed AI</div>
+      <div class="ccard-s">Record & check</div>
+      <span class="cbadge badge-soon">SOON</span>
+    </div>
+    <div class="ccard soon">
+      <div class="ccard-ico">👥</div>
+      <div class="ccard-t">Group Study</div>
+      <div class="ccard-s">Read together</div>
+      <span class="cbadge badge-soon">SOON</span>
+    </div>
+    <div class="ccard soon">
+      <div class="ccard-ico">🌍</div>
+      <div class="ccard-t">Multi-Language</div>
+      <div class="ccard-s">Hausa · French</div>
+      <span class="cbadge badge-soon">SOON</span>
+    </div>
+  </div>
+
+  <!-- Hadith -->
+  <div class="sec-label">🌙 Daily Wisdom</div>
+  <div class="hadith-card">
+    <div class="hadith-lbl">✦ Hadith of the Day</div>
+    <div class="hadith-txt">"The best of you are those who learn the Quran and teach it to others."</div>
+    <div class="hadith-src">— Sahih Bukhari 5027</div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bnav">
+  <div class="ni on"><div class="ni-ico">🏠</div>Home</div>
+  <div class="ni"><div class="ni-ico">📖</div>Surahs</div>
+  <div class="ni"><div class="ni-ico">🧠</div>Memorize</div>
+  <div class="ni"><div class="ni-ico">🏔️</div>Dhikr</div>
+  <div class="ni"><div class="ni-ico">✨</div>AI</div>
+  <div class="ni"><div class="ni-ico">🌟</div>Prophets</div>
+  <div class="ni"><div class="ni-ico">🌙</div>Night</div>
+</div>
+
+<script>
+function setOpt(cls, btnId) {
+  document.body.className = cls;
+  document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(btnId).classList.add('active');
+}
+</script>
+</body>
+</html>
