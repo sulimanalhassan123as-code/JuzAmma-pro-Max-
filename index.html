@@ -1119,12 +1119,6 @@ function toggleBm(e,sid,vidx) {
 }
 function wrapTxt(ctx,text,maxW){const words=(text||'').split(' ');let line='',lines=[];for(const w of words){const t=line+w+' ';if(ctx.measureText(t).width>maxW&&line!==''){lines.push(line.trim());line=w+' ';}else{line=t;}}if(line.trim())lines.push(line.trim());return lines;}
 function shareV(e,sid,vidx){e.stopPropagation();const s=qData.find(x=>x.id===sid);if(!s)return;const v=s.verses[vidx];try{const c=document.createElement('canvas');c.width=800;c.height=420;const x=c.getContext('2d');const g=x.createLinearGradient(0,0,800,420);g.addColorStop(0,'#0f1923');g.addColorStop(1,'#1a3a5c');x.fillStyle=g;x.fillRect(0,0,800,420);x.strokeStyle='#c9a84c';x.lineWidth=2;x.strokeRect(10,10,780,400);x.fillStyle='#fff';x.font='bold 32px serif';x.textAlign='center';const arl=wrapTxt(x,v.a,680);let ay=120;arl.forEach(l=>{x.fillText(l,400,ay);ay+=48;});x.font='15px sans-serif';x.fillStyle='#90aec8';const enl=wrapTxt(x,v.e||'',720);let ey=ay+28;enl.forEach(l=>{x.fillText(l,400,ey);ey+=24;});x.font='bold 13px sans-serif';x.fillStyle='#c9a84c';x.fillText('📖 '+s.name+' · Verse '+(vidx+1)+' · Juz Amma Pro Max',400,405);c.toBlob(blob=>{const url=URL.createObjectURL(blob);if(navigator.share&&navigator.canShare({files:[new File([blob],'ayah.png',{type:'image/png'})]})){navigator.share({files:[new File([blob],'ayah.png',{type:'image/png'})],title:s.name});}else{const a=document.createElement('a');a.href=url;a.download='ayah.png';a.click();}toast('📤 Ayah image ready!');},'image/png');return;}catch(ex){}
-  e.stopPropagation();
-  const s=qData.find(x=>x.id===sid); if(!s) return;
-  const v=s.verses[vidx];
-  const txt=`${v.a}\n\n"${v.e}"\n\n— ${s.name}, Verse ${v.n||vidx+1}`;
-  if (navigator.share) navigator.share({text:txt});
-  else { navigator.clipboard&&navigator.clipboard.writeText(txt); toast('📋 Verse copied!'); }
 }
 function toggleTrans() { showTrans=!showTrans; localStorage.setItem('showTrans',showTrans); document.getElementById('btn-trans').classList.toggle('on',showTrans); const s=qData.find(x=>x.id===curS); if(s) renderVerses(s); if(isPlaying){const c=document.getElementById(`vc-${curS}-${curV}`);if(c){c.classList.add('playing');c.scrollIntoView({behavior:'smooth',block:'center'});}} }
 function toggleAuto() { autoPlay=!autoPlay; localStorage.setItem('autoPlay',autoPlay); document.getElementById('btn-auto').classList.toggle('on',autoPlay); toast(autoPlay?'▶ Auto-play on':'Auto-play off'); }
