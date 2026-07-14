@@ -460,6 +460,8 @@ body { font-family:'Poppins',sans-serif; background:var(--dark); color:var(--txt
 .azan-modal-prayer{font-size:1.1rem;font-weight:700;color:#c9a84c;margin-bottom:4px;}
 .azan-modal-arabic{font-size:1.4rem;color:#fff;margin-bottom:18px;font-family:serif;}
 .azan-stop-btn{background:#c9a84c;color:#0d2137;border:none;border-radius:20px;padding:12px 32px;font-size:.9rem;font-weight:700;cursor:pointer;}
+
+.azan-test-btn{background:linear-gradient(135deg,#c9a84c,#a07830);color:#fff;border:none;border-radius:10px;padding:10px;width:100%;font-size:.78rem;font-weight:700;cursor:pointer;margin-top:8px;letter-spacing:.5px;}
 </style>
 </head>
 <body>
@@ -504,6 +506,7 @@ body { font-family:'Poppins',sans-serif; background:var(--dark); color:var(--txt
       <span>▶️ Preview selected Azan</span>
       <span style="font-size:.65rem;opacity:.5">tap to hear</span>
     </div>
+    <button class="azan-test-btn" onclick="testAzanNow()">🔔 Test Ring Now</button>
     <div class="azan-next-info" id="azan-next-info">Enable to get Azan at each prayer time</div>
   </div>
 
@@ -1670,12 +1673,12 @@ function initHadith() {
 
 
 const AZAN_VOICES = [
-  {id:'makkah',   name:'Makkah',    origin:'Masjid al-Haram',    url:'https://islamicfinder.org/prayer_times/azan/azan_1.mp3'},
-  {id:'madinah',  name:'Madinah',   origin:'Masjid an-Nabawi',   url:'https://islamicfinder.org/prayer_times/azan/azan_2.mp3'},
-  {id:'mishary',  name:'Mishary',   origin:'Al-Afasy, Kuwait',   url:'https://islamicfinder.org/prayer_times/azan/azan_3.mp3'},
-  {id:'abdulbasit',name:'A. Basit', origin:'Egypt',              url:'https://islamicfinder.org/prayer_times/azan/azan_4.mp3'},
-  {id:'turkey',   name:'Turkey',    origin:'Diyanet Işleri',     url:'https://islamicfinder.org/prayer_times/azan/azan_5.mp3'},
-  {id:'egypt',    name:'Egypt',     origin:'Radio Quran Cairo',  url:'https://islamicfinder.org/prayer_times/azan/azan_6.mp3'},
+  {id:'makkah',    name:'Makkah',     origin:'Masjid al-Haram',   url:'https://praytimes.org/audio/sunni/Adhan-Makkah.mp3'},
+  {id:'madinah',   name:'Madinah',    origin:'Masjid an-Nabawi',  url:'https://praytimes.org/audio/sunni/Adhan-Madinah.mp3'},
+  {id:'abdulbasit',name:'Abdul Basit',origin:'Egypt (Classic)',   url:'https://praytimes.org/audio/sunni/Abdul-Basit.mp3'},
+  {id:'minshawi',  name:'Minshawi',   origin:'Sheikh Minshawi',   url:'https://praytimes.org/audio/sunni/Minshawi.mp3'},
+  {id:'egypt',     name:'Egypt',      origin:'Cairo Official',    url:'https://praytimes.org/audio/sunni/Adhan-Egypt.mp3'},
+  {id:'yusufi',    name:'Yusuf Islam',origin:'Cat Stevens (UK)',  url:'https://praytimes.org/audio/sunni/Yusuf-Islam.mp3'},
 ];
 const PRAYER_ARABIC = {Fajr:'الفجر',Dhuhr:'الظهر',Asr:'العصر',Maghrib:'المغرب',Isha:'العشاء'};
 let azanEnabled = localStorage.getItem('azanEnabled') === '1';
@@ -1705,6 +1708,12 @@ async function loadPrayerTimes(){
 }
 
 /* ── AZAN ENGINE ── */
+
+function testAzanNow(){
+  playAzanFor('Fajr');
+  toast('🕌 Testing Azan — listen!');
+}
+
 function toggleAzan(){
   azanEnabled = !azanEnabled;
   localStorage.setItem('azanEnabled', azanEnabled ? '1' : '0');
