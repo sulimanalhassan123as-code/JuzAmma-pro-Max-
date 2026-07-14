@@ -493,6 +493,20 @@ body { font-family:'Poppins',sans-serif; background:var(--dark); color:var(--txt
 
   
   <div class="pw"><div class="pw-hd">🕌 Prayer Times <span id="pw-city" style="font-weight:400;opacity:.6">— allow location</span></div><div class="pw-grid"><div class="pw-cell"><span class="pw-nm">Fajr</span><span class="pw-tm" id="pt-fajr">--:--</span></div><div class="pw-cell"><span class="pw-nm">Dhuhr</span><span class="pw-tm" id="pt-dhuhr">--:--</span></div><div class="pw-cell"><span class="pw-nm">Asr</span><span class="pw-tm" id="pt-asr">--:--</span></div><div class="pw-cell"><span class="pw-nm">Maghrib</span><span class="pw-tm" id="pt-maghrib">--:--</span></div><div class="pw-cell"><span class="pw-nm">Isha</span><span class="pw-tm" id="pt-isha">--:--</span></div><div class="pw-cell pw-nxt"><span class="pw-nm" id="pt-nxt-nm">⏰ Next</span><span class="pw-tm" id="pt-nxt-tm">--:--</span></div></div></div>
+  <!-- AZAN SETTINGS PANEL -->
+  <div class="azan-panel">
+    <div class="azan-hd">
+      <span>🕌 Azan Alarm</span>
+      <button class="azan-toggle" id="azan-toggle-btn" onclick="toggleAzan()">🔕 OFF</button>
+    </div>
+    <div class="azan-voices" id="azan-voices-grid"><!-- filled by JS --></div>
+    <div class="azan-preview" onclick="previewAzan()">
+      <span>▶️ Preview selected Azan</span>
+      <span style="font-size:.65rem;opacity:.5">tap to hear</span>
+    </div>
+    <div class="azan-next-info" id="azan-next-info">Enable to get Azan at each prayer time</div>
+  </div>
+
 <div class="home-sec">
     <div class="home-sec-lbl">📚 Features</div>
     <div class="mcards">
