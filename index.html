@@ -81,8 +81,6 @@ body { font-family:'Poppins',sans-serif; background:var(--dark); color:var(--txt
 #memorize-view.active { display:flex; }
 
 /* Admin: standard scrollable view */
-#admin-view { display:none; position:fixed; top:0; left:0; right:0; bottom:var(--nav); overflow-y:auto; background:var(--bg); }
-#admin-view.active { display:block; }
 
 /* ── BOTTOM NAV ───────────────────────── */
 .bnav { position:fixed; bottom:0; left:0; right:0; height:var(--nav); background:var(--hdr); border-top:1px solid var(--bdr); display:flex; z-index:200; box-shadow:0 -3px 16px rgba(0,0,0,.08); }
@@ -315,13 +313,7 @@ body { font-family:'Poppins',sans-serif; background:var(--dark); color:var(--txt
 .csend:active { transform:scale(.9); }
 
 /* ── ADMIN ────────────────────────────── */
-.adm-login { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:70vh; padding:26px; text-align:center; }
-.adm-login h2 { font-size:1.1rem; font-weight:700; color:var(--txt); margin-bottom:4px; }
-.adm-login p { font-size:.78rem; color:var(--txt2); margin-bottom:16px; }
 .adm-wrap { padding:14px; }
-.adm-card { background:var(--card); border-radius:15px; padding:15px; margin-bottom:11px; border:1.5px solid var(--bdr); }
-.adm-card h3 { font-size:.88rem; font-weight:700; color:var(--txt); margin-bottom:2px; }
-.adm-card p { font-size:.76rem; color:var(--txt2); margin-bottom:11px; }
 .ainp { width:100%; padding:10px 11px; border:1.5px solid var(--bdr); border-radius:9px; background:var(--bg); color:var(--txt); font-size:.83rem; font-family:'Poppins',sans-serif; outline:none; margin-bottom:8px; }
 .ainp:focus { border-color:var(--p); }
 .ata { width:100%; padding:10px 11px; border:1.5px solid var(--bdr); border-radius:9px; background:var(--bg); color:var(--txt); font-size:.83rem; font-family:'Poppins',sans-serif; outline:none; resize:vertical; min-height:68px; margin-bottom:8px; }
@@ -826,94 +818,6 @@ body { font-family:'Poppins',sans-serif; background:var(--dark); color:var(--txt
 </div>
 
 <!-- ════════════════ ADMIN ════════════════ -->
-<div id="admin-view">
-  <div id="adm-login" class="adm-login">
-    <div style="font-size:2.4rem;margin-bottom:10px">🔐</div>
-    <h2>Admin Dashboard</h2>
-    <p>Enter admin password to continue</p>
-    <input type="password" class="ainp" id="adm-pass" placeholder="Password" style="max-width:260px;text-align:center" onkeydown="if(event.key==='Enter')chkAdm()">
-    <button class="abtn" style="max-width:260px" onclick="chkAdm()">Login</button>
-    <!-- password hint removed for security -->
-  </div>
-  <div id="adm-dash" style="display:none">
-    <div style="padding:13px 15px 5px;display:flex;align-items:center;gap:9px">
-      <span style="font-size:1.2rem">⚙️</span>
-      <div><div style="font-weight:700;font-size:.97rem;color:var(--txt)">Admin Dashboard</div><div style="font-size:.72rem;color:var(--txt2)">Juz Amma Pro</div></div>
-      <button class="abtn grey" style="width:auto;padding:6px 13px;margin:0;margin-left:auto;font-size:.78rem" onclick="admOut()">Logout</button>
-    </div>
-    <div class="adm-wrap">
-      <div class="adm-tabs">
-        <div class="adm-tab on" onclick="admTab('stats',this)">📊 Stats</div>
-        <div class="adm-tab" onclick="admTab('content',this)">📝 Content</div>
-        <div class="adm-tab" onclick="admTab('settings',this)">⚙️ Settings</div>
-        <div class="adm-tab" onclick="admTab('data',this)">🗄️ Data</div>
-      </div>
-      <div class="adm-panel on" id="panel-stats">
-        <div class="adm-card"><h3>📊 Live Stats</h3><p>Usage data</p>
-          <div class="stats-g">
-            <div class="stat-b"><div class="stat-n" id="s-v">0</div><div class="stat-l">Visits</div></div>
-            <div class="stat-b"><div class="stat-n" id="s-t">0</div><div class="stat-l">Tasbih</div></div>
-            <div class="stat-b"><div class="stat-n" id="s-s">37</div><div class="stat-l">Surahs</div></div>
-            <div class="stat-b"><div class="stat-n" id="s-c">0</div><div class="stat-l">AI Chats</div></div>
-          </div>
-        </div>
-        <div class="adm-card"><h3>🔖 Saved Data</h3><p>Bookmarks &amp; favourites</p>
-          <div class="stats-g">
-            <div class="stat-b"><div class="stat-n" id="s-bm">0</div><div class="stat-l">Bookmarks</div></div>
-            <div class="stat-b"><div class="stat-n" id="s-fv">0</div><div class="stat-l">Favourites</div></div>
-          </div>
-        </div>
-      </div>
-      <div class="adm-panel" id="panel-content">
-        <div class="adm-card"><h3>📢 Banner</h3><p>Shown at top of home</p>
-          <textarea class="ata" id="banner-txt" placeholder="e.g. Ramadan Mubarak!"></textarea>
-          <button class="abtn" onclick="saveBanner()">Save Banner</button>
-        </div>
-        <div class="adm-card"><h3>🌙 Daily Hadith</h3><p>Custom wisdom text</p>
-          <textarea class="ata" id="custom-hadith" placeholder="The Prophet ﷺ said…"></textarea>
-          <input class="ainp" id="custom-hadith-src" placeholder="Source (e.g. Bukhari 6412)">
-          <button class="abtn" onclick="saveHadith()">Save Hadith</button>
-        </div>
-        <div class="adm-card"><h3>💬 AI Welcome</h3><p>First AI chat message</p>
-          <textarea class="ata" id="ai-welcome" placeholder="As-salamu alaykum!…"></textarea>
-          <button class="abtn" onclick="saveWelcome()">Save</button>
-        </div>
-      </div>
-      <div class="adm-panel" id="panel-settings">
-        <div class="adm-card"><h3>🎙️ Default Reciter</h3><p>Voice for all users</p>
-          <select class="ainp" id="adm-reciter">
-            <option value="Alafasy_128kbps">Mishary Alafasy</option>
-            <option value="Abu_Bakr_Ash-Shaatree_128kbps">Abu Bakr Ash-Shaatree</option>
-            <option value="Husary_128kbps">Mahmoud Al-Husary</option>
-            <option value="Abdul_Basit_Murattal_192kbps">Abdul Basit</option>
-          </select>
-          <button class="abtn" onclick="saveReciter()">Save Reciter</button>
-        </div>
-        <div class="adm-card"><h3>🎨 Default Theme</h3>
-          <select class="ainp" id="adm-theme">
-            <option value="default">Emerald (Default)</option>
-            <option value="ocean">Ocean Blue</option>
-            <option value="purple">Purple</option>
-            <option value="rose">Rose</option>
-            <option value="sand">Sand Gold</option>
-            <option value="dark">Dark Mode</option>
-          </select>
-          <button class="abtn" onclick="setTheme(document.getElementById('adm-theme').value);toast('✅ Theme saved')">Save Theme</button>
-        </div>
-        <div class="adm-card"><h3>🔑 Change Password</h3>
-          <input type="password" class="ainp" id="new-p" placeholder="New password">
-          <input type="password" class="ainp" id="new-p2" placeholder="Confirm">
-          <button class="abtn" onclick="changePass()">Change Password</button>
-        </div>
-      </div>
-      <div class="adm-panel" id="panel-data">
-        <div class="adm-card"><h3>📤 Export Data</h3><p>Download progress as JSON</p><button class="abtn" onclick="exportData()">Export JSON</button></div>
-        <div class="adm-card"><h3>🔄 Refresh Quran</h3><p>Re-fetch from server</p><button class="abtn grey" onclick="refreshQ()">Refresh</button></div>
-        <div class="adm-card"><h3>🗑️ Clear All Data</h3><p>Wipes all local data</p><button class="abtn red" onclick="clearAll()">Clear All</button></div>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- ════════════════ BOTTOM NAV ════════════════ -->
 <nav class="bnav">
@@ -924,7 +828,6 @@ body { font-family:'Poppins',sans-serif; background:var(--dark); color:var(--txt
   <div class="ni"    data-v="prophets" onclick="goToView('prophets')"><div class="ico">🌟</div><div>Prophets</div></div>
   <div class="ni"    data-v="night"    onclick="goToView('night')">   <div class="ico">🌙</div><div>Night</div></div>
   <div class="ni"    data-v="ai"       onclick="goToView('ai')">      <div class="ico">✨</div><div>AI</div></div>
-  <div class="ni"    data-v="admin"    onclick="goToView('admin')">   <div class="ico">⚙️</div><div>Admin</div></div>
 </nav>
 
 <!-- ════════════════ PROPHETS ════════════════ -->
@@ -1055,7 +958,6 @@ let speed   = parseFloat(localStorage.getItem('speed')||'1');
 let showTrans = localStorage.getItem('showTrans')!=='false';
 let autoPlay  = localStorage.getItem('autoPlay')==='true';
 let nightMode = localStorage.getItem('nightMode')==='true';
-let admIn=false, admPass=localStorage.getItem('admPass')||atob('anV6YW1tYTIwMjQ=');
 let totTasbih = parseInt(localStorage.getItem('totTasbih')||'0');
 let totChats  = parseInt(localStorage.getItem('totChats')||'0');
 let visits    = parseInt(localStorage.getItem('visits')||'0');
@@ -1078,7 +980,6 @@ function goToView(v) {
   document.getElementById('tasbih-view').classList.remove('active');
   document.getElementById('ai-view').classList.remove('active');
   document.getElementById('memorize-view').classList.remove('active');
-  document.getElementById('admin-view').classList.remove('active');
   document.getElementById('prophets-view').classList.remove('active');
   document.getElementById('night-view').classList.remove('active');
 
@@ -1101,7 +1002,6 @@ function goToView(v) {
   // 5. View-specific inits
   if (v === 'tasbih')   initTasbih();
   if (v === 'ai' && !document.getElementById('chat-area').children.length) initAI();
-  if (v === 'admin')    initAdmin();
   if (v === 'memorize') initMem();
   if (v === 'prophets') initProphets();
   if (v === 'night')    initNight();
@@ -1723,34 +1623,6 @@ function ask(q) { document.getElementById('cinp').value=q; sendChat(); }
 // ================================================================
 // ADMIN
 // ================================================================
-function initAdmin() {
-  if (admIn) showDash();
-  else { document.getElementById('adm-login').style.display='flex'; document.getElementById('adm-dash').style.display='none'; }
-}
-function chkAdm() { const p=document.getElementById('adm-pass').value; if(p===admPass){admIn=true;showDash();}else toast('❌ Wrong password'); }
-function showDash() {
-  document.getElementById('adm-login').style.display='none'; document.getElementById('adm-dash').style.display='block';
-  document.getElementById('s-v').innerText=visits; document.getElementById('s-t').innerText=totTasbih;
-  document.getElementById('s-c').innerText=totChats;
-  document.getElementById('s-bm').innerText=Object.values(bookmarks).reduce((a,b)=>a+b.length,0);
-  document.getElementById('s-fv').innerText=favSurahs.length;
-  document.getElementById('banner-txt').value=localStorage.getItem('adminBanner')||'';
-  document.getElementById('adm-reciter').value=reciter;
-  document.getElementById('adm-theme').value=localStorage.getItem('theme')||'default';
-  document.getElementById('ai-welcome').value=localStorage.getItem('aiWelcome')||'';
-  document.getElementById('custom-hadith').value=localStorage.getItem('customHadith')||'';
-  document.getElementById('custom-hadith-src').value=localStorage.getItem('customHadithSrc')||'';
-}
-function admTab(id,el) { document.querySelectorAll('.adm-panel').forEach(p=>p.classList.remove('on')); document.querySelectorAll('.adm-tab').forEach(t=>t.classList.remove('on')); document.getElementById('panel-'+id).classList.add('on'); el.classList.add('on'); }
-function saveBanner() { const t=document.getElementById('banner-txt').value; localStorage.setItem('adminBanner',t); toast('✅ Banner saved'); if(t) showBanner(t); else{const b=document.getElementById('app-banner');if(b)b.remove();} }
-function saveReciter() { reciter=document.getElementById('adm-reciter').value; localStorage.setItem('reciter',reciter); toast('✅ Reciter saved'); }
-function saveWelcome() { localStorage.setItem('aiWelcome',document.getElementById('ai-welcome').value); toast('✅ Welcome message saved'); }
-function saveHadith() { const h=document.getElementById('custom-hadith').value,src=document.getElementById('custom-hadith-src').value; localStorage.setItem('customHadith',h); localStorage.setItem('customHadithSrc',src); if(h){document.getElementById('daily-hadith').innerText=h;document.getElementById('daily-hadith-src').innerText=src;} toast('✅ Hadith saved'); }
-function changePass() { const a=document.getElementById('new-p').value,b=document.getElementById('new-p2').value; if(!a){toast('❌ Enter a password');return;} if(a!==b){toast('❌ Passwords do not match');return;} admPass=a; localStorage.setItem('admPass',a); document.getElementById('new-p').value=''; document.getElementById('new-p2').value=''; toast('✅ Password changed'); }
-function exportData() { const d={visits,totTasbih,totChats,bookmarks,favSurahs,lastRead,streak}; const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='juzamma_data.json'; a.click(); toast('📤 Exported!'); }
-function refreshQ() { localStorage.removeItem('juzAmma_pro_v4'); qData=[]; loadQ(); toast('🔄 Refreshing…'); }
-function clearAll() { if(confirm('Clear ALL data? This cannot be undone.')){ localStorage.clear(); location.reload(); } }
-function admOut() { admIn=false; goToView('home'); }
 function showBanner(t) { let b=document.getElementById('app-banner'); if(!b){b=document.createElement('div');b.id='app-banner';b.style.cssText='background:var(--p);color:#fff;text-align:center;padding:8px 15px;font-size:.78rem;font-weight:600;cursor:pointer;';b.onclick=()=>b.remove();document.getElementById('home-view').prepend(b);}b.innerText=t+' (tap to close)'; }
 
 // ================================================================

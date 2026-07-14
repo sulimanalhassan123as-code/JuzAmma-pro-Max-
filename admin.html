@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Juz Amma Pro — Admin</title>
+<meta name="robots" content="noindex,nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --p:#10b981;--pd:#059669;--bg:#060f1e;--card:#0f1f3d;--hdr:#0a1628;
+  --txt:#e2e8f0;--txt2:#94a3b8;--bdr:#1e3a5f;--red:#ef4444;--gold:#fbbf24;
+}
+html,body{height:100%;font-family:'Poppins',sans-serif;background:var(--bg);color:var(--txt);}
+body{overflow-x:hidden;}
+
+/* ── LOGIN SCREEN ── */
+#login-screen{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100vh;padding:30px 24px;text-align:center;
+  background:linear-gradient(160deg,#060f1e 0%,#0f1f3d 100%);
+}
+.login-orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;}
+.orb1{width:300px;height:300px;top:-80px;right:-80px;background:rgba(16,185,129,.15);}
+.orb2{width:200px;height:200px;bottom:-60px;left:-60px;background:rgba(251,191,36,.1);}
+.login-box{position:relative;z-index:1;width:100%;max-width:360px;}
+.login-logo{font-size:3.5rem;margin-bottom:12px;display:block;}
+.login-title{font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:4px;}
+.login-sub{font-size:.82rem;color:var(--txt2);margin-bottom:28px;}
+.login-card{
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:22px;padding:28px 24px;backdrop-filter:blur(10px);
+}
+.login-label{font-size:.72rem;font-weight:600;color:var(--txt2);text-align:left;margin-bottom:6px;display:block;letter-spacing:.5px;text-transform:uppercase;}
+.login-inp{
+  width:100%;background:rgba(255,255,255,.07);border:1.5px solid var(--bdr);
+  border-radius:12px;padding:13px 16px;font-size:.9rem;color:var(--txt);
+  font-family:'Poppins',sans-serif;outline:none;margin-bottom:16px;
+  transition:border-color .2s;
+}
+.login-inp:focus{border-color:var(--p);}
+.login-btn{
+  width:100%;background:linear-gradient(135deg,var(--p),var(--pd));
+  border:none;border-radius:14px;padding:14px;font-size:.95rem;
+  font-weight:700;color:#fff;cursor:pointer;letter-spacing:.3px;
+  transition:opacity .2s,transform .15s;font-family:'Poppins',sans-serif;
+}
+.login-btn:active{opacity:.85;transform:scale(.98);}
+.login-err{color:var(--red);font-size:.78rem;margin-top:10px;display:none;}
+.login-attempts{font-size:.7rem;color:var(--txt2);margin-top:8px;}
+.powered{margin-top:28px;font-size:.68rem;color:rgba(255,255,255,.25);letter-spacing:.5px;}
+
+/* ── DASHBOARD ── */
+#dashboard{display:none;flex-direction:column;min-height:100vh;}
+
+/* Header */
+.dash-hdr{
+  background:var(--hdr);border-bottom:1px solid var(--bdr);
+  padding:16px 18px;display:flex;align-items:center;gap:12px;
+  position:sticky;top:0;z-index:100;
+}
+.dash-hdr-ico{font-size:1.6rem;}
+.dash-hdr-info{flex:1;}
+.dash-hdr-title{font-size:1rem;font-weight:700;color:#fff;}
+.dash-hdr-sub{font-size:.68rem;color:var(--p);}
+.logout-btn{
+  background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);
+  border-radius:10px;padding:7px 14px;font-size:.75rem;color:var(--red);
+  cursor:pointer;font-weight:600;font-family:'Poppins',sans-serif;
+  transition:background .2s;
+}
+.logout-btn:active{background:rgba(239,68,68,.3);}
+
+/* Tabs */
+.dash-tabs{
+  display:flex;gap:0;background:var(--hdr);
+  border-bottom:1px solid var(--bdr);overflow-x:auto;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+.dash-tabs::-webkit-scrollbar{display:none;}
+.dtab{
+  flex-shrink:0;padding:11px 18px;font-size:.78rem;font-weight:600;
+  color:var(--txt2);cursor:pointer;border-bottom:2.5px solid transparent;
+  white-space:nowrap;transition:color .2s,border-color .2s;
+}
+.dtab.on{color:var(--p);border-bottom-color:var(--p);}
+
+/* Panels */
+.dash-body{flex:1;padding:16px;overflow-y:auto;}
+.dpanel{display:none;}
+.dpanel.on{display:block;}
+
+/* Cards */
+.acard{
+  background:var(--card);border:1.5px solid var(--bdr);
+  border-radius:18px;padding:18px 16px;margin-bottom:13px;
+}
+.acard h3{font-size:.92rem;font-weight:700;color:#fff;margin-bottom:3px;}
+.acard p{font-size:.74rem;color:var(--txt2);margin-bottom:13px;}
+
+/* Stats grid */
+.stats-g{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.stat-b{background:rgba(255,255,255,.05);border-radius:12px;padding:12px;text-align:center;}
+.stat-n{font-size:1.6rem;font-weight:800;color:var(--p);}
+.stat-l{font-size:.68rem;color:var(--txt2);margin-top:2px;}
+
+/* Form elements */
+.ainp{
+  width:100%;background:rgba(255,255,255,.06);border:1.5px solid var(--bdr);
+  border-radius:11px;padding:11px 14px;font-size:.85rem;color:var(--txt);
+  font-family:'Poppins',sans-serif;outline:none;margin-bottom:10px;
+  transition:border-color .2s;
+}
+.ainp:focus{border-color:var(--p);}
+.ata{
+  width:100%;background:rgba(255,255,255,.06);border:1.5px solid var(--bdr);
+  border-radius:11px;padding:11px 14px;font-size:.82rem;color:var(--txt);
+  font-family:'Poppins',sans-serif;outline:none;resize:vertical;
+  min-height:80px;margin-bottom:10px;transition:border-color .2s;
+}
+.ata:focus{border-color:var(--p);}
+.abtn{
+  display:block;width:100%;background:linear-gradient(135deg,var(--p),var(--pd));
+  border:none;border-radius:11px;padding:11px;font-size:.85rem;
+  font-weight:700;color:#fff;cursor:pointer;font-family:'Poppins',sans-serif;
+  margin-top:4px;transition:opacity .2s,transform .15s;
+}
+.abtn:active{opacity:.85;transform:scale(.98);}
+.abtn.grey{background:rgba(255,255,255,.1);color:var(--txt2);}
+.abtn.red{background:rgba(239,68,68,.2);color:var(--red);border:1px solid rgba(239,68,68,.3);}
+
+/* Toast */
+#toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(30px);
+  background:#1e293b;color:#fff;padding:10px 20px;border-radius:24px;
+  font-size:.82rem;font-weight:600;white-space:nowrap;z-index:9999;
+  opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;
+  border:1px solid rgba(255,255,255,.12);
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* App link card */
+.app-link-card{
+  background:linear-gradient(135deg,rgba(16,185,129,.15),rgba(16,185,129,.05));
+  border:1.5px solid rgba(16,185,129,.35);border-radius:16px;
+  padding:16px;display:flex;align-items:center;gap:14px;margin-bottom:13px;
+  text-decoration:none;
+}
+.app-link-ico{font-size:2rem;}
+.app-link-t{font-size:.88rem;font-weight:700;color:#fff;}
+.app-link-s{font-size:.72rem;color:var(--txt2);}
+
+/* Live indicator */
+.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#22c55e;margin-right:5px;animation:pulse-dot 1.5s infinite;}
+@keyframes pulse-dot{0%,100%{opacity:1;}50%{opacity:.4;}}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div id="login-screen">
+  <div class="login-orb orb1"></div>
+  <div class="login-orb orb2"></div>
+  <div class="login-box">
+    <span class="login-logo">🔐</span>
+    <div class="login-title">Admin Dashboard</div>
+    <div class="login-sub">Juz Amma Pro Max · Secure Access</div>
+    <div class="login-card">
+      <label class="login-label">Password</label>
+      <input type="password" class="login-inp" id="adm-pass" placeholder="Enter admin password"
+        onkeydown="if(event.key==='Enter')chkAdm()">
+      <button class="login-btn" onclick="chkAdm()">🔓 Login</button>
+      <div class="login-err" id="login-err">❌ Wrong password. Try again.</div>
+      <div class="login-attempts" id="login-attempts"></div>
+    </div>
+    <div class="powered">Powered by Suleiman Alhassan</div>
+  </div>
+</div>
+
+<!-- ══ DASHBOARD ══ -->
+<div id="dashboard">
+  <!-- Header -->
+  <div class="dash-hdr">
+    <span class="dash-hdr-ico">⚙️</span>
+    <div class="dash-hdr-info">
+      <div class="dash-hdr-title">Admin Dashboard</div>
+      <div class="dash-hdr-sub"><span class="live-dot"></span>Juz Amma Pro Max</div>
+    </div>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="dash-tabs">
+    <div class="dtab on" onclick="switchTab('stats',this)">📊 Stats</div>
+    <div class="dtab" onclick="switchTab('content',this)">📝 Content</div>
+    <div class="dtab" onclick="switchTab('settings',this)">⚙️ Settings</div>
+    <div class="dtab" onclick="switchTab('data',this)">🗄️ Data</div>
+  </div>
+
+  <!-- Body -->
+  <div class="dash-body">
+
+    <!-- Go to App card -->
+    <a class="app-link-card" href="https://juz-amma-pro-max.vercel.app" target="_blank">
+      <span class="app-link-ico">🕌</span>
+      <div>
+        <div class="app-link-t">Open Juz Amma Pro Max</div>
+        <div class="app-link-s">juz-amma-pro-max.vercel.app ↗</div>
+      </div>
+    </a>
+
+    <!-- STATS PANEL -->
+    <div class="dpanel on" id="panel-stats">
+      <div class="acard">
+        <h3>📊 Live Stats</h3>
+        <p>Usage data from local storage</p>
+        <div class="stats-g">
+          <div class="stat-b"><div class="stat-n" id="s-v">—</div><div class="stat-l">Visits</div></div>
+          <div class="stat-b"><div class="stat-n" id="s-t">—</div><div class="stat-l">Tasbih</div></div>
+          <div class="stat-b"><div class="stat-n">37</div><div class="stat-l">Surahs</div></div>
+          <div class="stat-b"><div class="stat-n" id="s-c">—</div><div class="stat-l">AI Chats</div></div>
+        </div>
+      </div>
+      <div class="acard">
+        <h3>🔖 Saved Data</h3>
+        <p>Bookmarks & favourites stored</p>
+        <div class="stats-g">
+          <div class="stat-b"><div class="stat-n" id="s-bm">—</div><div class="stat-l">Bookmarks</div></div>
+          <div class="stat-b"><div class="stat-n" id="s-fv">—</div><div class="stat-l">Favourites</div></div>
+        </div>
+      </div>
+      <div class="acard">
+        <h3>🔥 Streak & Progress</h3>
+        <p>Current reading streak</p>
+        <div class="stats-g">
+          <div class="stat-b"><div class="stat-n" id="s-streak">—</div><div class="stat-l">Day Streak</div></div>
+          <div class="stat-b"><div class="stat-n" id="s-last">—</div><div class="stat-l">Last Surah</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTENT PANEL -->
+    <div class="dpanel" id="panel-content">
+      <div class="acard">
+        <h3>📢 App Banner</h3>
+        <p>Message shown at the top of the home screen</p>
+        <textarea class="ata" id="banner-txt" placeholder="e.g. Ramadan Mubarak! 🌙"></textarea>
+        <button class="abtn" onclick="saveBanner()">💾 Save Banner</button>
+      </div>
+      <div class="acard">
+        <h3>🌙 Daily Hadith</h3>
+        <p>Override the auto-generated daily wisdom</p>
+        <textarea class="ata" id="custom-hadith" placeholder="The Prophet ﷺ said…"></textarea>
+        <input class="ainp" id="custom-hadith-src" placeholder="Source (e.g. Sahih Bukhari 6412)">
+        <button class="abtn" onclick="saveHadith()">💾 Save Hadith</button>
+      </div>
+      <div class="acard">
+        <h3>💬 AI Welcome Message</h3>
+        <p>First message users see in the AI Guide</p>
+        <textarea class="ata" id="ai-welcome" placeholder="As-salamu alaykum! I am your Islamic AI Guide…"></textarea>
+        <button class="abtn" onclick="saveWelcome()">💾 Save Message</button>
+      </div>
+    </div>
+
+    <!-- SETTINGS PANEL -->
+    <div class="dpanel" id="panel-settings">
+      <div class="acard">
+        <h3>🎙️ Default Reciter</h3>
+        <p>Default voice for all users</p>
+        <select class="ainp" id="adm-reciter">
+          <option value="Alafasy_128kbps">Mishary Alafasy</option>
+          <option value="Abu_Bakr_Ash-Shaatree_128kbps">Abu Bakr Ash-Shaatree</option>
+          <option value="Husary_128kbps">Mahmoud Al-Husary</option>
+          <option value="Abdul_Basit_Murattal_192kbps">Abdul Basit</option>
+        </select>
+        <button class="abtn" onclick="saveReciter()">💾 Save Reciter</button>
+      </div>
+      <div class="acard">
+        <h3>🎨 Default Theme</h3>
+        <p>Default color theme for the app</p>
+        <select class="ainp" id="adm-theme">
+          <option value="">Emerald Green (Default)</option>
+          <option value="ocean">Ocean Blue</option>
+          <option value="sky">Sky Blue</option>
+          <option value="indigo">Indigo</option>
+          <option value="purple">Purple</option>
+          <option value="rose">Rose</option>
+          <option value="gold">Gold</option>
+          <option value="light">Light Mode</option>
+        </select>
+        <button class="abtn" onclick="saveTheme()">💾 Save Theme</button>
+      </div>
+      <div class="acard">
+        <h3>🔑 Change Admin Password</h3>
+        <p>Update the dashboard access password</p>
+        <input type="password" class="ainp" id="new-p" placeholder="New password">
+        <input type="password" class="ainp" id="new-p2" placeholder="Confirm new password">
+        <button class="abtn" onclick="changePass()">🔒 Change Password</button>
+      </div>
+    </div>
+
+    <!-- DATA PANEL -->
+    <div class="dpanel" id="panel-data">
+      <div class="acard">
+        <h3>📤 Export User Data</h3>
+        <p>Download all progress & settings as a JSON file</p>
+        <button class="abtn" onclick="exportData()">📥 Export JSON</button>
+      </div>
+      <div class="acard">
+        <h3>🔄 Refresh Quran Data</h3>
+        <p>Force re-fetch Quran content from server</p>
+        <button class="abtn grey" onclick="refreshQ()">🔄 Refresh Now</button>
+      </div>
+      <div class="acard">
+        <h3>🗑️ Clear All App Data</h3>
+        <p>⚠️ This permanently wipes all local user data</p>
+        <button class="abtn red" onclick="clearAll()">🗑️ Clear Everything</button>
+      </div>
+    </div>
+
+  </div><!-- /dash-body -->
+</div><!-- /dashboard -->
+
+<div id="toast"></div>
+
+<script>
+// ── CONFIG ──
+const APP_ORIGIN = 'https://juz-amma-pro-max.vercel.app';
+let admPass = localStorage.getItem('admPass') || atob('anV6YW1tYTIwMjQ=');
+let attempts = 0;
+const MAX_ATTEMPTS = 5;
+
+// ── TOAST ──
+function toast(msg, dur=2800) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), dur);
+}
+
+// ── LOGIN ──
+function chkAdm() {
+  const p = document.getElementById('adm-pass').value;
+  if (!p) return;
+  if (p === admPass) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'flex';
+    localStorage.setItem('admSession', Date.now());
+    loadDash();
+    attempts = 0;
+  } else {
+    attempts++;
+    document.getElementById('login-err').style.display = 'block';
+    document.getElementById('login-attempts').textContent =
+      attempts >= MAX_ATTEMPTS ? '🔒 Too many attempts. Wait 30s.' : `Attempt ${attempts}/${MAX_ATTEMPTS}`;
+    document.getElementById('adm-pass').value = '';
+    if (attempts >= MAX_ATTEMPTS) {
+      document.querySelector('.login-btn').disabled = true;
+      setTimeout(() => {
+        document.querySelector('.login-btn').disabled = false;
+        attempts = 0;
+        document.getElementById('login-attempts').textContent = '';
+      }, 30000);
+    }
+  }
+}
+
+// Auto-login if recent session (within 2 hours)
+(function() {
+  const sess = parseInt(localStorage.getItem('admSession') || 0);
+  if (Date.now() - sess < 7200000) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'flex';
+    loadDash();
+  }
+})();
+
+// ── LOGOUT ──
+function logout() {
+  localStorage.removeItem('admSession');
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('adm-pass').value = '';
+}
+
+// ── LOAD DASHBOARD DATA ──
+function loadDash() {
+  // Stats — reads from shared localStorage with main app
+  try {
+    document.getElementById('s-v').textContent = localStorage.getItem('visits') || '0';
+    document.getElementById('s-t').textContent = localStorage.getItem('totTasbih') || '0';
+    document.getElementById('s-c').textContent = localStorage.getItem('totChats') || '0';
+    document.getElementById('s-streak').textContent = localStorage.getItem('streak') || '0';
+    const lastRead = JSON.parse(localStorage.getItem('lastRead') || 'null');
+    document.getElementById('s-last').textContent = lastRead ? lastRead.name : '—';
+    const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '{}');
+    document.getElementById('s-bm').textContent = Object.values(bookmarks).reduce((a,b)=>a+b.length,0);
+    const favs = JSON.parse(localStorage.getItem('favSurahs') || '[]');
+    document.getElementById('s-fv').textContent = favs.length;
+  } catch(e) {}
+  // Content fields
+  document.getElementById('banner-txt').value = localStorage.getItem('adminBanner') || '';
+  document.getElementById('custom-hadith').value = localStorage.getItem('customHadith') || '';
+  document.getElementById('custom-hadith-src').value = localStorage.getItem('customHadithSrc') || '';
+  document.getElementById('ai-welcome').value = localStorage.getItem('aiWelcome') || '';
+  document.getElementById('adm-reciter').value = localStorage.getItem('reciter') || 'Alafasy_128kbps';
+  document.getElementById('adm-theme').value = localStorage.getItem('colorTheme') || '';
+}
+
+// ── TABS ──
+function switchTab(id, el) {
+  document.querySelectorAll('.dpanel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.dtab').forEach(t => t.classList.remove('on'));
+  document.getElementById('panel-' + id).classList.add('on');
+  el.classList.add('on');
+}
+
+// ── CONTENT SAVES ──
+function saveBanner()  { localStorage.setItem('adminBanner', document.getElementById('banner-txt').value); toast('✅ Banner saved!'); }
+function saveHadith()  { localStorage.setItem('customHadith', document.getElementById('custom-hadith').value); localStorage.setItem('customHadithSrc', document.getElementById('custom-hadith-src').value); toast('✅ Hadith saved!'); }
+function saveWelcome() { localStorage.setItem('aiWelcome', document.getElementById('ai-welcome').value); toast('✅ Welcome message saved!'); }
+function saveReciter() { localStorage.setItem('reciter', document.getElementById('adm-reciter').value); toast('✅ Default reciter saved!'); }
+function saveTheme()   { localStorage.setItem('colorTheme', document.getElementById('adm-theme').value); toast('✅ Theme saved!'); }
+
+// ── CHANGE PASSWORD ──
+function changePass() {
+  const a = document.getElementById('new-p').value;
+  const b = document.getElementById('new-p2').value;
+  if (!a) { toast('❌ Enter a password'); return; }
+  if (a !== b) { toast('❌ Passwords do not match'); return; }
+  if (a.length < 6) { toast('❌ Password too short (min 6 chars)'); return; }
+  admPass = a;
+  localStorage.setItem('admPass', a);
+  document.getElementById('new-p').value = '';
+  document.getElementById('new-p2').value = '';
+  toast('✅ Password changed successfully!');
+}
+
+// ── DATA ACTIONS ──
+function exportData() {
+  const d = {
+    visits: localStorage.getItem('visits'),
+    totTasbih: localStorage.getItem('totTasbih'),
+    totChats: localStorage.getItem('totChats'),
+    streak: localStorage.getItem('streak'),
+    lastRead: localStorage.getItem('lastRead'),
+    bookmarks: localStorage.getItem('bookmarks'),
+    favSurahs: localStorage.getItem('favSurahs'),
+    adminBanner: localStorage.getItem('adminBanner'),
+    exportedAt: new Date().toISOString()
+  };
+  const blob = new Blob([JSON.stringify(d, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'juzamma_admin_export_' + new Date().toLocaleDateString().replace(/\//g,'-') + '.json';
+  a.click();
+  toast('📥 Data exported!');
+}
+function refreshQ()  { localStorage.removeItem('juzAmma_pro_v4'); toast('🔄 Quran cache cleared — reload the app'); }
+function clearAll()  { if(confirm('⚠️ This will wipe ALL data permanently. Are you sure?')) { localStorage.clear(); toast('🗑️ All data cleared'); setTimeout(()=>logout(), 1500); } }
+</script>
+</body>
+</html>
