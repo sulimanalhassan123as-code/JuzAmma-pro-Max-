@@ -546,6 +546,88 @@ body { font-family:'Poppins',sans-serif; background:var(--dark); color:var(--txt
 /* Streak */
 .streak-card { background: var(--card); border-color: var(--bdr); }
 
+
+/* ══ PROGRESS TRACKER VIEW ══ */
+#progress-view { display:none; flex-direction:column; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:var(--bg); overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; z-index:20; }
+#progress-view.active { display:flex; }
+
+.prog-hdr { background:var(--hdr); border-bottom:1.5px solid var(--bdr); padding:16px 16px 14px; position:sticky; top:0; z-index:10; }
+.prog-hdr-row { display:flex; align-items:center; gap:10px; margin-bottom:2px; }
+.prog-back { background:rgba(0,0,0,.06); border:1px solid var(--bdr); border-radius:10px; padding:6px 12px; font-size:.78rem; font-weight:600; color:var(--txt); cursor:pointer; font-family:'Poppins',sans-serif; }
+.prog-hdr-title { font-size:1rem; font-weight:800; color:var(--txt); }
+.prog-hdr-sub { font-size:.72rem; color:var(--txt2); margin-left:auto; }
+
+.prog-body { padding:14px 14px 20px; flex:1; }
+
+/* ── Summary Cards ── */
+.prog-summary { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
+.psum-card { background:var(--card); border:1.5px solid var(--bdr); border-radius:18px; padding:16px 14px; text-align:center; box-shadow:0 2px 12px rgba(0,0,0,.06); }
+.psum-ico { font-size:1.8rem; margin-bottom:4px; }
+.psum-n { font-size:1.6rem; font-weight:800; color:var(--p); line-height:1; }
+.psum-l { font-size:.68rem; color:var(--txt2); margin-top:3px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; }
+
+/* ── Overall progress bar ── */
+.prog-overall { background:var(--card); border:1.5px solid var(--bdr); border-radius:18px; padding:16px; margin-bottom:16px; box-shadow:0 2px 12px rgba(0,0,0,.06); }
+.prog-overall-hd { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.prog-overall-title { font-size:.88rem; font-weight:700; color:var(--txt); }
+.prog-overall-pct { font-size:1.1rem; font-weight:800; color:var(--p); }
+.prog-bar-wrap { background:var(--bdr); border-radius:10px; height:10px; overflow:hidden; margin-bottom:8px; }
+.prog-bar-fill { height:100%; border-radius:10px; background:linear-gradient(90deg, var(--p), var(--pd)); transition:width .8s cubic-bezier(.4,0,.2,1); }
+.prog-bar-sub { font-size:.7rem; color:var(--txt2); }
+
+/* ── Streak section ── */
+.prog-streak { background:var(--card); border:1.5px solid var(--bdr); border-radius:18px; padding:16px; margin-bottom:16px; box-shadow:0 2px 12px rgba(0,0,0,.06); }
+.prog-sec-title { font-size:.88rem; font-weight:700; color:var(--txt); margin-bottom:12px; }
+.streak-week { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; }
+.sw-day { display:flex; flex-direction:column; align-items:center; gap:3px; }
+.sw-dot { width:28px; height:28px; border-radius:50%; background:var(--bdr); display:flex; align-items:center; justify-content:center; font-size:.65rem; font-weight:700; color:var(--txt2); transition:all .3s; }
+.sw-dot.done { background:var(--p); color:#fff; }
+.sw-dot.today { outline:2.5px solid var(--p); outline-offset:2px; }
+.sw-lbl { font-size:.58rem; color:var(--txt2); font-weight:600; }
+
+/* ── Surah grid ── */
+.prog-surahs { background:var(--card); border:1.5px solid var(--bdr); border-radius:18px; padding:16px; margin-bottom:16px; box-shadow:0 2px 12px rgba(0,0,0,.06); }
+.prog-filter { display:flex; gap:7px; margin-bottom:12px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:2px; }
+.prog-filter::-webkit-scrollbar { display:none; }
+.pf-btn { flex-shrink:0; padding:5px 13px; border-radius:20px; border:1.5px solid var(--bdr); background:transparent; font-size:.72rem; font-weight:600; color:var(--txt2); cursor:pointer; font-family:'Poppins',sans-serif; transition:all .2s; white-space:nowrap; }
+.pf-btn.on { background:var(--p); border-color:var(--p); color:#fff; }
+.surah-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:7px; }
+.sg-item { aspect-ratio:1; border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1.5px solid var(--bdr); background:var(--bg); cursor:pointer; transition:all .2s; gap:2px; }
+.sg-item.read { background:rgba(16,185,129,.12); border-color:var(--p); }
+.sg-item.memorized { background:rgba(251,191,36,.15); border-color:var(--gold); }
+.sg-item.fav { background:rgba(251,113,133,.12); border-color:#fb7185; }
+.sg-num { font-size:.65rem; font-weight:700; color:var(--txt2); }
+.sg-item.read .sg-num { color:var(--p); }
+.sg-item.memorized .sg-num { color:var(--gold); }
+.sg-item.fav .sg-num { color:#fb7185; }
+.sg-dot { width:6px; height:6px; border-radius:50%; background:var(--bdr); }
+.sg-item.read .sg-dot { background:var(--p); }
+.sg-item.memorized .sg-dot { background:var(--gold); }
+.sg-item.fav .sg-dot { background:#fb7185; }
+
+/* ── Legend ── */
+.prog-legend { display:flex; gap:12px; flex-wrap:wrap; margin-top:10px; }
+.pl-item { display:flex; align-items:center; gap:5px; font-size:.68rem; color:var(--txt2); font-weight:600; }
+.pl-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+
+/* ── Stats detail ── */
+.prog-stats { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
+.pstat { background:var(--card); border:1.5px solid var(--bdr); border-radius:16px; padding:14px; box-shadow:0 2px 12px rgba(0,0,0,.06); }
+.pstat-n { font-size:1.3rem; font-weight:800; color:var(--p); }
+.pstat-l { font-size:.7rem; color:var(--txt2); margin-top:2px; }
+
+/* ── Daily goal ── */
+.prog-goal { background:var(--card); border:1.5px solid var(--bdr); border-radius:18px; padding:16px; margin-bottom:16px; box-shadow:0 2px 12px rgba(0,0,0,.06); }
+.goal-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.goal-title { font-size:.88rem; font-weight:700; color:var(--txt); }
+.goal-count { font-size:.82rem; font-weight:700; color:var(--p); }
+.goal-bar { background:var(--bdr); border-radius:10px; height:8px; overflow:hidden; margin-bottom:6px; }
+.goal-fill { height:100%; border-radius:10px; background:linear-gradient(90deg,var(--p),var(--pd)); transition:width .6s; }
+.goal-sub { font-size:.7rem; color:var(--txt2); }
+.goal-btns { display:flex; gap:8px; margin-top:10px; }
+.goal-btn { flex:1; padding:8px; border-radius:10px; border:1.5px solid var(--bdr); background:transparent; font-size:.75rem; font-weight:700; color:var(--txt2); cursor:pointer; font-family:'Poppins',sans-serif; transition:all .2s; }
+.goal-btn.on { background:var(--p); border-color:var(--p); color:#fff; }
+
 </style>
 </head>
 <body>
@@ -652,11 +734,11 @@ body { font-family:'Poppins',sans-serif; background:var(--dark); color:var(--txt
 <div class="cgrid-wrap" style="margin-top:14px">
   <div class="cgrid-label">🚀 Coming Soon</div>
   <div class="cgrid">
-    <div class="ccard soon">
+    <div class="ccard" onclick="goToView('progress')">
       <div class="ccard-ico">📊</div>
       <div class="ccard-t">Progress Tracker</div>
       <div class="ccard-s">Surah completion charts</div>
-      <span class="ccard-badge badge-soon">SOON</span>
+      <span class="ccard-badge badge-new">NEW</span>
     </div>
     <div class="ccard soon">
       <div class="ccard-ico">🎙️</div>
@@ -851,14 +933,128 @@ body { font-family:'Poppins',sans-serif; background:var(--dark); color:var(--txt
 
 <!-- ════════════════ ADMIN ════════════════ -->
 
+
+<!-- ════════════════ PROGRESS TRACKER ════════════════ -->
+<div id="progress-view">
+  <div class="prog-hdr">
+    <div class="prog-hdr-row">
+      <button class="prog-back" onclick="goToView('home')">← Home</button>
+      <div class="prog-hdr-title">📊 My Progress</div>
+      <div class="prog-hdr-sub" id="prog-date"></div>
+    </div>
+  </div>
+  <div class="prog-body">
+
+    <!-- Summary cards -->
+    <div class="prog-summary">
+      <div class="psum-card">
+        <div class="psum-ico">📖</div>
+        <div class="psum-n" id="ps-read">0</div>
+        <div class="psum-l">Surahs Read</div>
+      </div>
+      <div class="psum-card">
+        <div class="psum-ico">🧠</div>
+        <div class="psum-n" id="ps-mem">0</div>
+        <div class="psum-l">Memorized</div>
+      </div>
+      <div class="psum-card">
+        <div class="psum-ico">🔥</div>
+        <div class="psum-n" id="ps-streak">0</div>
+        <div class="psum-l">Day Streak</div>
+      </div>
+      <div class="psum-card">
+        <div class="psum-ico">🔖</div>
+        <div class="psum-n" id="ps-bm">0</div>
+        <div class="psum-l">Bookmarks</div>
+      </div>
+    </div>
+
+    <!-- Overall completion -->
+    <div class="prog-overall">
+      <div class="prog-overall-hd">
+        <div class="prog-overall-title">📗 Juz Amma Completion</div>
+        <div class="prog-overall-pct" id="po-pct">0%</div>
+      </div>
+      <div class="prog-bar-wrap">
+        <div class="prog-bar-fill" id="po-bar" style="width:0%"></div>
+      </div>
+      <div class="prog-bar-sub" id="po-sub">0 of 37 Surahs read</div>
+    </div>
+
+    <!-- Daily Goal -->
+    <div class="prog-goal">
+      <div class="goal-row">
+        <div class="goal-title">🎯 Daily Reading Goal</div>
+        <div class="goal-count" id="goal-count">0 / 3 verses</div>
+      </div>
+      <div class="goal-bar">
+        <div class="goal-fill" id="goal-fill" style="width:0%"></div>
+      </div>
+      <div class="goal-sub" id="goal-sub">Set a daily goal to track your progress</div>
+      <div class="goal-btns">
+        <button class="goal-btn" id="gBtn3"  onclick="setGoal(3)">3</button>
+        <button class="goal-btn" id="gBtn5"  onclick="setGoal(5)">5</button>
+        <button class="goal-btn" id="gBtn10" onclick="setGoal(10)">10</button>
+        <button class="goal-btn" id="gBtn20" onclick="setGoal(20)">20</button>
+      </div>
+    </div>
+
+    <!-- Streak this week -->
+    <div class="prog-streak">
+      <div class="prog-sec-title">🔥 This Week's Streak</div>
+      <div class="streak-week" id="streak-week"></div>
+    </div>
+
+    <!-- Extra stats -->
+    <div class="prog-stats">
+      <div class="pstat">
+        <div class="pstat-n" id="ps-verses">0</div>
+        <div class="pstat-l">Total Verses Read</div>
+      </div>
+      <div class="pstat">
+        <div class="pstat-n" id="ps-tasbih">0</div>
+        <div class="pstat-l">Total Dhikr Count</div>
+      </div>
+      <div class="pstat">
+        <div class="pstat-n" id="ps-ai">0</div>
+        <div class="pstat-l">AI Questions Asked</div>
+      </div>
+      <div class="pstat">
+        <div class="pstat-n" id="ps-fav">0</div>
+        <div class="pstat-l">Favourite Surahs</div>
+      </div>
+    </div>
+
+    <!-- Surah completion grid -->
+    <div class="prog-surahs">
+      <div class="prog-sec-title">📋 Surah Progress Map</div>
+      <div class="prog-filter">
+        <button class="pf-btn on" id="pf-all"  onclick="progFilter('all',this)">All 37</button>
+        <button class="pf-btn"    id="pf-read"  onclick="progFilter('read',this)">✅ Read</button>
+        <button class="pf-btn"    id="pf-mem"   onclick="progFilter('mem',this)">🧠 Memorized</button>
+        <button class="pf-btn"    id="pf-fav"   onclick="progFilter('fav',this)">❤️ Favourites</button>
+        <button class="pf-btn"    id="pf-left"  onclick="progFilter('left',this)">⏳ Not Yet</button>
+      </div>
+      <div class="surah-grid" id="surah-grid"></div>
+      <div class="prog-legend">
+        <div class="pl-item"><div class="pl-dot" style="background:var(--p)"></div>Read</div>
+        <div class="pl-item"><div class="pl-dot" style="background:var(--gold)"></div>Memorized</div>
+        <div class="pl-item"><div class="pl-dot" style="background:#fb7185"></div>Favourite</div>
+        <div class="pl-item"><div class="pl-dot" style="background:var(--bdr)"></div>Not yet</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <!-- ════════════════ BOTTOM NAV ════════════════ -->
 <nav class="bnav">
   <div class="ni on" data-v="home"     onclick="goToView('home')">    <div class="ico">🏠</div><div>Home</div></div>
   <div class="ni"    data-v="list"     onclick="goToView('list')">    <div class="ico">📖</div><div>Surahs</div></div>
   <div class="ni"    data-v="memorize" onclick="goToView('memorize')"><div class="ico">🧠</div><div>Memorize</div></div>
   <div class="ni"    data-v="tasbih"   onclick="goToView('tasbih')">  <div class="ico">🏔️</div><div>Dhikr</div></div>
+  <div class="ni"    data-v="progress" onclick="goToView('progress')"><div class="ico">📊</div><div>Progress</div></div>
   <div class="ni"    data-v="prophets" onclick="goToView('prophets')"><div class="ico">🌟</div><div>Prophets</div></div>
-  <div class="ni"    data-v="night"    onclick="goToView('night')">   <div class="ico">🌙</div><div>Night</div></div>
   <div class="ni"    data-v="ai"       onclick="goToView('ai')">      <div class="ico">✨</div><div>AI</div></div>
 </nav>
 
@@ -1014,6 +1210,7 @@ function goToView(v) {
   document.getElementById('memorize-view').classList.remove('active');
   document.getElementById('prophets-view').classList.remove('active');
   document.getElementById('night-view').classList.remove('active');
+  document.getElementById('progress-view').classList.remove('active');
 
   // 2. Show target view
   document.getElementById(v + '-view').classList.add('active');
@@ -1023,7 +1220,7 @@ function goToView(v) {
 
   // 4. Player bar visibility
   const pb = document.getElementById('pbar');
-  if (v === 'tasbih' || v === 'ai' || v === 'memorize' || v === 'admin' || v === 'prophets' || v === 'night') {
+  if (v === 'tasbih' || v === 'ai' || v === 'memorize' || v === 'admin' || v === 'prophets' || v === 'night' || v === 'progress') {
     pb.style.display = 'none';
   } else {
     pb.style.display = 'flex';
@@ -1036,6 +1233,7 @@ function goToView(v) {
   if (v === 'ai' && !document.getElementById('chat-area').children.length) initAI();
   if (v === 'memorize') initMem();
   if (v === 'prophets') initProphets();
+  if (v === 'progress') initProgress();
   if (v === 'night')    initNight();
   if ((v === 'list' || v === 'memorize') && !qData.length) loadQ();
 
@@ -1211,6 +1409,7 @@ function toggleNight() { nightMode=!nightMode; localStorage.setItem('nightMode',
 // PLAYER
 // ================================================================
 function playV(sid, vidx) {
+  trackVerseRead();
   curS=sid; curV=vidx; isPlaying=true;
   const su=qData.find(x=>x.id===sid), ve=su.verses[vidx];
   const pb=document.getElementById('pbar');
@@ -2087,6 +2286,202 @@ function switchColor(theme, accent, el) {
     if (btn) { document.querySelectorAll('.csw-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
   }
 })();
+
+
+// ================================================================
+// PROGRESS TRACKER
+// ================================================================
+let dailyGoal = parseInt(localStorage.getItem('dailyGoal')||'5');
+let dailyRead = parseInt(localStorage.getItem('dailyRead_'+new Date().toDateString())||'0');
+
+function initProgress() {
+  // Date header
+  const now = new Date();
+  document.getElementById('prog-date').textContent =
+    now.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+
+  // ── Compute read surahs from lastRead + readHistory ──
+  let readSurahs = JSON.parse(localStorage.getItem('readSurahs')||'[]');
+  if (lastRead && lastRead.surahId && !readSurahs.includes(lastRead.surahId)) {
+    readSurahs.push(lastRead.surahId);
+    localStorage.setItem('readSurahs', JSON.stringify(readSurahs));
+  }
+
+  // ── Memorized surahs count ──
+  const memProg = JSON.parse(localStorage.getItem('memProgress')||'{}');
+  let memCount = 0;
+  if (qData.length) {
+    qData.forEach(s => {
+      const p = memProg[s.id]||{};
+      const done = Object.values(p).filter(v=>v==='done').length;
+      if (done >= s.verses.length && s.verses.length > 0) memCount++;
+    });
+  } else {
+    // fallback: count surahs with >80% done
+    Object.keys(memProg).forEach(sid => {
+      const p = memProg[sid];
+      const done = Object.values(p).filter(v=>v==='done').length;
+      if (done >= 3) memCount++;
+    });
+  }
+
+  // ── Bookmarks count ──
+  const bm = JSON.parse(localStorage.getItem('bookmarks')||'{}');
+  const bmCount = Object.values(bm).reduce((a,b)=>a+b.length, 0);
+
+  // ── Summary cards ──
+  document.getElementById('ps-read').textContent = readSurahs.length;
+  document.getElementById('ps-mem').textContent = memCount;
+  document.getElementById('ps-streak').textContent = streak;
+  document.getElementById('ps-bm').textContent = bmCount;
+
+  // ── Overall bar ──
+  const readPct = Math.round((readSurahs.length / 37) * 100);
+  document.getElementById('po-pct').textContent = readPct + '%';
+  document.getElementById('po-bar').style.width = readPct + '%';
+  document.getElementById('po-sub').textContent =
+    readSurahs.length + ' of 37 Surahs read · ' +
+    (37 - readSurahs.length) + ' remaining';
+
+  // ── Daily Goal ──
+  dailyRead = parseInt(localStorage.getItem('dailyRead_'+new Date().toDateString())||'0');
+  renderGoal();
+
+  // ── Week streak ──
+  renderWeekStreak();
+
+  // ── Extra stats ──
+  document.getElementById('ps-verses').textContent =
+    parseInt(localStorage.getItem('totalVersesRead')||'0');
+  document.getElementById('ps-tasbih').textContent = totTasbih;
+  document.getElementById('ps-ai').textContent = totChats;
+  document.getElementById('ps-fav').textContent = favSurahs.length;
+
+  // ── Surah grid ──
+  renderSurahGrid('all');
+
+  // ── Active goal button ──
+  ['3','5','10','20'].forEach(n => {
+    const btn = document.getElementById('gBtn'+n);
+    if (btn) btn.classList.toggle('on', parseInt(n) === dailyGoal);
+  });
+}
+
+function renderGoal() {
+  const pct = Math.min(100, Math.round((dailyRead / dailyGoal) * 100));
+  document.getElementById('goal-fill').style.width = pct + '%';
+  document.getElementById('goal-count').textContent = dailyRead + ' / ' + dailyGoal + ' verses';
+  if (dailyRead >= dailyGoal) {
+    document.getElementById('goal-sub').textContent = '🎉 MashaAllah! Daily goal achieved!';
+  } else {
+    const left = dailyGoal - dailyRead;
+    document.getElementById('goal-sub').textContent = left + ' more verses to reach your goal today';
+  }
+}
+
+function setGoal(n) {
+  dailyGoal = n;
+  localStorage.setItem('dailyGoal', n);
+  ['3','5','10','20'].forEach(x => {
+    const btn = document.getElementById('gBtn'+x);
+    if (btn) btn.classList.toggle('on', parseInt(x) === n);
+  });
+  renderGoal();
+  toast('🎯 Daily goal set to ' + n + ' verses');
+}
+
+function renderWeekStreak() {
+  const days = ['S','M','T','W','T','F','S'];
+  const today = new Date();
+  const readHistory = JSON.parse(localStorage.getItem('readHistory')||'[]');
+  let html = '';
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    const key = d.toDateString();
+    const isDone = readHistory.includes(key);
+    const isToday = i === 0;
+    html += '<div class="sw-day">' +
+      '<div class="sw-dot' + (isDone?' done':'') + (isToday?' today':'') + '">' +
+      days[d.getDay()] + '</div>' +
+      '<div class="sw-lbl">' + (isToday?'Today':d.getDate()) + '</div>' +
+      '</div>';
+  }
+  document.getElementById('streak-week').innerHTML = html;
+}
+
+function renderSurahGrid(filter) {
+  const readSurahs = JSON.parse(localStorage.getItem('readSurahs')||'[]');
+  const memProg = JSON.parse(localStorage.getItem('memProgress')||'{}');
+  let html = '';
+
+  // Build list of 37 surah IDs (78–114)
+  for (let id = 78; id <= 114; id++) {
+    const isRead = readSurahs.includes(id);
+    const memData = memProg[id]||{};
+    const memDone = Object.values(memData).filter(v=>v==='done').length;
+    const isMem = memDone >= 3;
+    const isFav = favSurahs.includes(id);
+
+    // Apply filter
+    if (filter === 'read' && !isRead) continue;
+    if (filter === 'mem' && !isMem) continue;
+    if (filter === 'fav' && !isFav) continue;
+    if (filter === 'left' && isRead) continue;
+
+    let cls = 'sg-item';
+    if (isMem)  cls += ' memorized';
+    else if (isFav) cls += ' fav';
+    else if (isRead) cls += ' read';
+
+    // Surah number display (surah 78 = An-Naba, #1 in Juz Amma)
+    const num = id - 77;
+    html += '<div class="' + cls + '" onclick="openSurah(' + id + ');" title="Surah ' + id + '">' +
+      '<div class="sg-num">' + num + '</div>' +
+      '<div class="sg-dot"></div>' +
+      '</div>';
+  }
+  if (!html) {
+    html = '<div style="grid-column:1/-1;text-align:center;padding:20px;font-size:.8rem;color:var(--txt2)">None yet — keep reading! 📖</div>';
+  }
+  document.getElementById('surah-grid').innerHTML = html;
+}
+
+function progFilter(f, el) {
+  document.querySelectorAll('.pf-btn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  renderSurahGrid(f);
+}
+
+// Track verses read daily (called when a verse plays)
+function trackVerseRead() {
+  const key = 'dailyRead_' + new Date().toDateString();
+  let count = parseInt(localStorage.getItem(key)||'0') + 1;
+  localStorage.setItem(key, count);
+  dailyRead = count;
+
+  // Track total verses
+  let total = parseInt(localStorage.getItem('totalVersesRead')||'0') + 1;
+  localStorage.setItem('totalVersesRead', total);
+
+  // Track read history for streak
+  const dateKey = new Date().toDateString();
+  let hist = JSON.parse(localStorage.getItem('readHistory')||'[]');
+  if (!hist.includes(dateKey)) {
+    hist.push(dateKey);
+    if (hist.length > 90) hist = hist.slice(-90); // keep last 90 days
+    localStorage.setItem('readHistory', JSON.stringify(hist));
+  }
+
+  // Track read surahs
+  if (curS) {
+    let rs = JSON.parse(localStorage.getItem('readSurahs')||'[]');
+    if (!rs.includes(curS)) {
+      rs.push(curS);
+      localStorage.setItem('readSurahs', JSON.stringify(rs));
+    }
+  }
+}
 
 </script>
 
