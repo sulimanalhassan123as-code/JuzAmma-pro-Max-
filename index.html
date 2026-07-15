@@ -752,11 +752,11 @@ body { font-family:'Poppins',sans-serif; background:var(--dark); color:var(--txt
       <div class="ccard-s">Read with friends live</div>
       <span class="ccard-badge badge-soon">SOON</span>
     </div>
-    <div class="ccard soon">
+    <div class="ccard" onclick="setLangAndGo('ha')">
       <div class="ccard-ico">🌍</div>
       <div class="ccard-t">Multi-Language</div>
-      <div class="ccard-s">Hausa · French · Arabic</div>
-      <span class="ccard-badge badge-soon">SOON</span>
+      <div class="ccard-s">Hausa · English</div>
+      <span class="ccard-badge badge-new">NEW</span>
     </div>
   </div>
 </div>
@@ -816,6 +816,7 @@ body { font-family:'Poppins',sans-serif; background:var(--dark); color:var(--txt
     </div>
     <div class="racts">
       <button class="ract" id="btn-trans" onclick="toggleTrans()">📝 Translation</button>
+      <button class="ract" id="btn-lang" onclick="toggleLang()">🌍 EN</button>
       <button class="ract" id="btn-auto" onclick="toggleAuto()">▶ Auto-play</button>
       <button class="ract" id="btn-night" onclick="toggleNight()">🌙 Night</button>
     </div>
@@ -1355,6 +1356,8 @@ function openSurah(id) {
   document.getElementById('btn-trans').classList.toggle('on',showTrans);
   document.getElementById('btn-auto').classList.toggle('on',autoPlay);
   document.getElementById('btn-night').classList.toggle('on',nightMode);
+  document.getElementById('btn-lang').textContent = '🌍 ' + (curLang==='ha'?'HA':'EN');
+  document.getElementById('btn-lang').classList.toggle('on', curLang==='ha');
   document.getElementById('read-view').style.background = nightMode ? '#060f1e' : '';
   renderVerses(s);
   goToView('read');
@@ -1378,7 +1381,7 @@ function renderVerses(s) {
         </div>
       </div>
       <div class="arabic">${v.a}</div>
-      ${showTrans?`<div class="trans">${v.e}</div>`:''}
+      ${showTrans?`<div class="trans">${getLangTrans(s.id, idx, v.e)}</div>`:''}
     </div>`;
   });
   document.getElementById('verse-container').innerHTML=html;
@@ -2481,6 +2484,686 @@ function trackVerseRead() {
       localStorage.setItem('readSurahs', JSON.stringify(rs));
     }
   }
+}
+
+
+// ================================================================
+// MULTI-LANGUAGE — Hausa Translations
+// ================================================================
+let curLang = localStorage.getItem('curLang') || 'en';
+
+// Hausa translations for all 37 Surahs in Juz Amma (78-114)
+// Each surah: array of verse translations in Hausa
+const HAUSA = {
+  78: [ // An-Naba
+    "Game da menene suke tambayar juna?",
+    "Game da babbar labari,",
+    "Wanda suke saɓa a kansa.",
+    "A'a, za su sani nan gaba.",
+    "Sake, a'a, za su sani.",
+    "Ashe, ba Mu sanya duniya kwanciya ba?",
+    "Da duwatsu a matsayin sanduna?",
+    "Muka halicci ku a nau'i-nau'i?",
+    "Muka sanya barcinku hutawa?",
+    "Muka sanya dare rigar rufewa?",
+    "Muka sanya rana fitila mai haskakawa?",
+    "Muka saukar da ruwan sama mai yawa,",
+    "Don mu fitar da hatsi da tsirrai,",
+    "Da lambuna masu yawa?",
+    "Lalle, ranar yanke hukunci tana da lokacinta da aka shirya,",
+    "Ranar da za a busa a cikin ƙaho, ku zo da ɗari-ɗari,",
+    "An buɗe sama sai ta zama kofofi,",
+    "An motsa duwatsu sai su yi kamar duhu,",
+    "Lalle, jahannama tana kwance a kwari,",
+    "Mafaka ga masu hana gaskiya,",
+    "Suna zaune a cikinta tsawon shekaru-shekaru.",
+    "Ba za su ɗanɗani a cikinta sanyi ba kuma ba sha ba,",
+    "Sai ruwan zafi mai wuta da mai ƙamshi mai muni,",
+    "Wata sakamako daidai.",
+    "Lalle, ba sa tsammanin hisabi,",
+    "Da ƙaryata ayoyinMu ƙarya ƙwarai.",
+    "Kuma dukkan abu Mun rubuta shi a cikin littafi.",
+    "Ku ɗanɗani! Mun ƙara muku wani abu da azaba kawai.",
+    "Lalle, masu tsarki suna da nasara —",
+    "Lambuna da inabi,",
+    "Da ƴan mata masu buɗaɗɗen ido na tsufa,",
+    "Da kofuna masu cike.",
+    "Ba za su ji a cikinta magana marar amfani ba kuma ba ƙarya ba —",
+    "Ladan daga Ubangijinka, kyauta, hisabi.",
+    "Ubangijin sammai da ƙasashe da abin da yake tsakaninsu, Mai rahama; Ba su da ikon yin magana da Shi.",
+    "Ranar da Ruhu da mala'iku za su tsaya jeri-jeri; ba za su yi magana ba sai wanda Mai rahama ya yarda da shi, kuma ya faɗi gaskiya.",
+    "Wannan ita ce ranar gaskiya; to duk wanda ya so ya ɗauki mafaka zuwa ga Ubangijinsa.",
+    "Lalle, Mun gargaɗe ku da azaba mai kusa — ranar da mutum zai ga abin da hannayensa suka gabatar, kuma kafirai suka ce: 'Ina magudi! Da ace ni ƙasa ne!'"
+  ],
+  79: [ // An-Nazi'at
+    "Da wadanda suke fizge da ƙarfi,",
+    "Da wadanda suke cire da laushi,",
+    "Da masu iyo da sanyin gwiwa,",
+    "Da masu gabatarwa da sauri,",
+    "Da wadanda ke gudanar da al'amari —",
+    "Ranar da girgizawa za ta girgiza,",
+    "Bayan ta wata girgizawa ta biyu.",
+    "Zukatan a ranar nan za su yi taɓawa mai ƙarfi,",
+    "Idanunsu za su kasance masu wulaƙanci.",
+    "Suna cewa: 'Ashe, lalle za a mayar da mu zuwa ga farkon halitta?'",
+    "'Ashe, har ma lokacin da muka zama ƙasusuwa da gutsure?'",
+    "Suka ce: 'A zahiri wannan zai zama dawowa mai hasara.'",
+    "To, wannan kawai za ta zama girgizawa ɗaya,",
+    "Sai su ga ana kan wuta.",
+    "Shin labarin Musa ya zo ka?",
+    "Lokacin da Ubangijinsa ya kira shi a kwarin mai alfarma Tuwa:",
+    "'Tafi wurin Fir'auna, lalle shi ya yi azzalumi.'",
+    "'Ka faɗa masa: shin kana son ka tsarkaka?'",
+    "'Kuma in shiryar da kai zuwa ga Ubangijinka ka ji tsoronSa?'",
+    "Sai ya nuna masa babban alamar.",
+    "Amma shi ya ƙaryata ya ƙi.",
+    "Sa'an nan ya juya yana tafiya da gaggawa,",
+    "Sa'an nan ya tattara, ya yi ihu,",
+    "Yana mai cewa: 'Ni ne Ubangijinku mafi girma.'",
+    "Sai Allah ya kama shi azaban ƙarshe da ta farko.",
+    "Lalle a cikin wannan akwai darasi ga wanda ke tsoron Allah.",
+    "Shin ku mafi wahala ne a halittu ko sama? An gina ta.",
+    "Ya ɗaga sararin samanta, ya tabbatar da ita.",
+    "Ya duhunta darenta, ya fitar da hasken safarta.",
+    "Bayan haka ya shimfiɗa ƙasa.",
+    "Ya fitar da ruwan ta da kimarinta.",
+    "Da duwatsu ya tabbatar da su.",
+    "Amfani gare ku da dabbobin ku.",
+    "To, lokacin da babbar masifa ta zo —",
+    "Ranar da mutum zai tuna abin da ya yi ƙoƙari,",
+    "Kuma an nuna jahannama ga duk wanda zai gani —",
+    "To duk wanda ya zarce iyaka,",
+    "Ya fi son rayuwar duniya,",
+    "To, jahannama ita ce mafaka.",
+    "Amma duk wanda ya ji tsoron tsayuwar Ubangijinsa, ya hana ransa son zuciya,",
+    "To, aljanna ita ce mafaka.",
+    "Suna tambayar ka game da Sa'ah: 'Yaushe za ta sauka?'",
+    "Wane ne kai da za ka faɗi abin game da ita?",
+    "Zuwa ga Ubangijinka ƙarshen ta yake.",
+    "Kai ɗan gargaɗi ne kawai na wanda ke jin tsoronsa.",
+    "Ranar da suka ga ta, kamar sun zama ba su yi kwana a duniya ba sai magriba ko safiyar ta."
+  ],
+  80: [ // Abasa
+    "Ya yi fushin fuska ya juya —",
+    "Saboda makaho ya zo wurinsa.",
+    "Me ya sanar da ka? Watakila zai tsarkaka.",
+    "Ko ya karɓa shawara ta, nasihar ta amfane shi.",
+    "Amma wanda ya isar masa —",
+    "Kai kana mai yiwa shi hankali.",
+    "Ba laifi a kanka ba ko bai tsarkaka ba.",
+    "Amma wanda ya zo maka yana mai yi ƙoƙari,",
+    "Yana mai ji tsoron Allah —",
+    "Daga gare shi kake yin anfanin.",
+    "A'a! Lalle wannan gargaɗi ne.",
+    "Duk wanda ya so zai tuna.",
+    "A cikin littattafai masu daraja,",
+    "Masu girma, masu tsarki,",
+    "A hannun manzanni —",
+    "Masu daraja, masu aminci.",
+    "Bari ya lalace mutum, yaya kafarcinsa yake!",
+    "Daga menene Allah Ya halicce shi?",
+    "Daga ƙwai Ya halicce shi, Ya ƙaddara shi.",
+    "Sa'an nan ya sauƙaƙa masa hanya.",
+    "Sa'an nan Ya ɗaukar rayuwarsa, Ya binne shi.",
+    "Sa'an nan duk lokacin da Ya so, Ya tashe shi.",
+    "A'a! Bai yi abin da Ya umarce shi ba.",
+    "Bari mutum ya duba abincinsa —",
+    "Lalle Mun zuba ruwa ta zuba,",
+    "Sa'an nan Mun fashe ƙasa fashewar ƙwarai,",
+    "Muka fitar da hatsi a cikinta,",
+    "Da inabi da ciyawa,",
+    "Da zaitun da dabino,",
+    "Da lambuna masu yawa,",
+    "Da 'ya'yan itatuwa da ciyawa,",
+    "Amfani gare ku da dabbobin ku.",
+    "To, lokacin da babbar murya ta zo —",
+    "Ranar da mutum zai gudu daga ɗan'uwansa,",
+    "Da mahaifiyarsa da mahaifansa,",
+    "Da matarsa da 'ya'yansa —",
+    "Kowane ɗayansu a ranar nan zai sami wadataccen sha'awarsa.",
+    "Fuskokin wasu a ranar nan za su yi fara'a —",
+    "Masu dariya, masu farin ciki.",
+    "Fuskokin wasu a ranar nan za su kasance masu ƙura,",
+    "Duhu ya rufe su.",
+    "Wadannan su ne masu kafirci, masu fasiki."
+  ],
+  81: [ // At-Takwir
+    "Lokacin da rana ta narkewa,",
+    "Da taurari suka faɗo,",
+    "Da duwatsu suka motsa,",
+    "Da raƙuma masu ciki goma suka yi watsi,",
+    "Da dabbobi-daji suka tattaru,",
+    "Da tekuna suka hau,",
+    "Da rayuka suka yi nau'i-nau'i,",
+    "Da ɗiyar da aka binne da rai aka tambaye ta:",
+    "Don wane laifi aka kashe ta?",
+    "Da litattafai suka bazu,",
+    "Da sama ta rigirge,",
+    "Da wuta ta haskaka,",
+    "Da aljanna ta kusanta —",
+    "Kowace rai za ta san abin da ta gabatar.",
+    "Ina rantsuwa da tauraron dare da yake gudu mai ɓoye,",
+    "Da daddare lokacin da ya kwarara,",
+    "Da wayewar gari lokacin da ya numfasa —",
+    "Lalle shi ne maganar manzo mai girma,",
+    "Mai ƙarfi, mai matsayi a Ubangijin Al'arshi,",
+    "Mai ɗaukaka a can, mai aminci.",
+    "Abokin ku ba mahaukaci ba ne.",
+    "Ya ga shi a sararin sama mai fili.",
+    "Ba mai rowa ne a kan gaibi ba.",
+    "Kuma ba maganar shaidan mai ƙi ba.",
+    "To, ina kuke tafiya?",
+    "Wannan gargaɗi ne kawai ga duniyoyi —",
+    "Ga duk wanda ke son tafiya daidai.",
+    "Ba za ku so ba sai Allah Ya so — Ubangijin duniyoyi."
+  ],
+  82: [ // Al-Infitar
+    "Lokacin da sama ta tsage,",
+    "Da taurari suka warwatse,",
+    "Da tekuna suka haɗu,",
+    "Da kaburburan suka bazu —",
+    "Kowace rai za ta san abin da ta gabatar da kuma abin da ta jinkirta.",
+    "Ya kai mutum! Menene ya ruɗe ka game da Ubangijinka mai karamci?",
+    "Wanda Ya halitta ka, Ya tabbatar da ka, Ya tsara ka.",
+    "A kowane surar da Ya so, Ya shigar da kai.",
+    "A'a! Ku ƙaryata hisabi.",
+    "Lalle a kanku akwai masu gadi,",
+    "Masu daraja, masu rubuta —",
+    "Sun san duk abin da kuke aikatawa.",
+    "Lalle masu kirki suna cikin ni'ima,",
+    "Kuma masu fasiki lalle suna cikin wuta.",
+    "Za su shiga cikinta a ranar sakamako.",
+    "Ba su da ikon ɓoyewa daga ita.",
+    "Menene ya sanar da ka ranar sakamako?",
+    "Sake, menene ya sanar da ka ranar sakamako?",
+    "Ranar da rai ba zai mallaki kome na wani rai ba — al'amari a ranar nan na Allah ne."
+  ],
+  83: [ // Al-Mutaffifin
+    "Bala'i ga masu ƙera,",
+    "Waɗanda idan sun karɓa ma'auni daga mutane, suka cika,",
+    "Amma idan sun auna wa mutane ko sun yi musu sikeli, suka rasa.",
+    "Ashe, ba su tsammanin za a tashe su?",
+    "Ga babban yini —",
+    "Ranar da mutane za su tsaya ga Ubangijin duniyoyi.",
+    "A'a! Lalle littafin masu fasiki yana cikin Sijjin.",
+    "Menene ya sanar da ka Sijjin?",
+    "Littafi mai layi-layi.",
+    "Bala'i a ranar nan ga masu ƙaryatawa,",
+    "Waɗanda ke ƙaryata ranar sakamako.",
+    "Ba zai ƙaryata ta ba sai duk azzalumi, mai laifi.",
+    "Idan ayoyinMu aka karanta masa, ya ce: 'Tatsuniyoyin na farko!'",
+    "A'a! Riginmu ya rufe zukatansu game da abin da suka samu.",
+    "A'a! Lalle za a ƙone su daga Ubangijinsu a ranar nan.",
+    "Sa'an nan lalle za su shiga wuta.",
+    "Sa'an nan za a ce: 'Wannan abin da kuka kasance kuke ƙaryatawa!'",
+    "A'a! Lalle littafin masu kirki yana cikin Illiyyin.",
+    "Menene ya sanar da ka Illiyyin?",
+    "Littafi mai layi-layi.",
+    "Waɗanda aka kusantar Allah ne za su shaida shi.",
+    "Lalle masu kirki suna cikin ni'ima —",
+    "A kan kursiyu suna duba.",
+    "Za ka gane a fuskokinsu kyakkyawan ni'ima.",
+    "Ana ba su sha ruwan giya mai tsarki da tutiyar ta.",
+    "Tushen ta daga Tasnim —",
+    "Maɓuɓɓugar da waɗanda aka kusantar za su sha.",
+    "Lalle masu laifi sukan yi dariya a kan muminai —",
+    "Da suka wuce su sukan yi murmushi.",
+    "Da suka koma iyalansu suka koma da farin ciki.",
+    "Da suka ga su suka ce: 'Lalle waɗannan suna ɓacewa.'",
+    "Ba a aike su a kansu masu gadi ba.",
+    "To, a yau muminai suna yi wa kafirai dariya —",
+    "A kan kursiyu suna duba.",
+    "Shin kafirai sun sami sakamako abin da suka samu?"
+  ],
+  84: [ // Al-Inshiqaq
+    "Lokacin da sama ta tsage —",
+    "Ta yi ɗa'a ga Ubangijinta, kuma ta dace da ita —",
+    "Da ƙasa ta shimfiɗa,",
+    "Ta fitar da abin da yake ciikinta ta yi fanko,",
+    "Ta yi ɗa'a ga Ubangijinta, kuma ta dace da ita —",
+    "Ya kai mutum! Lalle kai mai ɗacin ƙoƙari ne zuwa ga Ubangijinka, za ka sadu da Shi.",
+    "To duk wanda aka ba shi littafinsa ta hannun dama —",
+    "Za a yi masa hisabi mai sauƙi,",
+    "Zai koma ga iyalinsa mai farin ciki.",
+    "Amma duk wanda aka ba shi littafinsa a bayansa —",
+    "Zai kira lalewa,",
+    "Zai shiga wuta mai hura.",
+    "Lalle shi ya kasance tare da iyalinsa mai farin ciki.",
+    "Lalle ya tsammanin ba za a koma shi ba.",
+    "A'a! Ubangijinsa ya kasance mai gani a kansa.",
+    "Ina rantsuwa da duhu ya yi lale —",
+    "Da dare da abin da ya tattara,",
+    "Da wata lokacin da ta cika —",
+    "Lalle za ku hau matakai-matakai.",
+    "To menene ya same su da ba su gaskata ba?",
+    "Kuma idan Alƙur'ani aka karanta musu, ba sa yin sujuda?",
+    "A'a masu kafirci suna ƙaryatawa.",
+    "Kuma Allah ya fi sanin abin da suke boye.",
+    "Ka ba su labarin azaba mai raɗaɗi —",
+    "Sai waɗanda suka yi imani suka aikata nagarta — suna da lada wanda ba zai yanke ba."
+  ],
+  85: [ // Al-Buruj
+    "Rantsuwa da sama mai manyan taurari,",
+    "Da ranar alkiyama da aka alkawarta,",
+    "Da mai shaida da abin da aka yi shaida a kansa —",
+    "An halaka abokan kududdufi —",
+    "Wuta mai wuta —",
+    "Lokacin da suke zaune a kanta,",
+    "Suna shaida abin da suke aikatawa ga muminai.",
+    "Ba su azabtar da su ba sai don sun yi imani da Allah Mabuwayi, Mai yabo,",
+    "Wanda mulkin sammai da ƙasa naSa ne. Kuma Allah a kan duk abu Shi ne Mai shaida.",
+    "Lalle waɗanda suka gwada muminai da muminai, sa'an nan ba su tuba ba, suna da azaban jahannama, suna da azaban ƙonewa.",
+    "Lalle waɗanda suka yi imani suka aikata nagarta suna da aljannoni da ƙoramu ke gudana ƙarƙashinsu. Wannan babbar nasara ce.",
+    "Lalle kambun Ubangijinka mai tsanani ne.",
+    "Lalle Shi ne Shi ya fara halitta, Ya kuma koma da ita.",
+    "Shi ne Mai gafara, Mai ƙauna,",
+    "Mai Al'arshi mai girma,",
+    "Mai aikata duk abin da Yake so.",
+    "Shin labarin sojoji ya zo ka —",
+    "Fir'auna da Thamud?",
+    "A'a! Waɗanda suka kafirta suna cikin ƙaryatawa.",
+    "Kuma Allah Ya kewaye su daga baya.",
+    "A'a! Shi Alƙur'ani ne mai girma,",
+    "A cikin Allunan Alhazai."
+  ],
+  86: [ // At-Tariq
+    "Rantsuwa da sama da dare mai zuwa,",
+    "Menene ya sanar da ka dare mai zuwa?",
+    "Tauraro mai huda —",
+    "Kowace rai ba ta da mai tsaronta.",
+    "Bari mutum ya duba daga menene aka halicce shi.",
+    "An halicce shi daga ruwa mai zuba,",
+    "Da ya fita daga tsakanin ƙashin baya da ƙasusuwan ƙirji.",
+    "Lalle Shi yana da iko a kansa ya dawo shi.",
+    "Ranar da asiri za a bayyana —",
+    "Sa'an nan ba shi da ƙarfi kuma ba mai taimakawa.",
+    "Rantsuwa da sama mai ruwa,",
+    "Da ƙasa mai tsagewa —",
+    "Lalle shi magana mai rarrabewa ne,",
+    "Ba abin wasa ba ne.",
+    "Lalle suna yin makirci —",
+    "Kuma Ni Ma Ina yin makirci.",
+    "To ka yi haƙuri da kafirai, ka ba su lokaci kaɗan."
+  ],
+  87: [ // Al-Ala
+    "Tsarki ya tabbata ga sunan Ubangijinka mafi Girma,",
+    "Wanda Ya halitta ya daidaita,",
+    "Wanda Ya ƙaddara ya shirya,",
+    "Wanda Ya fitar da ciyawa,",
+    "Sa'an nan Ya sanya shi tsohon sharar gida mai baki.",
+    "Za Mu sa ka karanta, ba za ka manta ba —",
+    "Sai abin da Allah Ya so; lalle Shi Ya san sarari da abin da yake ɓoye.",
+    "Za Mu sauƙaƙa maka abu mafi sauƙi.",
+    "Ka gargaɗa idan gargaɗi ya amfana.",
+    "Wanda ke jin tsoro zai karɓa.",
+    "Kuma kafirai za su nisance shi —",
+    "Wanda zai shiga manyan wuta.",
+    "Sa'an nan ba zai mutu a cikinta ba kuma ba zai rayu ba.",
+    "Wanda ya tsarkaka ya ci nasara —",
+    "Ya ambaci sunan Ubangijinsa ya yi salla.",
+    "A'a! Ku fi son rayuwar duniya —",
+    "Alhali lahira ta fi kyau kuma ta fi dawwama.",
+    "Lalle wannan yana cikin litattafan farko —",
+    "Litattafan Ibrahim da Musa."
+  ],
+  88: [ // Al-Ghashiyah
+    "Shin labarin lulluɓi ya zo ka?",
+    "Fuskokin wasu a ranar nan za su kasance masu wulaƙanci,",
+    "Masu aiki, masu gajiya,",
+    "Suna shiga wuta mai ƙuna.",
+    "Ana ba su sha ruwan tafasa,",
+    "Babu abincinsu sai ciyawar ƙaya,",
+    "Ba ta ciyarwa kuma ba ta kwantar da yunwa.",
+    "Fuskokin wasu a ranar nan za su kasance masu taushi,",
+    "Game da ƙoƙarinsu suna gamsuwa,",
+    "A cikin aljanna mai girma.",
+    "Ba za su ji a cikinta magana marar amfani ba.",
+    "A cikinta akwai maɓuɓɓugar da ke gudana.",
+    "A cikinta akwai kursiyoyi masu ɗaukaka,",
+    "Da kofofi da aka shirya,",
+    "Da shimfiɗu-shimfiɗu da aka shimfiɗa,",
+    "Da jarfa-jarfa da aka ajiye.",
+    "Ashe, ba su duba raƙuma yadda aka halicce ta ba?",
+    "Da sama yadda aka ɗaga ta?",
+    "Da duwatsu yadda aka tsayar da su?",
+    "Da ƙasa yadda aka shimfiɗa ta?",
+    "To ka gargaɗa; kai mai gargaɗi ne kawai.",
+    "Ba mai leƙen asiri ba ne a kansu.",
+    "Amma duk wanda ya juya baya ya kafirta —",
+    "Allah zai azabtar da shi babban azaba.",
+    "Lalle zuwa Gare Mu dawowarka take.",
+    "Sa'an nan lalle Mu ne za Mu yi musu hisabi."
+  ],
+  89: [ // Al-Fajr
+    "Rantsuwa da Alfijir,",
+    "Da dare goma,",
+    "Da mai jini da daidai,",
+    "Da dare lokacin da ya gudana —",
+    "Shin a cikin wannan akwai rantsuwa ga mai hankali?",
+    "Ashe, ba ka gani yadda Ubangijinka Ya yi wa Aad —",
+    "Iram mai ginshiƙai —",
+    "Wanda ba a halicci irin su a ƙasashe ba?",
+    "Da Thamud waɗanda suka yanke dutse a kwari?",
+    "Da Fir'auna mai sanduna?",
+    "Waɗanda suka yi azzalumi a ƙasashe,",
+    "Suka yalwata ɓarna a cikinsu.",
+    "Sai Ubangijinka Ya zuba musu bullar azaba.",
+    "Lalle Ubangijinka yana gado.",
+    "To ga mutum, idan Ubangijinsa Ya jarrabe shi Ya girmama shi Ya ni'imata shi, ya ce: 'Ubangijina Ya girmama ni!'",
+    "Amma idan Ya jarrabe shi Ya taƙaita masa abinci, ya ce: 'Ubangijina Ya wulaƙanta ni!'",
+    "A'a! Amma ku ba ku girmama marayu ba —",
+    "Kuma ba ku ƙarfafawa juna da ciyar da miskini —",
+    "Kuma ku cinye gado yadda ya kamata —",
+    "Kuma ku so arziki sona mai ƙarfi.",
+    "A'a! Lokacin da ƙasa ta niƙa niƙa dogo,",
+    "Da Ubangijinka ya zo, da mala'iku jeri-jeri,",
+    "Da aka kawo jahannama a ranar nan —",
+    "A ranar nan mutum zai tuna, kuma menene tunawa zai amfane shi?",
+    "Zai ce: 'Ya daɗɗe, da ace na gabatar saboda rayuwata ta!'",
+    "To a ranar nan ba wanda zai azabtar irin azabarSa,",
+    "Kuma ba wanda zai ɗaure irin daure-daureSa.",
+    "Ya kai rai mai natsuwa!",
+    "Koma zuwa ga Ubangijinka mai gamsuwa mai gamsar da ka —",
+    "Ka shiga cikin bawayiNa —",
+    "Ka shiga aljannaKa."
+  ],
+  90: [ // Al-Balad
+    "Ina rantsuwa da wannan gari —",
+    "Kuma kai mai halatta ne a wannan gari —",
+    "Da mahaifi da abin da ya haifa.",
+    "Lalle Mun halicci mutum cikin wahala.",
+    "Ashe ya tsammanin ba wanda zai iya masa?",
+    "Ya ce: 'Na kashe dukiya mai yawa!'",
+    "Ashe, ya tsammanin ba wanda ya gani?",
+    "Ashe, ba Mu sanya masa idanu biyu?",
+    "Da harshe da lebbuna biyu?",
+    "Muka nuna masa duwatsin biyu?",
+    "Amma bai bi matsalar hanya ba —",
+    "Menene ya sanar da ka matsalar hanya?",
+    "Shi ne 'yantar da bawa,",
+    "Ko ciyarwa a lokacin yunwa —",
+    "Na marayu mai dangi,",
+    "Ko miskini mai ƙura —",
+    "Sa'an nan ya kasance daga waɗanda suka yi imani suka juna yin haƙuri suka juna juyayi.",
+    "Wadannan su ne abokan dama.",
+    "Amma waɗanda suka kafirta da ayoyinMu su ne abokan hagu,",
+    "A kansu akwai wuta ta rufe su."
+  ],
+  91: [ // Ash-Shams
+    "Rantsuwa da rana da haske ta,",
+    "Da wata lokacin da ta bi ta,",
+    "Da rana lokacin da ta bayyana ta,",
+    "Da dare lokacin da ya rufe ta,",
+    "Da sama da abin da Ya gineta,",
+    "Da ƙasa da abin da Ya shimfiɗeta,",
+    "Da rai da abin da Ya daidaita ta —",
+    "Ya sanar da ita fasikanci ta da tsarkakanta.",
+    "Ya ci nasara wanda ya tsarkake ta,",
+    "Ya ci hasara wanda ya ɓatar da ita.",
+    "Thamud sun ƙaryata saboda zaman zalunci —",
+    "Lokacin da mafi ƙasƙancin su ya tashi,",
+    "Sai manzon Allah ya ce musu: 'Bari raƙumar Allah ta yi abinci.'",
+    "Suka ƙaryata shi suka yanke ta, sai Ubangijinsu Ya halakar da su saboda lafinsu, Ya daidaita halakar.",
+    "Kuma ba Ya jin tsoron sakamakonsa."
+  ],
+  92: [ // Al-Layl
+    "Rantsuwa da dare lokacin da ya rufe,",
+    "Da rana lokacin da ta bayyana,",
+    "Da Wanda Ya halicci namiji da mace —",
+    "Lalle ƙoƙarinku ya bambanta.",
+    "To duk wanda ya ba da hannunsa ya kiyaye Allah,",
+    "Ya kuma gaskata kyakkyawa —",
+    "Za Mu sauƙaƙa masa sauƙin abu.",
+    "Amma duk wanda ya yi ƙishi ya ishe kansa,",
+    "Ya ƙaryata kyakkyawa —",
+    "Za Mu sauƙaƙa masa wahalar abu.",
+    "Dukiyarsa ba za ta amfane shi lokacin da ya faɗo ba.",
+    "Lalle Mu ne, muke jagoranci.",
+    "Kuma lalle lahira da duniya naMu ne.",
+    "Sai na gargaɗe ku da wuta mai ƙuna —",
+    "Ba za ta ƙone shi ba sai mafi ƙasƙanci —",
+    "Wanda ya ƙaryata ya juya —",
+    "Kuma mafi tsarki za a kiyaye shi daga gare ta —",
+    "Wanda ke ba da dukiyarsa ya tsarkaka —",
+    "Kuma ba mai wani lada a kansa da za a saka masa —",
+    "Sai neman yanayin Ubangijinsa Mafi Girma.",
+    "Kuma lalle zai gamsu."
+  ],
+  93: [ // Ad-Dhuha
+    "Rantsuwa da wayewar gari,",
+    "Da dare lokacin da ya yi natsuwa —",
+    "Ubangijinka bai ƙi ka ba kuma bai ji haushinsa ba.",
+    "Kuma lahira ta fi maka alheri da duniya.",
+    "Kuma za Ubangijinka ya ba ka, ka gamsu.",
+    "Ashe, bai same ka marayu ya ba ka mafaka?",
+    "Ya same ka ɓace ya jagoranta ka?",
+    "Ya same ka matalauci ya wadatar da ka?",
+    "To game da marayu, kada ka ɗauke shi da ƙarfi.",
+    "Game da mai neman taimako, kada ka tsawata masa.",
+    "Game da ni'imar Ubangijinka, faɗa!"
+  ],
+  94: [ // Ash-Sharh
+    "Ashe, ba Mu bude maka ƙirjinka?",
+    "Muka ɗauke nauyin ka,",
+    "Wanda ya nauyayi bayanka?",
+    "Muka ɗaukaka sunanka?",
+    "Lalle tare da wahala akwai sauƙi.",
+    "Lalle tare da wahala akwai sauƙi.",
+    "To idan ka gama, sai ka yi ƙoƙari,",
+    "Kuma zuwa ga Ubangijinka ka yi sha'awa."
+  ],
+  95: [ // At-Tin
+    "Rantsuwa da ɓaure da zaitun —",
+    "Da Dutsen Sinai —",
+    "Da wannan garin mai aminci —",
+    "Lalle Mun halicci mutum a mafi kyaun tsari.",
+    "Sa'an nan Muka koma shi mafi ƙasƙanci —",
+    "Sai waɗanda suka yi imani suka aikata nagarta, suna da lada marar ƙarewa.",
+    "To me ya sa kake ƙaryata hisabi bayan haka?",
+    "Ashe, Allah ba Mafi kyawun masu yin hukunci ba ne?"
+  ],
+  96: [ // Al-Alaq
+    "Karanta da sunan Ubangijinka Wanda ya halitta —",
+    "Ya halicci mutum daga ƙwai.",
+    "Karanta! Kuma Ubangijinka Mafi karamci ne,",
+    "Wanda Ya koyar da alƙalami,",
+    "Ya koyar da mutum abin da bai sani ba.",
+    "A'a! Lalle mutum ya zarce iyaka —",
+    "Domin ya ga ya ishe kansa.",
+    "Lalle zuwa ga Ubangijinka dawowa take.",
+    "Ashe, ka ga wanda ya hana —",
+    "Bawa lokacin da ya yi salla?",
+    "Ashe, ya kasance yana kan shiriya?",
+    "Ko ya umarci tsarki?",
+    "Ashe, ya ƙaryata ya juya?",
+    "Ashe, bai san Allah yana gani?",
+    "A'a! Idan bai daina ba, lalle za Mu kama shi da gashin gaban kansa —",
+    "Gashin gaban maƙaryaci, mai zunubi.",
+    "Sa'an nan ya kira zabubbukansa —",
+    "Za Mu kira malaiku masu azaba.",
+    "A'a! Kada ka yi masa ɗa'a — ka yi sujuda ka kusance Allah."
+  ],
+  97: [ // Al-Qadr
+    "Lalle Mu Ne Muka saukar da shi a Dare mai ɗaukaka.",
+    "Menene ya sanar da ka Dare mai ɗaukaka?",
+    "Dare mai ɗaukaka ya fi alfijiri na wata.",
+    "Mala'iku suna sauka a cikinta da Ruhu da iznin Ubangijinsu — game da kowane al'amari.",
+    "Salama ce har wayewar gari."
+  ],
+  98: [ // Al-Bayyinah
+    "Waɗanda suka kafirta daga Ahlul-Kitabi da mushirikai ba su kasance da wargajewa ba har sai bayyanannen dalili ya zo musu —",
+    "Manzo daga Allah yana karanta litattafai masu tsarki —",
+    "A cikinsu akwai daidaittun rubutun.",
+    "Kuma Ahlul-Kitabi ba su rarrabu ba sai bayan bayyanannen dalili ya zo musu.",
+    "Ba su umarne ba sai su bauta wa Allah cikin tsarki, suka lallashe addini gare Shi, suka daidaita salla suka ba da zakka — wannan ita ce addinin daidai.",
+    "Lalle waɗanda suka kafirta daga Ahlul-Kitabi da mushirikai suna cikin wutan jahannama, suna zaune a cikinta. Wadannan su ne mafi munin halittu.",
+    "Lalle waɗanda suka yi imani suka aikata nagarta wadannan su ne mafi kyawun halittu.",
+    "Ladan su wurin Ubangijinsu aljannatu Adn da ƙoramu ke gudana ƙarƙashinsu — suna zaune a cikinta har abada. Allah ya yarda da su suka yarda da Shi. Wannan ga wanda ya ji tsoron Ubangijinsa."
+  ],
+  99: [ // Az-Zalzalah
+    "Lokacin da ƙasa ta girgiza girgizawarta,",
+    "Da ƙasa ta fitar da nauye-nauyenta,",
+    "Mutum ya ce: 'Menene ta?'",
+    "A ranar nan za ta faɗi labaran ta —",
+    "Domin Ubangijinka Ya yi mata umarni.",
+    "A ranar nan mutane za su fita dabam-dabam don a nuna musu ayyukansu.",
+    "Duk wanda ya aikata nagarta girma tsutsumma zai gan ta.",
+    "Duk wanda ya aikata mugunta girma tsutsumma zai gan ta."
+  ],
+  100: [ // Al-Adiyat
+    "Rantsuwa da masu gudana da fafutuka —",
+    "Da masu fitar wuta a ciki —",
+    "Da masu kai hari da safe —",
+    "Suka fitar da ƙura a cikinta —",
+    "Suka shiga tsakiyar adawin su —",
+    "Lalle mutum yana rashin godiya ga Ubangijinsa.",
+    "Kuma lalle shi mai shaida ne a kan wannan.",
+    "Kuma lalle shi mai ƙaunar dukiya ne da ƙarfi.",
+    "Ashe, bai san idan aka tono abin da yake cikin kabari —",
+    "Da an tattara abin da yake cikin zukata —",
+    "Lalle Ubangijinsu a ranar nan Mai labarinsu ne?"
+  ],
+  101: [ // Al-Qariah
+    "Babbar masifa —",
+    "Menene babbar masifa?",
+    "Menene ya sanar da ka babbar masifa?",
+    "Ranar da mutane za su zama kamar ƙwari-ƙwari da aka warwatse,",
+    "Da duwatsu za su zama kamar farin ulu da aka kwalale —",
+    "To duk wanda ma'aunansa suka yi nauyi —",
+    "Shi yana cikin rayuwa mai so.",
+    "Amma duk wanda ma'aunansa suka yi ƙaranci —",
+    "Mafarkarsa ita ce Hawiyya.",
+    "Menene ya sanar da ka abin da ita take?",
+    "Wuta mai ƙuna ne."
+  ],
+  102: [ // At-Takathur
+    "Ƙaunar ƙara tara ya shagantar da ku —",
+    "Har kun isa kabari.",
+    "A'a! Za ku sani.",
+    "Sake, a'a! Za ku sani.",
+    "A'a! Da kuna san ilimin yaƙini —",
+    "Lalle za ku ga wuta.",
+    "Sa'an nan lalle za ku gan ta da idon yaƙini.",
+    "Sa'an nan lalle a ranar nan za a tambaye ku game da ni'ima."
+  ],
+  103: [ // Al-Asr
+    "Rantsuwa da lokaci —",
+    "Lalle mutum yana cikin hasara —",
+    "Sai waɗanda suka yi imani suka aikata nagarta suka juna yin wasiyya da gaskiya suka juna yin wasiyya da haƙuri."
+  ],
+  104: [ // Al-Humazah
+    "Bala'i ga duk mai cin mutunci mai zargi —",
+    "Wanda ya tattara dukiya ya kirginta —",
+    "Ya tsammanin dukiyarsa za ta dawwama masa.",
+    "A'a! Lalle za a jefa shi a cikin Hutama.",
+    "Menene ya sanar da ka Hutama?",
+    "Wutar Allah mai ƙuna —",
+    "Wadda take ɗaukar ƙirji —",
+    "Lalle ita a kansu ta rufe —",
+    "A cikin ginshiƙai masu tsawo."
+  ],
+  105: [ // Al-Fil
+    "Ashe, ba ka gani yadda Ubangijinka Ya yi wa abokan giwa?",
+    "Ashe, ba Ya sanya makircinsu cikin ɓacewa?",
+    "Ya aike musu da tsuntsaye jama'a-jama'a —",
+    "Suna jifansu da duwatsun yumbu —",
+    "Ya sanya su kamar gashin da aka ci."
+  ],
+  106: [ // Al-Quraysh
+    "Domin ƙaunar Ƙuraishawa —",
+    "Ƙaunarsu ta tafiya ta hunturu da ta rani —",
+    "To bari su bauta wa Ubangijin wannan Gida —",
+    "Wanda Ya ciyar da su a yunwa Ya ba su aminci daga tsoro."
+  ],
+  107: [ // Al-Maun
+    "Ashe, ka ga wanda ke ƙaryata hisabi?",
+    "Shi ne wanda ke ɗauke da marayu da ƙarfi,",
+    "Kuma ba ya ƙarfafawa juna da ciyar da miskini.",
+    "Bala'i ga masu salla —",
+    "Waɗanda suna gafala daga salloli nasu —",
+    "Waɗanda suke nuna wa mutane —",
+    "Kuma suke hana kayan amfani."
+  ],
+  108: [ // Al-Kawthar
+    "Lalle Mu Ne Muka ba ka Al-Kawthar.",
+    "To salla wa Ubangijinka ka yanka.",
+    "Lalle abokin ka shi ne wanda ake yankewa."
+  ],
+  109: [ // Al-Kafirun
+    "Ka ce: Ya ku kafirai!",
+    "Ba na bauta wa abin da kuke bauta wa —",
+    "Kuma ku ba ku bauta wa abin da nake bauta wa —",
+    "Kuma ni ba mai bauta wa abin da kuka bauta wa ba ne —",
+    "Kuma ku ba ku bauta wa abin da nake bauta wa —",
+    "Addininku naku ne kuma addini nawa nawa ne."
+  ],
+  110: [ // An-Nasr
+    "Lokacin da taimakon Allah ya zo da nasara —",
+    "Ka ga mutane suna shiga addinin Allah jama'a-jama'a —",
+    "Ka yi tasbih da yabo ga Ubangijinka ka nemi gafarar sa; lalle Shi mai karbar tuba ne."
+  ],
+  111: [ // Al-Masad
+    "Hannuwan Abu Lahab sun halaka kuma shi ya halaka.",
+    "Dukiyarsa da abin da ya samu ba za su amfane shi ba.",
+    "Zai shiga wuta mai hura —",
+    "Da matarsa — mai ɗaukar itacen wuta —",
+    "A wuyanta igiya ta ƙyalli."
+  ],
+  112: [ // Al-Ikhlas
+    "Ka ce: Shi Allah ne Ɗaya —",
+    "Allah Mafificin Buƙata ne.",
+    "Bai haifa kuma ba a haife Shi ba —",
+    "Kuma babu wanda yayi kama da Shi."
+  ],
+  113: [ // Al-Falaq
+    "Ka ce: Ina neman tsari da Ubangijin wayewar gari —",
+    "Daga sharrin abin da Ya halitta,",
+    "Da sharrin duhu lokacin da ya shiga,",
+    "Da sharrin masu hura a ƙulla,",
+    "Da sharrin mai hassada lokacin da ya hassada."
+  ],
+  114: [ // An-Nas
+    "Ka ce: Ina neman tsari da Ubangijin mutane —",
+    "Sarkin mutane —",
+    "Ilahin mutane —",
+    "Daga sharrin waswasaɗan da ke ɓoyewa —",
+    "Wanda ke yin waswasi a zukata mutane —",
+    "Daga aljannu da mutane."
+  ]
+};
+
+function getLangTrans(surahId, verseIdx, englishFallback) {
+  if (curLang === 'ha') {
+    const h = HAUSA[surahId];
+    if (h && h[verseIdx]) return h[verseIdx];
+  }
+  return englishFallback;
+}
+
+function toggleLang() {
+  curLang = curLang === 'en' ? 'ha' : 'en';
+  localStorage.setItem('curLang', curLang);
+  const btn = document.getElementById('btn-lang');
+  if (btn) {
+    btn.textContent = '🌍 ' + (curLang === 'ha' ? 'HA' : 'EN');
+    btn.classList.toggle('on', curLang === 'ha');
+  }
+  // Re-render if translation is on
+  if (showTrans) {
+    const s = qData.find(x => x.id === curS);
+    if (s) renderVerses(s);
+  }
+  toast(curLang === 'ha' ? '🌍 Hausa ya kunna!' : '🌍 English on');
+}
+
+function setLangAndGo(lang) {
+  curLang = lang;
+  localStorage.setItem('curLang', lang);
+  // Enable translation
+  showTrans = true;
+  localStorage.setItem('showTrans', 'true');
+  toast('🌍 Hausa ya kunna! Zaɓi Surah.');
+  goToView('list');
 }
 
 </script>
