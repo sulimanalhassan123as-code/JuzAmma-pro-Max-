@@ -1839,17 +1839,14 @@ async function sendChat() {
   addMsg(txt,'user'); inp.value=''; inp.style.height='';
   totChats++; localStorage.setItem('totChats',totChats); addTyping();
   try {
-    const k=['gsk_q3JmKZmoFdWYCVY5Pgm','NWGdyb3FYoRj3J4PKoETbNrveVAJh4lP4'].join('');
-    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+    const r=await fetch('https://solas-e2b9da08.base44.app/functions/islamicAiProxy',{
       method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},
-      body:JSON.stringify({model:'llama3-8b-8192',messages:[
-        {role:'system',content:'You are an Islamic AI Guide. Answer questions about the Quran, Hadith, prayer, fasting, Hajj, Zakat, and daily Islamic life. Be concise and respectful.'},
-        {role:'user',content:txt}],max_tokens:350,temperature:0.7})
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:txt})
     });
     const d=await r.json();
     removeTyping();
-    addMsg(d.choices?.[0]?.message?.content||getAnswer(txt),'bot');
+    addMsg(d.reply||getAnswer(txt),'bot');
   } catch(e){ removeTyping(); addMsg(getAnswer(txt),'bot'); }
 }
 function ask(q) { document.getElementById('cinp').value=q; sendChat(); }
@@ -1921,7 +1918,20 @@ async function loadPrayerTimes(){
       const[h,m]=tm.split(':').map(Number);const pt=new Date();pt.setHours(h,m,0,0);
       if(pt>now){document.getElementById('pt-nxt-nm').textContent='⏰ '+nm;document.getElementById('pt-nxt-tm').textContent=tm;break;}
     }
-  }catch(e){const el=document.getElementById('pw-city');if(el)el.textContent='enable location';}
+  }catch(e){
+    const el=document.getElementById('pw-city');
+    if(el)el.textContent='tap to enable';
+    // Add a clickable prompt on the prayer widget
+    const pw=document.querySelector('.pw');
+    if(pw && !document.getElementById('pt-enable-btn')){
+      const btn=document.createElement('button');
+      btn.id='pt-enable-btn';
+      btn.textContent='📍 Tap to Enable Prayer Times';
+      btn.style.cssText='display:block;width:100%;margin-top:10px;padding:10px;background:var(--p);color:#fff;border:none;border-radius:10px;font-family:Poppins,sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;';
+      btn.onclick=()=>{btn.remove();loadPrayerTimes();};
+      pw.appendChild(btn);
+    }
+  }
 }
 
 /* ── AZAN ENGINE ── */
