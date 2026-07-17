@@ -740,13 +740,13 @@ body { font-family:'Poppins',sans-serif; background:var(--dark); color:var(--txt
       <div class="ccard-s">Surah completion charts</div>
       <span class="ccard-badge badge-new">NEW</span>
     </div>
-    <div class="ccard soon">
+    <div class="ccard soon" onclick="toast('🎙️ Tajweed Checker coming soon! We\'re training the AI to listen to your recitation.')">
       <div class="ccard-ico">🎙️</div>
       <div class="ccard-t">Tajweed Checker</div>
       <div class="ccard-s">Record &amp; AI feedback</div>
       <span class="ccard-badge badge-soon">SOON</span>
     </div>
-    <div class="ccard soon">
+    <div class="ccard soon" onclick="toast('👥 Group Study coming soon! Read Quran live with friends.')">
       <div class="ccard-ico">👥</div>
       <div class="ccard-t">Group Study</div>
       <div class="ccard-s">Read with friends live</div>
@@ -1381,7 +1381,7 @@ function renderVerses(s) {
         </div>
       </div>
       <div class="arabic">${v.a}</div>
-      ${showTrans?`<div class="trans">${getLangTrans(s.id, idx, v.e)}</div>`:''}
+      ${showTrans?`<div class="trans">${getLangTrans(s.id, i, v.e)}</div>`:''}
     </div>`;
   });
   document.getElementById('verse-container').innerHTML=html;
