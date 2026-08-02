@@ -4,7 +4,7 @@
 // Strategy: Cache-first for assets, Network-first for Quran API
 // ============================================================
 
-const CACHE_NAME = 'juzamma-pro-v2';
+const CACHE_NAME = 'juzamma-pro-v3';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -68,7 +68,21 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Everything else — cache first, network fallback
+  // Navigation/HTML — network first (always get latest version)
+  if (event.request.mode === 'navigate' || 
+      (event.request.destination === 'document') ||
+      (url.pathname === '/' || url.pathname.endsWith('.html'))) {
+    event.respondWith(
+      fetch(event.request).then(response => {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        return response;
+      }).catch(() => caches.match(event.request).then(c => c || caches.match('./index.html')))
+    );
+    return;
+  }
+
+  // Other assets — cache first, network fallback
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
@@ -78,11 +92,6 @@ self.addEventListener('fetch', event => {
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         }
         return response;
-      }).catch(() => {
-        // Offline fallback for navigation
-        if (event.request.mode === 'navigate') {
-          return caches.match('./index.html');
-        }
       });
     })
   );
