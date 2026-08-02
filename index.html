@@ -628,6 +628,65 @@ body { font-family:'Poppins',sans-serif; background:var(--dark); color:var(--txt
 .goal-btn { flex:1; padding:8px; border-radius:10px; border:1.5px solid var(--bdr); background:transparent; font-size:.75rem; font-weight:700; color:var(--txt2); cursor:pointer; font-family:'Poppins',sans-serif; transition:all .2s; }
 .goal-btn.on { background:var(--p); border-color:var(--p); color:#fff; }
 
+
+/* ═══ GROUP STUDY VIEW ══════════════════════════════════════════════ */
+#groupstudy-view { display:none; flex-direction:column; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:var(--bg); overflow-y:auto; -webkit-overflow-scrolling:touch; }
+#groupstudy-view.active { display:flex; }
+.gs-lobby { padding:20px 16px; display:flex; flex-direction:column; gap:14px; }
+.gs-logo { font-size:2.8rem; text-align:center; margin:10px 0 4px; }
+.gs-title { text-align:center; font-size:1.2rem; font-weight:700; color:var(--txt); }
+.gs-sub { text-align:center; font-size:.8rem; color:var(--txt2); }
+.gs-card { background:var(--dark2); border:1px solid var(--bdr); border-radius:16px; padding:18px; }
+.gs-card h3 { font-size:.85rem; font-weight:700; color:var(--p); margin:0 0 12px; text-transform:uppercase; letter-spacing:.05em; }
+.gs-input { width:100%; padding:12px 14px; border:1.5px solid var(--bdr); border-radius:12px; background:var(--bg); color:var(--txt); font-size:.95rem; font-family:Poppins,sans-serif; box-sizing:border-box; outline:none; }
+.gs-input:focus { border-color:var(--p); }
+.gs-btn { width:100%; padding:13px; border:none; border-radius:12px; font-size:.95rem; font-weight:700; font-family:Poppins,sans-serif; cursor:pointer; transition:opacity .15s, transform .1s; }
+.gs-btn:active { transform:scale(.97); }
+.gs-btn-create { background:var(--p); color:#fff; }
+.gs-btn-join { background:transparent; border:2px solid var(--p); color:var(--p); }
+.gs-btn:disabled { opacity:.5; cursor:default; }
+.gs-divider { text-align:center; color:var(--txt2); font-size:.78rem; margin:2px 0; }
+/* In-room UI */
+.gs-room { display:none; flex-direction:column; height:100%; }
+.gs-room.active { display:flex; }
+.gs-room-hdr { background:var(--hdr); border-bottom:1px solid var(--bdr); padding:11px 14px; display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.gs-room-code { background:var(--p); color:#fff; padding:4px 10px; border-radius:8px; font-size:.72rem; font-weight:700; letter-spacing:.08em; }
+.gs-room-info { flex:1; }
+.gs-room-name { font-size:.9rem; font-weight:700; color:var(--txt); }
+.gs-room-peers { font-size:.72rem; color:var(--txt2); }
+.gs-leave-btn { background:rgba(239,68,68,.12); border:1px solid rgba(239,68,68,.3); color:#ef4444; padding:7px 12px; border-radius:9px; font-size:.75rem; font-weight:700; cursor:pointer; }
+.gs-verse-area { flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:12px; }
+.gs-surah-sel { padding:10px 14px; border-bottom:1px solid var(--bdr); background:var(--hdr); display:flex; gap:8px; align-items:center; flex-shrink:0; }
+.gs-sel { flex:1; padding:8px 10px; border:1px solid var(--bdr); border-radius:9px; background:var(--bg); color:var(--txt); font-size:.82rem; font-family:Poppins,sans-serif; outline:none; }
+.gs-sync-btn { padding:8px 14px; background:var(--p); color:#fff; border:none; border-radius:9px; font-size:.8rem; font-weight:700; cursor:pointer; }
+.gs-ar { font-family:'Amiri', serif; font-size:1.6rem; text-align:right; line-height:2; direction:rtl; color:var(--txt); }
+.gs-en { font-size:.85rem; color:var(--txt2); line-height:1.6; margin-top:6px; }
+.gs-verse-nav { padding:10px 14px; border-top:1px solid var(--bdr); background:var(--hdr); display:flex; gap:8px; align-items:center; flex-shrink:0; }
+.gs-vnav-btn { flex:1; padding:11px; background:var(--dark2); border:1px solid var(--bdr); border-radius:10px; color:var(--txt); font-size:.88rem; font-weight:600; cursor:pointer; text-align:center; }
+.gs-vnav-btn.primary { background:var(--p); color:#fff; border-color:transparent; }
+.gs-verse-lbl { text-align:center; font-size:.75rem; color:var(--txt2); padding:5px 14px 0; flex-shrink:0; }
+.gs-participants { display:flex; flex-wrap:wrap; gap:6px; padding:10px 14px; border-bottom:1px solid var(--bdr); background:var(--hdr); flex-shrink:0; }
+.gs-peer { background:var(--p); color:#fff; border-radius:20px; padding:3px 10px; font-size:.7rem; font-weight:600; }
+.gs-peer.host { background:linear-gradient(135deg,#f59e0b,#d97706); }
+.gs-status { text-align:center; color:var(--txt2); font-size:.78rem; padding:8px; }
+/* Tajweed */
+#tajweed-view { display:none; flex-direction:column; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:var(--bg); overflow-y:auto; }
+#tajweed-view.active { display:flex; }
+.tj-body { padding:20px 16px; display:flex; flex-direction:column; gap:14px; align-items:center; }
+.tj-mic { width:110px; height:110px; border-radius:50%; border:4px solid var(--p); background:var(--dark2); display:flex; align-items:center; justify-content:center; font-size:3rem; cursor:pointer; transition:box-shadow .3s, transform .1s; box-shadow:0 0 0 0 var(--pg); }
+.tj-mic.recording { animation:tj-pulse 1.2s ease-in-out infinite; border-color:#ef4444; box-shadow:0 0 0 8px rgba(239,68,68,.2); }
+@keyframes tj-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+.tj-lbl { font-size:.85rem; color:var(--txt2); text-align:center; }
+.tj-surah-pick { width:100%; max-width:340px; padding:11px 14px; border:1.5px solid var(--bdr); border-radius:12px; background:var(--bg); color:var(--txt); font-size:.9rem; font-family:Poppins,sans-serif; outline:none; }
+.tj-verse-ar { font-family:'Amiri',serif; font-size:1.5rem; direction:rtl; text-align:right; line-height:2; color:var(--txt); width:100%; max-width:340px; background:var(--dark2); border-radius:14px; padding:14px; box-sizing:border-box; }
+.tj-feedback { width:100%; max-width:340px; background:var(--dark2); border-radius:14px; padding:14px; box-sizing:border-box; }
+.tj-feedback h4 { color:var(--p); font-size:.82rem; margin:0 0 8px; text-transform:uppercase; letter-spacing:.05em; }
+.tj-fb-item { font-size:.82rem; color:var(--txt); margin:5px 0; line-height:1.5; }
+.tj-fb-item.good { color:#10b981; }
+.tj-fb-item.warn { color:#f59e0b; }
+.tj-fb-item.err  { color:#ef4444; }
+.tj-rec-btn { padding:13px 30px; background:var(--p); color:#fff; border:none; border-radius:14px; font-size:.95rem; font-weight:700; font-family:Poppins,sans-serif; cursor:pointer; }
+.tj-timer { font-size:1.4rem; font-weight:700; color:#ef4444; min-height:2rem; }
 </style>
 </head>
 <body>
@@ -718,7 +777,7 @@ body { font-family:'Poppins',sans-serif; background:var(--dark); color:var(--txt
     <div class="ccard" onclick="goToView('prophets')">
       <div class="ccard-ico">🌟</div>
       <div class="ccard-t">Prophets Stories</div>
-      <div class="ccard-s">10 Prophets · Videos</div>
+      <div class="ccard-s">25 Prophets · Videos</div>
       <span class="ccard-badge badge-new">NEW</span>
     </div>
     <div class="ccard" onclick="goToView('night')">
@@ -740,17 +799,17 @@ body { font-family:'Poppins',sans-serif; background:var(--dark); color:var(--txt
       <div class="ccard-s">Surah completion charts</div>
       <span class="ccard-badge badge-new">NEW</span>
     </div>
-    <div class="ccard soon" onclick="toast('🎙️ Tajweed Checker coming soon! We\'re training the AI to listen to your recitation.')">
+    <div class="ccard" onclick="goToView('tajweed')">
       <div class="ccard-ico">🎙️</div>
       <div class="ccard-t">Tajweed Checker</div>
       <div class="ccard-s">Record &amp; AI feedback</div>
-      <span class="ccard-badge badge-soon">SOON</span>
+      <span class="ccard-badge badge-new">NEW</span>
     </div>
-    <div class="ccard soon" onclick="toast('👥 Group Study coming soon! Read Quran live with friends.')">
+    <div class="ccard" onclick="goToView('groupstudy')">
       <div class="ccard-ico">👥</div>
       <div class="ccard-t">Group Study</div>
       <div class="ccard-s">Read with friends live</div>
-      <span class="ccard-badge badge-soon">SOON</span>
+      <span class="ccard-badge badge-new">NEW</span>
     </div>
     <div class="ccard" onclick="setLangAndGo('ha')">
       <div class="ccard-ico">🌍</div>
@@ -1212,6 +1271,8 @@ function goToView(v) {
   document.getElementById('prophets-view').classList.remove('active');
   document.getElementById('night-view').classList.remove('active');
   document.getElementById('progress-view').classList.remove('active');
+  if(document.getElementById('groupstudy-view')) document.getElementById('groupstudy-view').classList.remove('active');
+  if(document.getElementById('tajweed-view')) document.getElementById('tajweed-view').classList.remove('active');
 
   // 2. Show target view
   document.getElementById(v + '-view').classList.add('active');
@@ -1221,7 +1282,7 @@ function goToView(v) {
 
   // 4. Player bar visibility
   const pb = document.getElementById('pbar');
-  if (v === 'tasbih' || v === 'ai' || v === 'memorize' || v === 'admin' || v === 'prophets' || v === 'night' || v === 'progress') {
+  if (v === 'tasbih' || v === 'ai' || v === 'memorize' || v === 'admin' || v === 'prophets' || v === 'night' || v === 'progress' || v === 'groupstudy' || v === 'tajweed') {
     pb.style.display = 'none';
   } else {
     pb.style.display = 'flex';
@@ -1236,6 +1297,8 @@ function goToView(v) {
   if (v === 'prophets') initProphets();
   if (v === 'progress') initProgress();
   if (v === 'night')    initNight();
+  if (v === 'groupstudy') initGroupStudy();
+  if (v === 'tajweed')  initTajweed();
   if ((v === 'list' || v === 'memorize') && !qData.length) loadQ();
 
   closeTP();
@@ -2137,7 +2200,81 @@ const PROPHETS = [
   { n:'Muhammad', ar:'مُحَمَّد',  num:10, icon:'🌙', title:'The Final Prophet ﷺ',   vid:'kzIu3hrdqRM',
     story:"Muhammad ﷺ was born in Mecca in 570 CE. He was known as Al-Amin (The Trustworthy) before prophethood. At 40, Angel Jibreel appeared in the Cave of Hira and delivered the first revelation: Read in the name of your Lord. He spent 23 years delivering Allah's message, faced extreme persecution, migrated to Medina, united the Arabs under Islam, and returned to Mecca in a peaceful conquest. He is the seal of all Prophets.",
     lesson:"He is our living example in every aspect of life — how he ate, slept, spoke, led, forgave, and worshipped. Following his Sunnah is an act of love for Allah.",
-    tags:['Final Prophet','Al-Amin','Quran','Mercy to Worlds','Seal of Prophets'] },
+  { n:'Idris',    ar:'إِدْرِيس',   num:11, icon:'📜', title:'The Patient Scholar',
+    vid:'xNq8Hs3jvtQ',
+    story:"Idris ﷺ was one of the earliest prophets, blessed with great knowledge. He is believed to be among the first humans to write. Allah says in the Quran: And We raised him to a high station (19:57). He was known for his devotion to worship and for teaching his people how to read, write, and sew — laying the foundations of early civilization.",
+    lesson:"Knowledge combined with sincere worship elevates a person in Allah's sight. Idris combined pen and prayer — and Allah gave him an exalted rank.",
+    tags:['Knowledge','Writing','Exalted Station','Patience'] },
+  { n:'Hud',      ar:'هُود',      num:12, icon:'🌬️', title:"Messenger to the People of Aad",
+    vid:'k7oH5oqsA1Y',
+    story:"Hud ﷺ was sent to the mighty tribe of Aad in ancient South Arabia — a people of great physical strength who built towering monuments. They arrogantly rejected Hud's message and mocked him. Allah sent a ferocious wind that raged for 7 nights and 8 days, destroying everything. Only Hud and the believers survived.",
+    lesson:"No amount of worldly power protects a person who rejects Allah. True strength lies in faith, not in physical might or material achievement.",
+    tags:['Tribe of Aad','Wind','Arrogance','Punishment'] },
+  { n:'Salih',    ar:'صَالِح',    num:13, icon:'🐪', title:'The She-Camel Prophet',
+    vid:'3h5lJXxDNgM',
+    story:"Salih ﷺ was sent to the tribe of Thamud who carved their homes from mountains. A miraculous she-camel emerged from solid rock as a divine sign. They were commanded to protect her and let her graze freely. Instead they hamstrung her — a direct act of defiance. Three days later, a thunderous blast destroyed the entire tribe. Only Salih and his followers were saved.",
+    lesson:"Divine signs are given as mercy, not to be taken lightly. Transgressing Allah's clear limits, even once, can bring irreversible consequences.",
+    tags:['Thamud','She-Camel','Sign of Allah','Punishment'] },
+  { n:'Lut',      ar:'لُوط',      num:14, icon:'🌃', title:'The Messenger of Justice',
+    vid:'yQb3Iy0KVSQ',
+    story:"Lut ﷺ, nephew of Ibrahim, was sent to the people of Sodom who had fallen into vile immorality. Angels came to him in the form of beautiful guests. The townspeople rushed to his home. The angels blinded them. Allah commanded Lut to leave that night with his family. At dawn, the city was completely overturned — a punishment unlike any other in history.",
+    lesson:"Standing for truth in a corrupt society is the ultimate test. Lut stood alone against his entire city — and Allah's protection was all he needed.",
+    tags:['Sodom','Angels','Justice','Corruption','Destruction'] },
+  { n:'Shuaib',   ar:'شُعَيب',    num:15, icon:'⚖️', title:'The Prophet of Business Ethics',
+    vid:'sAiDpqVkd0I',
+    story:"Shuaib ﷺ was sent to the people of Madyan — merchants famous for cheating their customers with false scales. He warned them: Give full measure and weight. Do not deprive people of their due. They mocked and threatened him. Allah sent a scorching cloud of punishment that destroyed the wrongdoers. Shuaib and the believers were saved.",
+    lesson:"Honesty in business is a religious duty. Cheating in trade, even in small amounts, is a form of corruption that invites divine accountability.",
+    tags:['Madyan','Fair Scales','Business Ethics','Corruption'] },
+  { n:'Yusuf',    ar:'يُوسُف',    num:16, icon:'👑', title:'The Most Beautiful Story',
+    vid:'yCJIEqkR2XY',
+    story:"Yusuf ﷺ was thrown into a well by his jealous brothers, sold as a slave, falsely imprisoned — yet never lost faith. Through his God-given ability to interpret dreams he rose to become minister of Egypt. His brothers came begging during famine. He revealed himself, forgave them completely, and was reunited with his father Yaqub in one of the most emotional scenes in prophetic history.",
+    lesson:"Patience, chastity, and complete trust in Allah's plan turn the lowest points into the greatest elevations. What looks like the end is often Allah's greatest beginning.",
+    tags:['Beautiful Story','Patience','Dreams','Forgiveness','Egypt'] },
+  { n:'Ayyub',    ar:'أَيُّوب',   num:17, icon:'💎', title:'The Prophet of Ultimate Patience',
+    vid:'jMJ7T5uRdFo',
+    story:"Ayyub ﷺ had immense wealth, family, and health. Allah tested him by removing all three. For years he endured painful illness, loss, and poverty. He never complained publicly. He made a simple dua: Adversity has touched me, and You are the Most Merciful of the merciful. Allah healed him completely, restored his family doubled, and praised him in the Quran as an excellent servant — a true model of patience.",
+    lesson:"The greatest tests fall on the greatest people. Ayyub is the definition of Sabr — not passive surrender, but active trust in Allah through the darkest storm.",
+    tags:['Patience','Trial','Health','Restoration','Gratitude'] },
+  { n:'Shuaib',   ar:'شُعَيب',    num:18, icon:'🤝', title:'Dhul-Kifl — The Man of Promise',
+    vid:'MpeSbPWIY6U',
+    story:"Dhul-Kifl ﷺ is mentioned in the Quran (21:85, 38:48) among the patient ones. He pledged to judge with perfect justice, fast daily, and pray through the night — and he fulfilled every part of that covenant perfectly for his entire life. He was tested and provoked repeatedly but never broke his promise.",
+    lesson:"Your word is your bond before Allah. Dhul-Kifl is in the Quran because he made a commitment and kept it, no matter how difficult. That is the mark of true righteousness.",
+    tags:['Justice','Promise','Covenant','Patience'] },
+  { n:'Ilyas',    ar:'إِلْيَاس',  num:19, icon:'🔥', title:'The Fearless Reformer',
+    vid:'hMl6RkXzFOk',
+    story:"Ilyas ﷺ (Elias) was sent to Baalbek in Lebanon where the people worshipped the idol Baal. He stood alone against an entire idol-worshipping civilization, calling them back to Allah. Most rejected him fiercely. The Quran gives him an eternal tribute: Peace be upon Ilyas! (37:130) — proving that standing for truth, even in total isolation, is never forgotten by Allah.",
+    lesson:"When the entire world goes one way, a believer walks with Allah. Ilyas is praised in the Quran not for his numbers but for his courage to stand alone.",
+    tags:['Idol Worship','Baalbek','Courage','Reform','Alone'] },
+  { n:'Alyasa',   ar:'اليَسَع',   num:20, icon:'💧', title:'The Inheritor of Ilyas',
+    vid:'6I_uFMSw7cw',
+    story:"Alyasa ﷺ (Elisha) was the student and successor of Ilyas. He continued his teacher's mission in a land that kept reverting to idol worship. He is praised alongside the greatest prophets in the Quran (6:86, 38:48). He performed miracles by Allah's permission — including purifying water and healing the sick — and maintained tawhid in a deeply difficult environment.",
+    lesson:"Being a righteous successor to a great teacher is itself an honour. Alyasa inherited a hard mission and carried it faithfully — enough for Allah to place his name among the greatest in the Quran.",
+    tags:['Succession','Mission','Miracle','Tawhid','Persistence'] },
+  { n:'Zakariya', ar:'زَكَرِيَّا', num:21, icon:'🌿', title:'The Patient Father',
+    vid:'nNHPqr9c3aA',
+    story:"Zakariya ﷺ was elderly and his wife was barren. But standing alone in the prayer hall, he made dua: My Lord, do not leave me without an heir. A voice called back: We give you glad tidings of Yahya — a name We have given to no one before. Despite his age and apparent impossibility, he trusted Allah. Yahya was born — a prophet from birth, a miracle of answered prayer.",
+    lesson:"Never consider a prayer too late or too impossible. Zakariya made dua past all human limits — and Allah answered. No sincere dua is ever wasted.",
+    tags:['Old Age','Dua','Miracle','Hope','Yahya'] },
+  { n:'Yahya',    ar:'يَحْيَى',   num:22, icon:'🌱', title:'Born Righteous from Day One',
+    vid:'9AsmkG1LoZQ',
+    story:"Yahya ﷺ (John the Baptist) was a miracle child born to elderly parents. Allah gave him wisdom and judgement as a child: O Yahya! Take the Scripture with determination — and We gave him wisdom while yet a boy (19:12). He was described as one who confirmed the truth of Isa ﷺ. He lived a life of complete purity and asceticism, and died as a martyr for the truth.",
+    lesson:"The greatest gift to a child is righteous upbringing and parents who make dua. Yahya is a model for what a human can become when raised in the love of Allah.",
+    tags:['Miracle Birth','Wisdom','Martyr','Purity','Child Prophet'] },
+  { n:'Harun',    ar:'هَارُون',   num:23, icon:'🗣️', title:'The Eloquent Brother of Musa',
+    vid:'nNHPqr9c3aA',
+    story:"Harun ﷺ (Aaron) was Musa's elder brother and closest companion in prophethood. When Musa was sent to Pharaoh, he begged Allah: Give me Harun as my helper — he is more eloquent than I am. Allah granted this, making Harun a prophet alongside Musa. When Musa went to receive the Torah and was delayed, Harun struggled to stop the Israelites from falling into calf worship — but was overpowered.",
+    lesson:"Brotherhood in faith and mission is a prophetic sunnah. Having a companion who supports you in calling to truth is a gift — Musa asked for his brother, and Allah gave him one.",
+    tags:['Brotherhood','Eloquence','Musa','Prophethood','Helper'] },
+  { n:'Isa',      ar:'عِيسَى',   num:24, icon:'✨', title:'The Messiah — Spirit of Allah',
+    vid:'y0pc95YEloA',
+    story:"Isa ﷺ (Jesus) was born miraculously to the Virgin Maryam without a father, by Allah's direct command: Be — and it is. He spoke in the cradle to defend his mother's honour. He healed the blind, the lepers, raised the dead — all by Allah's permission. He was given the Injeel (Gospel). When the enemies plotted to crucify him, Allah raised him to the heavens. He will return before the Day of Judgment to restore justice on earth.",
+    lesson:"Miracles belong to Allah alone — Isa performed them only as signs pointing to the One who sent him. His return is one of the major signs of the Day of Judgment.",
+    tags:['Messiah','Miraculous Birth','Injeel','Will Return','Spirit of Allah'] },
+  { n:'Muhammad', ar:'مُحَمَّد',  num:25, icon:'🌙', title:'The Final Prophet ﷺ — Seal of All Prophets',
+    vid:'kzIu3hrdqRM',
+    story:"Muhammad ﷺ is the Seal of all 25 Prophets — sent as a mercy to all of creation (21:107). Born in Mecca in 570 CE, known as Al-Amin (The Trustworthy). At 40, Jibreel ﷺ brought the first revelation in the Cave of Hira. Over 23 years he built a complete civilization — spiritual, legal, social, and political. He returned to Mecca peacefully, forgave his worst enemies, and left behind the Quran and his Sunnah as a guide until the Day of Judgment.",
+    lesson:"He is not just a historical figure — he is alive in every Muslim's daily life through his Sunnah. Sending one salawat upon him brings ten mercies from Allah. He is our guide forever.",
+    tags:['Final Prophet','Seal','Mercy to Worlds','Al-Amin','Quran','Sunnah'] },
 ];
 
 function initProphets() {
@@ -3176,6 +3313,358 @@ function setLangAndGo(lang) {
   goToView('list');
 }
 
+
+// ================================================================
+// GROUP STUDY — Real-time Quran reading with friends
+// ================================================================
+const GS_HUB = 'https://solas-e2b9da08.base44.app/functions/groupStudyHub';
+let gsRoomCode = null, gsUserName = null, gsPollTimer = null;
+let gsCurSurah = 78, gsCurVerse = 0, gsHostName = null;
+
+function initGroupStudy() {
+  // Show lobby, hide room
+  document.getElementById('gs-lobby-wrap').style.display = '';
+  document.getElementById('gs-room-wrap').classList.remove('active');
+  // If we're already in a room, show the room
+  if (gsRoomCode) {
+    gsShowRoom();
+  }
+  // Populate surah list if qData is loaded
+  if (qData.length) gsPopulateSurahSel();
+}
+
+function gsPopulateSurahSel() {
+  const sel = document.getElementById('gs-surah-sel');
+  if (!sel || sel.options.length > 1) return; // already done
+  sel.innerHTML = qData.map(s => `<option value="${s.id}">${s.id} · ${s.name}</option>`).join('');
+}
+
+async function gsCreate() {
+  const name = document.getElementById('gs-myname').value.trim();
+  if (!name) { toast('✋ Enter your name first'); return; }
+  gsUserName = name;
+  gsSetLobbyStatus('Creating room...');
+  try {
+    const res = await fetch(GS_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'create', userName: name, surahId: 78, verseIdx: 0 })
+    });
+    const d = await res.json();
+    if (!d.ok) throw new Error(d.error);
+    gsRoomCode = d.roomCode;
+    gsCurSurah = 78; gsCurVerse = 0; gsHostName = name;
+    toast('✅ Room ' + gsRoomCode + ' created!');
+    gsShowRoom();
+    gsStartPoll();
+  } catch(e) {
+    gsSetLobbyStatus('❌ ' + e.message);
+  }
+}
+
+async function gsJoin() {
+  const name = document.getElementById('gs-myname').value.trim();
+  const code = document.getElementById('gs-joincode').value.trim().toUpperCase();
+  if (!name) { toast('✋ Enter your name first'); return; }
+  if (code.length < 4) { toast('✋ Enter the room code'); return; }
+  gsUserName = name;
+  gsSetLobbyStatus('Joining room ' + code + '...');
+  try {
+    const res = await fetch(GS_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'join', roomCode: code, userName: name })
+    });
+    const d = await res.json();
+    if (!d.ok) throw new Error(d.error || 'Room not found — check the code');
+    gsRoomCode = code;
+    gsCurSurah = d.currentSurah || 78;
+    gsCurVerse = d.currentVerse || 0;
+    gsHostName = d.hostName || name;
+    toast('✅ Joined room ' + code);
+    gsShowRoom();
+    gsRenderVerse();
+    gsStartPoll();
+  } catch(e) {
+    gsSetLobbyStatus('❌ ' + e.message);
+    toast('❌ ' + e.message);
+  }
+}
+
+function gsShowRoom() {
+  document.getElementById('gs-lobby-wrap').style.display = 'none';
+  document.getElementById('gs-room-wrap').classList.add('active');
+  document.getElementById('gs-room-code-lbl').textContent = gsRoomCode;
+  document.getElementById('gs-room-title').textContent = '👥 Room ' + gsRoomCode;
+  // Set surah selector
+  const sel = document.getElementById('gs-surah-sel');
+  if (sel) sel.value = gsCurSurah;
+  gsRenderVerse();
+}
+
+function gsSetLobbyStatus(msg) {
+  const el = document.getElementById('gs-lobby-status');
+  if (el) el.textContent = msg;
+}
+
+function gsRenderVerse() {
+  if (!qData.length) {
+    document.getElementById('gs-verse-area').innerHTML = '<div class="gs-status">⏳ Loading Quran data...</div>';
+    loadQ();
+    setTimeout(gsRenderVerse, 2000);
+    return;
+  }
+  const surah = qData.find(s => s.id === gsCurSurah);
+  if (!surah) return;
+  const v = surah.verses[gsCurVerse];
+  if (!v) return;
+  document.getElementById('gs-verse-lbl').textContent = surah.name + ' — Verse ' + (gsCurVerse + 1) + ' of ' + surah.verses.length;
+  document.getElementById('gs-verse-area').innerHTML =
+    '<div class="gs-ar">' + (v.a || '') + '</div>' +
+    '<div class="gs-en">' + (v.e || '') + '</div>';
+  const sel = document.getElementById('gs-surah-sel');
+  if (sel) sel.value = gsCurSurah;
+}
+
+async function gsNextVerse() {
+  if (!qData.length) return;
+  const surah = qData.find(s => s.id === gsCurSurah);
+  if (!surah) return;
+  if (gsCurVerse + 1 < surah.verses.length) {
+    gsCurVerse++;
+  } else {
+    const allIds = qData.map(s => s.id);
+    const ci = allIds.indexOf(gsCurSurah);
+    if (ci + 1 < allIds.length) { gsCurSurah = allIds[ci+1]; gsCurVerse = 0; }
+    else { toast('🌙 End of Juz Amma'); return; }
+  }
+  gsRenderVerse();
+  await gsSyncPosition();
+}
+
+async function gsPrevVerse() {
+  if (gsCurVerse > 0) {
+    gsCurVerse--;
+  } else {
+    if (!qData.length) return;
+    const allIds = qData.map(s => s.id);
+    const ci = allIds.indexOf(gsCurSurah);
+    if (ci > 0) {
+      gsCurSurah = allIds[ci-1];
+      const prevS = qData.find(s => s.id === gsCurSurah);
+      gsCurVerse = prevS ? prevS.verses.length - 1 : 0;
+    }
+  }
+  gsRenderVerse();
+  await gsSyncPosition();
+}
+
+function gsChangeSurah() {
+  const sel = document.getElementById('gs-surah-sel');
+  if (!sel) return;
+  gsCurSurah = parseInt(sel.value);
+  gsCurVerse = 0;
+  gsRenderVerse();
+  gsSyncPosition();
+}
+
+async function gsSyncPosition() {
+  if (!gsRoomCode) return;
+  try {
+    await fetch(GS_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'sync', roomCode: gsRoomCode, userName: gsUserName, surahId: gsCurSurah, verseIdx: gsCurVerse })
+    });
+  } catch(e) {}
+}
+
+function gsStartPoll() {
+  clearInterval(gsPollTimer);
+  gsPollTimer = setInterval(gsPoll, 3000);
+}
+
+async function gsPoll() {
+  if (!gsRoomCode) return;
+  try {
+    const res = await fetch(GS_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'poll', roomCode: gsRoomCode, userName: gsUserName })
+    });
+    const d = await res.json();
+    if (!d.ok) return;
+    // Update participants bar
+    const bar = document.getElementById('gs-participants-bar');
+    if (bar) {
+      bar.innerHTML = (d.participants || []).map(n =>
+        '<span class="gs-peer' + (n === (d.hostName||gsHostName) ? ' host' : '') + '">' +
+        (n === gsUserName ? '👤 ' : '') + n + '</span>'
+      ).join('');
+      document.getElementById('gs-room-peers').textContent = d.participants.length + ' reading';
+    }
+    // Sync verse position if it changed (another user navigated)
+    if (d.currentSurah !== gsCurSurah || d.currentVerse !== gsCurVerse) {
+      gsCurSurah = d.currentSurah;
+      gsCurVerse = d.currentVerse;
+      gsRenderVerse();
+      toast('📖 ' + (d.hostName||'Someone') + ' moved to a new verse');
+    }
+  } catch(e) {}
+}
+
+async function gsLeave() {
+  clearInterval(gsPollTimer);
+  if (gsRoomCode && gsUserName) {
+    try {
+      await fetch(GS_HUB, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'leave', roomCode: gsRoomCode, userName: gsUserName })
+      });
+    } catch(e) {}
+  }
+  gsRoomCode = null; gsUserName = null;
+  document.getElementById('gs-room-wrap').classList.remove('active');
+  document.getElementById('gs-lobby-wrap').style.display = '';
+  document.getElementById('gs-lobby-status').textContent = '';
+  toast('👋 Left the room');
+}
+
+// ================================================================
+// TAJWEED CHECKER — Record & get feedback
+// ================================================================
+let tjRecording = false, tjMediaRec = null, tjChunks = [], tjTimerInt = null, tjSeconds = 0;
+let tjSurahData = null, tjVerseIdx = 0;
+
+// Tajweed rules database — common rules with detection patterns
+const TAJWEED_RULES = [
+  { rule:'Bismillah', check: s => s.startsWith('بِسْمِ'), msg:'Start with Bismillah — ✅ Good practice!', type:'good' },
+  { rule:'Madd (Elongation)', check: s => /[اوي]/.test(s), msg:'Contains Madd letters (ا و ي) — elongate these vowels for 2-6 counts.', type:'warn' },
+  { rule:'Shaddah (Doubling)', check: s => /ّ/.test(s), msg:'Contains Shaddah (ّ) — double the consonant sound.', type:'warn' },
+  { rule:'Tanwin', check: s => /[ًٌٍ]/.test(s), msg:'Contains Tanwin — pronounce as "n" sound at end of word.', type:'warn' },
+  { rule:'Sukoon (No vowel)', check: s => /ْ/.test(s), msg:'Contains Sukoon (ْ) — stop the vowel sound here.', type:'warn' },
+  { rule:'Qalqalah letters', check: s => /[قطبجد]/.test(s), msg:'Contains Qalqalah letters (ق ط ب ج د) — slight echo/bounce at Sukoon.', type:'warn' },
+];
+
+function initTajweed() {
+  if (qData.length) tjLoadVerse();
+}
+
+function tjLoadVerse() {
+  const sel = document.getElementById('tj-surah');
+  if (!sel) return;
+  const sid = parseInt(sel.value);
+  tjSurahData = qData.find(s => s.id === sid);
+  if (!tjSurahData && !qData.length) {
+    loadQ();
+    setTimeout(tjLoadVerse, 2000);
+    return;
+  }
+  if (!tjSurahData) return;
+  // Populate verse selector
+  const vsel = document.getElementById('tj-verse-sel');
+  if (vsel) {
+    vsel.innerHTML = tjSurahData.verses.map((v,i) => `<option value="${i}">Verse ${i+1}</option>`).join('');
+  }
+  tjVerseIdx = 0;
+  tjShowVerse();
+}
+
+function tjShowVerse() {
+  const vsel = document.getElementById('tj-verse-sel');
+  if (vsel) tjVerseIdx = parseInt(vsel.value) || 0;
+  if (!tjSurahData) { tjLoadVerse(); return; }
+  const v = tjSurahData.verses[tjVerseIdx];
+  if (!v) return;
+  document.getElementById('tj-verse-ar').textContent = v.a;
+  document.getElementById('tj-verse-en').textContent = v.e;
+  // Show relevant tajweed notes for this verse
+  const feedback = TAJWEED_RULES.filter(r => r.check(v.a));
+  document.getElementById('tj-feedback').style.display = 'block';
+  document.getElementById('tj-fb-content').innerHTML =
+    '<div class="tj-fb-item warn">🎙️ Record yourself reciting the verse above, then stop to see personalized feedback.</div>' +
+    feedback.map(f => `<div class="tj-fb-item ${f.type}">• <b>${f.rule}:</b> ${f.msg}</div>`).join('');
+}
+
+async function tjToggleRecord() {
+  if (tjRecording) {
+    tjStopRecord();
+  } else {
+    await tjStartRecord();
+  }
+}
+
+async function tjStartRecord() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio:true });
+    tjChunks = []; tjSeconds = 0;
+    tjMediaRec = new MediaRecorder(stream);
+    tjMediaRec.ondataavailable = e => tjChunks.push(e.data);
+    tjMediaRec.onstop = tjAnalyze;
+    tjMediaRec.start();
+    tjRecording = true;
+    document.getElementById('tj-mic').classList.add('recording');
+    document.getElementById('tj-mic').textContent = '⏹';
+    document.getElementById('tj-mic-lbl').textContent = 'Recording... tap to stop';
+    // Timer
+    tjTimerInt = setInterval(() => {
+      tjSeconds++;
+      document.getElementById('tj-timer').textContent = Math.floor(tjSeconds/60)+':'+(tjSeconds%60<10?'0':'')+tjSeconds%60;
+      if (tjSeconds >= 60) tjStopRecord(); // max 60s
+    }, 1000);
+  } catch(e) {
+    toast('⚠️ Mic permission denied. Please allow microphone access.');
+  }
+}
+
+function tjStopRecord() {
+  if (!tjMediaRec) return;
+  clearInterval(tjTimerInt);
+  tjMediaRec.stop();
+  tjMediaRec.stream.getTracks().forEach(t => t.stop());
+  tjRecording = false;
+  document.getElementById('tj-mic').classList.remove('recording');
+  document.getElementById('tj-mic').textContent = '🎙️';
+  document.getElementById('tj-mic-lbl').textContent = 'Tap to Record';
+  document.getElementById('tj-timer').textContent = '';
+}
+
+function tjAnalyze() {
+  // Analyze the recorded audio and give feedback
+  if (!tjSurahData) return;
+  const v = tjSurahData.verses[tjVerseIdx];
+  if (!v) return;
+
+  const dur = tjSeconds;
+  const ar = v.a;
+  const expectedLetters = ar.replace(/[^؀-ۿ]/g,'').length;
+  const secPerLetter = dur / Math.max(1, expectedLetters);
+
+  const items = [];
+
+  // Duration-based feedback
+  if (dur < 1) {
+    items.push({ type:'err', msg:'Recording too short — please recite the full verse.' });
+  } else if (secPerLetter < 0.05) {
+    items.push({ type:'warn', msg:'Recitation seems fast — try to recite each letter clearly with proper articulation (Makhaarij).' });
+  } else if (secPerLetter > 0.5) {
+    items.push({ type:'warn', msg:'Recitation is slow — once you know the rules, aim for a flowing, measured pace (Tarteel).' });
+  } else {
+    items.push({ type:'good', msg:'✅ Good pace! You spent ' + dur + 's on ' + expectedLetters + ' letters — that is Tarteel.' });
+  }
+
+  // Tajweed rule feedback for this verse
+  const applicable = TAJWEED_RULES.filter(r => r.check(ar));
+  applicable.forEach(r => {
+    items.push({ type: r.type, msg: '• <b>' + r.rule + ':</b> ' + r.msg });
+  });
+
+  // General encouragement
+  items.push({ type:'good', msg:'🌟 Keep reciting daily — Tajweed improves with consistent practice. Even the Prophet ﷺ would repeat verses multiple times.' });
+  items.push({ type:'warn', msg:'📚 Tip: Find a local Tajweed teacher or use the Quran Companion app for one-on-one correction.' });
+
+  document.getElementById('tj-feedback').style.display = 'block';
+  document.getElementById('tj-fb-content').innerHTML =
+    items.map(i => `<div class="tj-fb-item ${i.type}">${i.msg}</div>`).join('');
+  toast('✅ Tajweed analysis complete!');
+}
+
 </script>
 
 <!-- AZAN PLAYING MODAL -->
@@ -3189,5 +3678,152 @@ function setLangAndGo(lang) {
   </div>
 </div>
 
+
+<!-- ════════════════ GROUP STUDY VIEW ════════════════ -->
+<div id="groupstudy-view">
+  <!-- LOBBY (shown before joining a room) -->
+  <div id="gs-lobby-wrap">
+    <div class="stickyh">
+      <div class="hrow">
+        <button class="btn-back" onclick="goToView('home')">← Home</button>
+        <div class="htitle">👥 Group Study</div>
+        <div style="width:60px"></div>
+      </div>
+    </div>
+    <div class="gs-lobby">
+      <div class="gs-logo">👥</div>
+      <div class="gs-title">Read Quran Together, Live</div>
+      <div class="gs-sub">Create a room or join with a 6-letter code. Everyone stays on the same verse.</div>
+
+      <div class="gs-card">
+        <h3>✦ Your Name</h3>
+        <input id="gs-myname" class="gs-input" placeholder="Enter your name (e.g. Ahmad)" maxlength="20">
+      </div>
+
+      <div class="gs-card">
+        <h3>🚀 Create a New Room</h3>
+        <button class="gs-btn gs-btn-create" onclick="gsCreate()">Create Room</button>
+      </div>
+
+      <div class="gs-divider">— or join an existing room —</div>
+
+      <div class="gs-card">
+        <h3>🔑 Join with Room Code</h3>
+        <input id="gs-joincode" class="gs-input" placeholder="Enter 6-letter code (e.g. AB1C2D)" maxlength="8" style="text-transform:uppercase;margin-bottom:10px">
+        <button class="gs-btn gs-btn-join" onclick="gsJoin()">Join Room</button>
+      </div>
+
+      <div class="gs-status" id="gs-lobby-status"></div>
+    </div>
+  </div>
+
+  <!-- ROOM (shown after joining) -->
+  <div class="gs-room" id="gs-room-wrap">
+    <div class="gs-room-hdr">
+      <div class="gs-room-info">
+        <div class="gs-room-name" id="gs-room-title">Room</div>
+        <div class="gs-room-peers" id="gs-room-peers">Loading...</div>
+      </div>
+      <div class="gs-room-code" id="gs-room-code-lbl">------</div>
+      <button class="gs-leave-btn" onclick="gsLeave()">Leave</button>
+    </div>
+
+    <div class="gs-participants" id="gs-participants-bar"></div>
+
+    <div class="gs-surah-sel">
+      <select id="gs-surah-sel" class="gs-sel" onchange="gsChangeSurah()">
+        <option value="78">78 · An-Naba</option>
+        <option value="79">79 · An-Naazi'aat</option>
+        <option value="80">80 · Abasa</option>
+        <option value="81">81 · At-Takwir</option>
+        <option value="82">82 · Al-Infitaar</option>
+        <option value="83">83 · Al-Mutaffifin</option>
+        <option value="84">84 · Al-Inshiqaaq</option>
+        <option value="85">85 · Al-Burooj</option>
+        <option value="86">86 · At-Tariq</option>
+        <option value="87">87 · Al-A'la</option>
+        <option value="88">88 · Al-Ghaashiya</option>
+        <option value="89">89 · Al-Fajr</option>
+        <option value="90">90 · Al-Balad</option>
+        <option value="91">91 · Ash-Shams</option>
+        <option value="92">92 · Al-Layl</option>
+        <option value="93">93 · Ad-Dhuha</option>
+        <option value="94">94 · Ash-Sharh</option>
+        <option value="95">95 · At-Tin</option>
+        <option value="96">96 · Al-Alaq</option>
+        <option value="97">97 · Al-Qadr</option>
+        <option value="98">98 · Al-Bayyina</option>
+        <option value="99">99 · Az-Zalzala</option>
+        <option value="100">100 · Al-Aadiyaat</option>
+        <option value="101">101 · Al-Qaari'a</option>
+        <option value="102">102 · At-Takaathur</option>
+        <option value="103">103 · Al-Asr</option>
+        <option value="104">104 · Al-Humaza</option>
+        <option value="105">105 · Al-Feel</option>
+        <option value="106">106 · Quraysh</option>
+        <option value="107">107 · Al-Maa'oon</option>
+        <option value="108">108 · Al-Kawthar</option>
+        <option value="109">109 · Al-Kaafiroon</option>
+        <option value="110">110 · An-Nasr</option>
+        <option value="111">111 · Al-Masad</option>
+        <option value="112">112 · Al-Ikhlaas</option>
+        <option value="113">113 · Al-Falaq</option>
+        <option value="114">114 · An-Naas</option>
+      </select>
+      <button class="gs-sync-btn" onclick="gsSyncPosition()">🔄 Sync</button>
+    </div>
+
+    <div class="gs-verse-lbl" id="gs-verse-lbl">Verse 1</div>
+    <div class="gs-verse-area" id="gs-verse-area">
+      <div class="gs-status">Loading room...</div>
+    </div>
+    <div class="gs-verse-nav">
+      <button class="gs-vnav-btn" onclick="gsPrevVerse()">← Prev</button>
+      <button class="gs-vnav-btn primary" onclick="gsNextVerse()">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ TAJWEED CHECKER VIEW ════════════════ -->
+<div id="tajweed-view">
+  <div class="stickyh">
+    <div class="hrow">
+      <button class="btn-back" onclick="goToView('home')">← Home</button>
+      <div class="htitle">🎙️ Tajweed Checker</div>
+      <div style="width:60px"></div>
+    </div>
+  </div>
+  <div class="tj-body">
+    <div class="gs-sub" style="text-align:center;max-width:320px">Choose a verse below, tap Record, recite clearly, then tap Stop for AI feedback.</div>
+
+    <select id="tj-surah" class="tj-surah-pick" onchange="tjLoadVerse()">
+      <option value="112">112 · Al-Ikhlaas (Recommended start)</option>
+      <option value="113">113 · Al-Falaq</option>
+      <option value="114">114 · An-Naas</option>
+      <option value="103">103 · Al-Asr</option>
+      <option value="108">108 · Al-Kawthar</option>
+      <option value="110">110 · An-Nasr</option>
+      <option value="96">96 · Al-Alaq (First revelation)</option>
+      <option value="78">78 · An-Naba</option>
+    </select>
+
+    <select id="tj-verse-sel" class="tj-surah-pick" onchange="tjShowVerse()">
+      <option value="0">Verse 1</option>
+    </select>
+
+    <div class="tj-verse-ar" id="tj-verse-ar">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>
+    <div class="gs-en" id="tj-verse-en" style="max-width:340px;text-align:center">Say: He is Allah, the One</div>
+
+    <div class="tj-timer" id="tj-timer"></div>
+
+    <div class="tj-mic" id="tj-mic" onclick="tjToggleRecord()">🎙️</div>
+    <div class="tj-lbl" id="tj-mic-lbl">Tap to Record</div>
+
+    <div class="tj-feedback" id="tj-feedback" style="display:none">
+      <h4>🎯 Tajweed Feedback</h4>
+      <div id="tj-fb-content"></div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
