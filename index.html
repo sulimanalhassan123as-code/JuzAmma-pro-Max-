@@ -3537,10 +3537,15 @@ let tjSurahData = null, tjVerseIdx = 0;
 const TAJWEED_RULES = [
   { rule:'Bismillah', check: s => s.startsWith('بِسْمِ'), msg:'Start with Bismillah — ✅ Good practice!', type:'good' },
   { rule:'Madd (Elongation)', check: s => /[اوي]/.test(s), msg:'Contains Madd letters (ا و ي) — elongate these vowels for 2-6 counts.', type:'warn' },
-  { rule:'Shaddah (Doubling)', check: s => /ّ/.test(s), msg:'Contains Shaddah (ّ) — double the consonant sound.', type:'warn' },
+  { rule:'Madd Laazim', check: s => /ّ[اوي]/.test(s) || /[اوي]ّ/.test(s), msg:'Contains Madd Laazim — elongate 6 counts (mandatory).', type:'warn' },
+  { rule:'Shaddah (Doubling)', check: s => /ّ/.test(s), msg:'Contains Shaddah (ّ) — double the consonant sound with emphasis.', type:'warn' },
   { rule:'Tanwin', check: s => /[ًٌٍ]/.test(s), msg:'Contains Tanwin — pronounce as "n" sound at end of word.', type:'warn' },
-  { rule:'Sukoon (No vowel)', check: s => /ْ/.test(s), msg:'Contains Sukoon (ْ) — stop the vowel sound here.', type:'warn' },
-  { rule:'Qalqalah letters', check: s => /[قطبجد]/.test(s), msg:'Contains Qalqalah letters (ق ط ب ج د) — slight echo/bounce at Sukoon.', type:'warn' },
+  { rule:'Sukoon (No vowel)', check: s => /ْ/.test(s), msg:'Contains Sukoon (ْ) — stop the vowel sound here cleanly.', type:'warn' },
+  { rule:'Qalqalah', check: s => /[قطبجد]/.test(s), msg:'Contains Qalqalah letters (ق ط ب ج د) — slight echo/bounce when at Sukoon.', type:'warn' },
+  { rule:'Idgham (Merging)', check: s => /[يرولمن]/.test(s), msg:'May contain Idgham — merge the noon/tanwin sound into the following letter.', type:'warn' },
+  { rule:'Ikhfa (Hiding)', check: s => /ن|ً|ٍ|ٌ/.test(s), msg:'May contain Ikhfa — hide the noon sound with a nasal tone before certain letters.', type:'warn' },
+  { rule:'Ghunnah (Nasal)', check: s => /نّ|مّ/.test(s), msg:'Contains Ghunnah — hold the nasal sound for 2 counts on doubled noon/meem.', type:'warn' },
+  { rule:'Waqf (Stopping)', check: s => s.length > 40, msg:'Longer verse — plan where to stop. Look for natural pause points.', type:'warn' },
 ];
 
 function initTajweed() {
@@ -3579,8 +3584,9 @@ function tjShowVerse() {
   const feedback = TAJWEED_RULES.filter(r => r.check(v.a));
   document.getElementById('tj-feedback').style.display = 'block';
   document.getElementById('tj-fb-content').innerHTML =
-    '<div class="tj-fb-item warn">🎙️ Record yourself reciting the verse above, then stop to see personalized feedback.</div>' +
-    feedback.map(f => `<div class="tj-fb-item ${f.type}">• <b>${f.rule}:</b> ${f.msg}</div>`).join('');
+    '<div class="tj-fb-item good" style="font-weight:600">💡 Tajweed rules in this verse:</div>' +
+    (feedback.length ? feedback.map(f => `<div class="tj-fb-item ${f.type}">• <b>${f.rule}:</b> ${f.msg}</div>`).join('') : '<div class="tj-fb-item good">No special rules — good for beginners!</div>') +
+    '<div class="tj-fb-item warn" style="margin-top:6px">🎙️ Tap the mic to record, then get AI-powered feedback.</div>';
 }
 
 async function tjToggleRecord() {
@@ -3626,44 +3632,80 @@ function tjStopRecord() {
   document.getElementById('tj-timer').textContent = '';
 }
 
-function tjAnalyze() {
-  // Analyze the recorded audio and give feedback
+async function tjAnalyze() {
   if (!tjSurahData) return;
   const v = tjSurahData.verses[tjVerseIdx];
   if (!v) return;
 
   const dur = tjSeconds;
   const ar = v.a;
-  const expectedLetters = ar.replace(/[^؀-ۿ]/g,'').length;
-  const secPerLetter = dur / Math.max(1, expectedLetters);
+  const surahName = tjSurahData.name || tjSurahData.englishName || 'Surah ' + tjSurahData.id;
+  const verseNum = tjVerseIdx + 1;
 
-  const items = [];
-
-  // Duration-based feedback
-  if (dur < 1) {
-    items.push({ type:'err', msg:'Recording too short — please recite the full verse.' });
-  } else if (secPerLetter < 0.05) {
-    items.push({ type:'warn', msg:'Recitation seems fast — try to recite each letter clearly with proper articulation (Makhaarij).' });
-  } else if (secPerLetter > 0.5) {
-    items.push({ type:'warn', msg:'Recitation is slow — once you know the rules, aim for a flowing, measured pace (Tarteel).' });
-  } else {
-    items.push({ type:'good', msg:'✅ Good pace! You spent ' + dur + 's on ' + expectedLetters + ' letters — that is Tarteel.' });
-  }
-
-  // Tajweed rule feedback for this verse
-  const applicable = TAJWEED_RULES.filter(r => r.check(ar));
-  applicable.forEach(r => {
-    items.push({ type: r.type, msg: '• <b>' + r.rule + ':</b> ' + r.msg });
-  });
-
-  // General encouragement
-  items.push({ type:'good', msg:'🌟 Keep reciting daily — Tajweed improves with consistent practice. Even the Prophet ﷺ would repeat verses multiple times.' });
-  items.push({ type:'warn', msg:'📚 Tip: Find a local Tajweed teacher or use the Quran Companion app for one-on-one correction.' });
-
+  // Show loading state
   document.getElementById('tj-feedback').style.display = 'block';
   document.getElementById('tj-fb-content').innerHTML =
-    items.map(i => `<div class="tj-fb-item ${i.type}">${i.msg}</div>`).join('');
-  toast('✅ Tajweed analysis complete!');
+    '<div class="tj-fb-item good" style="display:flex;align-items:center;gap:8px">' +
+    '<div class="tdots"><span></span><span></span><span></span></div>' +
+    '<span>AI is analyzing your recitation of Surah ' + surahName + ', verse ' + verseNum + '...</span></div>';
+
+  // Build AI prompt for verse-specific Tajweed teaching
+  const prompt = 'You are an expert Quran Tajweed teacher. A student just recited the following verse and recorded for ' + dur + ' seconds.\n\n' +
+    'Surah: ' + surahName + ' (No. ' + tjSurahData.id + '), Verse ' + verseNum + '\n' +
+    'Arabic: ' + ar + '\n' +
+    'Translation: ' + (v.e || '') + '\n\n' +
+    'Please give concise, practical Tajweed feedback in plain text (no markdown). Cover:\n' +
+    '1. Pace assessment (recording was ' + dur + 's)\n' +
+    '2. Specific Tajweed rules found in THIS verse (Madd, Shaddah, Qalqalah, Idgham, Ikhfa, etc.)\n' +
+    '3. Which words need special attention\n' +
+    '4. One practice tip for improvement\n' +
+    'Keep it under 150 words, warm and encouraging tone. Use bullet points with dashes.';
+
+  try {
+    const r = await fetch('https://solas-e2b9da08.base44.app/functions/islamicAiProxy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: prompt })
+    });
+    const d = await r.json();
+    const aiReply = d.reply || '';
+
+    // Also get the quick heuristic checks
+    const applicable = TAJWEED_RULES.filter(rule => rule.check(ar));
+    let quickRules = applicable.map(rule =>
+      '<div class="tj-fb-item ' + rule.type + '">\u2022 <b>' + rule.rule + ':</b> ' + rule.msg + '</div>'
+    ).join('');
+
+    // Format AI response as feedback items
+    let aiItems = '';
+    if (aiReply) {
+      // Split AI reply into sections
+      const lines = aiReply.split('\n').filter(l => l.trim());
+      aiItems = lines.map(line => {
+        let type = 'good';
+        if (/pace|fast|slow|speed/i.test(line) && !/good|correct|proper/i.test(line)) type = 'warn';
+        if (/attention|careful|watch|important/i.test(line)) type = 'warn';
+        return '<div class="tj-fb-item ' + type + '">' + line.replace(/^[-\u2022]\s*/, '') + '</div>';
+      }).join('');
+    }
+
+    document.getElementById('tj-fb-content').innerHTML =
+      '<div class="tj-fb-item good" style="font-weight:700;margin-bottom:4px">\U0001f3a4 Recitation: ' + surahName + ' v.' + verseNum + ' (' + dur + 's)</div>' +
+      (aiItems || '<div class="tj-fb-item warn">No AI response received.</div>') +
+      '<div style="margin-top:8px;border-top:1px solid rgba(0,0,0,.1);padding-top:8px">' +
+      quickRules + '</div>';
+
+    toast('\u2705 AI Tajweed analysis complete!');
+  } catch(e) {
+    // Fallback to heuristic analysis
+    const applicable = TAJWEED_RULES.filter(rule => rule.check(ar));
+    let items = applicable.map(rule =>
+      '<div class="tj-fb-item ' + rule.type + '">\u2022 <b>' + rule.rule + ':</b> ' + rule.msg + '</div>'
+    ).join('');
+    if (!items) items = '<div class="tj-fb-item warn">Could not reach AI. Please check your connection.</div>';
+    document.getElementById('tj-fb-content').innerHTML = items;
+    toast('\u26a0 Using offline Tajweed rules');
+  }
 }
 
 </script>
@@ -3816,6 +3858,7 @@ function tjAnalyze() {
     <div class="gs-en" id="tj-verse-en" style="max-width:340px;text-align:center">Say: He is Allah, the One</div>
 
     <div class="tj-timer" id="tj-timer"></div>
+    <div class="gs-sub" style="font-size:.66rem;color:var(--txt2);max-width:300px;text-align:center;margin-top:2px">Find a quiet spot · Hold phone steady · Recite at a measured pace</div>
 
     <div class="tj-mic" id="tj-mic" onclick="tjToggleRecord()">🎙️</div>
     <div class="tj-lbl" id="tj-mic-lbl">Tap to Record</div>
