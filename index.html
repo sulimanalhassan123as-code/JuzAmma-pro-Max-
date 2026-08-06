@@ -1976,6 +1976,44 @@ let azanEnabled = localStorage.getItem('azanEnabled') === '1';
 let selectedAzan = localStorage.getItem('selectedAzan') || 'makkah';
 let azanAudio = null;
 let azanCheckInterval = null;
+let _swReady = false;
+
+// Register service worker for background alarm support
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').then(reg => {
+    _swReady = true;
+    console.log('[SW] Registered for Azan alarm support');
+    // If azan is already enabled, push state to SW
+    if(azanEnabled){
+      syncAzanToSW();
+    }
+  }).catch(err => console.log('[SW] Registration failed:', err));
+  
+  // Listen for azan messages from service worker
+  navigator.serviceWorker.addEventListener('message', event => {
+    if(event.data && event.data.type === 'AZAN_TIME'){
+      playAzanFor(event.data.prayer);
+    }
+  });
+}
+
+function getPrayerTimesForSW(){
+  const times = {};
+  ['Fajr','Dhuhr','Asr','Maghrib','Isha'].forEach(p => {
+    const el = document.getElementById('pt-' + p.toLowerCase());
+    if(el) times[p] = el.textContent.trim();
+  });
+  return times;
+}
+
+function syncAzanToSW(){
+  if(!_swReady || !navigator.serviceWorker.controller) return;
+  navigator.serviceWorker.controller.postMessage({
+    type: 'AZAN_ENABLE',
+    prayerTimes: getPrayerTimesForSW(),
+    selectedAzan: selectedAzan
+  });
+}
 
 /* ── PRAYER TIMES ── */
 async function loadPrayerTimes(){
@@ -1994,6 +2032,16 @@ async function loadPrayerTimes(){
     for(const [nm,tm] of [['Fajr',t.Fajr],['Dhuhr',t.Dhuhr],['Asr',t.Asr],['Maghrib',t.Maghrib],['Isha',t.Isha]]){
       const[h,m]=tm.split(':').map(Number);const pt=new Date();pt.setHours(h,m,0,0);
       if(pt>now){document.getElementById('pt-nxt-nm').textContent='⏰ '+nm;document.getElementById('pt-nxt-tm').textContent=tm;break;}
+    }
+    // Save prayer times to localStorage for alarm persistence
+    localStorage.setItem('prayerTimes', JSON.stringify({Fajr:t.Fajr,Dhuhr:t.Dhuhr,Asr:t.Asr,Maghrib:t.Maghrib,Isha:t.Isha}));
+    localStorage.setItem('prayerTimesDate', new Date().toDateString());
+    // Sync updated prayer times to service worker
+    if(azanEnabled && _swReady && navigator.serviceWorker.controller){
+      navigator.serviceWorker.controller.postMessage({
+        type: 'AZAN_UPDATE_TIMES',
+        prayerTimes: {Fajr:t.Fajr,Dhuhr:t.Dhuhr,Asr:t.Asr,Maghrib:t.Maghrib,Isha:t.Isha}
+      });
     }
   }catch(e){
     const el=document.getElementById('pw-city');
@@ -2023,14 +2071,38 @@ function toggleAzan(){
   localStorage.setItem('azanEnabled', azanEnabled ? '1' : '0');
   document.getElementById('azan-toggle-btn').classList.toggle('on', azanEnabled);
   document.getElementById('azan-toggle-btn').textContent = azanEnabled ? '🔔 ON' : '🔕 OFF';
-  if(azanEnabled){ startAzanWatch(); toast('🕌 Azan alarm enabled!'); }
-  else { stopAzanWatch(); toast('🔕 Azan alarm disabled'); }
+  if(azanEnabled){
+    startAzanWatch();
+    // Request notification permission for background alarms
+    if('Notification' in window && Notification.permission === 'default'){
+      Notification.requestPermission().then(p => {
+        if(p === 'granted') toast('🕌 Azan alarm enabled with background notifications!');
+        else toast('🕌 Azan enabled — allow notifications for background alarms');
+      });
+    } else {
+      toast('🕌 Azan alarm enabled!');
+    }
+    syncAzanToSW();
+  } else {
+    stopAzanWatch();
+    if(_swReady && navigator.serviceWorker.controller){
+      navigator.serviceWorker.controller.postMessage({ type: 'AZAN_DISABLE' });
+    }
+    toast('🔕 Azan alarm disabled');
+  }
 }
 
 function selectAzanVoice(id){
   selectedAzan = id;
   localStorage.setItem('selectedAzan', id);
   document.querySelectorAll('.av-card').forEach(c => c.classList.toggle('selected', c.dataset.id === id));
+  // Pre-cache the audio for offline use
+  const voice = AZAN_VOICES.find(v => v.id === id);
+  if(voice) fetch(voice.url).then(r => r.blob()).then(() => console.log('[SW] Pre-cached:', voice.name)).catch(()=>{});
+  // Update SW
+  if(_swReady && navigator.serviceWorker.controller){
+    navigator.serviceWorker.controller.postMessage({ type: 'AZAN_UPDATE_VOICE', selectedAzan: id });
+  }
   toast('✅ Azan voice selected!');
 }
 
@@ -2073,6 +2145,7 @@ function stopAzan(){
 let _lastAzanFired = {};
 function startAzanWatch(){
   if(azanCheckInterval) clearInterval(azanCheckInterval);
+  updateAzanNextInfo();
   azanCheckInterval = setInterval(()=>{
     if(!azanEnabled) return;
     const now = new Date();
@@ -2087,15 +2160,41 @@ function startAzanWatch(){
         if(!_lastAzanFired[key]){
           _lastAzanFired[key] = true;
           playAzanFor(p);
-          // Clean old keys
           setTimeout(()=>{ delete _lastAzanFired[key]; }, 70000);
         }
       }
     });
-  }, 30000); // check every 30 seconds
+    updateAzanNextInfo();
+  }, 30000);
 }
 
 function stopAzanWatch(){ if(azanCheckInterval){ clearInterval(azanCheckInterval); azanCheckInterval=null; } }
+
+function updateAzanNextInfo(){
+  if(!azanEnabled) return;
+  const prayers = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
+  const now = new Date();
+  let next = null, nextName = '';
+  for(const p of prayers){
+    const el = document.getElementById('pt-' + p.toLowerCase());
+    if(!el) continue;
+    const pt = el.textContent.trim();
+    if(!pt || pt === '--') continue;
+    const [h,m] = pt.split(':').map(Number);
+    const dt = new Date(); dt.setHours(h,m,0,0);
+    if(dt > now){ next = dt; nextName = p; break; }
+  }
+  const info = document.getElementById('azan-next-info');
+  if(!info) return;
+  if(next){
+    const diff = next - now;
+    const hrs = Math.floor(diff / 3600000);
+    const mins = Math.floor((diff % 3600000) / 60000);
+    info.textContent = '⏰ Next: ' + nextName + ' in ' + (hrs > 0 ? hrs + 'h ' : '') + mins + 'm';
+  } else {
+    info.textContent = '✅ All prayers completed today';
+  }
+}
 
 function renderAzanVoices(){
   const grid = document.getElementById('azan-voices-grid');
@@ -2163,13 +2262,61 @@ function initApp() {
   loadPrayerTimes();
   checkDailyNotif();
   renderAzanVoices();
-  if(azanEnabled) startAzanWatch();
+  // Restore prayer times from localStorage for instant alarm setup
+  const savedTimes = localStorage.getItem('prayerTimes');
+  const savedDate = localStorage.getItem('prayerTimesDate');
+  if(savedTimes && savedDate === new Date().toDateString()){
+    try {
+      const t = JSON.parse(savedTimes);
+      ['Fajr','Dhuhr','Asr','Maghrib','Isha'].forEach(p => {
+        const el = document.getElementById('pt-' + p.toLowerCase());
+        if(el) el.textContent = t[p];
+      });
+    } catch(e){}
+  }
+  // Sync azan toggle button state with saved value
+  const azanBtn = document.getElementById('azan-toggle-btn');
+  if(azanEnabled && azanBtn){
+    azanBtn.classList.add('on');
+    azanBtn.textContent = '🔔 ON';
+    startAzanWatch();
+    updateAzanNextInfo();
+  } else if(azanBtn) {
+    azanBtn.classList.remove('on');
+    azanBtn.textContent = '🔕 OFF';
+  }
   loadQ();
   updateResumeUI();
   const sb=localStorage.getItem('adminBanner'); if(sb) showBanner(sb);
   if (window.location.hash==='#admin') goToView('admin');
   else goToView('home');
 }
+
+// Re-check alarm state when app returns to foreground
+document.addEventListener('visibilitychange', () => {
+  if(!document.hidden && azanEnabled){
+    // App is back in foreground — restart the watch
+    startAzanWatch();
+    // Reload prayer times if stale
+    const savedDate = localStorage.getItem('prayerTimesDate');
+    if(savedDate !== new Date().toDateString()){
+      loadPrayerTimes();
+    } else {
+      // Restore from localStorage
+      const savedTimes = localStorage.getItem('prayerTimes');
+      if(savedTimes){
+        try {
+          const t = JSON.parse(savedTimes);
+          ['Fajr','Dhuhr','Asr','Maghrib','Isha'].forEach(p => {
+            const el = document.getElementById('pt-' + p.toLowerCase());
+            if(el) el.textContent = t[p];
+          });
+        } catch(e){}
+      }
+    }
+    updateAzanNextInfo();
+  }
+});
 
 // ================================================================
 // PROPHETS
