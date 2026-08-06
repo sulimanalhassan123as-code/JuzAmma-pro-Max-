@@ -68,7 +68,7 @@ body { font-family:'Poppins',sans-serif;
 .view.active { display:block; }
 
 /* Home: full height flex column, dark bg */
-#home-view { display:none; flex-direction:column; overflow-y:auto; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:var(--dark); z-index:20; }
+#home-view { display:none; flex-direction:column; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:var(--dark); z-index:20; }
 #home-view.active { display:flex; }
 
 /* Tasbih: full height flex column, very dark */
@@ -93,7 +93,7 @@ body { font-family:'Poppins',sans-serif;
 .ni.on .ico { transform:scale(1.12); }
 
 /* ── HOME ─────────────────────────────── */
-.hero { position:relative; overflow:hidden; background:linear-gradient(160deg,var(--dark2) 0%,var(--dark) 60%,var(--dark2) 100%); padding:50px 22px 28px; text-align:center; }
+.hero { position:relative; overflow:visible; background:linear-gradient(160deg,var(--dark2) 0%,var(--dark) 60%,var(--dark2) 100%); padding:50px 22px 28px; text-align:center; flex-shrink:0; }
 .orb { position:absolute; border-radius:50%; filter:blur(70px); pointer-events:none; }
 .orb1 { width:260px; height:260px; top:-70px; right:-60px; background:var(--pg); }
 .orb2 { width:160px; height:160px; bottom:-40px; left:-40px; background:var(--gold2); }
@@ -719,7 +719,8 @@ body { font-family:'Poppins',sans-serif;
 
 /* Mobile phones (under 768px) — prevent Arabic overlap */
 @media (max-width: 767px) {
-  .hero-bism { font-size:1.45rem; line-height:2; letter-spacing:0; word-spacing:1px; padding:0 8px; }
+  .hero { padding:35px 18px 22px; flex-shrink:0; }
+  .hero-bism { font-size:1.45rem; line-height:2.2; letter-spacing:0; word-spacing:1px; padding:0 8px; margin-bottom:6px; display:block; width:100%; }
   .bism-ar { font-size:1.4rem; line-height:2; padding:0 6px; }
   .arabic { font-size:1.4rem; line-height:2.4; padding:0 4px; }
   .m-arabic { font-size:1.5rem; line-height:2.3; padding:0 4px; }
