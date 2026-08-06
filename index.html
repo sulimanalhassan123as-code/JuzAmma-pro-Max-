@@ -704,6 +704,48 @@ body { font-family:'Poppins',sans-serif;
 .tj-sec-quick .tj-sec-title { color:#059669; }
 .tj-rec-btn { padding:13px 30px; background:var(--p); color:#fff; border:none; border-radius:14px; font-size:.95rem; font-weight:700; font-family:Poppins,sans-serif; cursor:pointer; }
 .tj-timer { font-size:1.4rem; font-weight:700; color:#ef4444; min-height:2rem; }
+
+/* ═══════════ DEVICE-AWARE ARABIC TEXT SCALING ═══════════ */
+
+/* Desktop / large tablets (768px and up) — keep current sizes */
+@media (min-width: 768px) {
+  .hero-bism { font-size:2.2rem; line-height:1.8; letter-spacing:0; word-spacing:2px; }
+  .bism-ar { font-size:1.9rem; line-height:2; }
+  .arabic { font-size:1.8rem; line-height:2.3; }
+  .m-arabic { font-size:2rem; line-height:2.2; }
+  .zarabic { font-size:2rem; line-height:1.6; }
+  .night-now-play { font-size:1.6rem; line-height:1.8; }
+}
+
+/* Mobile phones (under 768px) — prevent Arabic overlap */
+@media (max-width: 767px) {
+  .hero-bism { font-size:1.45rem; line-height:2; letter-spacing:0; word-spacing:1px; padding:0 8px; }
+  .bism-ar { font-size:1.4rem; line-height:2; padding:0 6px; }
+  .arabic { font-size:1.4rem; line-height:2.4; padding:0 4px; }
+  .m-arabic { font-size:1.5rem; line-height:2.3; padding:0 4px; }
+  .zarabic { font-size:1.4rem; line-height:1.7; padding:0 6px; }
+  .night-now-play { font-size:1.2rem; line-height:1.8; padding:0 10px; }
+  .teacher-verse { font-size:.95rem; line-height:1.7; }
+  .pcard-ar { font-size:.9rem; line-height:1.5; }
+  .azan-modal-arabic { font-size:1.2rem; line-height:1.8; }
+}
+
+/* Small phones (under 380px) — extra compact */
+@media (max-width: 379px) {
+  .hero-bism { font-size:1.2rem; line-height:2.1; padding:0 4px; }
+  .bism-ar { font-size:1.15rem; line-height:2.1; }
+  .arabic { font-size:1.2rem; line-height:2.4; }
+  .m-arabic { font-size:1.25rem; line-height:2.3; }
+  .zarabic { font-size:1.15rem; line-height:1.8; }
+  .sc-ar { font-size:.85rem; line-height:1.6; }
+}
+
+/* Landscape phone — tighter line height */
+@media (max-height: 500px) and (orientation: landscape) {
+  .hero-bism { font-size:1.2rem; line-height:1.5; margin-bottom:2px; }
+  .hero-title { font-size:1.5rem; }
+}
+
 </style>
 </head>
 <body>
