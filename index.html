@@ -2015,6 +2015,31 @@ function syncAzanToSW(){
   });
 }
 
+// Native Android Bridge — schedule alarms via AlarmManager
+function syncAlarmsToNative(){
+  if(!window.AndroidBridge || !azanEnabled) return;
+  
+  // Check if exact alarm permission is available
+  if(window.AndroidBridge.canScheduleExactAlarms && !window.AndroidBridge.canScheduleExactAlarms()){
+    console.log('[Native] Requesting exact alarm permission');
+    window.AndroidBridge.requestExactAlarmPermission();
+    return;
+  }
+  
+  const prayers = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
+  prayers.forEach(p => {
+    const el = document.getElementById('pt-' + p.toLowerCase());
+    if(!el) return;
+    const pt = el.textContent.trim();
+    if(!pt || pt === '--') return;
+    const [h, m] = pt.split(':').map(Number);
+    if(!isNaN(h) && !isNaN(m)) {
+      window.AndroidBridge.scheduleAlarm(p, pt, h, m);
+      console.log('[Native] Scheduled alarm for', p, 'at', pt);
+    }
+  });
+}
+
 /* ── PRAYER TIMES ── */
 async function loadPrayerTimes(){
   try{
@@ -2043,6 +2068,8 @@ async function loadPrayerTimes(){
         prayerTimes: {Fajr:t.Fajr,Dhuhr:t.Dhuhr,Asr:t.Asr,Maghrib:t.Maghrib,Isha:t.Isha}
       });
     }
+    // Sync to native Android AlarmManager
+    if(azanEnabled) syncAlarmsToNative();
   }catch(e){
     const el=document.getElementById('pw-city');
     if(el)el.textContent='tap to enable';
@@ -2083,10 +2110,14 @@ function toggleAzan(){
       toast('🕌 Azan alarm enabled!');
     }
     syncAzanToSW();
+    syncAlarmsToNative();
   } else {
     stopAzanWatch();
     if(_swReady && navigator.serviceWorker.controller){
       navigator.serviceWorker.controller.postMessage({ type: 'AZAN_DISABLE' });
+    }
+    if(window.AndroidBridge && window.AndroidBridge.cancelAllAlarms){
+      window.AndroidBridge.cancelAllAlarms();
     }
     toast('🔕 Azan alarm disabled');
   }
