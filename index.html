@@ -462,6 +462,30 @@ body { font-family:'Poppins',sans-serif;
 
 .azan-test-btn{background:linear-gradient(135deg,#c9a84c,#a07830);color:#fff;border:none;border-radius:10px;padding:10px;width:100%;font-size:.78rem;font-weight:700;cursor:pointer;margin-top:8px;letter-spacing:.5px;}
 
+
+/* 99 Names of Allah */
+#names-view { display:none; flex-direction:column; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:linear-gradient(180deg,#0a0a20 0%,#0d1b2a 100%); z-index:20; }
+#names-view.active { display:flex; }
+.names-hdr { text-align:center; padding:20px 16px 14px; background:linear-gradient(135deg,#1a0b2e,#16213e); border-bottom:1px solid rgba(255,215,0,.15); }
+.names-back { background:rgba(255,255,255,.1); color:#fff; border:1px solid rgba(255,255,255,.2); border-radius:20px; padding:4px 14px; font-size:.8rem; cursor:pointer; position:absolute; left:12px; top:18px; }
+.names-badge { display:inline-block; background:rgba(255,215,0,.15); color:#ffd700; font-size:.72rem; padding:3px 12px; border-radius:20px; margin-bottom:8px; border:1px solid rgba(255,215,0,.3); }
+.names-hdr h2 { color:#fff; font-size:1.4rem; margin:0 0 4px; }
+.names-hdr p { color:#94a3b8; font-size:.82rem; margin:0; }
+.names-body { padding:12px 14px 80px; }
+.names-search { width:100%; padding:10px 14px; border:1px solid rgba(255,255,255,.1); border-radius:12px; background:rgba(255,255,255,.05); color:#fff; font-size:.88rem; margin-bottom:12px; box-sizing:border-box; }
+.names-search::placeholder { color:#475569; }
+.names-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.name-card { background:linear-gradient(135deg,rgba(255,215,0,.06),rgba(255,255,255,.03)); border:1px solid rgba(255,215,0,.12); border-radius:12px; padding:14px 12px; text-align:center; transition:all .2s; cursor:pointer; }
+.name-card:active { transform:scale(.96); }
+.name-card .name-num { font-size:.68rem; color:#64748b; margin-bottom:4px; }
+.name-card .name-ar { font-size:1.5rem; color:#ffd700; font-weight:700; margin-bottom:2px; direction:rtl; }
+.name-card .name-en { font-size:.82rem; color:#e2e8f0; font-weight:600; margin-bottom:4px; }
+.name-card .name-mean { font-size:.72rem; color:#94a3b8; line-height:1.3; }
+.name-card .name-desc { display:none; font-size:.72rem; color:#cbd5e1; line-height:1.4; margin-top:6px; padding-top:6px; border-top:1px solid rgba(255,215,0,.1); }
+.name-card.expanded .name-desc { display:block; }
+.names-virtue { background:rgba(255,215,0,.08); border:1px solid rgba(255,215,0,.2); border-radius:12px; padding:12px 14px; margin-bottom:14px; text-align:center; }
+.names-virtue p { color:#fcd34d; font-size:.8rem; margin:0; line-height:1.4; }
+.names-virtue p span { color:#94a3b8; font-size:.72rem; }
 /* ══ NEW CARD GRID MENU ══ */
 .cgrid-wrap { padding: 0 14px; margin-bottom: 4px; }
 .cgrid-label { font-size:.68rem; font-weight:700; text-transform:uppercase;
@@ -930,6 +954,12 @@ body { font-family:'Poppins',sans-serif;
       <div class="ccard-s">How to perform ablution</div>
       <span class="ccard-badge badge-new">NEW</span>
     </div>
+    <div class="ccard" onclick="goToView('names')" style="background:linear-gradient(135deg,rgba(255,215,0,.08),rgba(245,158,11,.04));border-color:rgba(255,215,0,.2)">
+      <div class="ccard-ico">🌟</div>
+      <div class="ccard-t">99 Names of Allah</div>
+      <div class="ccard-s">Asma ul Husna</div>
+      <span class="ccard-badge badge-new">NEW</span>
+    </div>
     <div class="ccard" onclick="goToView('progress')">
       <div class="ccard-ico">📊</div>
       <div class="ccard-t">Progress Tracker</div>
@@ -1140,6 +1170,13 @@ body { font-family:'Poppins',sans-serif;
 
   <div class="wudu-body">
 
+    <!-- Audio Guide -->
+    <div class="wudu-audio-bar">
+      <button class="wudu-audio-btn play" id="wudu-read-all" onclick="wuduReadAll()">🔊 Listen to Guide</button>
+      <button class="wudu-audio-btn stop" id="wudu-stop-btn" onclick="wuduStopReading()" style="display:none">⏹ Stop</button>
+      <span class="wudu-audio-status" id="wudu-audio-status"></span>
+    </div>
+
     <!-- Quranic Basis -->
     <div class="wudu-section wudu-quran">
       <div class="wudu-section-title">📖 Quranic Foundation</div>
@@ -1340,6 +1377,23 @@ body { font-family:'Poppins',sans-serif;
       <div class="wudu-virtue">The Prophet ﷺ said to Bilal (RA): "You will hear the footsteps of your shoes in Paradise ahead of you — because of the extra steps you take in wudu." <span class="wudu-ref-inline">— Bukhari & Muslim</span></div>
     </div>
 
+  </div>
+</div>
+
+<!-- ══ 99 NAMES OF ALLAH ══ -->
+<div id="names-view">
+  <div class="names-hdr">
+    <button class="names-back" onclick="goToView('home')">← Home</button>
+    <div class="names-badge">🌟 Asma ul Husna</div>
+    <h2>99 Names of Allah</h2>
+    <p>Tap any name to learn its meaning</p>
+  </div>
+  <div class="names-body">
+    <div class="names-virtue">
+      <p>The Prophet ﷺ said: "Allah has 99 names, 100 minus one. Whoever memorizes them will enter Paradise." <span>— Bukhari 2736</span></p>
+    </div>
+    <input type="text" class="names-search" id="names-search" placeholder="Search names..." oninput="filterNames(this.value)">
+    <div class="names-grid" id="names-grid"></div>
   </div>
 </div>
 
@@ -1627,6 +1681,7 @@ function goToView(v) {
   if(document.getElementById('groupstudy-view')) document.getElementById('groupstudy-view').classList.remove('active');
   if(document.getElementById('tajweed-view')) document.getElementById('tajweed-view').classList.remove('active');
   if(document.getElementById('wudu-view')) document.getElementById('wudu-view').classList.remove('active');
+  if(document.getElementById('names-view')) document.getElementById('names-view').classList.remove('active');
 
   // 2. Show target view
   document.getElementById(v + '-view').classList.add('active');
@@ -1636,7 +1691,7 @@ function goToView(v) {
 
   // 4. Player bar visibility
   const pb = document.getElementById('pbar');
-  if (v === 'tasbih' || v === 'ai' || v === 'memorize' || v === 'admin' || v === 'prophets' || v === 'night' || v === 'progress' || v === 'groupstudy' || v === 'tajweed' || v === 'wudu') {
+  if (v === 'tasbih' || v === 'ai' || v === 'memorize' || v === 'admin' || v === 'prophets' || v === 'night' || v === 'progress' || v === 'groupstudy' || v === 'tajweed' || v === 'wudu' || v === 'names') {
     pb.style.display = 'none';
   } else {
     pb.style.display = 'flex';
@@ -1646,6 +1701,7 @@ function goToView(v) {
 
   // 5. View-specific inits
   if (v === 'tasbih')   initTasbih();
+  if (v === 'names')    renderNames('');
   if (v === 'ai' && !document.getElementById('chat-area').children.length) initAI();
   if (v === 'memorize') initMem();
   if (v === 'prophets') initProphets();
@@ -2223,6 +2279,202 @@ const KB={
   months:"The 12 Islamic months: 1) Muharram 2) Safar 3) Rabi al-Awwal (Prophet's birth) 4) Rabi al-Thani 5) Jumada al-Awwal 6) Jumada al-Thani 7) Rajab 8) Sha'ban 9) Ramadan 10) Shawwal (Eid) 11) Dhul Qa'dah 12) Dhul Hijja (Hajj & Eid al-Adha).",
   default:"Bismillah! Islam is a complete way of life based on submission to Allah ﷻ. It is built on Tawhid (Oneness of God), following Prophet Muhammad ﷺ, and living by the Quran and Sunnah. Ask me about prayer, Quran, fasting, Hajj, Zakat, Islamic history, or daily Islamic practices!"
 };
+
+// ===== 99 NAMES OF ALLAH =====
+const ALLAH_NAMES = [
+  {ar:'الرَّحْمَٰن',en:'Ar-Rahman',mean:'The Most Compassionate',desc:'Allah is the source of all mercy and compassion. His mercy encompasses everything in existence.'},
+  {ar:'الرَّحِيم',en:'Ar-Raheem',mean:'The Most Merciful',desc:'Allah shows continuous mercy to the believers, especially in the Hereafter.'},
+  {ar:'الْمَلِك',en:'Al-Malik',mean:'The King',desc:'Allah is the absolute sovereign, owner and ruler of all creation.'},
+  {ar:'الْقُدُّوس',en:'Al-Quddus',mean:'The Holy',desc:'Allah is free from all imperfections and flaws. He is pure and perfect.'},
+  {ar:'السَّلَام',en:'As-Salam',mean:'The Source of Peace',desc:'Allah is the source of all peace and safety. He is free from all defects.'},
+  {ar:'الْمُؤْمِن',en:'Al-Mumin',mean:'The Granter of Security',desc:'Allah is the source of security and faith. He protects and safeguards His creation.'},
+  {ar:'الْمُهَيْمِن',en:'Al-Muhaymin',mean:'The Guardian',desc:'Allah watches over and protects all things. He is the ultimate guardian.'},
+  {ar:'الْعَزِيز',en:'Al-Aziz',mean:'The Almighty',desc:'Allah is all-powerful and cannot be overcome. He is supreme in strength.'},
+  {ar:'الْجَبَّار',en:'Al-Jabbar',mean:'The Compeller',desc:'Allah is the one who compels and corrects. He restores all things to their proper state.'},
+  {ar:'الْمُتَكَبِّر',en:'Al-Mutakabbir',mean:'The Supreme',desc:'Allah is above all arrogance. He is the greatest, far above any comparison.'},
+  {ar:'الْخَالِق',en:'Al-Khaliq',mean:'The Creator',desc:'Allah is the one who creates everything from nothing. He is the ultimate creator.'},
+  {ar:'الْبَارِئ',en:'Al-Bari',mean:'The Originator',desc:'Allah brings creation into being with perfect harmony and proportion.'},
+  {ar:'الْمُصَوِّر',en:'Al-Musawwir',mean:'The Fashioner',desc:'Allah shapes and forms every creation according to His divine wisdom.'},
+  {ar:'الْغَفَّار',en:'Al-Ghaffar',mean:'The Constant Forgiver',desc:'Allah forgives sins again and again, no matter how many times we err.'},
+  {ar:'الْقَهَّار',en:'Al-Qahhar',mean:'The Subduer',mean:'The Subduer',desc:'Allah is the dominant one who subdues all things. Nothing can resist His will.'},
+  {ar:'الْوَهَّاب',en:'Al-Wahhab',mean:'The Bestower',desc:'Allah gives freely and abundantly without expecting anything in return.'},
+  {ar:'الرَّزَّاق',en:'Ar-Razzaq',mean:'The Provider',desc:'Allah provides sustenance to all living things, from the smallest to the greatest.'},
+  {ar:'الْفَتَّاح',en:'Al-Fattah',mean:'The Opener',desc:'Allah opens doors and removes obstacles. He is the judge who opens the path to truth.'},
+  {ar:'الْعَلِيم',en:'Al-Alim',mean:'The All-Knowing',desc:'Allah knows everything — past, present, future, seen and unseen. His knowledge is infinite.'},
+  {ar:'الْقَابِض',en:'Al-Qabid',mean:'The Withholder',desc:'Allah withholds sustenance as He wills, and gives in abundance as He wills.'},
+  {ar:'الْبَاسِط',en:'Al-Basit',mean:'The Extender',desc:'Allah extends provision and mercy. He opens hearts and expands provision.'},
+  {ar:'الْخَافِض',en:'Al-Khafid',mean:'The Abaser',desc:'Allah lowers whom He wills in status, those who reject His guidance.'},
+  {ar:'الرَّافِع',en:'Ar-Rafi',mean:'The Exalter',desc:'Allah raises in rank those who follow His guidance. He elevates the believers.'},
+  {ar:'الْمُعِزّ',en:'Al-Muizz',mean:'The Honorer',desc:'Allah gives honor and dignity to whom He wills.'},
+  {ar:'الْمُذِلّ',en:'Al-Mudhill',mean:'The Dishonorer',desc:'Allah humbles those who reject truth and follow arrogance.'},
+  {ar:'السَّمِيع',en:'As-Sami',mean:'The All-Hearing',desc:'Allah hears everything — every whisper, every prayer, every thought.'},
+  {ar:'الْبَصِير',en:'Al-Basir',mean:'The All-Seeing',desc:'Allah sees everything — nothing is hidden from His sight.'},
+  {ar:'الْحَكَم',en:'Al-Hakam',mean:'The Judge',desc:'Allah is the ultimate judge. His judgment is perfect and just.'},
+  {ar:'الْعَدْل',en:'Al-Adl',mean:'The Just',desc:'Allah is absolutely just. He never wrongs anyone, even by the weight of an atom.'},
+  {ar:'اللَّطِيف',en:'Al-Latif',mean:'The Subtle',desc:'Allah is gentle and subtle. His kindness is hidden in the smallest details of life.'},
+  {ar:'الْخَبِير',en:'Al-Khabir',mean:'The All-Aware',desc:'Allah is aware of everything — every reality, every secret, every intention.'},
+  {ar:'الْحَلِيم',en:'Al-Halim',mean:'The Forbearing',desc:'Allah is patient and does not punish immediately. He gives time to repent.'},
+  {ar:'الْعَظِيم',en:'Al-Azim',mean:'The Magnificent',desc:'Allah is supremely great. His greatness is beyond human comprehension.'},
+  {ar:'الْغَفُور',en:'Al-Ghafur',mean:'The All-Forgiving',desc:'Allah forgives all sins for those who sincerely repent.'},
+  {ar:'الشَّكُور',en:'Ash-Shakur',mean:'The Grateful',desc:'Allah rewards even the smallest good deed with immense reward.'},
+  {ar:'الْعَلِيّ',en:'Al-Ali',mean:'The Most High',desc:'Allah is above all creation in status, power, and majesty.'},
+  {ar:'الْكَبِير',en:'Al-Kabir',mean:'The Greatest',desc:'Allah is greater than everything. Nothing is greater than Him.'},
+  {ar:'الْحَفِيظ',en:'Al-Hafiz',mean:'The Preserver',desc:'Allah protects and preserves all things. Nothing is lost from His care.'},
+  {ar:'الْمُقِيت',en:'Al-Muqit',mean:'The Sustainer',desc:'Allah provides nourishment and sustenance to all living things.'},
+  {ar:'الْحَسِيب',en:'Al-Hasib',mean:'The Reckoner',desc:'Allah is the one who takes account of all deeds. He suffices for the believers.'},
+  {ar:'الْجَلِيل',en:'Al-Jalil',mean:'The Majestic',desc:'Allah is majestic and glorious. His attributes are perfect and complete.'},
+  {ar:'الْكَرِيم',en:'Al-Karim',mean:'The Most Generous',desc:'Allah gives without measure. His generosity has no limits.'},
+  {ar:'الرَّقِيب',en:'Ar-Raqib',mean:'The Watchful',desc:'Allah watches over everything. He is the guardian of all creation.'},
+  {ar:'الْمُجِيب',en:'Al-Mujib',mean:'The Responsive',desc:'Allah responds to every prayer and call. He answers those who turn to Him.'},
+  {ar:'الْوَاسِع',en:'Al-Wasi',mean:'The All-Encompassing',desc:'Allah's mercy and knowledge encompass all things.'},
+  {ar:'الْحَكِيم',en:'Al-Hakim',mean:'The Wise',desc:'Allah is perfectly wise. Everything He does has divine wisdom behind it.'},
+  {ar:'الْوَدُود',en:'Al-Wadud',mean:'The Most Loving',desc:'Allah loves His servants and is loved by them. He is the source of all love.'},
+  {ar:'الْمَجِيد',en:'Al-Majid',mean:'The Most Glorious',desc:'Allah is glorious and honorable. His glory shines in all creation.'},
+  {ar:'الْبَاعِث',en:'Al-Bait',mean:'The Resurrector',desc:'Allah will raise the dead on the Day of Judgment. He gives life to the dead.'},
+  {ar:'الشَّهِيد',en:'Ash-Shahid',mean:'The Witness',desc:'Allah is the witness to everything. Nothing happens without His knowledge.'},
+  {ar:'الْحَقّ',en:'Al-Haqq',mean:'The Truth',desc:'Allah is the absolute truth. His existence and words are the ultimate reality.'},
+  {ar:'الْوَكِيل',en:'Al-Wakil',mean:'The Trustee',desc:'Allah is the ultimate guardian. Trust in Him and He will suffice you.'},
+  {ar:'الْقَوِيّ',en:'Al-Qawi',mean:'The Strong',desc:'Allah has ultimate and perfect strength. No one can overcome Him.'},
+  {ar:'الْمَتِين',en:'Al-Matin',mean:'The Firm',desc:'Allah is firm and unshakable. His power never weakens.'},
+  {ar:'الْوَلِيّ',en:'Al-Wali',mean:'The Protecting Friend',desc:'Allah is the friend and protector of the believers.'},
+  {ar:'الْحَمِيد',en:'Al-Hamid',mean:'The Praiseworthy',desc:'Allah deserves all praise. Every breath should be in gratitude to Him.'},
+  {ar:'الْمُحْصِي',en:'Al-Muhsi',mean:'The All-Counting',desc:'Allah counts everything. Not a single atom escapes His accounting.'},
+  {ar:'الْمُبْدِئ',en:'Al-Mubdi',mean:'The Originator',desc:'Allah created everything from nothing. He is the first cause.'},
+  {ar:'الْمُعِيد',en:'Al-Muid',mean:'The Restorer',desc:'Allah will restore life after death. He recreates as He first created.'},
+  {ar:'الْمُحْيِي',en:'Al-Muhyi',mean:'The Giver of Life',desc:'Allah gives life. He is the source of all life in existence.'},
+  {ar:'الْمُمِيت',en:'Al-Mumit',mean:'The Bringer of Death',desc:'Allah causes death at the appointed time. He is the one who decrees death.'},
+  {ar:'الْحَيّ',en:'Al-Hayy',mean:'The Living',desc:'Allah is eternally alive. He never dies and has no beginning or end.'},
+  {ar:'الْقَيُّوم',en:'Al-Qayyum',mean:'The Self-Subsisting',desc:'Allah sustains everything while needing nothing Himself. He stands alone.'},
+  {ar:'الْوَاجِد',en:'Al-Wajid',mean:'The Finder',desc:'Allah finds everything He seeks. Nothing is lost from Him.'},
+  {ar:'الْمَاجِد',en:'Al-Majid',mean:'The Noble',desc:'Allah is noble and generous. His attributes are perfect and complete.'},
+  {ar:'الْوَاحِد',en:'Al-Wahid',mean:'The One',desc:'Allah is one, with no partner, no equal, and no one comparable to Him.'},
+  {ar:'الْأَحَد',en:'Al-Ahad',mean:'The Unique',desc:'Allah is one and indivisible. He has no partner or equal.'},
+  {ar:'الصَّمَد',en:'As-Samad',mean:'The Eternal Refuge',desc:'Allah is the one everyone turns to in need. He is self-sufficient.'},
+  {ar:'الْقَادِر',en:'Al-Qadir',mean:'The Capable',desc:'Allah has power over all things. Nothing is beyond His ability.'},
+  {ar:'الْمُقْتَدِر',en:'Al-Muqtadir',mean:'The Powerful',desc:'Allah has perfect power and control over all things.'},
+  {ar:'الْمُقَدِّم',en:'Al-Muqaddim',mean:'The Expediter',desc:'Allah brings forward in time and status what He wills.'},
+  {ar:'الْمُؤَخِّر',en:'Al-Muakhkhir',mean:'The Delayer',desc:'Allah delays what He wills. He is the one who sets all things in order.'},
+  {ar:'الْأَوَّل',en:'Al-Awwal',mean:'The First',desc:'Allah existed before all things. He has no beginning.'},
+  {ar:'الْآخِر',en:'Al-Akhir',mean:'The Last',desc:'Allah will remain after all things perish. He has no end.'},
+  {ar:'الظَّاهِر',en:'Az-Zahir',mean:'The Manifest',desc:'Allah is evident through His creation. His signs are everywhere.'},
+  {ar:'الْبَاطِن',en:'Al-Batin',mean:'The Hidden',desc:'Allah is hidden from human perception. He cannot be seen in this world.'},
+  {ar:'الْوَالِي',en:'Al-Wali',mean:'The Governor',desc:'Allah governs all affairs. He manages everything in the universe.'},
+  {ar:'الْمُتَعَالِي',en:'Al-Mutaali',mean:'The Most Exalted',desc:'Allah is exalted above all creation. He is beyond all limitations.'},
+  {ar:'الْبَرّ',en:'Al-Barr',mean:'The Most Kind',desc:'Allah is kind and gentle. He is the source of all goodness.'},
+  {ar:'التَّوَّاب',en:'At-Tawwab',mean:'The Accepter of Repentance',desc:'Allah accepts repentance. No matter how many times you sin, He forgives those who return to Him.'},
+  {ar:'الْمُنْتَقِم',en:'Al-Muntaqim',mean:'The Avenger',desc:'Allah punishes the wrongdoers in due time. Justice is His.'},
+  {ar:'الْعَفُوّ',en:'Al-Afuww',mean:'The Pardoner',desc:'Allah pardons sins and overlooks faults. He is the most forgiving.'},
+  {ar:'الرَّؤُوف',en:'Ar-Rauf',mean:'The Most Kind',desc:'Allah is compassionate and tender. His kindness is beyond measure.'},
+  {ar:'مَالِك الْمُلْك',en:'Malik-ul-Mulk',mean:'The Master of the Kingdom',desc:'Allah owns the dominion of everything. He is the king of all kings.'},
+  {ar:'ذُو الْجَلَال وَالْإِكْرَام',en:'Dhul-Jalali wal-Ikram',mean:'The Lord of Majesty and Bounty',desc:'Allah is the possessor of majesty and honor. All glory belongs to Him.'},
+  {ar:'الْمُقْسِط',en:'Al-Muqsit',mean:'The Equitable',desc:'Allah is fair and just in all His decisions and judgments.'},
+  {ar:'الْجَامِع',en:'Al-Jami',mean:'The Gatherer',desc:'Allah gathers all things. He will gather people on the Day of Judgment.'},
+  {ar:'الْغَنِيّ',en:'Al-Ghani',mean:'The Self-Sufficient',desc:'Allah needs nothing. He is rich while all creation is in need of Him.'},
+  {ar:'الْمُغْنِي',en:'Al-Mughni',mean:'The Enricher',desc:'Allah enriches whom He wills. He provides abundance beyond measure.'},
+  {ar:'الْمَانِع',en:'Al-Mani',mean:'The Preventer',desc:'Allah prevents what He wills. He protects and withholds harm.'},
+  {ar:'الضَّارّ',en:'Ad-Darr',mean:'The Distresser',desc:'Allah sends trials to test His servants. He decrees both good and hardship.'},
+  {ar:'النَّافِع',en:'An-Nafi',mean:'The Benefactor',desc:'Allah is the source of all benefit. Every good comes from Him.'},
+  {ar:'النُّور',en:'An-Nur',mean:'The Light',desc:'Allah is the light of the heavens and earth. He guides to light whom He wills.'},
+  {ar:'الْهَادِي',en:'Al-Hadi',mean:'The Guide',desc:'Allah guides whom He wills to the straight path. He is the ultimate guide.'},
+  {ar:'الْبَدِيع',en:'Al-Badi',mean:'The Incomparable',desc:'Allah created the universe without precedent. He is the originator of all things.'},
+  {ar:'الْبَاقِي',en:'Al-Baqi',mean:'The Everlasting',desc:'Allah is eternal. He remains while all else perishes.'},
+  {ar:'الْوَارِث',en:'Al-Warith',mean:'The Inheritor',desc:'Allah inherits all things. Everything returns to Him in the end.'},
+  {ar:'الرَّشِيد',en:'Ar-Rashid',mean:'The Guide to the Right Path',desc:'Allah guides to what is right. He is the source of all guidance.'},
+  {ar:'الصَّبُور',en:'As-Sabur',mean:'The Patient',desc:'Allah is patient. He does not rush to punish but gives time to repent.'},
+];
+
+function renderNames(filter) {
+  const grid = document.getElementById('names-grid');
+  if (!grid) return;
+  const f = (filter || '').toLowerCase();
+  const list = f ? ALLAH_NAMES.filter(n => n.en.toLowerCase().includes(f) || n.mean.toLowerCase().includes(f)) : ALLAH_NAMES;
+  grid.innerHTML = list.map((n, i) => {
+    const origIdx = ALLAH_NAMES.indexOf(n) + 1;
+    return `<div class="name-card" onclick="this.classList.toggle('expanded')">
+      <div class="name-num">#${origIdx}</div>
+      <div class="name-ar" dir="rtl">${n.ar}</div>
+      <div class="name-en">${n.en}</div>
+      <div class="name-mean">${n.mean}</div>
+      <div class="name-desc">${n.desc}</div>
+    </div>`;
+  }).join('');
+}
+
+function filterNames(v) { renderNames(v); }
+
+// ===== WUDU AUDIO (Text-to-Speech) =====
+let wuduSpeech = null;
+let wuduReadingAll = false;
+let wuduStepCounter = 0;
+
+function wuduSpeak(text, onDone) {
+  if (!('speechSynthesis' in window)) { alert('Audio not supported on this device'); return; }
+  wuduStopReading();
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 0.85;
+  u.pitch = 1;
+  // Try to find an English voice
+  const voices = speechSynthesis.getVoices();
+  const enVoice = voices.find(v => v.lang.startsWith('en'));
+  if (enVoice) u.voice = enVoice;
+  u.onend = () => { if (onDone) onDone(); };
+  u.onerror = () => { if (onDone) onDone(); };
+  wuduSpeech = u;
+  speechSynthesis.speak(u);
+}
+
+function wuduStopReading() {
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  wuduReadingAll = false;
+  wuduSpeech = null;
+  const playBtn = document.getElementById('wudu-read-all');
+  const stopBtn = document.getElementById('wudu-stop-btn');
+  const status = document.getElementById('wudu-audio-status');
+  if (playBtn) { playBtn.innerHTML = '🔊 Listen to Guide'; playBtn.classList.remove('active'); }
+  if (stopBtn) stopBtn.style.display = 'none';
+  if (status) status.textContent = '';
+  // Reset step highlights
+  document.querySelectorAll('.wudu-step-audio.active').forEach(el => el.classList.remove('active'));
+}
+
+function wuduReadAll() {
+  if (wuduReadingAll) { wuduStopReading(); return; }
+  wuduReadingAll = true;
+  const playBtn = document.getElementById('wudu-read-all');
+  const stopBtn = document.getElementById('wudu-stop-btn');
+  const status = document.getElementById('wudu-audio-status');
+  if (playBtn) { playBtn.innerHTML = '⏸ Stop Reading'; playBtn.classList.add('active'); }
+  if (stopBtn) stopBtn.style.display = 'inline-flex';
+  if (status) status.textContent = 'Starting...';
+
+  const steps = [
+    { text: "How to Perform Wudu. The Prophetic Method, based on Sahih al-Bukhari and Muslim.", status: 'Intro' },
+    { text: "Quranic Foundation. Surah Al-Ma'idah verse 6: O you who believe! When you intend to offer the prayer, wash your faces and your hands up to the elbows, rub your heads, and wash your feet up to ankles.", status: 'Quranic Foundation' },
+    { text: "The 6 Obligatory Acts, known as Fard. These are the pillars — wudu is invalid without any of them.", status: 'Obligatory Acts' },
+    { text: "Step 1: Wash the Face. From hairline to chin, ear to ear. Includes rinsing mouth and nose.", status: 'Step 1 of 6: Face' },
+    { text: "Step 2: Wash the Arms to the Elbows. Both arms including the elbows — right arm first, then left.", status: 'Step 2 of 6: Arms' },
+    { text: "Step 3: Wipe the Head. With wet hands — the amount differs by school of thought.", status: 'Step 3 of 6: Head' },
+    { text: "Step 4: Wash the Feet to the Ankles. Both feet including the ankles — right foot first, then left.", status: 'Step 4 of 6: Feet' },
+    { text: "Step 5: Sequence. Follow the order: face, then arms, then head, then feet. Required by Shafi'i, Maliki, and Hanbali schools. Recommended by Hanafi.", status: 'Step 5 of 6: Sequence' },
+    { text: "Step 6: Continuity. Wash each part before the previous one dries — no long gaps between steps.", status: 'Step 6 of 6: Continuity' },
+    { text: "The Prophetic Method. Step 1: Make intention and say Bismillah. Step 2: Wash hands three times. Step 3: Rinse mouth three times. Step 4: Rinse nose three times. Step 5: Wash face three times. Step 6: Wash right arm to elbow three times, then left three times. Step 7: Wipe head once, front to back and back to front. Step 8: Wipe ears once. Step 9: Wash right foot to ankle three times, then left three times. Step 10: Recite the Shahada dua.", status: 'Prophetic Method' },
+    { text: "What Nullifies Wudu: 1. Natural discharges. 2. Deep sleep causing loss of awareness. 3. Loss of consciousness. 4. Touching private parts directly, according to Shafi'i and Hanbali. 5. Vomiting a mouthful, according to Hanafi and Hanbali. 6. Bleeding that flows from the skin, according to the majority.", status: 'Nullifiers' },
+    { text: "Virtues of Wudu. The Prophet peace be upon him said: Whoever performs wudu like this, then stands and prays two rak'ahs without letting his thoughts wander, his previous sins will be forgiven. — Bukhari and Muslim. He also said to Bilal: You will hear the footsteps of your shoes in Paradise ahead of you — because of the extra steps you take in wudu.", status: 'Virtues' },
+  ];
+
+  let i = 0;
+  function speakNext() {
+    if (!wuduReadingAll || i >= steps.length) {
+      wuduStopReading();
+      if (status) status.textContent = 'Complete ✓';
+      return;
+    }
+    if (status) status.textContent = 'Reading: ' + steps[i].status;
+    wuduSpeak(steps[i].text, () => { i++; setTimeout(speakNext, 300); });
+  }
+  speakNext();
+}
+
 function getAnswer(q) {
   const l=q.toLowerCase();
   const map=[
