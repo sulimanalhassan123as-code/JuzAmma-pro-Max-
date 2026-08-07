@@ -466,6 +466,10 @@ body { font-family:'Poppins',sans-serif;
 /* 99 Names of Allah */
 #names-view { display:none; flex-direction:column; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:linear-gradient(180deg,#0a0a20 0%,#0d1b2a 100%); z-index:20; }
 #names-view.active { display:flex; }
+.names-audio-bar { display:flex; flex-direction:column; align-items:center; gap:4px; margin:0 0 14px; padding:12px; background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.25); border-radius:14px; }
+.names-audio-btn { background:linear-gradient(135deg,#d4af37,#a07830); color:#0d1b2a; border:none; border-radius:20px; padding:11px 24px; font-size:.85rem; font-weight:700; cursor:pointer; width:100%; max-width:280px; }
+.names-audio-btn.playing { background:linear-gradient(135deg,#c0392b,#922b21); color:#fff; }
+.names-audio-status { color:#c9a84c; font-size:.72rem; opacity:.85; }
 .names-hdr { text-align:center; padding:20px 16px 14px; background:linear-gradient(135deg,#1a0b2e,#16213e); border-bottom:1px solid rgba(255,215,0,.15); }
 .names-back { background:rgba(255,255,255,.1); color:#fff; border:1px solid rgba(255,255,255,.2); border-radius:20px; padding:4px 14px; font-size:.8rem; cursor:pointer; position:absolute; left:12px; top:18px; }
 .names-badge { display:inline-block; background:rgba(255,215,0,.15); color:#ffd700; font-size:.72rem; padding:3px 12px; border-radius:20px; margin-bottom:8px; border:1px solid rgba(255,215,0,.3); }
@@ -1389,6 +1393,13 @@ body { font-family:'Poppins',sans-serif;
     <p>Tap any name to learn its meaning</p>
   </div>
   <div class="names-body">
+    <div class="names-audio-bar">
+      <button class="names-audio-btn" id="names-play-btn" onclick="toggleNamesAudio()">▶ Play All 99 Names</button>
+      <div class="names-audio-status" id="names-audio-status">Beautiful continuous recitation</div>
+    </div>
+    <audio id="names-audio" preload="none" style="display:none">
+      <source src="https://archive.org/download/AsmaUlHusna99NamesofALLAH_201808/Asma-ul-Husna-99Nam-Download-From-YTPak.com.mp3" type="audio/mpeg">
+    </audio>
     <div class="names-virtue">
       <p>The Prophet ﷺ said: "Allah has 99 names, 100 minus one. Whoever memorizes them will enter Paradise." <span>— Bukhari 2736</span></p>
     </div>
@@ -2402,13 +2413,54 @@ function renderNames(filter) {
 
 function filterNames(v) { renderNames(v); }
 
+// ===== 99 NAMES CONTINUOUS AUDIO =====
+function toggleNamesAudio() {
+  const audio = document.getElementById('names-audio');
+  const btn = document.getElementById('names-play-btn');
+  const status = document.getElementById('names-audio-status');
+  if (audio.paused) {
+    status.textContent = 'Loading audio...';
+    audio.play().then(() => {
+      btn.textContent = '⏸ Pause Recitation';
+      btn.classList.add('playing');
+      status.textContent = 'Now playing — all 99 Names of Allah';
+    }).catch(() => {
+      status.textContent = 'Could not play audio — tap again or check your connection';
+    });
+  } else {
+    audio.pause();
+    btn.textContent = '▶ Play All 99 Names';
+    btn.classList.remove('playing');
+    status.textContent = 'Paused';
+  }
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const audio = document.getElementById('names-audio');
+  if (audio) {
+    audio.addEventListener('ended', () => {
+      const btn = document.getElementById('names-play-btn');
+      const status = document.getElementById('names-audio-status');
+      if (btn) { btn.textContent = '▶ Play All 99 Names'; btn.classList.remove('playing'); }
+      if (status) status.textContent = 'Recitation complete — tap to replay';
+    });
+  }
+});
+
 // ===== WUDU AUDIO (Text-to-Speech) =====
 let wuduSpeech = null;
 let wuduReadingAll = false;
 let wuduStepCounter = 0;
 
 function wuduSpeak(text, onDone) {
-  if (!('speechSynthesis' in window)) { alert('Audio not supported on this device'); return; }
+  if (!('speechSynthesis' in window)) {
+    const status = document.getElementById('wudu-audio-status');
+    if (status) status.textContent = 'Voice audio needs Chrome/Safari — open this page in your phone browser (not inside WhatsApp) to use it.';
+    wuduReadingAll = false;
+    const playBtn = document.getElementById('wudu-read-all');
+    if (playBtn) { playBtn.innerHTML = '🔊 Listen to Guide'; playBtn.classList.remove('active'); }
+    if (onDone) onDone();
+    return;
+  }
   wuduStopReading();
   const u = new SpeechSynthesisUtterance(text);
   u.rate = 0.85;
