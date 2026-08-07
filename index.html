@@ -705,6 +705,77 @@ body { font-family:'Poppins',sans-serif;
 .tj-rec-btn { padding:13px 30px; background:var(--p); color:#fff; border:none; border-radius:14px; font-size:.95rem; font-weight:700; font-family:Poppins,sans-serif; cursor:pointer; }
 .tj-timer { font-size:1.4rem; font-weight:700; color:#ef4444; min-height:2rem; }
 
+
+/* ═════════════ WUDU / ABLUTION GUIDE ═════════════ */
+#wudu-view { display:none; flex-direction:column; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:linear-gradient(180deg,#0a1628 0%,#0d2137 100%); z-index:20; }
+#wudu-view.active { display:flex; }
+
+.wudu-header { text-align:center; padding:50px 22px 22px; position:relative; overflow:hidden; flex-shrink:0; }
+.wudu-header::before { content:''; position:absolute; top:-60px; left:50%; transform:translateX(-50%); width:300px; height:300px; border-radius:50%; background:radial-gradient(circle,rgba(34,211,238,.08) 0%,transparent 70%); pointer-events:none; }
+.wudu-badge { display:inline-block; background:rgba(34,211,238,.12); color:#22d3ee; padding:5px 14px; border-radius:20px; font-size:.7rem; font-weight:700; letter-spacing:.5px; margin-bottom:10px; }
+.wudu-header h2 { font-size:1.7rem; font-weight:800; color:#fff; margin:0; position:relative; z-index:1; }
+.wudu-sub { font-size:.75rem; color:rgba(255,255,255,.45); margin-top:5px; position:relative; z-index:1; }
+
+.wudu-body { padding:0 16px 40px; flex-shrink:0; }
+
+.wudu-section { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:16px; padding:18px 16px; margin-bottom:14px; }
+.wudu-section-title { font-size:1rem; font-weight:700; color:#e2e8f0; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,.08); }
+.wudu-note { font-size:.74rem; color:#94a3b8; margin-bottom:14px; line-height:1.6; padding:8px 11px; background:rgba(148,163,184,.08); border-radius:8px; border-left:3px solid rgba(148,163,184,.3); }
+
+/* Quran section */
+.wudu-quran { background:rgba(34,211,238,.05); border-color:rgba(34,211,238,.15); }
+.wudu-ayah { font-family:'Amiri','Noto Naskh Arabic','Scheherazade New',serif; font-size:1.45rem; color:#7dd3fc; line-height:2.4; text-align:center; direction:rtl; margin:10px 0; padding:0 8px; font-feature-settings:'liga' 1,'calt' 1; }
+.wudu-translation { font-size:.82rem; color:#cbd5e1; line-height:1.7; text-align:center; margin-top:8px; }
+.wudu-ref { font-size:.72rem; color:#64748b; text-align:center; margin-top:8px; font-weight:600; }
+.wudu-ref-inline { font-size:.7rem; color:#64748b; font-weight:600; }
+
+/* Steps */
+.wudu-step { display:flex; gap:12px; align-items:flex-start; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.05); }
+.wudu-step:last-child { border-bottom:none; padding-bottom:0; }
+.wudu-step-num { width:32px; height:32px; min-width:32px; border-radius:50%; background:rgba(34,211,238,.12); color:#22d3ee; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:.9rem; }
+.wudu-step-title { font-size:.88rem; font-weight:700; color:#e2e8f0; margin-bottom:3px; }
+.wudu-step-desc { font-size:.76rem; color:#94a3b8; line-height:1.6; }
+
+/* Sunnah steps - gold accent */
+.wudu-sunnah { background:rgba(251,191,36,.04); border-color:rgba(251,191,36,.15); }
+.wudu-step-sunnah .wudu-step-title { color:#fcd34d; }
+.wudu-step-num-sunnah { background:rgba(251,191,36,.12); color:#fcd34d; }
+
+/* Fard steps - green accent */
+.wudu-fard { background:rgba(16,185,129,.04); border-color:rgba(16,185,129,.15); }
+.wudu-fard .wudu-section-title { color:#6ee7b7; }
+.wudu-fard .wudu-step-num { background:rgba(16,185,129,.12); color:#6ee7b7; }
+
+/* Madhabs */
+.wudu-madhabs { background:rgba(168,85,247,.04); border-color:rgba(168,85,247,.15); }
+.wudu-madhabs .wudu-section-title { color:#c4b5fd; }
+.wudu-madhab-card { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:14px 14px; margin-bottom:10px; }
+.wudu-madhab-name { font-size:.9rem; font-weight:800; color:#c4b5fd; margin-bottom:8px; }
+.wudu-madhab-point { font-size:.76rem; color:#94a3b8; line-height:1.6; margin-bottom:4px; }
+.wudu-madhab-point b { color:#cbd5e1; }
+
+/* Nullifiers */
+.wudu-nullifiers { background:rgba(239,68,68,.04); border-color:rgba(239,68,68,.15); }
+.wudu-nullifiers .wudu-section-title { color:#fca5a5; }
+.wudu-null-list { display:flex; flex-direction:column; gap:6px; }
+.wudu-null-item { font-size:.78rem; color:#cbd5e1; line-height:1.5; padding:8px 10px; background:rgba(239,68,68,.06); border-radius:8px; border-left:3px solid rgba(239,68,68,.25); }
+
+/* Virtues */
+.wudu-virtues { background:rgba(251,191,36,.04); border-color:rgba(251,191,36,.15); }
+.wudu-virtues .wudu-section-title { color:#fcd34d; }
+.wudu-virtue { font-size:.78rem; color:#cbd5e1; line-height:1.7; padding:10px 12px; background:rgba(251,191,36,.05); border-radius:10px; margin-bottom:8px; border-left:3px solid rgba(251,191,36,.25); }
+
+/* Mobile responsive for wudu */
+@media (max-width: 767px) {
+  .wudu-header { padding:35px 18px 18px; }
+  .wudu-header h2 { font-size:1.4rem; }
+  .wudu-ayah { font-size:1.2rem; line-height:2.4; padding:0 6px; }
+  .wudu-step-title { font-size:.84rem; }
+  .wudu-step-desc { font-size:.73rem; }
+  .wudu-madhab-point { font-size:.73rem; }
+}
+
+
 /* ═══════════ DEVICE-AWARE ARABIC TEXT SCALING ═══════════ */
 
 /* Desktop / large tablets (768px and up) — keep current sizes */
@@ -1051,6 +1122,222 @@ body { font-family:'Poppins',sans-serif;
   </div>
 </div>
 
+
+<!-- ════════════════ WUDU / ABLUTION GUIDE ════════════════ -->
+<div id="wudu-view">
+  <div class="wudu-header">
+    <button class="prog-back" onclick="goToView('home')" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)">← Home</button>
+    <div class="wudu-badge">💧 Purification</div>
+    <h2>How to Perform Wudu</h2>
+    <p class="wudu-sub">The Prophetic Method ﷺ · Based on Sahih al-Bukhari & Muslim</p>
+  </div>
+
+  <div class="wudu-body">
+
+    <!-- Quranic Basis -->
+    <div class="wudu-section wudu-quran">
+      <div class="wudu-section-title">📖 Quranic Foundation</div>
+      <div class="wudu-ayah" dir="rtl">يَا أَيُّهَا الَّذِينَ آمَنُوا إِذَا قُمْتُمْ إِلَى الصَّلَاةِ فَاغْسِلُوا وُجُوهَكُمْ وَأَيْدِيَكُمْ إِلَى الْمَرَافِقِ وَامْسَحُوا بِرُءُوسِكُمْ وَأَرْجُلَكُمْ إِلَى الْكَعْبَيْنِ</div>
+      <div class="wudu-translation">"O you who believe! When you intend to offer the prayer, wash your faces and your hands (forearms) up to the elbows, rub (by passing wet hands over) your heads, and (wash) your feet up to ankles."</div>
+      <div class="wudu-ref">— Surah Al-Ma'idah 5:6</div>
+    </div>
+
+    <!-- The 6 Fard (Obligatory) Acts -->
+    <div class="wudu-section wudu-fard">
+      <div class="wudu-section-title">✅ The 6 Obligatory Acts (Fard)</div>
+      <div class="wudu-note">These are the pillars — wudu is invalid without any of them. (Shaykh Ibn 'Uthaymeen, Ar-Rawd al-Murbi')</div>
+      <div class="wudu-step">
+        <div class="wudu-step-num">1</div>
+        <div class="wudu-step-body">
+          <div class="wudu-step-title">Wash the Face</div>
+          <div class="wudu-step-desc">From hairline to chin, ear to ear. Includes rinsing mouth and nose.</div>
+        </div>
+      </div>
+      <div class="wudu-step">
+        <div class="wudu-step-num">2</div>
+        <div class="wudu-step-body">
+          <div class="wudu-step-title">Wash the Arms to the Elbows</div>
+          <div class="wudu-step-desc">Both arms including the elbows — right arm first, then left.</div>
+        </div>
+      </div>
+      <div class="wudu-step">
+        <div class="wudu-step-num">3</div>
+        <div class="wudu-step-body">
+          <div class="wudu-step-title">Wipe the Head</div>
+          <div class="wudu-step-desc">With wet hands — the amount differs by school (see below).</div>
+        </div>
+      </div>
+      <div class="wudu-step">
+        <div class="wudu-step-num">4</div>
+        <div class="wudu-step-body">
+          <div class="wudu-step-title">Wash the Feet to the Ankles</div>
+          <div class="wudu-step-desc">Both feet including the ankles — right foot first, then left.</div>
+        </div>
+      </div>
+      <div class="wudu-step">
+        <div class="wudu-step-num">5</div>
+        <div class="wudu-step-body">
+          <div class="wudu-step-title">Sequence (Tartib)</div>
+          <div class="wudu-step-desc">Follow the order: face → arms → head → feet. Required by Shafi'i, Maliki, Hanbali. Recommended by Hanafi.</div>
+        </div>
+      </div>
+      <div class="wudu-step">
+        <div class="wudu-step-num">6</div>
+        <div class="wudu-step-body">
+          <div class="wudu-step-title">Continuity (Muwalah)</div>
+          <div class="wudu-step-desc">Wash each part before the previous one dries — no long gaps between steps.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- The Prophetic Method (Most Authentic) -->
+    <div class="wudu-section wudu-sunnah">
+      <div class="wudu-section-title">🌟 The Prophetic Method ﷺ (Most Authentic)</div>
+      <div class="wudu-note">Based on the Hadith of Uthman ibn Affan (RA) — Sahih al-Bukhari 1934 & Sahih Muslim 226. Ibn Shihab said: "This is the most complete way of performing wudu."</div>
+
+      <div class="wudu-step wudu-step-sunnah">
+        <div class="wudu-step-num wudu-step-num-sunnah">1</div>
+        <div class="wudu-step-body">
+          <div class="wudu-step-title">Make Intention (Niyyah)</div>
+          <div class="wudu-step-desc">Intend in your heart to perform wudu for Allah's sake. Shafi'i school also recommends verbal intention.</div>
+        </div>
+      </div>
+      <div class="wudu-step wudu-step-sunnah">
+        <div class="wudu-step-num wudu-step-num-sunnah">2</div>
+        <div class="wudu-step-body">
+          <div class="wudu-step-title">Say Bismillah</div>
+          <div class="wudu-step-desc">Say "Bismillah" before starting. (Imam Ahmad considered it obligatory; majority consider it Sunnah)</div>
+        </div>
+      </div>
+      <div class="wudu-step wudu-step-sunnah">
+        <div class="wudu-step-num wudu-step-num-sunnah">3</div>
+        <div class="wudu-step-body">
+          <div class="wudu-step-title">Wash Hands 3× </div>
+          <div class="wudu-step-desc">Wash both hands up to the wrists, three times. Use siwak/miswak if available.</div>
+        </div>
+      </div>
+      <div class="wudu-step wudu-step-sunnah">
+        <div class="wudu-step-num wudu-step-num-sunnah">4</div>
+        <div class="wudu-step-body">
+          <div class="wudu-step-title">Rinse Mouth 3×</div>
+          <div class="wudu-step-desc">Circulate water thoroughly throughout the mouth, three times. (When fasting, do so lightly)</div>
+        </div>
+      </div>
+      <div class="wudu-step wudu-step-sunnah">
+        <div class="wudu-step-num wudu-step-num-sunnah">5</div>
+        <div class="wudu-step-body">
+          <div class="wudu-step-title">Rinse Nose 3×</div>
+          <div class="wudu-step-desc">Inhale water into the nose and blow it out, three times. (When fasting, do not inhale deeply)</div>
+        </div>
+      </div>
+      <div class="wudu-step wudu-step-sunnah">
+        <div class="wudu-step-num wudu-step-num-sunnah">6</div>
+        <div class="wudu-step-body">
+          <div class="wudu-step-title">Wash Face 3×</div>
+          <div class="wudu-step-desc">From hairline to chin, ear to ear — three times. Run wet fingers through a thick beard.</div>
+        </div>
+      </div>
+      <div class="wudu-step wudu-step-sunnah">
+        <div class="wudu-step-num wudu-step-num-sunnah">7</div>
+        <div class="wudu-step-body">
+          <div class="wudu-step-title">Wash Right Arm 3×, Then Left Arm 3×</div>
+          <div class="wudu-step-desc">From fingertips to elbow (including the elbow). Right arm three times first, then left arm three times.</div>
+        </div>
+      </div>
+      <div class="wudu-step wudu-step-sunnah">
+        <div class="wudu-step-num wudu-step-num-sunnah">8</div>
+        <div class="wudu-step-body">
+          <div class="wudu-step-title">Wipe the Head Once</div>
+          <div class="wudu-step-desc">Wet both hands, wipe from front to back of head, then back to front (Hadith of Abdullah bin Zayd, Bukhari 185). </div>
+        </div>
+      </div>
+      <div class="wudu-step wudu-step-sunnah">
+        <div class="wudu-step-num wudu-step-num-sunnah">9</div>
+        <div class="wudu-step-body">
+          <div class="wudu-step-title">Wipe the Ears Once</div>
+          <div class="wudu-step-desc">Index fingers inside the ears, thumbs wipe the outer ears — once. (Imam Ahmad considered it obligatory; majority Sunnah)</div>
+        </div>
+      </div>
+      <div class="wudu-step wudu-step-sunnah">
+        <div class="wudu-step-num wudu-step-num-sunnah">10</div>
+        <div class="wudu-step-body">
+          <div class="wudu-step-title">Wash Right Foot 3×, Then Left Foot 3×</div>
+          <div class="wudu-step-desc">From toes to ankle (including the ankle). Run fingers between toes. Right foot three times, then left three times.</div>
+        </div>
+      </div>
+      <div class="wudu-step wudu-step-sunnah">
+        <div class="wudu-step-num wudu-step-num-sunnah">11</div>
+        <div class="wudu-step-body">
+          <div class="wudu-step-title">Recite the Du'a</div>
+          <div class="wudu-step-desc">"Ashhadu an la ilaha ill-Allah wahdahu la sharika lah, wa ashhadu anna Muhammadan 'abduhu wa rasuluhu. Allahummaj'alni min al-tawwabina waj'alni min al-mutatahhirina."</div>
+          <div class="wudu-step-desc" style="margin-top:4px;font-style:italic;color:#94a3b8">"I bear witness that there is no god except Allah alone, with no partner, and I bear witness that Muhammad is His slave and Messenger. O Allah, make me one of those who repent and make me one of those who purify themselves."</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scholarly Differences -->
+    <div class="wudu-section wudu-madhabs">
+      <div class="wudu-section-title">📚 Scholarly Opinions (The 4 Madhabs)</div>
+      <div class="wudu-note">All four schools agree on the obligatory acts. They differ on some details — all are valid.</div>
+
+      <div class="wudu-madhab-card">
+        <div class="wudu-madhab-name">🕌 Hanafi</div>
+        <div class="wudu-madhab-point"><b>Wiping head:</b> At least 1/4 of the head</div>
+        <div class="wudu-madhab-point"><b>Order (Tartib):</b> Sunnah, not obligatory</div>
+        <div class="wudu-madhab-point"><b>Bismillah:</b> Sunnah</div>
+        <div class="wudu-madhab-point"><b>Intention:</b> In the heart</div>
+      </div>
+
+      <div class="wudu-madhab-card">
+        <div class="wudu-madhab-name">🕌 Shafi'i</div>
+        <div class="wudu-madhab-point"><b>Wiping head:</b> Any portion (even one hair)</div>
+        <div class="wudu-madhab-point"><b>Order (Tartib):</b> Obligatory</div>
+        <div class="wudu-madhab-point"><b>Bismillah:</b> Sunnah</div>
+        <div class="wudu-madhab-point"><b>Intention:</b> In the heart + recommended verbally</div>
+      </div>
+
+      <div class="wudu-madhab-card">
+        <div class="wudu-madhab-name">🕌 Maliki</div>
+        <div class="wudu-madhab-point"><b>Wiping head:</b> Entire head</div>
+        <div class="wudu-madhab-point"><b>Order (Tartib):</b> Obligatory</div>
+        <div class="wudu-madhab-point"><b>Bismillah:</b> Sunnah</div>
+        <div class="wudu-madhab-point"><b>Intention:</b> In the heart</div>
+      </div>
+
+      <div class="wudu-madhab-card">
+        <div class="wudu-madhab-name">🕌 Hanbali</div>
+        <div class="wudu-madhab-point"><b>Wiping head:</b> Entire head</div>
+        <div class="wudu-madhab-point"><b>Order (Tartib):</b> Obligatory</div>
+        <div class="wudu-madhab-point"><b>Bismillah:</b> Obligatory (Imam Ahmad's view)</div>
+        <div class="wudu-madhab-point"><b>Intention:</b> In the heart</div>
+      </div>
+    </div>
+
+    <!-- What Nullifies Wudu -->
+    <div class="wudu-section wudu-nullifiers">
+      <div class="wudu-section-title">⚠️ What Nullifies Wudu</div>
+      <div class="wudu-null-list">
+        <div class="wudu-null-item">Natural discharges (urine, stool, gas)</div>
+        <div class="wudu-null-item">Deep sleep that causes loss of awareness</div>
+        <div class="wudu-null-item">Loss of consciousness</div>
+        <div class="wudu-null-item">Touching the private parts directly (Shafi'i & Hanbali)</div>
+        <div class="wudu-null-item">Vomiting a mouthful (Hanafi & Hanbali)</div>
+        <div class="wudu-null-item">Bleeding that flows from the skin (majority)</div>
+      </div>
+    </div>
+
+    <!-- Virtues -->
+    <div class="wudu-section wudu-virtues">
+      <div class="wudu-section-title">✨ Virtues of Wudu</div>
+      <div class="wudu-virtue">The Prophet ﷺ said: "Whoever performs wudu like this, then stands and prays two rak'ahs without letting his thoughts wander, his previous sins will be forgiven." <span class="wudu-ref-inline">— Bukhari & Muslim</span></div>
+      <div class="wudu-virtue">The Prophet ﷺ said: "When a Muslim — or a believer — performs wudu and washes his face, every sin he committed with his eyes comes out with the water... When he washes his feet, every sin his feet walked toward comes out with the water." <span class="wudu-ref-inline">— Sahih Muslim 244</span></div>
+      <div class="wudu-virtue">The Prophet ﷺ said to Bilal (RA): "You will hear the footsteps of your shoes in Paradise ahead of you — because of the extra steps you take in wudu." <span class="wudu-ref-inline">— Bukhari & Muslim</span></div>
+    </div>
+
+  </div>
+</div>
+
+
 <!-- ════════════════ ADMIN ════════════════ -->
 
 
@@ -1333,6 +1620,7 @@ function goToView(v) {
   document.getElementById('progress-view').classList.remove('active');
   if(document.getElementById('groupstudy-view')) document.getElementById('groupstudy-view').classList.remove('active');
   if(document.getElementById('tajweed-view')) document.getElementById('tajweed-view').classList.remove('active');
+  if(document.getElementById('wudu-view')) document.getElementById('wudu-view').classList.remove('active');
 
   // 2. Show target view
   document.getElementById(v + '-view').classList.add('active');
@@ -1342,7 +1630,7 @@ function goToView(v) {
 
   // 4. Player bar visibility
   const pb = document.getElementById('pbar');
-  if (v === 'tasbih' || v === 'ai' || v === 'memorize' || v === 'admin' || v === 'prophets' || v === 'night' || v === 'progress' || v === 'groupstudy' || v === 'tajweed') {
+  if (v === 'tasbih' || v === 'ai' || v === 'memorize' || v === 'admin' || v === 'prophets' || v === 'night' || v === 'progress' || v === 'groupstudy' || v === 'tajweed' || v === 'wudu') {
     pb.style.display = 'none';
   } else {
     pb.style.display = 'flex';
@@ -1916,7 +2204,7 @@ function showMemStats() {
 const KB={
   fatiha:"Al-Fatiha (The Opening) is the first surah of the Quran, called 'Umm al-Kitab' (Mother of the Book). It has 7 verses and is recited in every unit of prayer. It covers praise of Allah, acknowledgment of His Lordship, and the prayer for guidance to the straight path.",
   prayer:"Muslims perform 5 daily prayers: Fajr (dawn), Dhuhr (midday), Asr (afternoon), Maghrib (sunset), and Isha (night). Prayer is the 2nd pillar of Islam — the Prophet ﷺ said: 'The key to Paradise is prayer.' (Tirmidhi)",
-  wudu:"Wudu steps: 1) Intention in the heart + say Bismillah. 2) Wash hands 3×. 3) Rinse mouth 3×. 4) Rinse nose 3×. 5) Wash face 3×. 6) Wash arms to elbows 3× (right first). 7) Wipe head once. 8) Wash feet to ankles 3× (right first).",
+  wudu:"Wudu (ablution) is purification before prayer. The 6 obligatory acts: wash face (including mouth & nose), wash arms to elbows, wipe head, wash feet to ankles, do them in order, and do them consecutively. The Prophetic method ﷺ (Bukhari 1934): 1) Make intention + say Bismillah 2) Wash hands 3× 3) Rinse mouth 3× 4) Rinse nose 3× 5) Wash face 3× 6) Wash right arm to elbow 3×, then left 3× 7) Wipe head once (front to back, back to front) 8) Wipe ears once 9) Wash right foot to ankle 3×, then left 3× 10) Recite the shahada dua. Tap the Wudu Guide on the homepage for the full step-by-step with scholarly opinions from all 4 madhabs.",
   tasbih:"Tasbih is glorifying Allah. After each prayer: SubhanAllah (33×) + Alhamdulillah (33×) + Allahu Akbar (34×) = 100 total. This is the Tasbeeh of Fatimah. The Quran says: 'In the remembrance of Allah do hearts find rest.' (13:28)",
   juzz:"Juz Amma (جزء عم) is the 30th section of the Quran containing 37 surahs, from An-Naba (78) to An-Nas (114). These shorter surahs are the first memorized by Muslims worldwide.",
   ramadan:"Ramadan is the 9th Islamic month — Muslims fast from Fajr to Maghrib. The Quran was revealed in Ramadan. Laylatul Qadr in the last 10 nights is worth more than 1,000 months of worship.",
@@ -2399,47 +2687,47 @@ document.addEventListener('visibilitychange', () => {
 // PROPHETS
 // ================================================================
 const PROPHETS = [
-  { n:'Adam',     ar:'آدَم',     num:1,  icon:'🌱', title:'Father of Humanity',    vid:'C6dMU9lQXI4',
+  { n:'Adam',     ar:'آدَم',     num:1,  icon:'🌱', title:'Father of Humanity',    vid:'fzOBRSvmSC8',
     bg:'linear-gradient(135deg,#e8f5e9,#f1f8e9)',
     story:"Adam ﷺ was the first human and the first Prophet. Allah created him from clay, breathed life into him, and taught him the names of all things. He and Hawwa (Eve) were placed in Paradise, but were tested and descended to Earth, where they repented and were forgiven. Allah chose Adam as His first messenger to guide mankind.",
     lesson:"Allah forgives those who sincerely repent. No matter how great a mistake, turning back to Allah with a sincere heart brings forgiveness.",
     tags:['First Prophet','Creation','Repentance','Paradise'] },
-  { n:'Nuh',      ar:'نُوح',     num:2,  icon:'⛵', title:'Builder of the Ark',     vid:'M14LFL54JD4',
-    bg:'linear-gradient(135deg,#e3f2fd,#bbdefb)',
+  { n:'Nuh',      ar:'نُوح',     num:2,  icon:'⛵', title:'Builder of the Ark',     vid:'CgYVH9IYF3c',
+    bg:'linear-gradient(135deg,#e3f2fd 0%,#bbdefb 50%,#90caf9 100%)',
     story:"Nuh ﷺ called his people to Islam for 950 years. They refused and mocked him. Allah commanded him to build a great ark. The great flood came and covered the earth. Only those who believed were saved. His son refused to board and drowned. After the flood, Allah established a new generation through the believers.",
     lesson:"Patience in calling people to the truth, even when results seem impossible. 950 years of dawah — never give up.",
     tags:['Patience','Flood','Dawah','950 Years'] },
-  { n:'Ibrahim',  ar:'إِبْرَاهِيم', num:3, icon:'🔥', title:'Friend of Allah (Khalilullah)', vid:'ZzWI0EsWrh4',
-    bg:'linear-gradient(135deg,#fff3e0,#ffe0b2)',
+  { n:'Ibrahim',  ar:'إِبْرَاهِيم', num:3, icon:'🔥', title:'Friend of Allah (Khalilullah)', vid:'W45DrRGECQE',
+    bg:'linear-gradient(135deg,#fff3e0 0%,#ffe0b2 50%,#ffcc80 100%)',
     story:"Ibrahim ﷺ was called Khalilullah — the Friend of Allah. He broke his people's idols and was thrown into a great fire — but Allah made it cool and safe for him. He was commanded to leave his wife Hajar and infant son Ismail in the desert — and obeyed. He was then commanded to sacrifice his son, and when he submitted, Allah replaced Ismail with a ram. He and Ismail built the Kaaba.",
     lesson:"True submission to Allah means trusting Him completely even when you don't understand why. Ibrahim's faith was tested at every level.",
     tags:['Khalilullah','Kaaba','Sacrifice','Fire','Tawhid'] },
-  { n:'Ismail',   ar:'إِسْمَاعِيل', num:4, icon:'🏗️', title:'Helper of the Kaaba',   vid:'0PqaQEgrNSs',
+  { n:'Ismail',   ar:'إِسْمَاعِيل', num:4, icon:'🏗️', title:'Helper of the Kaaba',   vid:'_nKqgSky4Sg',
     bg:'linear-gradient(135deg,#efebe9,#d7ccc8)',
     story:"Ismail ﷺ was left as an infant in the barren valley of Mecca with his mother Hajar. When she ran between Safa and Marwa in search of water, Allah caused the Zamzam spring to gush from the ground. Ismail grew up in Mecca, learned Arabic from the Jurhum tribe, and helped his father Ibrahim build the Kaaba — the first house of worship on earth.",
     lesson:"Trust in Allah's provision. Hajar's trust and running between Safa and Marwa became an act of worship for all time in Hajj.",
     tags:['Zamzam','Kaaba','Safa & Marwa','Mecca'] },
-  { n:'Musa',     ar:'مُوسَى',   num:5,  icon:'🪄', title:'The One Who Spoke to Allah', vid:'PFCTEIiMuww',
-    bg:'linear-gradient(135deg,#e8eaf6,#c5cae9)',
+  { n:'Musa',     ar:'مُوسَى',   num:5,  icon:'🪄', title:'The One Who Spoke to Allah', vid:'dlA_UuwzL54',
+    bg:'linear-gradient(135deg,#e8eaf6 0%,#c5cae9 50%,#9fa8da 100%)',
     story:"Musa ﷺ was born when Pharaoh was killing newborn boys. His mother placed him in a basket in the Nile and he was found by Pharaoh's family. He grew up in the palace. After accidentally killing a man, he fled to Madyan. Allah spoke to him directly at the burning bush and sent him back to free the Israelites from slavery. He parted the Red Sea, received the Torah, and led his people for 40 years.",
     lesson:"Allah prepares His servants for great missions through trials. Growing up in the house of the enemy was Allah's plan all along.",
     tags:['Pharaoh','Red Sea','Torah','Spoke to Allah'] },
   { n:'Dawud',    ar:'دَاوُد',   num:6,  icon:'🎵', title:'King, Prophet & Psalmist', vid:'uI3v_emZ0VY',
-    bg:'linear-gradient(135deg,#f3e5f5,#e1bee7)',
+    bg:'linear-gradient(135deg,#f3e5f5 0%,#e1bee7 50%,#ce93d8 100%)',
     story:"Dawud ﷺ killed the giant Jalut (Goliath) as a young man with a sling. Allah gave him the kingdom of Israel and the Zabur (Psalms). He had the most beautiful voice — when he recited, birds and mountains would join in glorifying Allah. He was known for his justice and his deep worship, fasting every other day throughout his life.",
     lesson:"Gratitude for gifts. Allah gave Dawud a beautiful voice — he used it only for the glorification of Allah.",
     tags:['Goliath','Zabur','King','Beautiful Voice'] },
   { n:'Sulaiman', ar:'سُلَيْمَان', num:7, icon:'👑', title:'King of Prophets',       vid:'cxLPytuySn0',
-    bg:'linear-gradient(135deg,#fff8e1,#ffecb3)',
+    bg:'linear-gradient(135deg,#fff8e1 0%,#ffecb3 50%,#ffe082 100%)',
     story:"Sulaiman ﷺ was given the greatest kingdom in history — he commanded humans, jinn, animals, and the wind. He understood the language of birds and animals. He built the great Temple in Jerusalem. The Queen of Sheba, Bilqis, came to him and accepted Islam. Yet with all this power, he was deeply humble and always grateful to Allah.",
     lesson:"True power comes with humility. Sulaiman had the greatest earthly kingdom yet remained the most grateful servant.",
     tags:['Jinn','Animals','Wind','Queen of Sheba','Kingdom'] },
-  { n:'Yunus',    ar:'يُونُس',   num:8,  icon:'🐋', title:'The Man of the Whale',   vid:'eYfrQnLnJxU',
-    bg:'linear-gradient(135deg,#e0f7fa,#b2ebf2)',
+  { n:'Yunus',    ar:'يُونُس',   num:8,  icon:'🐋', title:'The Man of the Whale',   vid:'2c48V4fSqco',
+    bg:'linear-gradient(135deg,#e0f7fa 0%,#b2ebf2 50%,#80deea 100%)',
     story:"Yunus ﷺ left his people without Allah's permission when they rejected his message. He boarded a ship caught in a terrible storm. The passengers drew lots to throw someone overboard — the lot fell on Yunus. He was swallowed by a great whale. In its belly, in total darkness, he cried: There is no god but You, glory be to You — I was indeed among the wrongdoers. Allah answered and he was released.",
     lesson:"No darkness is so deep that Allah cannot hear you. Dhikr and sincere repentance are the greatest rescue.",
     tags:['Whale','Repentance','Darkness','Patience'] },
-  { n:'Isa',      ar:'عِيسَى',   num:9,  icon:'✨', title:'The Messiah, Spirit of Allah', vid:'y0pc95YEloA',
+  { n:'Isa',      ar:'عِيسَى',   num:9,  icon:'✨', title:'The Messiah, Spirit of Allah', vid:'l7s8R9ugb98',
     bg:'linear-gradient(135deg,#f3e5f5,#fce4ec)',
     story:"Isa ﷺ was born miraculously to the Virgin Maryam — with no father, by Allah's command. He spoke in the cradle. He healed the blind and lepers, raised the dead by Allah's permission, and breathed life into birds made of clay. He was given the Injeel (Gospel). When the disbelievers plotted to crucify him, Allah raised him up to the heavens. He will return before the Day of Judgment.",
     lesson:"Miracles come only from Allah. Isa's signs were gifts from Allah to prove his prophethood — not his own power.",
@@ -2450,85 +2738,85 @@ const PROPHETS = [
     lesson:"He is our living example in every aspect of life — how he ate, slept, spoke, led, forgave, and worshipped. Following his Sunnah is an act of love for Allah.",
     tags:['Seal of Prophets','Sunnah','Mercy to Mankind'] },
   { n:'Idris',    ar:'إِدْرِيس',   num:11, icon:'📜', title:'The Patient Scholar',
-    vid:'eGgNrs9UyRU',
-    bg:'linear-gradient(135deg,#e8f5e9,#c8e6c9)',
+    vid:'wR7cN4Aj3eQ',
+    bg:'linear-gradient(135deg,#e8f5e9 0%,#c8e6c9 50%,#a5d6a7 100%)',
     story:"Idris ﷺ was one of the earliest prophets, blessed with great knowledge. He is believed to be among the first humans to write. Allah says in the Quran: And We raised him to a high station (19:57). He was known for his devotion to worship and for teaching his people how to read, write, and sew — laying the foundations of early civilization.",
     lesson:"Knowledge combined with sincere worship elevates a person in Allah's sight. Idris combined pen and prayer — and Allah gave him an exalted rank.",
     tags:['Knowledge','Writing','Exalted Station','Patience'] },
   { n:'Hud',      ar:'هُود',      num:12, icon:'🌬️', title:"Messenger to the People of Aad",
-    vid:'Ub2SsLvzdjA',
-    bg:'linear-gradient(135deg,#efebe9,#f5f5f5)',
+    vid:'o4tcfC9LArs',
+    bg:'linear-gradient(135deg,#efebe9 0%,#d7ccc8 50%,#bcaaa4 100%)',
     story:"Hud ﷺ was sent to the mighty tribe of Aad in ancient South Arabia — a people of great physical strength who built towering monuments. They arrogantly rejected Hud's message and mocked him. Allah sent a ferocious wind that raged for 7 nights and 8 days, destroying everything. Only Hud and the believers survived.",
     lesson:"No amount of worldly power protects a person who rejects Allah. True strength lies in faith, not in physical might or material achievement.",
     tags:['Tribe of Aad','Wind','Arrogance','Punishment'] },
   { n:'Salih',    ar:'صَالِح',    num:13, icon:'🐪', title:'The She-Camel Prophet',
-    vid:'kHtxCfDNUSs',
-    bg:'linear-gradient(135deg,#fff3e0,#ffe0b2)',
+    vid:'_RUNc_lZBVA',
+    bg:'linear-gradient(135deg,#fff3e0 0%,#ffe0b2 50%,#ffcc80 100%)',
     story:"Salih ﷺ was sent to the tribe of Thamud who carved their homes from mountains. A miraculous she-camel emerged from solid rock as a divine sign. They were commanded to protect her and let her graze freely. Instead they hamstrung her — a direct act of defiance. Three days later, a thunderous blast destroyed the entire tribe. Only Salih and his followers were saved.",
     lesson:"Divine signs are given as mercy, not to be taken lightly. Transgressing Allah's clear limits, even once, can bring irreversible consequences.",
     tags:['Thamud','She-Camel','Sign of Allah','Punishment'] },
   { n:'Lut',      ar:'لُوط',      num:14, icon:'🌃', title:'The Messenger of Justice',
-    vid:'oYsNjZOBo-o',
+    vid:'am6y4Sh6XNc',
     bg:'linear-gradient(135deg,#eceff1,#cfd8dc)',
     story:"Lut ﷺ, nephew of Ibrahim, was sent to the people of Sodom who had fallen into vile immorality. Angels came to him in the form of beautiful guests. The townspeople rushed to his home. The angels blinded them. Allah commanded Lut to leave that night with his family. At dawn, the city was completely overturned — a punishment unlike any other in history.",
     lesson:"Standing for truth in a corrupt society is the ultimate test. Lut stood alone against his entire city — and Allah's protection was all he needed.",
     tags:['Sodom','Angels','Justice','Corruption','Destruction'] },
   { n:'Shuaib',   ar:'شُعَيب',    num:15, icon:'⚖️', title:'The Prophet of Business Ethics',
-    vid:'_9voHb5ZPTc',
-    bg:'linear-gradient(135deg,#e8f5e9,#dcedc8)',
+    vid:'W-zgP_0d6J0',
+    bg:'linear-gradient(135deg,#e8f5e9 0%,#dcedc8 50%,#c5e1a5 100%)',
     story:"Shuaib ﷺ was sent to the people of Madyan — merchants famous for cheating their customers with false scales. He warned them: Give full measure and weight. Do not deprive people of their due. They mocked and threatened him. Allah sent a scorching cloud of punishment that destroyed the wrongdoers. Shuaib and the believers were saved.",
     lesson:"Honesty in business is a religious duty. Cheating in trade, even in small amounts, is a form of corruption that invites divine accountability.",
     tags:['Madyan','Fair Scales','Business Ethics','Corruption'] },
   { n:'Yusuf',    ar:'يُوسُف',    num:16, icon:'👑', title:'The Most Beautiful Story',
-    vid:'_rH_FzyddkA',
+    vid:'2EDI8RCNWjo',
     bg:'linear-gradient(135deg,#fff8e1,#ffecb3)',
     story:"Yusuf ﷺ was thrown into a well by his jealous brothers, sold as a slave, falsely imprisoned — yet never lost faith. Through his God-given ability to interpret dreams he rose to become minister of Egypt. His brothers came begging during famine. He revealed himself, forgave them completely, and was reunited with his father Yaqub in one of the most emotional scenes in prophetic history.",
     lesson:"Patience, chastity, and complete trust in Allah's plan turn the lowest points into the greatest elevations. What looks like the end is often Allah's greatest beginning.",
     tags:['Beautiful Story','Patience','Dreams','Forgiveness','Egypt'] },
   { n:'Ayyub',    ar:'أَيُّوب',   num:17, icon:'💎', title:'The Prophet of Ultimate Patience',
-    vid:'etLBpjWmBtc',
+    vid:'SvcSVsgy09M',
     bg:'linear-gradient(135deg,#efebe9,#d7ccc8)',
     story:"Ayyub ﷺ had immense wealth, family, and health. Allah tested him by removing all three. For years he endured painful illness, loss, and poverty. He never complained publicly. He made a simple dua: Adversity has touched me, and You are the Most Merciful of the merciful. Allah healed him completely, restored his family doubled, and praised him in the Quran as an excellent servant — a true model of patience.",
     lesson:"The greatest tests fall on the greatest people. Ayyub is the definition of Sabr — not passive surrender, but active trust in Allah through the darkest storm.",
     tags:['Patience','Trial','Health','Restoration','Gratitude'] },
-  { n:'Shuaib',   ar:'شُعَيب',    num:18, icon:'🤝', title:'Dhul-Kifl — The Man of Promise',
-    vid:'T6Ujr43fXHU',
-    bg:'linear-gradient(135deg,#e8f5e9,#dcedc8)',
+  { n:'Dhul-Kifl',ar:'ذُو ٱلْكِفْل', num:18, icon:'🤝', title:'Dhul-Kifl — The Man of Promise',
+    vid:'yUfh3dEZVdY',
+    bg:'linear-gradient(135deg,#e8f5e9 0%,#dcedc8 50%,#c5e1a5 100%)',
     story:"Dhul-Kifl ﷺ is mentioned in the Quran (21:85, 38:48) among the patient ones. He pledged to judge with perfect justice, fast daily, and pray through the night — and he fulfilled every part of that covenant perfectly for his entire life. He was tested and provoked repeatedly but never broke his promise.",
     lesson:"Your word is your bond before Allah. Dhul-Kifl is in the Quran because he made a commitment and kept it, no matter how difficult. That is the mark of true righteousness.",
     tags:['Justice','Promise','Covenant','Patience'] },
   { n:'Ilyas',    ar:'إِلْيَاس',  num:19, icon:'🔥', title:'The Fearless Reformer',
-    vid:'BrXgLINRDMA',
+    vid:'I9pLrzaHpvY',
     bg:'linear-gradient(135deg,#ffe0b2,#fff3e0)',
     story:"Ilyas ﷺ (Elias) was sent to Baalbek in Lebanon where the people worshipped the idol Baal. He stood alone against an entire idol-worshipping civilization, calling them back to Allah. Most rejected him fiercely. The Quran gives him an eternal tribute: Peace be upon Ilyas! (37:130) — proving that standing for truth, even in total isolation, is never forgotten by Allah.",
     lesson:"When the entire world goes one way, a believer walks with Allah. Ilyas is praised in the Quran not for his numbers but for his courage to stand alone.",
     tags:['Idol Worship','Baalbek','Courage','Reform','Alone'] },
   { n:'Alyasa',   ar:'اليَسَع',   num:20, icon:'💧', title:'The Inheritor of Ilyas',
-    vid:'YSIIeHCTvBM',
+    vid:'e68MMjpCEIE',
     bg:'linear-gradient(135deg,#e0f7fa,#b2ebf2)',
     story:"Alyasa ﷺ (Elisha) was the student and successor of Ilyas. He continued his teacher's mission in a land that kept reverting to idol worship. He is praised alongside the greatest prophets in the Quran (6:86, 38:48). He performed miracles by Allah's permission — including purifying water and healing the sick — and maintained tawhid in a deeply difficult environment.",
     lesson:"Being a righteous successor to a great teacher is itself an honour. Alyasa inherited a hard mission and carried it faithfully — enough for Allah to place his name among the greatest in the Quran.",
     tags:['Succession','Mission','Miracle','Tawhid','Persistence'] },
   { n:'Zakariya', ar:'زَكَرِيَّا', num:21, icon:'🌿', title:'The Patient Father',
-    vid:'T0ljAxKnUcg',
+    vid:'CzAjhUZxsk4',
     bg:'linear-gradient(135deg,#e8f5e9,#c8e6c9)',
     story:"Zakariya ﷺ was elderly and his wife was barren. But standing alone in the prayer hall, he made dua: My Lord, do not leave me without an heir. A voice called back: We give you glad tidings of Yahya — a name We have given to no one before. Despite his age and apparent impossibility, he trusted Allah. Yahya was born — a prophet from birth, a miracle of answered prayer.",
     lesson:"Never consider a prayer too late or too impossible. Zakariya made dua past all human limits — and Allah answered. No sincere dua is ever wasted.",
     tags:['Old Age','Dua','Miracle','Hope','Yahya'] },
   { n:'Yahya',    ar:'يَحْيَى',   num:22, icon:'🌱', title:'Born Righteous from Day One',
-    vid:'-M6r0IMvcI0',
+    vid:'m_ID3RRFze0',
     bg:'linear-gradient(135deg,#f1f8e9,#dcedc8)',
     story:"Yahya ﷺ (John the Baptist) was a miracle child born to elderly parents. Allah gave him wisdom and judgement as a child: O Yahya! Take the Scripture with determination — and We gave him wisdom while yet a boy (19:12). He was described as one who confirmed the truth of Isa ﷺ. He lived a life of complete purity and asceticism, and died as a martyr for the truth.",
     lesson:"The greatest gift to a child is righteous upbringing and parents who make dua. Yahya is a model for what a human can become when raised in the love of Allah.",
     tags:['Miracle Birth','Wisdom','Martyr','Purity','Child Prophet'] },
   { n:'Harun',    ar:'هَارُون',   num:23, icon:'🗣️', title:'The Eloquent Brother of Musa',
-    vid:'xytfNi1q3NQ',
-    bg:'linear-gradient(135deg,#e3f2fd,#bbdefb)',
+    vid:'JZjPXlffz1Y',
+    bg:'linear-gradient(135deg,#e3f2fd 0%,#bbdefb 50%,#90caf9 100%)',
     story:"Harun ﷺ (Aaron) was Musa's elder brother and closest companion in prophethood. When Musa was sent to Pharaoh, he begged Allah: Give me Harun as my helper — he is more eloquent than I am. Allah granted this, making Harun a prophet alongside Musa. When Musa went to receive the Torah and was delayed, Harun struggled to stop the Israelites from falling into calf worship — but was overpowered.",
     lesson:"Brotherhood in faith and mission is a prophetic sunnah. Having a companion who supports you in calling to truth is a gift — Musa asked for his brother, and Allah gave him one.",
     tags:['Brotherhood','Eloquence','Musa','Prophethood','Helper'] },
   { n:'Isa',      ar:'عِيسَى',   num:24, icon:'✨', title:'The Messiah — Spirit of Allah',
-    vid:'y0pc95YEloA',
+    vid:'l7s8R9ugb98',
     bg:'linear-gradient(135deg,#f3e5f5,#fce4ec)',
     story:"Isa ﷺ (Jesus) was born miraculously to the Virgin Maryam without a father, by Allah's direct command: Be — and it is. He spoke in the cradle to defend his mother's honour. He healed the blind, the lepers, raised the dead — all by Allah's permission. He was given the Injeel (Gospel). When the enemies plotted to crucify him, Allah raised him to the heavens. He will return before the Day of Judgment to restore justice on earth.",
     lesson:"Miracles belong to Allah alone — Isa performed them only as signs pointing to the One who sent him. His return is one of the major signs of the Day of Judgment.",
