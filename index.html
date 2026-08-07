@@ -2507,6 +2507,21 @@ async function sendChat() {
   const txt=inp.value.trim(); if(!txt) return;
   addMsg(txt,'user'); inp.value=''; inp.style.height='';
   totChats++; localStorage.setItem('totChats',totChats); addTyping();
+  
+  // Check local KB first (verified accurate) before calling remote AI
+  const localAnswer = getAnswer(txt);
+  const isDefault = (localAnswer === KB.default);
+  
+  if (!isDefault) {
+    // We have a verified local answer — use it immediately
+    setTimeout(() => {
+      removeTyping();
+      addMsg(localAnswer, 'bot');
+    }, 600);
+    return;
+  }
+  
+  // No local match — try remote AI for general questions
   try {
     const r=await fetch('https://solas-e2b9da08.base44.app/functions/islamicAiProxy',{
       method:'POST',
