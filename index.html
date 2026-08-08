@@ -1778,31 +1778,41 @@ document.addEventListener('click', e => { if (!e.target.closest('#tfab') && !e.t
 // ================================================================
 function detectInAppBrowser() {
   const ua = navigator.userAgent || navigator.vendor || window.opera;
+  // Must be mobile AND have in-app browser signature
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(ua);
   const isWhatsApp = /WhatsApp/i.test(ua);
   const isInstagram = /Instagram/i.test(ua);
   const isFacebook = /FBAN|FBAV/i.test(ua);
   const isTwitter = /Twitter/i.test(ua);
   const isSnapchat = /Snapchat/i.test(ua);
   const isLine = /Line/i.test(ua);
-  return { isWhatsApp, isInstagram, isFacebook, isTwitter, isSnapchat, isLine, any: isWhatsApp || isInstagram || isFacebook || isTwitter || isSnapchat || isLine };
+  const any = isMobile && (isWhatsApp || isInstagram || isFacebook || isTwitter || isSnapchat || isLine);
+  return { isWhatsApp, isInstagram, isFacebook, isTwitter, isSnapchat, isLine, any };
+}
+function showInAppBanner() {
+  const banner = document.getElementById('inapp-notice');
+  if (banner) banner.classList.add('show');
+  const homeView = document.getElementById('view-home');
+  if (homeView) {
+    const existing = homeView.querySelector('.inapp-banner');
+    if (!existing) {
+      const hBanner = document.createElement('div');
+      hBanner.className = 'inapp-banner show';
+      hBanner.style.margin = '14px 16px';
+      hBanner.innerHTML = '<div class="inapp-banner-title">📱 Open in Browser for Audio</div><div class="inapp-banner-desc">Audio playback works best in your phone browser. Tap below.</div><a class="inapp-banner-btn" href="https://juz-amma-pro-max.vercel.app" target="_blank" rel="noopener">Open in Browser →</a>';
+      const firstCard = homeView.querySelector('.hcard') || homeView.querySelector('.hstats');
+      if (firstCard) firstCard.parentNode.insertBefore(hBanner, firstCard);
+    }
+  }
 }
 (function() {
   const d = detectInAppBrowser();
   if (d.any) {
-    document.addEventListener('DOMContentLoaded', function() {
-      const banner = document.getElementById('inapp-notice');
-      if (banner) banner.classList.add('show');
-      // Also show on home page
-      const homeView = document.getElementById('view-home');
-      if (homeView) {
-        const hBanner = document.createElement('div');
-        hBanner.className = 'inapp-banner show';
-        hBanner.style.margin = '14px 16px';
-        hBanner.innerHTML = '<div class="inapp-banner-title">📱 Open in Browser for Audio</div><div class="inapp-banner-desc">Audio playback works best in your phone browser. Tap below.</div><a class="inapp-banner-btn" href="https://juz-amma-pro-max.vercel.app" target="_blank" rel="noopener">Open in Browser →</a>';
-        const firstCard = homeView.querySelector('.hcard') || homeView.querySelector('.hstats');
-        if (firstCard) firstCard.parentNode.insertBefore(hBanner, firstCard);
-      }
-    });
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', showInAppBanner);
+    } else {
+      showInAppBanner();
+    }
   }
 })();
 
