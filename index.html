@@ -870,7 +870,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="hero-title">Juz Amma <em>Pro</em></div>
     <div class="hero-sub">Complete Juz 30 · Read · Listen · Memorize · Reflect</div>
     <div class="hero-stats">
-      <div class="hstat"><div class="hstat-n">37</div><div class="hstat-l">Surahs</div></div>
+      <div class="hstat"><div class="hstat-n">79</div><div class="hstat-l">Surahs</div></div>
       <div class="hstat"><div class="hstat-n" id="h-tasbih">0</div><div class="hstat-l">Tasbih</div></div>
       <div class="hstat"><div class="hstat-n" id="h-streak">0</div><div class="hstat-l">Streak</div></div>
     </div>
@@ -914,7 +914,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="ccard" onclick="goToView('list')">
       <div class="ccard-ico">📖</div>
       <div class="ccard-t">Read &amp; Listen</div>
-      <div class="ccard-s">All 37 Surahs · Arabic + English</div>
+      <div class="ccard-s">All 79 Surahs · Arabic + English</div>
     </div>
     <div class="ccard" onclick="goToView('memorize')">
       <div class="ccard-ico">🧠</div>
@@ -1398,7 +1398,7 @@ body { font-family:'Poppins',sans-serif;
       <div class="names-audio-status" id="names-audio-status">Beautiful continuous recitation</div>
     </div>
     <audio id="names-audio" preload="none" style="display:none">
-      <source src="https://archive.org/download/AsmaUlHusna99NamesofALLAH_201808/Asma-ul-Husna-99Nam-Download-From-YTPak.com.mp3" type="audio/mpeg">
+      <source src="https://archive.org/download/nasheeds2021/ILYAS%20MAO%20-%2099%20NAMES%20OF%20ALLAH%20-%20ASMA%20-%20UL%20-%20HUSNA.mp3" type="audio/mpeg">
     </audio>
     <div class="names-virtue">
       <p>The Prophet ﷺ said: "Allah has 99 names, 100 minus one. Whoever memorizes them will enter Paradise." <span>— Bukhari 2736</span></p>
@@ -1771,28 +1771,47 @@ document.addEventListener('click', e => { if (!e.target.closest('#tfab') && !e.t
 // QURAN
 // ================================================================
 async function loadQ() {
-  const cached = localStorage.getItem('juzAmma_pro_v4');
+  const cached = localStorage.getItem('juzAmma_pro_v5');
   if (cached) {
     try { qData=JSON.parse(cached); renderList(); populateMemSel(); return; } catch(e) {}
   }
   document.getElementById('surah-container').innerHTML = '<div style="padding:40px;text-align:center;color:var(--txt2)">⏳ Loading Juz Amma…<br><small>Connecting to server</small></div>';
   try {
-    const [ar, en] = await Promise.all([
-      fetch('https://api.alquran.cloud/v1/juz/30/quran-uthmani').then(r=>r.json()),
-      fetch('https://api.alquran.cloud/v1/juz/30/en.sahih').then(r=>r.json())
-    ]);
+    // Load Juz Amma (surah 78-114) + additional surahs (36-77 for Ya-Sin to An-Naba)
+    const juz30 = await fetch('https://api.alquran.cloud/v1/juz/30/quran-uthmani').then(r=>r.json());
+    const juz30en = await fetch('https://api.alquran.cloud/v1/juz/30/en.sahih').then(r=>r.json());
     let tmp = {};
-    ar.data.ayahs.forEach((a,i) => {
+    juz30.data.ayahs.forEach((a,i) => {
       const s = a.surah;
       if (!tmp[s.number]) tmp[s.number]={id:s.number,name:s.englishName,ar:s.name,verses:[]};
       let txt=a.text;
       if (a.numberInSurah===1 && s.number!==1 && txt.startsWith('بِسْمِ')) {
         const w=txt.split(' '); txt=w.length>4?w.slice(4).join(' '):txt;
       }
-      tmp[s.number].verses.push({a:txt, e:en.data.ayahs[i].text, n:a.numberInSurah});
+      tmp[s.number].verses.push({a:txt, e:juz30en.data.ayahs[i].text, n:a.numberInSurah});
     });
-    qData = Object.values(tmp);
-    localStorage.setItem('juzAmma_pro_v4', JSON.stringify(qData));
+    // Fetch additional surahs 36-77 (Ya-Sin to just before Juz Amma)
+    const extraSurahs = [];
+    for (let sid=36; sid<=77; sid++) extraSurahs.push(sid);
+    const extraAr = await fetch('https://api.alquran.cloud/v1/surah/'+extraSurahs.join(',')+'/quran-uthmani').then(r=>r.json());
+    const extraEn = await fetch('https://api.alquran.cloud/v1/surah/'+extraSurahs.join(',')+'/en.sahih').then(r=>r.json());
+    const extraArData = Array.isArray(extraAr.data) ? extraAr.data : [extraAr.data];
+    const extraEnData = Array.isArray(extraEn.data) ? extraEn.data : [extraEn.data];
+    extraArData.forEach((surah, si) => {
+      const enSurah = extraEnData[si];
+      if (!tmp[surah.number]) tmp[surah.number]={id:surah.number,name:surah.englishName,ar:surah.name,verses:[]};
+      surah.ayahs.forEach((a, ai) => {
+        let txt=a.text;
+        if (a.numberInSurah===1 && surah.number!==1 && txt.startsWith('بِسْمِ')) {
+          const w=txt.split(' '); txt=w.length>4?w.slice(4).join(' '):txt;
+        }
+        if (!tmp[surah.number].verses.find(v=>v.n===a.numberInSurah)) {
+          tmp[surah.number].verses.push({a:txt, e:enSurah.ayahs[ai] ? enSurah.ayahs[ai].text : '', n:a.numberInSurah});
+        }
+      });
+    });
+    qData = Object.values(tmp).sort((a,b)=>a.id-b.id);
+    localStorage.setItem('juzAmma_pro_v5', JSON.stringify(qData));
     renderList(); populateMemSel();
   } catch(e) {
     document.getElementById('surah-container').innerHTML = '<div style="padding:40px;text-align:center;color:#ef4444">⚠️ No internet.<br><small>Please connect and reload.</small></div>';
@@ -1895,8 +1914,39 @@ function toggleNight() { nightMode=!nightMode; localStorage.setItem('nightMode',
 // ================================================================
 // PLAYER
 // ================================================================
-function playV(sid, vidx) {
-  trackVerseRead();
+// ===== PRELOAD AUDIO SYSTEM =====
+let preloadAud = new Audio();
+preloadAud.preload = 'auto';
+let audioRetryCount = 0;
+const MAX_RETRIES = 3;
+
+function getVerseUrl(sid, vidx) {
+  const ss=String(sid).padStart(3,'0'), vv=String(vidx+1).padStart(3,'0');
+  return `https://everyayah.com/data/${reciter}/${ss}${vv}.mp3`;
+}
+
+function preloadNextVerse() {
+  const s=qData.find(x=>x.id===curS);
+  if (s && curV < s.verses.length-1) {
+    const nextUrl = getVerseUrl(curS, curV+1);
+    if (preloadAud.src !== nextUrl) {
+      preloadAud.src = nextUrl;
+      preloadAud.load();
+    }
+  } else {
+    // Try to preload first verse of next surah
+    const sIdx = qData.findIndex(x=>x.id===curS);
+    if (sIdx >= 0 && sIdx < qData.length-1) {
+      const nextS = qData[sIdx+1];
+      const nextUrl = getVerseUrl(nextS.id, 0);
+      preloadAud.src = nextUrl;
+      preloadAud.load();
+    }
+  }
+}
+
+function playV(sid, vidx, isRetry) {
+  if (!isRetry) { trackVerseRead(); audioRetryCount = 0; }
   curS=sid; curV=vidx; isPlaying=true;
   const su=qData.find(x=>x.id===sid), ve=su.verses[vidx];
   const pb=document.getElementById('pbar');
@@ -1907,9 +1957,35 @@ function playV(sid, vidx) {
   document.getElementById('p-title').innerText=su.name;
   document.getElementById('p-sub').innerText=`Verse ${ve.n||vidx+1} / ${su.verses.length}`;
   document.getElementById('btn-play').innerHTML='⏸';
-  const ss=String(sid).padStart(3,'0'), vv=String(vidx+1).padStart(3,'0');
-  aud.src=`https://everyayah.com/data/${reciter}/${ss}${vv}.mp3`;
-  aud.playbackRate=speed; aud.play().catch(()=>{});
+  
+  const url = getVerseUrl(sid, vidx);
+  
+  // If preloaded audio matches, use it (swap aud and preloadAud)
+  if (preloadAud.src.includes(url.split('/').pop())) {
+    const tmp = aud; aud = preloadAud; preloadAud = tmp;
+    preloadAud.src = '';
+  } else {
+    aud.src = url;
+  }
+  
+  aud.playbackRate = speed;
+  aud.play().catch(() => {
+    audioRetryCount++;
+    if (audioRetryCount < MAX_RETRIES) {
+      const status = document.getElementById('p-sub');
+      if (status) status.innerText = `Buffering... (retry ${audioRetryCount}/${MAX_RETRIES})`;
+      setTimeout(() => playV(sid, vidx, true), 1500);
+    } else {
+      toast('⚠️ Network slow — tap play to retry');
+      isPlaying = false;
+      document.getElementById('btn-play').innerHTML = '▶';
+    }
+    return;
+  });
+  
+  // Start preloading next verse immediately
+  setTimeout(preloadNextVerse, 500);
+  
   clearInterval(progInt);
   progInt=setInterval(()=>{ if(aud.duration) document.getElementById('pfill').style.width=(aud.currentTime/aud.duration*100)+'%'; },400);
   lastRead={surahId:sid,surahName:su.name,verse:vidx}; localStorage.setItem('lastRead',JSON.stringify(lastRead));
@@ -1921,7 +1997,13 @@ function togglePlay() {
 function nextV() { const s=qData.find(x=>x.id===curS); if(s&&curV<s.verses.length-1) playV(curS,curV+1); else toast('✅ Surah complete!'); }
 function prevV() { if (curV>0) playV(curS,curV-1); }
 aud.onended = () => { if (autoPlay) nextV(); else { isPlaying=false; document.getElementById('btn-play').innerHTML='▶'; } };
-function changeReciter() { reciter=document.getElementById('reciter-sel').value; localStorage.setItem('reciter',reciter); if(isPlaying) playV(curS,curV); toast('🎙️ Reciter changed'); }
+aud.onerror = () => {
+  if (isPlaying && audioRetryCount < MAX_RETRIES) {
+    audioRetryCount++;
+    setTimeout(() => playV(curS, curV, true), 1500);
+  }
+};
+function changeReciter() { reciter=document.getElementById('reciter-sel').value; localStorage.setItem('reciter',reciter); preloadAud.src=''; if(isPlaying) playV(curS,curV); toast('🎙️ Reciter changed'); }
 function changeSpeed() { speed=parseFloat(document.getElementById('speed-sel').value); localStorage.setItem('speed',speed); aud.playbackRate=speed; toast('⚡ Speed: '+speed+'×'); }
 
 // ================================================================
