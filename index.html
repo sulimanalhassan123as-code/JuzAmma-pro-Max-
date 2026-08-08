@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Juz Amma Pro</title>
-<meta name="description" content="Complete Juz 30 Quran — Read, Listen, Memorize, Dhikr, AI Guide">
+<title>Quran Pro Max</title>
+<meta name="description" content="Complete Quran — Read, Listen, Memorize, Duas, Qibla, Zakat, Prayer Tracker, AI Guide">
 <meta name="theme-color" content="#10b981">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Juz Amma Pro">
+<meta name="apple-mobile-web-app-title" content="Quran Pro Max">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
 <link rel="apple-touch-icon" href="icons/icon-192x192.svg">
@@ -966,6 +966,16 @@ body { font-family:'Poppins',sans-serif;
 .hajj-step-tr { font-size:.72rem; color:var(--txt2); font-style:italic; }
 .hajj-warn { background:rgba(245,158,11,.1); border:1px solid rgba(245,158,11,.3); border-radius:10px; padding:10px 12px; font-size:.72rem; color:var(--txt2); margin:10px 0; line-height:1.5; }
 
+
+/* FULL SURAH AUDIO PLAYER */
+.fsap { display:flex; gap:8px; align-items:center; margin:10px 0; padding:10px; background:linear-gradient(135deg,rgba(16,185,129,.1),rgba(5,150,105,.05)); border:1px solid rgba(16,185,129,.2); border-radius:14px; flex-wrap:wrap; }
+.fsap-lbl { font-size:.78rem; font-weight:600; color:var(--txt); }
+.fsap-sel { background:var(--card); border:1px solid var(--bdr); border-radius:8px; padding:6px 10px; font-size:.75rem; color:var(--txt); }
+.fsap-btn { background:var(--p); border:none; color:#fff; padding:8px 16px; border-radius:20px; font-size:.78rem; cursor:pointer; font-weight:600; }
+.fsap-btn:active { transform:scale(.97); }
+.fsap-btn.playing { background:#ef4444; }
+.fsap-time { font-size:.7rem; color:var(--txt2); margin-left:6px; }
+
 </style>
 </head>
 <body>
@@ -987,10 +997,10 @@ body { font-family:'Poppins',sans-serif;
 <div class="hero">
     <div class="orb orb1"></div><div class="orb orb2"></div>
     <div class="hero-bism">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>
-    <div class="hero-title">Juz Amma <em>Pro</em></div>
-    <div class="hero-sub">Complete Juz 30 · Read · Listen · Memorize · Reflect</div>
+    <div class="hero-title">Quran <em>Pro</em></div>
+    <div class="hero-sub">114 Surahs · Read · Listen · Duas · Qibla · More</div>
     <div class="hero-stats">
-      <div class="hstat"><div class="hstat-n">79</div><div class="hstat-l">Surahs</div></div>
+      <div class="hstat"><div class="hstat-n">114</div><div class="hstat-l">Surahs</div></div>
       <div class="hstat"><div class="hstat-n" id="h-tasbih">0</div><div class="hstat-l">Tasbih</div></div>
       <div class="hstat"><div class="hstat-n" id="h-streak">0</div><div class="hstat-l">Streak</div></div>
     </div>
@@ -1149,7 +1159,7 @@ body { font-family:'Poppins',sans-serif;
   <div class="stickyh">
     <div class="hrow">
       <button class="btn-back" onclick="goToView('home')">← Home</button>
-      <div class="htitle">Juz Amma</div>
+      <div class="htitle">Full Quran</div>
       <div style="width:50px"></div>
     </div>
     <div class="srch-wrap"><span class="srch-ico">🔍</span><input class="srch" type="text" placeholder="Search surah…" id="srch" oninput="renderList(this.value)"></div>
@@ -1174,9 +1184,17 @@ body { font-family:'Poppins',sans-serif;
     <div class="read-tools">
       <select class="csel" id="reciter-sel" onchange="changeReciter()">
         <option value="Alafasy_128kbps">Mishary Alafasy</option>
-        <option value="Abu_Bakr_Ash-Shaatree_128kbps">Abu Bakr Ash-Shaatree</option>
-        <option value="Husary_128kbps">Mahmoud Al-Husary</option>
         <option value="Abdul_Basit_Murattal_192kbps">Abdul Basit</option>
+        <option value="Minshawy_Murattal_128kbps">Minshawi Murattal</option>
+        <option value="Husary_128kbps">Mahmoud Al-Husary</option>
+        <option value="Ghamadi_40kbps">Saad Al-Ghamdi</option>
+        <option value="Hudhaify_64kbps">Ali Al-Hudhaify</option>
+        <option value="Muhammad_Ayyoub_128kbps">Muhammad Ayyoub</option>
+        <option value="Saood_ash-Shuraym_128kbps">Saood Ash-Shuraym</option>
+        <option value="Abdullah_Basfar_192kbps">Abdullah Basfar</option>
+        <option value="Ali_Jaber_64kbps">Ali Jaber</option>
+        <option value="Abu_Bakr_Ash-Shaatree_128kbps">Abu Bakr Ash-Shaatree</option>
+        <option value="Maher_AlMuaiqly_64kbps">Maher Al-Muaiqly</option>
       </select>
       <select class="csel" id="speed-sel" onchange="changeSpeed()">
         <option value="0.75">0.75×</option>
@@ -1192,7 +1210,18 @@ body { font-family:'Poppins',sans-serif;
       <button class="ract" id="btn-night" onclick="toggleNight()">🌙 Night</button>
     </div>
   </div>
-  <div id="verse-container"></div>
+  <div class="fsap" id="fsap-bar">
+      <span class="fsap-lbl">🎵 Full Surah:</span>
+      <select class="fsap-sel" id="fsap-reciter" onchange="changeFullSurahReciter()">
+        <option value="afs|server8.mp3quran.net">Mishary Alafasy</option>
+        <option value="basit|server7.mp3quran.net">Abdul Basit (Full)</option>
+        <option value="minsh|server10.mp3quran.net">Minshawi (Full)</option>
+        <option value="maher|server12.mp3quran.net">Maher Al-Muaiqly</option>
+      </select>
+      <button class="fsap-btn" id="fsap-play" onclick="toggleFullSurah()">▶ Play Full Surah</button>
+      <span class="fsap-time" id="fsap-time"></span>
+    </div>
+    <div id="verse-container"></div>
 </div>
 
 <!-- ════════════════ MEMORIZE ════════════════ -->
@@ -1290,7 +1319,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="aichip" onclick="ask(this.innerText)">5 Pillars of Islam</div>
     <div class="aichip" onclick="ask(this.innerText)">How to do Wudu?</div>
     <div class="aichip" onclick="ask(this.innerText)">Benefits of Tasbih</div>
-    <div class="aichip" onclick="ask(this.innerText)">What is Juz Amma?</div>
+    <div class="aichip" onclick="ask(this.innerText)">What is the Quran?</div>
     <div class="aichip" onclick="ask(this.innerText)">Night Prayer</div>
     <div class="aichip" onclick="ask(this.innerText)">Islamic months</div>
   </div>
@@ -1597,7 +1626,7 @@ body { font-family:'Poppins',sans-serif;
     <!-- Overall completion -->
     <div class="prog-overall">
       <div class="prog-overall-hd">
-        <div class="prog-overall-title">📗 Juz Amma Completion</div>
+        <div class="prog-overall-title">📗 Quran Completion (114 Surahs)</div>
         <div class="prog-overall-pct" id="po-pct">0%</div>
       </div>
       <div class="prog-bar-wrap">
@@ -1880,6 +1909,7 @@ function goToView(v) {
   if (v === 'hadith40') initHadith40();
   if (v === 'ptracker') initPTracker();
   if (v === 'hajj') initHajj();
+  if (fsapPlaying && v !== 'read') { fsapAudio.pause(); fsapPlaying = false; updateFsapBtn(); }
   if (v === 'tajweed')  initTajweed();
   if ((v === 'list' || v === 'memorize') && !qData.length) loadQ();
 
@@ -1975,13 +2005,13 @@ function showInAppBanner() {
 // QURAN
 // ================================================================
 async function loadQ() {
-  const cached = localStorage.getItem('juzAmma_pro_v5');
+  const cached = localStorage.getItem('quranProMax_v6');
   if (cached) {
     try { qData=JSON.parse(cached); renderList(); populateMemSel(); return; } catch(e) {}
   }
-  document.getElementById('surah-container').innerHTML = '<div style="padding:40px;text-align:center;color:var(--txt2)">⏳ Loading Juz Amma…<br><small>Connecting to server</small></div>';
+  document.getElementById('surah-container').innerHTML = '<div style="padding:40px;text-align:center;color:var(--txt2)">⏳ Loading Quran…<br><small>Connecting to server</small></div>';
   try {
-    // Load Juz Amma (surah 78-114) + additional surahs (36-77 for Ya-Sin to An-Naba)
+    // Load full Quran (all 114 surahs)
     const juz30 = await fetch('https://api.alquran.cloud/v1/juz/30/quran-uthmani').then(r=>r.json());
     const juz30en = await fetch('https://api.alquran.cloud/v1/juz/30/en.sahih').then(r=>r.json());
     let tmp = {};
@@ -1994,9 +2024,9 @@ async function loadQ() {
       }
       tmp[s.number].verses.push({a:txt, e:juz30en.data.ayahs[i].text, n:a.numberInSurah});
     });
-    // Fetch additional surahs 36-77 (Ya-Sin to just before Juz Amma)
+    // Fetch additional surahs 1-77 (Al-Fatihah to just before Juz Amma)
     const extraSurahs = [];
-    for (let sid=36; sid<=77; sid++) extraSurahs.push(sid);
+    for (let sid=1; sid<=77; sid++) extraSurahs.push(sid);
     const extraAr = await fetch('https://api.alquran.cloud/v1/surah/'+extraSurahs.join(',')+'/quran-uthmani').then(r=>r.json());
     const extraEn = await fetch('https://api.alquran.cloud/v1/surah/'+extraSurahs.join(',')+'/en.sahih').then(r=>r.json());
     const extraArData = Array.isArray(extraAr.data) ? extraAr.data : [extraAr.data];
@@ -2015,7 +2045,7 @@ async function loadQ() {
       });
     });
     qData = Object.values(tmp).sort((a,b)=>a.id-b.id);
-    localStorage.setItem('juzAmma_pro_v5', JSON.stringify(qData));
+    localStorage.setItem('quranProMax_v6', JSON.stringify(qData));
     renderList(); populateMemSel();
   } catch(e) {
     document.getElementById('surah-container').innerHTML = '<div style="padding:40px;text-align:center;color:#ef4444">⚠️ No internet.<br><small>Please connect and reload.</small></div>';
@@ -2109,7 +2139,7 @@ function toggleBm(e,sid,vidx) {
   toast(bookmarks[sid].includes(vidx)?'🔖 Bookmarked':'Bookmark removed');
 }
 function wrapTxt(ctx,text,maxW){const words=(text||'').split(' ');let line='',lines=[];for(const w of words){const t=line+w+' ';if(ctx.measureText(t).width>maxW&&line!==''){lines.push(line.trim());line=w+' ';}else{line=t;}}if(line.trim())lines.push(line.trim());return lines;}
-function shareV(e,sid,vidx){e.stopPropagation();const s=qData.find(x=>x.id===sid);if(!s)return;const v=s.verses[vidx];try{const c=document.createElement('canvas');c.width=800;c.height=420;const x=c.getContext('2d');const g=x.createLinearGradient(0,0,800,420);g.addColorStop(0,'#0f1923');g.addColorStop(1,'#1a3a5c');x.fillStyle=g;x.fillRect(0,0,800,420);x.strokeStyle='#c9a84c';x.lineWidth=2;x.strokeRect(10,10,780,400);x.fillStyle='#fff';x.font='bold 32px serif';x.textAlign='center';const arl=wrapTxt(x,v.a,680);let ay=120;arl.forEach(l=>{x.fillText(l,400,ay);ay+=48;});x.font='15px sans-serif';x.fillStyle='#90aec8';const enl=wrapTxt(x,v.e||'',720);let ey=ay+28;enl.forEach(l=>{x.fillText(l,400,ey);ey+=24;});x.font='bold 13px sans-serif';x.fillStyle='#c9a84c';x.fillText('📖 '+s.name+' · Verse '+(vidx+1)+' · Juz Amma Pro Max',400,405);c.toBlob(blob=>{const url=URL.createObjectURL(blob);if(navigator.share&&navigator.canShare({files:[new File([blob],'ayah.png',{type:'image/png'})]})){navigator.share({files:[new File([blob],'ayah.png',{type:'image/png'})],title:s.name});}else{const a=document.createElement('a');a.href=url;a.download='ayah.png';a.click();}toast('📤 Ayah image ready!');},'image/png');return;}catch(ex){}
+function shareV(e,sid,vidx){e.stopPropagation();const s=qData.find(x=>x.id===sid);if(!s)return;const v=s.verses[vidx];try{const c=document.createElement('canvas');c.width=800;c.height=420;const x=c.getContext('2d');const g=x.createLinearGradient(0,0,800,420);g.addColorStop(0,'#0f1923');g.addColorStop(1,'#1a3a5c');x.fillStyle=g;x.fillRect(0,0,800,420);x.strokeStyle='#c9a84c';x.lineWidth=2;x.strokeRect(10,10,780,400);x.fillStyle='#fff';x.font='bold 32px serif';x.textAlign='center';const arl=wrapTxt(x,v.a,680);let ay=120;arl.forEach(l=>{x.fillText(l,400,ay);ay+=48;});x.font='15px sans-serif';x.fillStyle='#90aec8';const enl=wrapTxt(x,v.e||'',720);let ey=ay+28;enl.forEach(l=>{x.fillText(l,400,ey);ey+=24;});x.font='bold 13px sans-serif';x.fillStyle='#c9a84c';x.fillText('📖 '+s.name+' · Verse '+(vidx+1)+' · Quran Pro Max',400,405);c.toBlob(blob=>{const url=URL.createObjectURL(blob);if(navigator.share&&navigator.canShare({files:[new File([blob],'ayah.png',{type:'image/png'})]})){navigator.share({files:[new File([blob],'ayah.png',{type:'image/png'})],title:s.name});}else{const a=document.createElement('a');a.href=url;a.download='ayah.png';a.click();}toast('📤 Ayah image ready!');},'image/png');return;}catch(ex){}
 }
 function toggleTrans() { showTrans=!showTrans; localStorage.setItem('showTrans',showTrans); document.getElementById('btn-trans').classList.toggle('on',showTrans); const s=qData.find(x=>x.id===curS); if(s) renderVerses(s); if(isPlaying){const c=document.getElementById(`vc-${curS}-${curV}`);if(c){c.classList.add('playing');c.scrollIntoView({behavior:'smooth',block:'center'});}} }
 function toggleAuto() { autoPlay=!autoPlay; localStorage.setItem('autoPlay',autoPlay); document.getElementById('btn-auto').classList.toggle('on',autoPlay); toast(autoPlay?'▶ Auto-play on':'Auto-play off'); }
@@ -2565,10 +2595,10 @@ const KB={
   prayer:"Muslims perform 5 daily prayers: Fajr (dawn), Dhuhr (midday), Asr (afternoon), Maghrib (sunset), and Isha (night). Prayer is the 2nd pillar of Islam — the Prophet ﷺ said: 'The key to Paradise is prayer.' (Tirmidhi)",
   wudu:"Wudu (ablution) is purification before prayer. The 6 obligatory acts: wash face (including mouth & nose), wash arms to elbows, wipe head, wash feet to ankles, do them in order, and do them consecutively. The Prophetic method ﷺ (Bukhari 1934): 1) Make intention + say Bismillah 2) Wash hands 3× 3) Rinse mouth 3× 4) Rinse nose 3× 5) Wash face 3× 6) Wash right arm to elbow 3×, then left 3× 7) Wipe head once (front to back, back to front) 8) Wipe ears once 9) Wash right foot to ankle 3×, then left 3× 10) Recite the shahada dua. Tap the Wudu Guide on the homepage for the full step-by-step with scholarly opinions from all 4 madhabs.",
   tasbih:"Tasbih is glorifying Allah. After each prayer: SubhanAllah (33×) + Alhamdulillah (33×) + Allahu Akbar (34×) = 100 total. This is the Tasbeeh of Fatimah. The Quran says: 'In the remembrance of Allah do hearts find rest.' (13:28)",
-  juzz:"Juz Amma (جزء عم) is the 30th section of the Quran containing 37 surahs, from An-Naba (78) to An-Nas (114). These shorter surahs are the first memorized by Muslims worldwide.",
+  juzz:"The Quran contains 114 surahs (chapters) revealed to Prophet Muhammad ﷺ over 23 years. This app includes the full Quran with audio recitations, translations, and memorization tools.",
   ramadan:"Ramadan is the 9th Islamic month — Muslims fast from Fajr to Maghrib. The Quran was revealed in Ramadan. Laylatul Qadr in the last 10 nights is worth more than 1,000 months of worship.",
   pillars:"The 5 Pillars of Islam: 1) Shahada — testimony of faith. 2) Salah — 5 daily prayers. 3) Zakat — 2.5% annual charity. 4) Sawm — fasting in Ramadan. 5) Hajj — pilgrimage to Mecca once in a lifetime.",
-  quran:"The Quran is the holy book of Islam, revealed to Prophet Muhammad ﷺ over 23 years. It contains 114 surahs and 6,236 verses — the literal word of Allah, perfectly preserved.",
+  quran:"The Quran is the holy book of Islam, revealed to Prophet Muhammad ﷺ over 23 years. It contains 114 surahs and 6,236 verses. Quran Pro Max includes the complete Quran with audio recitations, translations, and memorization tools, plus Daily Duas, Qibla, Zakat Calculator, Hijri Calendar, 40 Hadith, Prayer Tracker, and Hajj guide.",
   prophet:"Prophet Muhammad ﷺ (born 570 CE, Mecca) is the final prophet of Allah. He received the first revelation at 40 in the Cave of Hira. He is described in the Quran as 'a mercy to all worlds.' (21:107)",
   hajj:"Hajj is the annual pilgrimage to Mecca during Dhul Hijja, obligatory once for every able Muslim. Key rituals: Tawaf (7 circles of Ka'bah), Sa'i (Safa-Marwa), Standing at Arafah, and stoning at Jamarat.",
   zakat:"Zakat is the 3rd pillar — 2.5% of savings above the nisab given annually to the poor, needy, those in debt, and others (Quran 9:60). It purifies wealth and strengthens community.",
@@ -5321,6 +5351,65 @@ function renderHajj(tab) {
     '<div class="hajj-step"><div class="hajj-step-hd"><div class="hajj-step-num">' + s.n + '</div><div class="hajj-step-t">' + s.t + '</div></div><div class="hajj-step-body">' + s.body + (s.ar ? '<div class="hajj-step-ar">' + s.ar + '</div>' : '') + (s.tr ? '<div class="hajj-step-tr">' + s.tr + '</div>' : '') + '</div></div>'
   ).join('') + '<div class="hajj-warn">This is a simplified guide. Please consult a qualified scholar for complete rulings.</div>';
 }
+
+
+
+// FULL SURAH AUDIO PLAYER
+let fsapAudio = new Audio();
+let fsapPlaying = false;
+
+function getFullSurahUrl() {
+  const sel = document.getElementById('fsap-reciter').value;
+  const [code, server] = sel.split('|');
+  if (!curS) return '';
+  const ss = String(curS).padStart(3, '0');
+  return 'https://' + server + '/' + code + '/' + ss + '.mp3';
+}
+
+function changeFullSurahReciter() {
+  if (fsapPlaying) { fsapAudio.pause(); fsapPlaying = false; updateFsapBtn(); }
+  fsapAudio.src = '';
+}
+
+function toggleFullSurah() {
+  if (!curS) { toast('Open a surah first'); return; }
+  if (fsapPlaying) {
+    fsapAudio.pause();
+    fsapPlaying = false;
+  } else {
+    const url = getFullSurahUrl();
+    if (!url) return;
+    fsapAudio.src = url;
+    fsapAudio.play().then(() => {
+      fsapPlaying = true;
+      if (isPlaying) { stopPlayback(); }
+    }).catch(e => {
+      toast('Audio loading... tap again');
+      fsapAudio.src = url;
+      fsapAudio.play();
+      fsapPlaying = true;
+    });
+    fsapAudio.onended = () => { fsapPlaying = false; updateFsapBtn(); };
+    fsapAudio.ontimeupdate = () => {
+      const t = document.getElementById('fsap-time');
+      if (t && fsapAudio.duration) {
+        const cur = Math.floor(fsapAudio.currentTime / 60) + ':' + String(Math.floor(fsapAudio.currentTime % 60)).padStart(2,'0');
+        const dur = Math.floor(fsapAudio.duration / 60) + ':' + String(Math.floor(fsapAudio.duration % 60)).padStart(2,'0');
+        t.textContent = cur + ' / ' + dur;
+      }
+    };
+  }
+  updateFsapBtn();
+}
+
+function updateFsapBtn() {
+  const btn = document.getElementById('fsap-play');
+  if (!btn) return;
+  if (fsapPlaying) { btn.textContent = '⏸ Stop'; btn.classList.add('playing'); }
+  else { btn.textContent = '▶ Play Full Surah'; btn.classList.remove('playing'); }
+}
+
+// Stop full surah when switching views
 
 </script>
 
