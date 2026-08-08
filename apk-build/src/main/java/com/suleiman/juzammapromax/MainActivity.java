@@ -16,6 +16,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.webkit.JavascriptInterface;
 import android.webkit.GeolocationPermissions;
 import android.webkit.PermissionRequest;
@@ -25,6 +27,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
+import java.util.Locale;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,11 +36,13 @@ import androidx.core.content.ContextCompat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
 
     private WebView webView;
     private static final String APP_URL = "https://juz-amma-pro-max.vercel.app";
     private SharedPreferences prefs;
+    private TextToSpeech nativeTts;
+    private boolean nativeTtsReady = false;
 
     // All permissions to request at startup
     private final String[] ALL_PERMISSIONS = {
@@ -106,6 +111,11 @@ public class MainActivity extends AppCompatActivity {
 
         // JavaScript bridge for native alarm scheduling
         webView.addJavascriptInterface(new AzanBridge(), "AndroidBridge");
+
+        // Native Android Text-to-Speech — used because the plain WebView does NOT
+        // implement the Web Speech API (speechSynthesis), so JS-side TTS silently
+        // fails inside this APK. This gives the web app a reliable native fallback.
+        nativeTts = new TextToSpeech(this, this);
 
         // Geolocation support
         webView.setWebChromeClient(new WebChromeClient() {
@@ -215,6 +225,15 @@ public class MainActivity extends AppCompatActivity {
             prefs.edit().putBoolean("azan_enabled", false).apply();
         }
 
+        // Stop any currently-playing Azan audio from the web UI
+        @JavascriptInterface
+        public void stopAzanPlayback() {
+            Intent serviceIntent = new Intent(MainActivity.this, AzanAlarmService.class);
+            stopService(serviceIntent);
+            NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            if (nm != null) nm.cancel(1001);
+        }
+
         @JavascriptInterface
         public boolean canScheduleExactAlarms() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -258,6 +277,87 @@ public class MainActivity extends AppCompatActivity {
                 v.vibrate(pattern, -1);
             }
         }
+
+        // ===== Native Text-to-Speech (fixes audio not working in APK) =====
+        // The web app calls AndroidBridge.speak(text, lang) instead of the
+        // browser's speechSynthesis API, which plain WebView doesn't support.
+        @JavascriptInterface
+        public boolean isNativeTtsAvailable() {
+            return nativeTtsReady;
+        }
+
+        @JavascriptInterface
+        public void speak(final String text, final String lang) {
+            speakWithRate(text, lang, 0.85f);
+        }
+
+        @JavascriptInterface
+        public void speakWithRate(final String text, final String lang, final float rate) {
+            if (nativeTts == null) return;
+            runOnUiThread(() -> {
+                if (!nativeTtsReady) {
+                    notifyTtsDone();
+                    return;
+                }
+                Locale locale = Locale.US;
+                try {
+                    if (lang != null && lang.startsWith("ar")) {
+                        Locale arLocale = new Locale("ar");
+                        int avail = nativeTts.isLanguageAvailable(arLocale);
+                        if (avail == TextToSpeech.LANG_AVAILABLE
+                            || avail == TextToSpeech.LANG_COUNTRY_AVAILABLE
+                            || avail == TextToSpeech.LANG_COUNTRY_VAR_AVAILABLE) {
+                            locale = arLocale;
+                        }
+                    }
+                } catch (Exception e) { /* fall back to default locale */ }
+                nativeTts.setLanguage(locale);
+                nativeTts.setSpeechRate(rate > 0 ? rate : 0.85f);
+                String utteranceId = "jamz_tts_" + System.currentTimeMillis();
+                nativeTts.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId);
+            });
+        }
+
+        @JavascriptInterface
+        public void stopSpeaking() {
+            runOnUiThread(() -> {
+                if (nativeTts != null) nativeTts.stop();
+            });
+        }
+    }
+
+    // Notifies the web page that the current native TTS utterance has finished,
+    // so the JS-side queue (Dua Listen / Play All) can move to the next item.
+    private void notifyTtsDone() {
+        runOnUiThread(() -> {
+            if (webView != null) {
+                webView.evaluateJavascript(
+                    "window.__nativeTtsDone && window.__nativeTtsDone();", null);
+            }
+        });
+    }
+
+    @Override
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS && nativeTts != null) {
+            nativeTtsReady = true;
+            nativeTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                @Override
+                public void onStart(String utteranceId) { }
+
+                @Override
+                public void onDone(String utteranceId) {
+                    notifyTtsDone();
+                }
+
+                @Override
+                public void onError(String utteranceId) {
+                    notifyTtsDone();
+                }
+            });
+        } else {
+            nativeTtsReady = false;
+        }
     }
 
     private void createNotificationChannel() {
@@ -265,13 +365,14 @@ public class MainActivity extends AppCompatActivity {
             NotificationChannel channel = new NotificationChannel(
                 "azan_channel",
                 "Azan Alarm",
-                NotificationManager.IMPORTANCE_HIGH
+                NotificationManager.IMPORTANCE_DEFAULT
             );
-            channel.setDescription("Azan prayer time notifications");
+            channel.setDescription("Azan prayer time notifications — tap STOP to silence");
             channel.enableVibration(true);
-            channel.setVibrationPattern(new long[]{500, 200, 500, 200, 500});
+            channel.setVibrationPattern(new long[]{300, 100, 300, 100, 300});
             channel.enableLights(true);
             channel.setShowBadge(true);
+            channel.setSound(null, null);  // Sound comes from MediaPlayer, not the channel
 
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
@@ -350,5 +451,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (nativeTts != null) {
+            nativeTts.stop();
+            nativeTts.shutdown();
+        }
+        super.onDestroy();
     }
 }

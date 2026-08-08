@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="gold">#c9a84c</color>
+    <color name="primary">#10B981</color>
+    <color name="primary_dark">#0d2137</color>
+    <color name="white">#FFFFFF</color>
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:statusBarColor">#0d2137</item>
+    </style>
+</resources>

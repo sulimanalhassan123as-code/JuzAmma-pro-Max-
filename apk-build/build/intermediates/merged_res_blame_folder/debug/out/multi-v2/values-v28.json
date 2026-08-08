@@ -4,7 +4,7 @@
             "outputFile": "com.suleiman.juzammapromax-mergeDebugResources-30:/values-v28/values-v28.xml",
             "map": [
                 {
-                    "source": "/root/.gradle/caches/transforms-3/2e9dfeaf32fde2aea20351ede11f35b6/transformed/material-1.11.0/res/values-v28/values-v28.xml",
+                    "source": "/root/.gradle/caches/8.11.1/transforms/3bb7d76448b0a6d1d7044d45b9299888/transformed/material-1.11.0/res/values-v28/values-v28.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -23,7 +23,7 @@
                     }
                 },
                 {
-                    "source": "/root/.gradle/caches/transforms-3/2579be1c4f6af27f5d5f024623ad7d72/transformed/appcompat-1.6.1/res/values-v28/values-v28.xml",
+                    "source": "/root/.gradle/caches/8.11.1/transforms/365a1cd015c9628845a54dbdad2c9a4e/transformed/appcompat-1.6.1/res/values-v28/values-v28.xml",
                     "from": {
                         "startLines": "2,3,4,8",
                         "startColumns": "4,4,4,4",

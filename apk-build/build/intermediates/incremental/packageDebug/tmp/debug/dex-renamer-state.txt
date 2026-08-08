@@ -1,9 +1,9 @@
-#2022-01-01 05:00:00 UTC
-base.2=/tmp/juzpro-current/apk-build/build/intermediates/dex/debug/mergeProjectDexDebug/15/classes.dex
+#Sat Aug 08 07:55:49 UTC 2026
+base.2=/tmp/juzamma-pro-max/apk-build/build/intermediates/dex/debug/mergeProjectDexDebug/15/classes.dex
 path.2=15/classes.dex
-base.1=/tmp/juzpro-current/apk-build/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
+base.1=/tmp/juzamma-pro-max/apk-build/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
 path.1=0/classes.dex
-base.0=/tmp/juzpro-current/apk-build/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
+base.0=/tmp/juzamma-pro-max/apk-build/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
 renamed.2=classes3.dex
 renamed.1=classes2.dex
 renamed.0=classes.dex

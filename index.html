@@ -2864,32 +2864,59 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// ===== UNIVERSAL TTS (native Android bridge first, Web Speech API fallback) =====
+// Plain Android WebView (used by our APK wrapper) does NOT implement the Web
+// Speech API, so speechSynthesis silently fails there. The APK exposes a real
+// native TextToSpeech engine via AndroidBridge.speakWithRate(text, lang, rate),
+// which this helper prefers whenever it's present, falling back to the browser
+// Web Speech API on normal web/PWA usage.
+function hasNativeTts() {
+  return !!(window.AndroidBridge && typeof window.AndroidBridge.speakWithRate === 'function');
+}
+function universalSpeak(text, lang, rate, onDone) {
+  if (hasNativeTts()) {
+    window.__nativeTtsDone = () => { window.__nativeTtsDone = null; if (onDone) onDone(); };
+    try {
+      window.AndroidBridge.speakWithRate(text, lang || 'en', rate || 0.9);
+      return true;
+    } catch(e) { /* fall through to Web Speech API */ }
+  }
+  if ('speechSynthesis' in window) {
+    try {
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = rate || 0.9;
+      u.pitch = 1;
+      const voices = speechSynthesis.getVoices();
+      const voice = voices.find(v => v.lang.startsWith(lang || 'en'));
+      if (voice) u.voice = voice; else if (lang) u.lang = lang;
+      u.onend = () => { if (onDone) onDone(); };
+      u.onerror = () => { if (onDone) onDone(); };
+      speechSynthesis.speak(u);
+      return true;
+    } catch(e) { /* fall through to no-support */ }
+  }
+  return false; // no TTS available on this device/browser at all
+}
+function universalStopSpeaking() {
+  if (hasNativeTts()) {
+    try { window.AndroidBridge.stopSpeaking(); } catch(e) {}
+  }
+  window.__nativeTtsDone = null;
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+}
+
 // ===== WUDU AUDIO (Text-to-Speech) =====
 let wuduSpeech = null;
 let wuduReadingAll = false;
 let wuduStepCounter = 0;
 
-// Wudu audio guide — uses TTS with graceful fallback
+// Wudu audio guide — uses native Android TTS in the APK, Web Speech API on web/PWA
 let wuduAudio = new Audio();
 function wuduSpeak(text, onDone) {
-  // Try TTS first
-  if ('speechSynthesis' in window) {
-    wuduStopReading();
-    try {
-      const u = new SpeechSynthesisUtterance(text);
-      u.rate = 0.85;
-      u.pitch = 1;
-      const voices = speechSynthesis.getVoices();
-      const enVoice = voices.find(v => v.lang.startsWith('en'));
-      if (enVoice) u.voice = enVoice;
-      u.onend = () => { if (onDone) onDone(); };
-      u.onerror = () => { if (onDone) onDone(); };
-      wuduSpeech = u;
-      speechSynthesis.speak(u);
-      return;
-    } catch(e) { /* fall through to no-support */ }
-  }
-  // Fallback: no TTS available
+  wuduStopReading();
+  const ok = universalSpeak(text, 'en', 0.85, onDone);
+  if (ok) return;
+  // Fallback: no TTS available anywhere
   const status = document.getElementById('wudu-audio-status');
   if (status) status.textContent = '📱 Open in your phone browser (Chrome/Safari) to hear audio. Not supported inside WhatsApp.';
   wuduReadingAll = false;
@@ -2899,7 +2926,7 @@ function wuduSpeak(text, onDone) {
 }
 
 function wuduStopReading() {
-  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  universalStopSpeaking();
   wuduReadingAll = false;
   wuduSpeech = null;
   const playBtn = document.getElementById('wudu-read-all');
@@ -5178,7 +5205,7 @@ function shareDua(catId, idx) {
   else { navigator.clipboard.writeText(text); alert('Dua copied! Paste to share.'); }
 }
 
-// ===== DUA AUDIO (Text-to-Speech: Arabic recitation + English meaning) =====
+// ===== DUA AUDIO (native Android TTS in APK, Web Speech API on web: Arabic + English) =====
 let duaCurrentBtn = null;
 function playDua(catId, idx) {
   const d = DUAS[catId][idx];
@@ -5186,58 +5213,41 @@ function playDua(catId, idx) {
   const noteId = 'dua-note-' + catId + '-' + idx;
   const btn = document.getElementById(btnId);
   const note = document.getElementById(noteId);
+  const isPlaying = btn && btn.classList.contains('playing');
 
   // Toggle off if this dua is currently playing
-  if (duaCurrentBtn === btnId && 'speechSynthesis' in window && speechSynthesis.speaking) {
-    speechSynthesis.cancel();
+  if (duaCurrentBtn === btnId && isPlaying) {
+    universalStopSpeaking();
     if (btn) { btn.textContent = '🔊 Listen'; btn.classList.remove('playing'); }
     duaCurrentBtn = null;
     return;
   }
 
-  if (!('speechSynthesis' in window)) {
-    if (note) { note.style.display = 'block'; note.textContent = '📱 Open in Chrome/Safari to hear audio — not supported inside WhatsApp/in-app browsers.'; }
-    return;
-  }
-
-  speechSynthesis.cancel();
+  universalStopSpeaking();
   if (duaCurrentBtn) {
     const prevBtn = document.getElementById(duaCurrentBtn);
     if (prevBtn) { prevBtn.textContent = '🔊 Listen'; prevBtn.classList.remove('playing'); }
   }
   if (note) note.style.display = 'none';
 
-  const voices = speechSynthesis.getVoices();
-  const arVoice = voices.find(v => v.lang.startsWith('ar'));
-  const enVoice = voices.find(v => v.lang.startsWith('en'));
-
   if (btn) { btn.textContent = '⏸ Playing…'; btn.classList.add('playing'); }
   duaCurrentBtn = btnId;
 
-  // 1) Recite Arabic (if an Arabic voice is available), then 2) read the English meaning
-  const uAr = new SpeechSynthesisUtterance(d.ar);
-  uAr.rate = 0.75;
-  if (arVoice) uAr.voice = arVoice;
-  else uAr.lang = 'ar-SA';
-
-  const uEn = new SpeechSynthesisUtterance(d.en);
-  uEn.rate = 0.9;
-  if (enVoice) uEn.voice = enVoice;
-
-  uAr.onend = () => { speechSynthesis.speak(uEn); };
-  uAr.onerror = () => { speechSynthesis.speak(uEn); };
-  uEn.onend = () => {
+  const finish = () => {
     if (btn) { btn.textContent = '🔊 Listen'; btn.classList.remove('playing'); }
     duaCurrentBtn = null;
   };
-  uEn.onerror = () => {
-    if (btn) { btn.textContent = '🔊 Listen'; btn.classList.remove('playing'); }
-    duaCurrentBtn = null;
-    if (!arVoice && note) { note.style.display = 'block'; note.textContent = 'ℹ️ Arabic voice not available on this device — played meaning only.'; }
-  };
 
-  if (!arVoice && note) { note.style.display = 'block'; note.textContent = 'ℹ️ No Arabic voice found on this device — playing the English meaning.'; }
-  speechSynthesis.speak(uAr);
+  // 1) Recite Arabic, then 2) read the English meaning
+  const okAr = universalSpeak(d.ar, 'ar', 0.75, () => {
+    const okEn = universalSpeak(d.en, 'en', 0.9, finish);
+    if (!okEn) finish();
+  });
+
+  if (!okAr) {
+    if (note) { note.style.display = 'block'; note.textContent = '📱 Audio not supported on this device/browser.'; }
+    finish();
+  }
 }
 
 // ===== DUA PLAY ALL (sequential TTS through entire category) =====
@@ -5252,7 +5262,7 @@ function playAllDuas(catId) {
   // Toggle off if already playing
   if (duaPlayAllActive && duaPlayAllCatId === catId) {
     duaPlayAllActive = false;
-    if ('speechSynthesis' in window) speechSynthesis.cancel();
+    universalStopSpeaking();
     if (btn) { btn.innerHTML = '🔊 Play All'; btn.classList.remove('playing'); }
     // Reset current dua button
     const curBtn = document.getElementById('dua-play-' + catId + '-' + duaPlayAllIdx);
@@ -5261,20 +5271,11 @@ function playAllDuas(catId) {
     return;
   }
 
-  if (!('speechSynthesis' in window)) {
-    alert('Audio not supported in this browser. Open in Chrome or Safari.');
-    return;
-  }
-
-  speechSynthesis.cancel();
+  universalStopSpeaking();
   duaPlayAllActive = true;
   duaPlayAllCatId = catId;
   duaPlayAllIdx = 0;
   if (btn) { btn.innerHTML = '⏸ Stop'; btn.classList.add('playing'); }
-
-  const voices = speechSynthesis.getVoices();
-  const arVoice = voices.find(v => v.lang.startsWith('ar'));
-  const enVoice = voices.find(v => v.lang.startsWith('en'));
 
   function speakNext() {
     if (!duaPlayAllActive) return;
@@ -5297,38 +5298,24 @@ function playAllDuas(catId) {
     // Scroll into view
     if (playBtn) playBtn.closest('.dua-item').scrollIntoView({ behavior:'smooth', block:'center' });
 
-    const uAr = new SpeechSynthesisUtterance(d.ar);
-    uAr.rate = 0.75;
-    if (arVoice) uAr.voice = arVoice;
-    else uAr.lang = 'ar-SA';
-
-    const uEn = new SpeechSynthesisUtterance(d.en);
-    uEn.rate = 0.9;
-    if (enVoice) uEn.voice = enVoice;
-
-    uAr.onend = () => {
-      if (!duaPlayAllActive) return;
-      speechSynthesis.speak(uEn);
-    };
-    uAr.onerror = () => {
-      if (!duaPlayAllActive) return;
-      speechSynthesis.speak(uEn);
-    };
-    uEn.onend = () => {
-      if (!duaPlayAllActive) return;
-      // Reset this button
-      if (playBtn) { playBtn.textContent = '🔊 Listen'; playBtn.classList.remove('playing'); }
-      duaPlayAllIdx++;
-      setTimeout(speakNext, 600);
-    };
-    uEn.onerror = () => {
+    const advance = () => {
       if (!duaPlayAllActive) return;
       if (playBtn) { playBtn.textContent = '🔊 Listen'; playBtn.classList.remove('playing'); }
       duaPlayAllIdx++;
       setTimeout(speakNext, 600);
     };
 
-    speechSynthesis.speak(uAr);
+    const okAr = universalSpeak(d.ar, 'ar', 0.75, () => {
+      if (!duaPlayAllActive) return;
+      const okEn = universalSpeak(d.en, 'en', 0.9, advance);
+      if (!okEn) advance();
+    });
+
+    if (!okAr) {
+      duaPlayAllActive = false;
+      if (btn) { btn.innerHTML = '🔊 Play All'; btn.classList.remove('playing'); }
+      alert('Audio not supported on this device/browser.');
+    }
   }
 
   speakNext();
