@@ -876,6 +876,10 @@ body { font-family:'Poppins',sans-serif;
 .dua-actions { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
 .dua-play { background:var(--p); border:none; border-radius:8px; padding:6px 14px; font-size:.7rem; color:#fff; cursor:pointer; font-weight:600; transition:background .15s; }
 .dua-play.playing { background:var(--pd); animation:pulse 1.2s infinite; }
+.dua-play-all { margin-left:auto; background:linear-gradient(135deg,var(--p),var(--pd)); border:none; border-radius:20px; padding:8px 18px; font-size:.75rem; font-weight:700; color:#fff; cursor:pointer; box-shadow:0 2px 10px var(--pg); transition:transform .15s; }
+.dua-play-all:active { transform:scale(.95); }
+.dua-play-all.playing { background:var(--dark2); animation:pulse 1.5s infinite; }
+.dua-play-all .play-progress { font-size:.65rem; opacity:.8; margin-left:4px; }
 .dua-audio-note { font-size:.65rem; color:var(--txt2); margin-top:6px; display:none; }
 /* QIBLA */
 .qibla-wrap { display:flex; flex-direction:column; align-items:center; padding:18px 14px; min-height:100%; background:linear-gradient(180deg,var(--bg) 0%,var(--card) 100%); }
@@ -5154,7 +5158,7 @@ function showDuas(catId) {
   const cat = DUA_CATS.find(c => c.id === catId);
   catsDiv.style.display = 'none';
   listDiv.style.display = 'block';
-  listDiv.innerHTML = '<div style="margin-bottom:12px;display:flex;align-items:center;gap:8px"><button class="dua-cat" style="padding:8px 14px" onclick="initDua()">← Back</button><span style="font-size:1.1rem">'+(cat?cat.ico:'')+'</span><span style="font-size:.9rem;font-weight:600">'+(cat?cat.name:'')+'</span></div>' +
+  listDiv.innerHTML = '<div style="margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap"><button class="dua-cat" style="padding:8px 14px" onclick="initDua()">← Back</button><span style="font-size:1.1rem">'+(cat?cat.ico:'')+'</span><span style="font-size:.9rem;font-weight:600">'+(cat?cat.name:'')+'</span><button class="dua-play-all" id="dua-play-all" onclick="playAllDuas(\''+catId+'\')">🔊 Play All</button></div>' +
     duas.map((d,i) =>
       '<div class="dua-item"><div class="dua-item-hd"><div class="dua-item-t">'+d.t+'</div><div class="dua-item-n">'+(i+1)+'</div></div>' +
       '<div class="dua-ar">'+d.ar+'</div><div class="dua-tr">'+d.tr+'</div><div class="dua-en">'+d.en+'</div>' +
@@ -5234,6 +5238,100 @@ function playDua(catId, idx) {
 
   if (!arVoice && note) { note.style.display = 'block'; note.textContent = 'ℹ️ No Arabic voice found on this device — playing the English meaning.'; }
   speechSynthesis.speak(uAr);
+}
+
+// ===== DUA PLAY ALL (sequential TTS through entire category) =====
+let duaPlayAllActive = false;
+let duaPlayAllIdx = 0;
+let duaPlayAllCatId = null;
+
+function playAllDuas(catId) {
+  const btn = document.getElementById('dua-play-all');
+  const duas = DUAS[catId] || [];
+
+  // Toggle off if already playing
+  if (duaPlayAllActive && duaPlayAllCatId === catId) {
+    duaPlayAllActive = false;
+    if ('speechSynthesis' in window) speechSynthesis.cancel();
+    if (btn) { btn.innerHTML = '🔊 Play All'; btn.classList.remove('playing'); }
+    // Reset current dua button
+    const curBtn = document.getElementById('dua-play-' + catId + '-' + duaPlayAllIdx);
+    if (curBtn) { curBtn.textContent = '🔊 Listen'; curBtn.classList.remove('playing'); }
+    duaCurrentBtn = null;
+    return;
+  }
+
+  if (!('speechSynthesis' in window)) {
+    alert('Audio not supported in this browser. Open in Chrome or Safari.');
+    return;
+  }
+
+  speechSynthesis.cancel();
+  duaPlayAllActive = true;
+  duaPlayAllCatId = catId;
+  duaPlayAllIdx = 0;
+  if (btn) { btn.innerHTML = '⏸ Stop'; btn.classList.add('playing'); }
+
+  const voices = speechSynthesis.getVoices();
+  const arVoice = voices.find(v => v.lang.startsWith('ar'));
+  const enVoice = voices.find(v => v.lang.startsWith('en'));
+
+  function speakNext() {
+    if (!duaPlayAllActive) return;
+    if (duaPlayAllIdx >= duas.length) {
+      // Finished all
+      duaPlayAllActive = false;
+      if (btn) { btn.innerHTML = '🔊 Play All'; btn.classList.remove('playing'); }
+      return;
+    }
+
+    const d = duas[duaPlayAllIdx];
+    const idx = duaPlayAllIdx;
+    const playBtn = document.getElementById('dua-play-' + catId + '-' + idx);
+
+    // Update UI: highlight current
+    if (btn) btn.innerHTML = '⏸ Stop <span class="play-progress">(' + (idx+1) + '/' + duas.length + ')</span>';
+    if (playBtn) { playBtn.textContent = '⏸ Playing…'; playBtn.classList.add('playing'); }
+    duaCurrentBtn = 'dua-play-' + catId + '-' + idx;
+
+    // Scroll into view
+    if (playBtn) playBtn.closest('.dua-item').scrollIntoView({ behavior:'smooth', block:'center' });
+
+    const uAr = new SpeechSynthesisUtterance(d.ar);
+    uAr.rate = 0.75;
+    if (arVoice) uAr.voice = arVoice;
+    else uAr.lang = 'ar-SA';
+
+    const uEn = new SpeechSynthesisUtterance(d.en);
+    uEn.rate = 0.9;
+    if (enVoice) uEn.voice = enVoice;
+
+    uAr.onend = () => {
+      if (!duaPlayAllActive) return;
+      speechSynthesis.speak(uEn);
+    };
+    uAr.onerror = () => {
+      if (!duaPlayAllActive) return;
+      speechSynthesis.speak(uEn);
+    };
+    uEn.onend = () => {
+      if (!duaPlayAllActive) return;
+      // Reset this button
+      if (playBtn) { playBtn.textContent = '🔊 Listen'; playBtn.classList.remove('playing'); }
+      duaPlayAllIdx++;
+      setTimeout(speakNext, 600);
+    };
+    uEn.onerror = () => {
+      if (!duaPlayAllActive) return;
+      if (playBtn) { playBtn.textContent = '🔊 Listen'; playBtn.classList.remove('playing'); }
+      duaPlayAllIdx++;
+      setTimeout(speakNext, 600);
+    };
+
+    speechSynthesis.speak(uAr);
+  }
+
+  speakNext();
 }
 
 // ═══════════════════════════════════════════════════════════
