@@ -874,18 +874,112 @@ body { font-family:'Poppins',sans-serif;
 .dua-src { font-size:.65rem; color:var(--txt2); opacity:.6; margin-top:8px; }
 .dua-share { background:rgba(16,185,129,.1); border:none; border-radius:8px; padding:6px 14px; font-size:.7rem; color:var(--p); cursor:pointer; margin-top:8px; }
 /* QIBLA */
-.qibla-wrap { display:flex; flex-direction:column; align-items:center; padding:20px 14px; }
-.qibla-compass { position:relative; width:240px; height:240px; margin:20px auto; }
-.qibla-ring { width:100%; height:100%; border-radius:50%; border:3px solid var(--bdr); background:radial-gradient(circle at center,rgba(16,185,129,.05),transparent); position:relative; }
-.qibla-ring::before { content:'N'; position:absolute; top:4px; left:50%; transform:translateX(-50%); font-size:.7rem; font-weight:700; color:var(--txt2); }
-.qibla-ring::after { content:'S'; position:absolute; bottom:4px; left:50%; transform:translateX(-50%); font-size:.7rem; font-weight:700; color:var(--txt2); }
-.qibla-dir { position:absolute; top:50%; left:50%; width:4px; height:100px; background:linear-gradient(to top,transparent,var(--p),var(--p)); transform-origin:bottom center; transform:translate(-50%,-100%); border-radius:2px; transition:transform .3s ease; }
-.qibla-dir::before { content:'\1F9AB'; position:absolute; top:-16px; left:50%; transform:translateX(-50%); font-size:1.2rem; }
-.qibla-kaaba { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:1.5rem; opacity:.3; }
-.qibla-angle { font-size:1.5rem; font-weight:700; color:var(--p); margin-top:10px; }
-.qibla-city { font-size:.8rem; color:var(--txt2); margin-top:4px; }
-.qibla-info { font-size:.72rem; color:var(--txt2); text-align:center; max-width:300px; margin-top:14px; line-height:1.5; padding:0 14px; }
+.qibla-wrap { display:flex; flex-direction:column; align-items:center; padding:18px 14px; min-height:100%; background:linear-gradient(180deg,var(--bg) 0%,var(--card) 100%); }
+.qibla-compass { position:relative; width:280px; height:280px; margin:16px auto; }
+.qibla-ring {
+  width:100%; height:100%; border-radius:50%;
+  border:2px solid var(--bdr);
+  background:
+    radial-gradient(circle at center, rgba(16,185,129,.08) 0%, transparent 70%),
+    conic-gradient(from 0deg,
+      rgba(16,185,129,.06), transparent 25%, rgba(16,185,129,.04) 50%, transparent 75%, rgba(16,185,129,.06));
+  position:relative;
+  box-shadow:0 4px 30px rgba(0,0,0,.08), inset 0 0 0 8px rgba(255,255,255,.02);
+}
+/* Tick marks via repeating conic gradient */
+.qibla-ring::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; bottom:0;
+  border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,
+    var(--bdr) 0deg 1deg, transparent 1deg 30deg);
+  -webkit-mask:radial-gradient(circle, transparent 60%, black 62%, black 68%, transparent 70%);
+  mask:radial-gradient(circle, transparent 60%, black 62%, black 68%, transparent 70%);
+  opacity:.5;
+}
+/* Cardinal direction labels */
+.qibla-ring::after {
+  content:'';
+  position:absolute; top:0; left:0; right:0; bottom:0;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 50% 8%, var(--p) 0 .5px, transparent 1px),
+    radial-gradient(circle at 50% 92%, var(--txt2) 0 .5px, transparent 1px),
+    radial-gradient(circle at 8% 50%, var(--txt2) 0 .5px, transparent 1px),
+    radial-gradient(circle at 92% 50%, var(--txt2) 0 .5px, transparent 1px);
+}
+.qibla-cardinal { position:absolute; font-size:.85rem; font-weight:800; z-index:2; }
+.qibla-cardinal.n { top:8px; left:50%; transform:translateX(-50%); color:var(--p); font-size:1rem; }
+.qibla-cardinal.s { bottom:8px; left:50%; transform:translateX(-50%); color:var(--txt2); }
+.qibla-cardinal.e { right:8px; top:50%; transform:translateY(-50%); color:var(--txt2); }
+.qibla-cardinal.w { left:8px; top:50%; transform:translateY(-50%); color:var(--txt2); }
+.qibla-dir {
+  position:absolute; top:50%; left:50%;
+  width:5px; height:110px;
+  background:linear-gradient(to top, transparent 10%, var(--pg) 40%, var(--p) 100%);
+  transform-origin:bottom center;
+  transform:translate(-50%,-100%);
+  border-radius:3px 3px 0 0;
+  transition:transform .4s cubic-bezier(.34,1.56,.64,1);
+  z-index:3;
+  filter:drop-shadow(0 0 6px var(--pg));
+}
+.qibla-dir::before {
+  content:'';
+  position:absolute; top:-2px; left:50%; transform:translateX(-50%);
+  width:0; height:0;
+  border-left:10px solid transparent;
+  border-right:10px solid transparent;
+  border-bottom:16px solid var(--p);
+  filter:drop-shadow(0 0 4px var(--pg));
+}
+.qibla-kaaba {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:44px; height:44px; border-radius:50%;
+  background:linear-gradient(135deg,var(--card),var(--dark2));
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.4rem; opacity:.7; z-index:1;
+  border:2px solid var(--bdr);
+  box-shadow:0 2px 12px rgba(0,0,0,.1);
+}
+.qibla-center-dot {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:8px; height:8px; border-radius:50%;
+  background:var(--p); z-index:4;
+  box-shadow:0 0 8px var(--pg);
+}
+.qibla-angle {
+  font-size:2.2rem; font-weight:800; color:var(--p);
+  margin-top:16px; letter-spacing:-1px;
+  text-shadow:0 2px 8px var(--pg);
+}
+.qibla-angle .unit { font-size:1rem; font-weight:600; color:var(--txt2); margin-left:2px; }
+.qibla-city {
+  font-size:.8rem; color:var(--txt2); margin-top:6px;
+  background:var(--card); padding:6px 16px; border-radius:20px;
+  border:1px solid var(--bdr);
+}
+.qibla-info {
+  font-size:.78rem; color:var(--txt2); text-align:center;
+  max-width:320px; margin-top:16px; line-height:1.6; padding:0 14px;
+}
 .qibla-calibrating { font-size:.75rem; color:var(--p); margin-top:10px; animation:pulse 1.5s infinite; }
+.qibla-tip {
+  margin-top:20px; padding:14px 18px;
+  background:var(--card); border:1px solid var(--bdr);
+  border-radius:14px; max-width:320px; text-align:center;
+}
+.qibla-tip-title { font-size:.85rem; font-weight:700; color:var(--txt); margin-bottom:6px; }
+.qibla-tip-text { font-size:.73rem; color:var(--txt2); line-height:1.6; }
+.qibla-calib-btn {
+  margin-top:18px; padding:14px 36px;
+  background:linear-gradient(135deg,var(--p),var(--pd));
+  color:#fff; border:none; border-radius:30px;
+  font-size:.9rem; font-weight:600; cursor:pointer;
+  box-shadow:0 4px 16px var(--pg);
+  transition:transform .15s, box-shadow .15s;
+}
+.qibla-calib-btn:active { transform:scale(.96); box-shadow:0 2px 8px var(--pg); }
 /* ZAKAT */
 .zakat-form { padding:14px; max-width:480px; margin:0 auto; }
 .zakat-section { background:var(--card); border:1px solid var(--bdr); border-radius:14px; padding:14px; margin-bottom:12px; }
@@ -5087,8 +5181,8 @@ function initQibla() {
     const lambda = lon * Math.PI / 180;
     const qibla = Math.atan2(Math.sin(lambdaK - lambda), Math.cos(phi) * Math.tan(phiK) - Math.sin(phi) * Math.cos(lambdaK - lambda));
     const qiblaDeg = (qibla * 180 / Math.PI + 360) % 360;
-    document.getElementById('qibla-angle').textContent = Math.round(qiblaDeg) + '° from North';
-    document.getElementById('qibla-city').textContent = 'Location: ' + lat.toFixed(2) + ', ' + lon.toFixed(2);
+    document.getElementById('qibla-angle').innerHTML = Math.round(qiblaDeg) + '° <span class="unit">from North</span>';
+    document.getElementById('qibla-city').textContent = '📍 Your location: ' + lat.toFixed(2) + ', ' + lon.toFixed(2);
     document.getElementById('qibla-info').textContent = 'First find true North with a compass, then face North and turn clockwise by this angle to face the Kaaba.';
     const arrow = document.getElementById('qibla-dir');
     // Fixed bearing arrow: N is always shown at top of the ring, so the
@@ -5588,11 +5682,28 @@ function updateFsapBtn() {
 </div>
 <div id="qibla-view" class="view">
   <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goToView('home')">← Home</button><div class="htitle">🧭 Qibla</div><div style="width:60px"></div></div></div>
-  <div class="qibla-wrap"><div class="qibla-compass"><div class="qibla-ring" id="qibla-ring"><div class="qibla-kaaba">🕋</div><div class="qibla-dir" id="qibla-dir"></div></div></div>
-  <div class="qibla-angle" id="qibla-angle">— °</div><div class="qibla-city" id="qibla-city">Tap to calibrate</div>
-  <div class="qibla-info" id="qibla-info">Find true North (with a compass), then turn clockwise by the shown angle to face the Kaaba.</div>
-  <button class="azan-test-btn" onclick="calibrateQibla()" style="margin-top:14px">🧭 Calibrate</button>
-  <div class="qibla-calibrating" id="qibla-calib" style="display:none">Calibrating... Move phone in figure-8</div></div>
+  <div class="qibla-wrap">
+    <div class="qibla-compass">
+      <div class="qibla-ring" id="qibla-ring">
+        <span class="qibla-cardinal n">N</span>
+        <span class="qibla-cardinal e">E</span>
+        <span class="qibla-cardinal s">S</span>
+        <span class="qibla-cardinal w">W</span>
+        <div class="qibla-kaaba">🕋</div>
+        <div class="qibla-dir" id="qibla-dir"></div>
+        <div class="qibla-center-dot"></div>
+      </div>
+    </div>
+    <div class="qibla-angle" id="qibla-angle">— °<span class="unit">from North</span></div>
+    <div class="qibla-city" id="qibla-city">📍 Tap to calibrate</div>
+    <div class="qibla-info" id="qibla-info">Find true North with a compass, then turn clockwise by the shown angle to face the Kaaba.</div>
+    <button class="qibla-calib-btn" onclick="calibrateQibla()">🧭 Calibrate Qibla</button>
+    <div class="qibla-calibrating" id="qibla-calib" style="display:none">Calibrating... Move phone in figure-8</div>
+    <div class="qibla-tip">
+      <div class="qibla-tip-title">💡 How to use</div>
+      <div class="qibla-tip-text">1. Open a compass app on your phone to find true North<br>2. Face North<br>3. Turn clockwise by the angle shown above<br>4. You are now facing the Kaaba in Makkah 🕋</div>
+    </div>
+  </div>
 </div>
 <div id="zakat-view" class="view">
   <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goToView('home')">← Home</button><div class="htitle">💰 Zakat</div><div style="width:60px"></div></div></div>
