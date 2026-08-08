@@ -873,6 +873,10 @@ body { font-family:'Poppins',sans-serif;
 .dua-en { font-size:.8rem; color:var(--txt); line-height:1.5; margin-top:6px; }
 .dua-src { font-size:.65rem; color:var(--txt2); opacity:.6; margin-top:8px; }
 .dua-share { background:rgba(16,185,129,.1); border:none; border-radius:8px; padding:6px 14px; font-size:.7rem; color:var(--p); cursor:pointer; margin-top:8px; }
+.dua-actions { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+.dua-play { background:var(--p); border:none; border-radius:8px; padding:6px 14px; font-size:.7rem; color:#fff; cursor:pointer; font-weight:600; transition:background .15s; }
+.dua-play.playing { background:var(--pd); animation:pulse 1.2s infinite; }
+.dua-audio-note { font-size:.65rem; color:var(--txt2); margin-top:6px; display:none; }
 /* QIBLA */
 .qibla-wrap { display:flex; flex-direction:column; align-items:center; padding:18px 14px; min-height:100%; background:linear-gradient(180deg,var(--bg) 0%,var(--card) 100%); }
 .qibla-compass { position:relative; width:280px; height:280px; margin:16px auto; }
@@ -5155,7 +5159,11 @@ function showDuas(catId) {
       '<div class="dua-item"><div class="dua-item-hd"><div class="dua-item-t">'+d.t+'</div><div class="dua-item-n">'+(i+1)+'</div></div>' +
       '<div class="dua-ar">'+d.ar+'</div><div class="dua-tr">'+d.tr+'</div><div class="dua-en">'+d.en+'</div>' +
       '<div class="dua-src">— '+d.src+'</div>' +
-      '<button class="dua-share" onclick="shareDua(\''+catId+'\','+i+')">📤 Share</button></div>'
+      '<div class="dua-actions">' +
+        '<button class="dua-play" id="dua-play-'+catId+'-'+i+'" onclick="playDua(\''+catId+'\','+i+')">🔊 Listen</button>' +
+        '<button class="dua-share" onclick="shareDua(\''+catId+'\','+i+')">📤 Share</button>' +
+      '</div>' +
+      '<div class="dua-audio-note" id="dua-note-'+catId+'-'+i+'"></div></div>'
     ).join('');
 }
 
@@ -5166,31 +5174,131 @@ function shareDua(catId, idx) {
   else { navigator.clipboard.writeText(text); alert('Dua copied! Paste to share.'); }
 }
 
+// ===== DUA AUDIO (Text-to-Speech: Arabic recitation + English meaning) =====
+let duaCurrentBtn = null;
+function playDua(catId, idx) {
+  const d = DUAS[catId][idx];
+  const btnId = 'dua-play-' + catId + '-' + idx;
+  const noteId = 'dua-note-' + catId + '-' + idx;
+  const btn = document.getElementById(btnId);
+  const note = document.getElementById(noteId);
+
+  // Toggle off if this dua is currently playing
+  if (duaCurrentBtn === btnId && 'speechSynthesis' in window && speechSynthesis.speaking) {
+    speechSynthesis.cancel();
+    if (btn) { btn.textContent = '🔊 Listen'; btn.classList.remove('playing'); }
+    duaCurrentBtn = null;
+    return;
+  }
+
+  if (!('speechSynthesis' in window)) {
+    if (note) { note.style.display = 'block'; note.textContent = '📱 Open in Chrome/Safari to hear audio — not supported inside WhatsApp/in-app browsers.'; }
+    return;
+  }
+
+  speechSynthesis.cancel();
+  if (duaCurrentBtn) {
+    const prevBtn = document.getElementById(duaCurrentBtn);
+    if (prevBtn) { prevBtn.textContent = '🔊 Listen'; prevBtn.classList.remove('playing'); }
+  }
+  if (note) note.style.display = 'none';
+
+  const voices = speechSynthesis.getVoices();
+  const arVoice = voices.find(v => v.lang.startsWith('ar'));
+  const enVoice = voices.find(v => v.lang.startsWith('en'));
+
+  if (btn) { btn.textContent = '⏸ Playing…'; btn.classList.add('playing'); }
+  duaCurrentBtn = btnId;
+
+  // 1) Recite Arabic (if an Arabic voice is available), then 2) read the English meaning
+  const uAr = new SpeechSynthesisUtterance(d.ar);
+  uAr.rate = 0.75;
+  if (arVoice) uAr.voice = arVoice;
+  else uAr.lang = 'ar-SA';
+
+  const uEn = new SpeechSynthesisUtterance(d.en);
+  uEn.rate = 0.9;
+  if (enVoice) uEn.voice = enVoice;
+
+  uAr.onend = () => { speechSynthesis.speak(uEn); };
+  uAr.onerror = () => { speechSynthesis.speak(uEn); };
+  uEn.onend = () => {
+    if (btn) { btn.textContent = '🔊 Listen'; btn.classList.remove('playing'); }
+    duaCurrentBtn = null;
+  };
+  uEn.onerror = () => {
+    if (btn) { btn.textContent = '🔊 Listen'; btn.classList.remove('playing'); }
+    duaCurrentBtn = null;
+    if (!arVoice && note) { note.style.display = 'block'; note.textContent = 'ℹ️ Arabic voice not available on this device — played meaning only.'; }
+  };
+
+  if (!arVoice && note) { note.style.display = 'block'; note.textContent = 'ℹ️ No Arabic voice found on this device — playing the English meaning.'; }
+  speechSynthesis.speak(uAr);
+}
+
 // ═══════════════════════════════════════════════════════════
 // QIBLA COMPASS
 // ═══════════════════════════════════════════════════════════
+// Local great-circle bearing calc — used for instant display + offline fallback
+function calcQiblaLocal(lat, lon) {
+  const kaabaLat = 21.4225, kaabaLon = 39.8262;
+  const phiK = kaabaLat * Math.PI / 180;
+  const lambdaK = kaabaLon * Math.PI / 180;
+  const phi = lat * Math.PI / 180;
+  const lambda = lon * Math.PI / 180;
+  const qibla = Math.atan2(Math.sin(lambdaK - lambda), Math.cos(phi) * Math.tan(phiK) - Math.sin(phi) * Math.cos(lambdaK - lambda));
+  return (qibla * 180 / Math.PI + 360) % 360;
+}
+
+function setQiblaDisplay(qiblaDeg, sourceLabel) {
+  document.getElementById('qibla-angle').innerHTML = Math.round(qiblaDeg) + '° <span class="unit">from North</span>';
+  document.getElementById('qibla-info').textContent = 'First find true North with a compass, then face North and turn clockwise by this angle to face the Kaaba.';
+  const arrow = document.getElementById('qibla-dir');
+  // Fixed bearing arrow: N is always shown at top of the ring, so the
+  // arrow always points qiblaDeg clockwise from that fixed N — this stays
+  // consistent with the ring's static N/S labels. (Phone magnetometer
+  // readings inside WebViews are unreliable/uncalibrated and previously
+  // caused the arrow to visually contradict the printed degree value.)
+  arrow.style.transform = 'translate(-50%,-100%) rotate(' + qiblaDeg + 'deg)';
+  const cityEl = document.getElementById('qibla-city');
+  if (cityEl && sourceLabel) {
+    const base = cityEl.dataset.base || cityEl.textContent;
+    cityEl.dataset.base = base;
+    cityEl.textContent = base + ' · ' + sourceLabel;
+  }
+}
+
 function initQibla() {
   if (!navigator.geolocation) { document.getElementById('qibla-info').textContent = 'Geolocation not supported.'; return; }
   navigator.geolocation.getCurrentPosition(pos => {
     const lat = pos.coords.latitude;
     const lon = pos.coords.longitude;
-    const kaabaLat = 21.4225, kaabaLon = 39.8262;
-    const phiK = kaabaLat * Math.PI / 180;
-    const lambdaK = kaabaLon * Math.PI / 180;
-    const phi = lat * Math.PI / 180;
-    const lambda = lon * Math.PI / 180;
-    const qibla = Math.atan2(Math.sin(lambdaK - lambda), Math.cos(phi) * Math.tan(phiK) - Math.sin(phi) * Math.cos(lambdaK - lambda));
-    const qiblaDeg = (qibla * 180 / Math.PI + 360) % 360;
-    document.getElementById('qibla-angle').innerHTML = Math.round(qiblaDeg) + '° <span class="unit">from North</span>';
     document.getElementById('qibla-city').textContent = '📍 Your location: ' + lat.toFixed(2) + ', ' + lon.toFixed(2);
-    document.getElementById('qibla-info').textContent = 'First find true North with a compass, then face North and turn clockwise by this angle to face the Kaaba.';
-    const arrow = document.getElementById('qibla-dir');
-    // Fixed bearing arrow: N is always shown at top of the ring, so the
-    // arrow always points qiblaDeg clockwise from that fixed N — this stays
-    // consistent with the ring's static N/S labels. (Phone magnetometer
-    // readings inside WebViews are unreliable/uncalibrated and previously
-    // caused the arrow to visually contradict the printed degree value.)
-    arrow.style.transform = 'translate(-50%,-100%) rotate(' + qiblaDeg + 'deg)';
+    document.getElementById('qibla-city').dataset.base = '📍 Your location: ' + lat.toFixed(2) + ', ' + lon.toFixed(2);
+
+    // 1) Show instant local calculation immediately (no network wait)
+    const localDeg = calcQiblaLocal(lat, lon);
+    setQiblaDisplay(localDeg, '📡 calculating…');
+
+    // 2) Confirm/refine with the Aladhan Qibla API — a trusted, widely-used
+    // Islamic-services API (already used elsewhere in this app for prayer
+    // times), fast (~100ms) and authoritative for Qibla bearing.
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    fetch('https://api.aladhan.com/v1/qibla/' + lat + '/' + lon, { signal: controller.signal })
+      .then(r => r.json())
+      .then(json => {
+        clearTimeout(timeout);
+        if (json && json.code === 200 && json.data && typeof json.data.direction === 'number') {
+          setQiblaDisplay(json.data.direction, '✅ verified');
+        } else {
+          setQiblaDisplay(localDeg, '📐 offline calc');
+        }
+      })
+      .catch(() => {
+        clearTimeout(timeout);
+        setQiblaDisplay(localDeg, '📐 offline calc');
+      });
   }, () => {
     document.getElementById('qibla-info').innerHTML = 'Location access needed. <button onclick="initQibla()" style="color:var(--p);background:none;border:none;text-decoration:underline;cursor:pointer">Try again</button>';
   });
