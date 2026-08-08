@@ -314,231 +314,272 @@
 151        android:required="true" />
 151-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:117:52-75
 152
-153    <permission
-153-->[androidx.core:core:1.12.0] /root/.gradle/caches/8.11.1/transforms/a66195a4aca2b869e817d030aea96840/transformed/core-1.12.0/AndroidManifest.xml:22:5-24:47
-154        android:name="com.suleiman.juzammapromax.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
-154-->[androidx.core:core:1.12.0] /root/.gradle/caches/8.11.1/transforms/a66195a4aca2b869e817d030aea96840/transformed/core-1.12.0/AndroidManifest.xml:23:9-81
-155        android:protectionLevel="signature" />
-155-->[androidx.core:core:1.12.0] /root/.gradle/caches/8.11.1/transforms/a66195a4aca2b869e817d030aea96840/transformed/core-1.12.0/AndroidManifest.xml:24:9-44
-156
-157    <uses-permission android:name="com.suleiman.juzammapromax.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" /> <!-- ==================== APP CONFIGURATION ==================== -->
-157-->[androidx.core:core:1.12.0] /root/.gradle/caches/8.11.1/transforms/a66195a4aca2b869e817d030aea96840/transformed/core-1.12.0/AndroidManifest.xml:26:5-97
-157-->[androidx.core:core:1.12.0] /root/.gradle/caches/8.11.1/transforms/a66195a4aca2b869e817d030aea96840/transformed/core-1.12.0/AndroidManifest.xml:26:22-94
-158    <application
-158-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:120:5-196:19
-159        android:allowBackup="true"
-159-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:121:9-35
-160        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-160-->[androidx.core:core:1.12.0] /root/.gradle/caches/8.11.1/transforms/a66195a4aca2b869e817d030aea96840/transformed/core-1.12.0/AndroidManifest.xml:28:18-86
-161        android:debuggable="true"
-162        android:extractNativeLibs="false"
-163        android:hardwareAccelerated="true"
-163-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:127:9-43
-164        android:icon="@mipmap/ic_launcher"
-164-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:122:9-43
-165        android:label="Juz Amma Pro Max"
-165-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:123:9-41
-166        android:largeHeap="true"
-166-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:128:9-33
-167        android:networkSecurityConfig="@xml/network_security_config"
-167-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:129:9-69
-168        android:requestLegacyExternalStorage="true"
-168-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:130:9-52
-169        android:roundIcon="@mipmap/ic_launcher_round"
-169-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:124:9-54
-170        android:supportsRtl="true"
-170-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:131:9-35
-171        android:theme="@style/Theme.AppCompat.NoActionBar"
-171-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:125:9-59
-172        android:usesCleartextTraffic="true" >
-172-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:126:9-44
-173
-174        <!-- Main PWA WebView Activity -->
-175        <activity
-175-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:134:9-152:20
-176            android:name="com.suleiman.juzammapromax.MainActivity"
-176-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:135:13-41
-177            android:configChanges="orientation|screenSize|keyboard|keyboardHidden|navigation|uiMode|density"
-177-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:136:13-109
-178            android:exported="true"
-178-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:137:13-36
-179            android:launchMode="singleTop"
-179-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:138:13-43
-180            android:screenOrientation="portrait"
-180-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:139:13-49
-181            android:windowSoftInputMode="adjustResize" >
-181-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:140:13-55
-182            <intent-filter>
-182-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:141:13-144:29
-183                <action android:name="android.intent.action.MAIN" />
-183-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:142:17-69
-183-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:142:25-66
-184
-185                <category android:name="android.intent.category.LAUNCHER" />
-185-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:143:17-77
-185-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:143:27-74
-186            </intent-filter>
-187            <!-- Deep link support -->
-188            <intent-filter>
-188-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:146:13-151:29
-189                <action android:name="android.intent.action.VIEW" />
-189-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:147:17-69
-189-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:147:25-66
-190
-191                <category android:name="android.intent.category.DEFAULT" />
-191-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:148:17-76
-191-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:148:27-73
-192                <category android:name="android.intent.category.BROWSABLE" />
-192-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:149:17-78
-192-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:149:27-75
-193
-194                <data
-194-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:150:17-91
-195                    android:host="juz-amma-pro-max.vercel.app"
-195-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:150:46-88
-196                    android:scheme="https" />
-196-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:150:23-45
-197            </intent-filter>
-198        </activity>
+153    <!-- ==================== ADDITIONAL PERMISSIONS ==================== -->
+154    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+154-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:120:5-88
+154-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:120:22-85
+155    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
+155-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:121:5-84
+155-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:121:22-81
+156    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH" />
+156-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:122:5-84
+156-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:122:22-81
+157    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+157-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:16:5-81
+157-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:16:22-78
+158    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+158-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:24:5-85
+158-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:24:22-82
+159    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+159-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:125:5-81
+159-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:125:22-78
+160    <uses-permission android:name="android.permission.WAKE_LOCK" />
+160-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:17:5-68
+160-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:17:22-65
+161    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+161-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:127:5-75
+161-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:127:22-72
+162    <uses-permission android:name="android.permission.TURN_SCREEN_ON" />
+162-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:128:5-73
+162-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:128:22-70
+163    <uses-permission android:name="android.permission.USE_ICC_AUTH_WITH_DEVICE_IDENTIFIER" />
+163-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:129:5-94
+163-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:129:22-91
+164    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+164-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:45:5-75
+164-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:45:22-72
+165    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+165-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:131:5-77
+165-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:131:22-74
+166    <uses-permission android:name="android.permission.HIGH_SAMPLING_RATE_SENSORS" />
+166-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:82:5-85
+166-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:82:22-82
+167
+168    <permission
+168-->[androidx.core:core:1.12.0] /root/.gradle/caches/8.11.1/transforms/a66195a4aca2b869e817d030aea96840/transformed/core-1.12.0/AndroidManifest.xml:22:5-24:47
+169        android:name="com.suleiman.juzammapromax.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+169-->[androidx.core:core:1.12.0] /root/.gradle/caches/8.11.1/transforms/a66195a4aca2b869e817d030aea96840/transformed/core-1.12.0/AndroidManifest.xml:23:9-81
+170        android:protectionLevel="signature" />
+170-->[androidx.core:core:1.12.0] /root/.gradle/caches/8.11.1/transforms/a66195a4aca2b869e817d030aea96840/transformed/core-1.12.0/AndroidManifest.xml:24:9-44
+171
+172    <uses-permission android:name="com.suleiman.juzammapromax.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" /> <!-- ==================== APP CONFIGURATION ==================== -->
+172-->[androidx.core:core:1.12.0] /root/.gradle/caches/8.11.1/transforms/a66195a4aca2b869e817d030aea96840/transformed/core-1.12.0/AndroidManifest.xml:26:5-97
+172-->[androidx.core:core:1.12.0] /root/.gradle/caches/8.11.1/transforms/a66195a4aca2b869e817d030aea96840/transformed/core-1.12.0/AndroidManifest.xml:26:22-94
+173    <application
+173-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:135:5-211:19
+174        android:allowBackup="true"
+174-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:136:9-35
+175        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+175-->[androidx.core:core:1.12.0] /root/.gradle/caches/8.11.1/transforms/a66195a4aca2b869e817d030aea96840/transformed/core-1.12.0/AndroidManifest.xml:28:18-86
+176        android:debuggable="true"
+177        android:extractNativeLibs="false"
+178        android:hardwareAccelerated="true"
+178-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:142:9-43
+179        android:icon="@mipmap/ic_launcher"
+179-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:137:9-43
+180        android:label="Juz Amma Pro Max"
+180-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:138:9-41
+181        android:largeHeap="true"
+181-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:143:9-33
+182        android:networkSecurityConfig="@xml/network_security_config"
+182-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:144:9-69
+183        android:requestLegacyExternalStorage="true"
+183-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:145:9-52
+184        android:roundIcon="@mipmap/ic_launcher_round"
+184-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:139:9-54
+185        android:supportsRtl="true"
+185-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:146:9-35
+186        android:theme="@style/Theme.AppCompat.NoActionBar"
+186-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:140:9-59
+187        android:usesCleartextTraffic="true" >
+187-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:141:9-44
+188
+189        <!-- Main PWA WebView Activity -->
+190        <activity
+190-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:149:9-167:20
+191            android:name="com.suleiman.juzammapromax.MainActivity"
+191-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:150:13-41
+192            android:configChanges="orientation|screenSize|keyboard|keyboardHidden|navigation|uiMode|density"
+192-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:151:13-109
+193            android:exported="true"
+193-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:152:13-36
+194            android:launchMode="singleTop"
+194-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:153:13-43
+195            android:screenOrientation="portrait"
+195-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:154:13-49
+196            android:windowSoftInputMode="adjustResize" >
+196-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:155:13-55
+197            <intent-filter>
+197-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:156:13-159:29
+198                <action android:name="android.intent.action.MAIN" />
+198-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:157:17-69
+198-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:157:25-66
 199
-200        <!-- Foreground Service for Background Azan Playback -->
-201        <service
-201-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:155:9-159:61
-202            android:name="com.suleiman.juzammapromax.AzanAlarmService"
-202-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:156:13-45
-203            android:enabled="true"
-203-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:157:13-35
-204            android:exported="false"
-204-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:158:13-37
-205            android:foregroundServiceType="mediaPlayback" />
-205-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:159:13-58
-206
-207        <!-- File Provider for sharing images/content -->
-208        <provider
-209            android:name="androidx.core.content.FileProvider"
-209-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:163:13-62
-210            android:authorities="com.suleiman.juzammapromax.fileprovider"
-210-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:164:13-64
-211            android:exported="false"
-211-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:165:13-37
-212            android:grantUriPermissions="true" >
-212-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:166:13-47
-213            <meta-data
-213-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:167:13-169:54
-214                android:name="android.support.FILE_PROVIDER_PATHS"
-214-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:168:17-67
-215                android:resource="@xml/file_paths" />
-215-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:169:17-51
-216        </provider>
-217
-218        <!-- Boot Receiver to Restart Alarms After Reboot -->
-219        <receiver
-219-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:173:9-182:20
-220            android:name="com.suleiman.juzammapromax.AzanBootReceiver"
-220-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:174:13-45
-221            android:enabled="true"
-221-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:175:13-35
-222            android:exported="false" >
-222-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:176:13-37
-223            <intent-filter>
-223-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:177:13-181:29
-224                <action android:name="android.intent.action.BOOT_COMPLETED" />
-224-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:178:17-79
-224-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:178:25-76
-225                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-225-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:179:17-82
-225-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:179:25-79
-226                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
-226-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:180:17-86
-226-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:180:25-83
-227            </intent-filter>
-228        </receiver>
-229
-230        <!-- Alarm Receiver for Exact Alarm Triggering -->
-231        <receiver
-231-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:185:9-188:40
-232            android:name="com.suleiman.juzammapromax.AzanAlarmReceiver"
-232-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:186:13-46
-233            android:enabled="true"
-233-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:187:13-35
-234            android:exported="false" />
-234-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:188:13-37
-235
-236        <!-- Notification Receiver for Dismiss/Play Actions -->
-237        <receiver
-237-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:191:9-194:40
-238            android:name="com.suleiman.juzammapromax.AzanNotificationActionReceiver"
-238-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:192:13-59
-239            android:enabled="true"
-239-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:193:13-35
-240            android:exported="false" />
-240-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:194:13-37
-241
-242        <provider
-242-->[androidx.emoji2:emoji2:1.2.0] /root/.gradle/caches/8.11.1/transforms/eeed028da509850157f59de2c3bbf495/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:24:9-32:20
-243            android:name="androidx.startup.InitializationProvider"
-243-->[androidx.emoji2:emoji2:1.2.0] /root/.gradle/caches/8.11.1/transforms/eeed028da509850157f59de2c3bbf495/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:25:13-67
-244            android:authorities="com.suleiman.juzammapromax.androidx-startup"
-244-->[androidx.emoji2:emoji2:1.2.0] /root/.gradle/caches/8.11.1/transforms/eeed028da509850157f59de2c3bbf495/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:26:13-68
-245            android:exported="false" >
-245-->[androidx.emoji2:emoji2:1.2.0] /root/.gradle/caches/8.11.1/transforms/eeed028da509850157f59de2c3bbf495/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:27:13-37
-246            <meta-data
-246-->[androidx.emoji2:emoji2:1.2.0] /root/.gradle/caches/8.11.1/transforms/eeed028da509850157f59de2c3bbf495/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:29:13-31:52
-247                android:name="androidx.emoji2.text.EmojiCompatInitializer"
-247-->[androidx.emoji2:emoji2:1.2.0] /root/.gradle/caches/8.11.1/transforms/eeed028da509850157f59de2c3bbf495/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:30:17-75
-248                android:value="androidx.startup" />
-248-->[androidx.emoji2:emoji2:1.2.0] /root/.gradle/caches/8.11.1/transforms/eeed028da509850157f59de2c3bbf495/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:31:17-49
-249            <meta-data
-249-->[androidx.lifecycle:lifecycle-process:2.6.1] /root/.gradle/caches/8.11.1/transforms/649f7e4a034d8d906c417cd36d3ad90f/transformed/jetified-lifecycle-process-2.6.1/AndroidManifest.xml:29:13-31:52
-250                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-250-->[androidx.lifecycle:lifecycle-process:2.6.1] /root/.gradle/caches/8.11.1/transforms/649f7e4a034d8d906c417cd36d3ad90f/transformed/jetified-lifecycle-process-2.6.1/AndroidManifest.xml:30:17-78
-251                android:value="androidx.startup" />
-251-->[androidx.lifecycle:lifecycle-process:2.6.1] /root/.gradle/caches/8.11.1/transforms/649f7e4a034d8d906c417cd36d3ad90f/transformed/jetified-lifecycle-process-2.6.1/AndroidManifest.xml:31:17-49
-252            <meta-data
-252-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:29:13-31:52
-253                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
-253-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:30:17-85
-254                android:value="androidx.startup" />
-254-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:31:17-49
-255        </provider>
+200                <category android:name="android.intent.category.LAUNCHER" />
+200-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:158:17-77
+200-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:158:27-74
+201            </intent-filter>
+202            <!-- Deep link support -->
+203            <intent-filter>
+203-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:161:13-166:29
+204                <action android:name="android.intent.action.VIEW" />
+204-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:162:17-69
+204-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:162:25-66
+205
+206                <category android:name="android.intent.category.DEFAULT" />
+206-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:163:17-76
+206-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:163:27-73
+207                <category android:name="android.intent.category.BROWSABLE" />
+207-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:164:17-78
+207-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:164:27-75
+208
+209                <data
+209-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:165:17-91
+210                    android:host="juz-amma-pro-max.vercel.app"
+210-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:165:46-88
+211                    android:scheme="https" />
+211-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:165:23-45
+212            </intent-filter>
+213        </activity>
+214
+215        <!-- Foreground Service for Background Azan Playback -->
+216        <service
+216-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:170:9-174:61
+217            android:name="com.suleiman.juzammapromax.AzanAlarmService"
+217-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:171:13-45
+218            android:enabled="true"
+218-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:172:13-35
+219            android:exported="false"
+219-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:173:13-37
+220            android:foregroundServiceType="mediaPlayback" />
+220-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:174:13-58
+221
+222        <!-- File Provider for sharing images/content -->
+223        <provider
+224            android:name="androidx.core.content.FileProvider"
+224-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:178:13-62
+225            android:authorities="com.suleiman.juzammapromax.fileprovider"
+225-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:179:13-64
+226            android:exported="false"
+226-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:180:13-37
+227            android:grantUriPermissions="true" >
+227-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:181:13-47
+228            <meta-data
+228-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:182:13-184:54
+229                android:name="android.support.FILE_PROVIDER_PATHS"
+229-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:183:17-67
+230                android:resource="@xml/file_paths" />
+230-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:184:17-51
+231        </provider>
+232
+233        <!-- Boot Receiver to Restart Alarms After Reboot -->
+234        <receiver
+234-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:188:9-197:20
+235            android:name="com.suleiman.juzammapromax.AzanBootReceiver"
+235-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:189:13-45
+236            android:enabled="true"
+236-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:190:13-35
+237            android:exported="false" >
+237-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:191:13-37
+238            <intent-filter>
+238-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:192:13-196:29
+239                <action android:name="android.intent.action.BOOT_COMPLETED" />
+239-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:193:17-79
+239-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:193:25-76
+240                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+240-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:194:17-82
+240-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:194:25-79
+241                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+241-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:195:17-86
+241-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:195:25-83
+242            </intent-filter>
+243        </receiver>
+244
+245        <!-- Alarm Receiver for Exact Alarm Triggering -->
+246        <receiver
+246-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:200:9-203:40
+247            android:name="com.suleiman.juzammapromax.AzanAlarmReceiver"
+247-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:201:13-46
+248            android:enabled="true"
+248-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:202:13-35
+249            android:exported="false" />
+249-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:203:13-37
+250
+251        <!-- Notification Receiver for Dismiss/Play Actions -->
+252        <receiver
+252-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:206:9-209:40
+253            android:name="com.suleiman.juzammapromax.AzanNotificationActionReceiver"
+253-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:207:13-59
+254            android:enabled="true"
+254-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:208:13-35
+255            android:exported="false" />
+255-->/tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:209:13-37
 256
-257        <receiver
-257-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:34:9-52:20
-258            android:name="androidx.profileinstaller.ProfileInstallReceiver"
-258-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:35:13-76
-259            android:directBootAware="false"
-259-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:36:13-44
-260            android:enabled="true"
-260-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:37:13-35
-261            android:exported="true"
-261-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:38:13-36
-262            android:permission="android.permission.DUMP" >
-262-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:39:13-57
-263            <intent-filter>
-263-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:40:13-42:29
-264                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
-264-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:41:17-91
-264-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:41:25-88
-265            </intent-filter>
-266            <intent-filter>
-266-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:43:13-45:29
-267                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
-267-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:44:17-85
-267-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:44:25-82
-268            </intent-filter>
-269            <intent-filter>
-269-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:46:13-48:29
-270                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
-270-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:47:17-88
-270-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:47:25-85
-271            </intent-filter>
-272            <intent-filter>
-272-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:49:13-51:29
-273                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
-273-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:50:17-95
-273-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:50:25-92
-274            </intent-filter>
-275        </receiver>
-276    </application>
-277
-278</manifest>
+257        <provider
+257-->[androidx.emoji2:emoji2:1.2.0] /root/.gradle/caches/8.11.1/transforms/eeed028da509850157f59de2c3bbf495/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:24:9-32:20
+258            android:name="androidx.startup.InitializationProvider"
+258-->[androidx.emoji2:emoji2:1.2.0] /root/.gradle/caches/8.11.1/transforms/eeed028da509850157f59de2c3bbf495/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:25:13-67
+259            android:authorities="com.suleiman.juzammapromax.androidx-startup"
+259-->[androidx.emoji2:emoji2:1.2.0] /root/.gradle/caches/8.11.1/transforms/eeed028da509850157f59de2c3bbf495/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:26:13-68
+260            android:exported="false" >
+260-->[androidx.emoji2:emoji2:1.2.0] /root/.gradle/caches/8.11.1/transforms/eeed028da509850157f59de2c3bbf495/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:27:13-37
+261            <meta-data
+261-->[androidx.emoji2:emoji2:1.2.0] /root/.gradle/caches/8.11.1/transforms/eeed028da509850157f59de2c3bbf495/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:29:13-31:52
+262                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+262-->[androidx.emoji2:emoji2:1.2.0] /root/.gradle/caches/8.11.1/transforms/eeed028da509850157f59de2c3bbf495/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:30:17-75
+263                android:value="androidx.startup" />
+263-->[androidx.emoji2:emoji2:1.2.0] /root/.gradle/caches/8.11.1/transforms/eeed028da509850157f59de2c3bbf495/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:31:17-49
+264            <meta-data
+264-->[androidx.lifecycle:lifecycle-process:2.6.1] /root/.gradle/caches/8.11.1/transforms/649f7e4a034d8d906c417cd36d3ad90f/transformed/jetified-lifecycle-process-2.6.1/AndroidManifest.xml:29:13-31:52
+265                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+265-->[androidx.lifecycle:lifecycle-process:2.6.1] /root/.gradle/caches/8.11.1/transforms/649f7e4a034d8d906c417cd36d3ad90f/transformed/jetified-lifecycle-process-2.6.1/AndroidManifest.xml:30:17-78
+266                android:value="androidx.startup" />
+266-->[androidx.lifecycle:lifecycle-process:2.6.1] /root/.gradle/caches/8.11.1/transforms/649f7e4a034d8d906c417cd36d3ad90f/transformed/jetified-lifecycle-process-2.6.1/AndroidManifest.xml:31:17-49
+267            <meta-data
+267-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:29:13-31:52
+268                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+268-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:30:17-85
+269                android:value="androidx.startup" />
+269-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:31:17-49
+270        </provider>
+271
+272        <receiver
+272-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:34:9-52:20
+273            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+273-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:35:13-76
+274            android:directBootAware="false"
+274-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:36:13-44
+275            android:enabled="true"
+275-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:37:13-35
+276            android:exported="true"
+276-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:38:13-36
+277            android:permission="android.permission.DUMP" >
+277-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:39:13-57
+278            <intent-filter>
+278-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:40:13-42:29
+279                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+279-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:41:17-91
+279-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:41:25-88
+280            </intent-filter>
+281            <intent-filter>
+281-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:43:13-45:29
+282                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+282-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:44:17-85
+282-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:44:25-82
+283            </intent-filter>
+284            <intent-filter>
+284-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:46:13-48:29
+285                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+285-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:47:17-88
+285-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:47:25-85
+286            </intent-filter>
+287            <intent-filter>
+287-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:49:13-51:29
+288                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+288-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:50:17-95
+288-->[androidx.profileinstaller:profileinstaller:1.3.0] /root/.gradle/caches/8.11.1/transforms/011555ec42dc418299141e9ce2b49fb6/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:50:25-92
+289            </intent-filter>
+290        </receiver>
+291    </application>
+292
+293</manifest>

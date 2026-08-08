@@ -1,20 +1,20 @@
 -- Merging decision tree log ---
 provider#androidx.core.content.FileProvider
-INJECTED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:162:9-170:20
+INJECTED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:177:9-185:20
 	android:grantUriPermissions
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:166:13-47
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:181:13-47
 	android:authorities
 		INJECTED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:164:13-64
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:179:13-64
 	android:exported
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:165:13-37
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:180:13-37
 	android:name
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:163:13-62
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:178:13-62
 manifest
-ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:2:1-198:12
-INJECTED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:2:1-198:12
-INJECTED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:2:1-198:12
-INJECTED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:2:1-198:12
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:2:1-213:12
+INJECTED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:2:1-213:12
+INJECTED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:2:1-213:12
+INJECTED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:2:1-213:12
 MERGED from [com.google.android.material:material:1.11.0] /root/.gradle/caches/8.11.1/transforms/3bb7d76448b0a6d1d7044d45b9299888/transformed/material-1.11.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.appcompat:appcompat-resources:1.6.1] /root/.gradle/caches/8.11.1/transforms/a5d21488c96e464f40a5c9b60d52edda/transformed/jetified-appcompat-resources-1.6.1/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.constraintlayout:constraintlayout:2.0.1] /root/.gradle/caches/8.11.1/transforms/bac215ec2f7bd59ae1798770a8740738/transformed/constraintlayout-2.0.1/AndroidManifest.xml:2:1-11:12
@@ -395,9 +395,41 @@ ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:117:5-78
 		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:117:19-51
 	android:required
 		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:117:52-75
+uses-permission#android.permission.FOREGROUND_SERVICE_MICROPHONE
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:120:5-88
+	android:name
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:120:22-85
+uses-permission#android.permission.FOREGROUND_SERVICE_CAMERA
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:121:5-84
+	android:name
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:121:22-81
+uses-permission#android.permission.FOREGROUND_SERVICE_HEALTH
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:122:5-84
+	android:name
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:122:22-81
+uses-permission#android.permission.USE_FULL_SCREEN_INTENT
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:125:5-81
+	android:name
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:125:22-78
+uses-permission#android.permission.DISABLE_KEYGUARD
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:127:5-75
+	android:name
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:127:22-72
+uses-permission#android.permission.TURN_SCREEN_ON
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:128:5-73
+	android:name
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:128:22-70
+uses-permission#android.permission.USE_ICC_AUTH_WITH_DEVICE_IDENTIFIER
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:129:5-94
+	android:name
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:129:22-91
+uses-permission#android.permission.QUERY_ALL_PACKAGES
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:131:5-77
+	android:name
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:131:22-74
 application
-ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:120:5-196:19
-INJECTED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:120:5-196:19
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:135:5-211:19
+INJECTED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:135:5-211:19
 MERGED from [com.google.android.material:material:1.11.0] /root/.gradle/caches/8.11.1/transforms/3bb7d76448b0a6d1d7044d45b9299888/transformed/material-1.11.0/AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.material:material:1.11.0] /root/.gradle/caches/8.11.1/transforms/3bb7d76448b0a6d1d7044d45b9299888/transformed/material-1.11.0/AndroidManifest.xml:22:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.0.1] /root/.gradle/caches/8.11.1/transforms/bac215ec2f7bd59ae1798770a8740738/transformed/constraintlayout-2.0.1/AndroidManifest.xml:9:5-20
@@ -417,127 +449,127 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] /root/.gradle/caches/8.11.1
 	android:extractNativeLibs
 		INJECTED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml
 	android:requestLegacyExternalStorage
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:130:9-52
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:145:9-52
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.12.0] /root/.gradle/caches/8.11.1/transforms/a66195a4aca2b869e817d030aea96840/transformed/core-1.12.0/AndroidManifest.xml:28:18-86
 	android:supportsRtl
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:131:9-35
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:146:9-35
 	android:label
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:123:9-41
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:138:9-41
 	android:hardwareAccelerated
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:127:9-43
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:142:9-43
 	android:roundIcon
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:124:9-54
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:139:9-54
 	android:largeHeap
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:128:9-33
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:143:9-33
 	android:icon
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:122:9-43
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:137:9-43
 	android:allowBackup
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:121:9-35
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:136:9-35
 	android:theme
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:125:9-59
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:140:9-59
 	android:networkSecurityConfig
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:129:9-69
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:144:9-69
 	android:usesCleartextTraffic
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:126:9-44
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:141:9-44
 activity#com.suleiman.juzammapromax.MainActivity
-ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:134:9-152:20
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:149:9-167:20
 	android:screenOrientation
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:139:13-49
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:154:13-49
 	android:launchMode
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:138:13-43
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:153:13-43
 	android:windowSoftInputMode
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:140:13-55
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:155:13-55
 	android:exported
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:137:13-36
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:152:13-36
 	android:configChanges
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:136:13-109
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:151:13-109
 	android:name
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:135:13-41
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:150:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:141:13-144:29
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:156:13-159:29
 action#android.intent.action.MAIN
-ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:142:17-69
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:157:17-69
 	android:name
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:142:25-66
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:157:25-66
 category#android.intent.category.LAUNCHER
-ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:143:17-77
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:158:17-77
 	android:name
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:143:27-74
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:158:27-74
 intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:host:juz-amma-pro-max.vercel.app+data:scheme:https
-ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:146:13-151:29
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:161:13-166:29
 action#android.intent.action.VIEW
-ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:147:17-69
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:162:17-69
 	android:name
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:147:25-66
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:162:25-66
 category#android.intent.category.DEFAULT
-ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:148:17-76
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:163:17-76
 	android:name
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:148:27-73
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:163:27-73
 category#android.intent.category.BROWSABLE
-ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:149:17-78
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:164:17-78
 	android:name
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:149:27-75
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:164:27-75
 data
-ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:150:17-91
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:165:17-91
 	android:host
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:150:46-88
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:165:46-88
 	android:scheme
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:150:23-45
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:165:23-45
 service#com.suleiman.juzammapromax.AzanAlarmService
-ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:155:9-159:61
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:170:9-174:61
 	android:enabled
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:157:13-35
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:172:13-35
 	android:exported
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:158:13-37
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:173:13-37
 	android:foregroundServiceType
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:159:13-58
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:174:13-58
 	android:name
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:156:13-45
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:171:13-45
 receiver#com.suleiman.juzammapromax.AzanBootReceiver
-ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:173:9-182:20
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:188:9-197:20
 	android:enabled
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:175:13-35
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:190:13-35
 	android:exported
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:176:13-37
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:191:13-37
 	android:name
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:174:13-45
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:189:13-45
 intent-filter#action:name:android.intent.action.BOOT_COMPLETED+action:name:android.intent.action.LOCKED_BOOT_COMPLETED+action:name:android.intent.action.QUICKBOOT_POWERON
-ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:177:13-181:29
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:192:13-196:29
 action#android.intent.action.BOOT_COMPLETED
-ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:178:17-79
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:193:17-79
 	android:name
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:178:25-76
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:193:25-76
 action#android.intent.action.QUICKBOOT_POWERON
-ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:179:17-82
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:194:17-82
 	android:name
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:179:25-79
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:194:25-79
 action#android.intent.action.LOCKED_BOOT_COMPLETED
-ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:180:17-86
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:195:17-86
 	android:name
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:180:25-83
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:195:25-83
 receiver#com.suleiman.juzammapromax.AzanAlarmReceiver
-ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:185:9-188:40
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:200:9-203:40
 	android:enabled
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:187:13-35
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:202:13-35
 	android:exported
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:188:13-37
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:203:13-37
 	android:name
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:186:13-46
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:201:13-46
 receiver#com.suleiman.juzammapromax.AzanNotificationActionReceiver
-ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:191:9-194:40
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:206:9-209:40
 	android:enabled
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:193:13-35
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:208:13-35
 	android:exported
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:194:13-37
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:209:13-37
 	android:name
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:192:13-59
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:207:13-59
 meta-data#android.support.FILE_PROVIDER_PATHS
-ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:167:13-169:54
+ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:182:13-184:54
 	android:resource
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:169:17-51
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:184:17-51
 	android:name
-		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:168:17-67
+		ADDED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml:183:17-67
 uses-sdk
 INJECTED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /tmp/juzamma-pro-max/apk-build/src/main/AndroidManifest.xml

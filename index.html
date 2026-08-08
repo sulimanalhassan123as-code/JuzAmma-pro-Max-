@@ -893,6 +893,7 @@ body { font-family:'Poppins',sans-serif;
       rgba(16,185,129,.06), transparent 25%, rgba(16,185,129,.04) 50%, transparent 75%, rgba(16,185,129,.06));
   position:relative;
   box-shadow:0 4px 30px rgba(0,0,0,.08), inset 0 0 0 8px rgba(255,255,255,.02);
+  transition: transform .15s linear;
 }
 /* Tick marks via repeating conic gradient */
 .qibla-ring::before {
@@ -2107,47 +2108,44 @@ function showInAppBanner() {
 // QURAN
 // ================================================================
 async function loadQ() {
-  const cached = localStorage.getItem('quranProMax_v6');
+  // v8: earlier versions tried to batch-fetch surahs 1-77 via a comma-
+  // separated surah list (e.g. /v1/surah/1,2,3.../quran-uthmani), but the
+  // alquran.cloud API does NOT support that — it silently returns only the
+  // FIRST surah in the list. That meant users only ever got Al-Fatihah plus
+  // Juz 30 (surahs 78-114), never the full Quran, no matter how long they
+  // used the app. Fixed by switching to the single full-Quran endpoint
+  // (/v1/quran/...) which returns all 114 surahs in one reliable call.
+  const cached = localStorage.getItem('quranProMax_v8');
   if (cached) {
-    try { qData=JSON.parse(cached); renderList(); populateMemSel(); return; } catch(e) {}
-  }
-  document.getElementById('surah-container').innerHTML = '<div style="padding:40px;text-align:center;color:var(--txt2)">⏳ Loading Quran…<br><small>Connecting to server</small></div>';
-  try {
-    // Load full Quran (all 114 surahs)
-    const juz30 = await fetch('https://api.alquran.cloud/v1/juz/30/quran-uthmani').then(r=>r.json());
-    const juz30en = await fetch('https://api.alquran.cloud/v1/juz/30/en.sahih').then(r=>r.json());
-    let tmp = {};
-    juz30.data.ayahs.forEach((a,i) => {
-      const s = a.surah;
-      if (!tmp[s.number]) tmp[s.number]={id:s.number,name:s.englishName,ar:s.name,verses:[]};
-      let txt=a.text;
-      if (a.numberInSurah===1 && s.number!==1 && txt.startsWith('بِسْمِ')) {
-        const w=txt.split(' '); txt=w.length>4?w.slice(4).join(' '):txt;
+    try {
+      const parsed = JSON.parse(cached);
+      if (Array.isArray(parsed) && parsed.length >= 114) {
+        qData = parsed; renderList(); populateMemSel(); return;
       }
-      tmp[s.number].verses.push({a:txt, e:juz30en.data.ayahs[i].text, n:a.numberInSurah});
-    });
-    // Fetch additional surahs 1-77 (Al-Fatihah to just before Juz Amma)
-    const extraSurahs = [];
-    for (let sid=1; sid<=77; sid++) extraSurahs.push(sid);
-    const extraAr = await fetch('https://api.alquran.cloud/v1/surah/'+extraSurahs.join(',')+'/quran-uthmani').then(r=>r.json());
-    const extraEn = await fetch('https://api.alquran.cloud/v1/surah/'+extraSurahs.join(',')+'/en.sahih').then(r=>r.json());
-    const extraArData = Array.isArray(extraAr.data) ? extraAr.data : [extraAr.data];
-    const extraEnData = Array.isArray(extraEn.data) ? extraEn.data : [extraEn.data];
-    extraArData.forEach((surah, si) => {
-      const enSurah = extraEnData[si];
-      if (!tmp[surah.number]) tmp[surah.number]={id:surah.number,name:surah.englishName,ar:surah.name,verses:[]};
-      surah.ayahs.forEach((a, ai) => {
-        let txt=a.text;
-        if (a.numberInSurah===1 && surah.number!==1 && txt.startsWith('بِسْمِ')) {
-          const w=txt.split(' '); txt=w.length>4?w.slice(4).join(' '):txt;
+    } catch(e) {}
+  }
+  // Clean up stale cache keys from earlier broken versions
+  try { localStorage.removeItem('quranProMax_v6'); localStorage.removeItem('quranProMax_v7'); } catch(e) {}
+  document.getElementById('surah-container').innerHTML = '<div style="padding:40px;text-align:center;color:var(--txt2)">⏳ Loading the complete Quran…<br><small>All 114 surahs — first load only</small></div>';
+  try {
+    const [arRes, enRes] = await Promise.all([
+      fetch('https://api.alquran.cloud/v1/quran/quran-uthmani').then(r=>r.json()),
+      fetch('https://api.alquran.cloud/v1/quran/en.sahih').then(r=>r.json())
+    ]);
+    const arSurahs = arRes.data.surahs;
+    const enSurahs = enRes.data.surahs;
+    qData = arSurahs.map((surah, si) => {
+      const enSurah = enSurahs[si];
+      const verses = surah.ayahs.map((a, ai) => {
+        let txt = a.text;
+        if (a.numberInSurah === 1 && surah.number !== 1 && txt.startsWith('بِسْمِ')) {
+          const w = txt.split(' '); txt = w.length > 4 ? w.slice(4).join(' ') : txt;
         }
-        if (!tmp[surah.number].verses.find(v=>v.n===a.numberInSurah)) {
-          tmp[surah.number].verses.push({a:txt, e:enSurah.ayahs[ai] ? enSurah.ayahs[ai].text : '', n:a.numberInSurah});
-        }
+        return { a: txt, e: enSurah.ayahs[ai] ? enSurah.ayahs[ai].text : '', n: a.numberInSurah };
       });
+      return { id: surah.number, name: surah.englishName, ar: surah.name, verses };
     });
-    qData = Object.values(tmp).sort((a,b)=>a.id-b.id);
-    localStorage.setItem('quranProMax_v6', JSON.stringify(qData));
+    localStorage.setItem('quranProMax_v8', JSON.stringify(qData));
     renderList(); populateMemSel();
   } catch(e) {
     document.getElementById('surah-container').innerHTML = '<div style="padding:40px;text-align:center;color:#ef4444">⚠️ No internet.<br><small>Please connect and reload.</small></div>';
@@ -5335,16 +5333,18 @@ function calcQiblaLocal(lat, lon) {
   return (qibla * 180 / Math.PI + 360) % 360;
 }
 
+let qiblaTargetDeg = null;   // true bearing to Kaaba from North (degrees)
+let qiblaLiveActive = false; // whether live device-compass tracking is on
+let qiblaHeading = 0;        // current device heading (compass) in degrees
+
 function setQiblaDisplay(qiblaDeg, sourceLabel) {
+  qiblaTargetDeg = qiblaDeg;
   document.getElementById('qibla-angle').innerHTML = Math.round(qiblaDeg) + '° <span class="unit">from North</span>';
-  document.getElementById('qibla-info').textContent = 'First find true North with a compass, then face North and turn clockwise by this angle to face the Kaaba.';
-  const arrow = document.getElementById('qibla-dir');
-  // Fixed bearing arrow: N is always shown at top of the ring, so the
-  // arrow always points qiblaDeg clockwise from that fixed N — this stays
-  // consistent with the ring's static N/S labels. (Phone magnetometer
-  // readings inside WebViews are unreliable/uncalibrated and previously
-  // caused the arrow to visually contradict the printed degree value.)
-  arrow.style.transform = 'translate(-50%,-100%) rotate(' + qiblaDeg + 'deg)';
+  if (!qiblaLiveActive) {
+    document.getElementById('qibla-info').textContent = 'Tap "Enable Live Compass" below for a real-time pointer, or manually find North and turn clockwise by this angle.';
+    const arrow = document.getElementById('qibla-dir');
+    arrow.style.transform = 'translate(-50%,-100%) rotate(' + qiblaDeg + 'deg)';
+  }
   const cityEl = document.getElementById('qibla-city');
   if (cityEl && sourceLabel) {
     const base = cityEl.dataset.base || cityEl.textContent;
@@ -5361,13 +5361,11 @@ function initQibla() {
     document.getElementById('qibla-city').textContent = '📍 Your location: ' + lat.toFixed(2) + ', ' + lon.toFixed(2);
     document.getElementById('qibla-city').dataset.base = '📍 Your location: ' + lat.toFixed(2) + ', ' + lon.toFixed(2);
 
-    // 1) Show instant local calculation immediately (no network wait)
+    // 1) Show instant local great-circle calculation immediately (no network wait)
     const localDeg = calcQiblaLocal(lat, lon);
     setQiblaDisplay(localDeg, '📡 calculating…');
 
-    // 2) Confirm/refine with the Aladhan Qibla API — a trusted, widely-used
-    // Islamic-services API (already used elsewhere in this app for prayer
-    // times), fast (~100ms) and authoritative for Qibla bearing.
+    // 2) Confirm/refine with the Aladhan Qibla API (authoritative, ~100ms)
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
     fetch('https://api.aladhan.com/v1/qibla/' + lat + '/' + lon, { signal: controller.signal })
@@ -5389,10 +5387,72 @@ function initQibla() {
   });
 }
 
+// ═══════════════════════════════════════════════════════════
+// LIVE DEVICE COMPASS — rotates the Kaaba arrow in real time as you turn
+// your phone, exactly like reliable dedicated Qibla-finder apps do.
+// Uses the phone's magnetometer via DeviceOrientationEvent (webkitCompassHeading
+// on iOS Safari, absolute alpha on Android Chrome) instead of requiring the
+// user to manually find North with a separate app first.
+// ═══════════════════════════════════════════════════════════
+function applyQiblaRotation() {
+  if (qiblaTargetDeg === null) return;
+  const arrow = document.getElementById('qibla-dir');
+  const ring = document.getElementById('qibla-ring');
+  // Rotate the whole ring opposite to device heading so N always points
+  // true North, then the arrow sits at the fixed true bearing to the Kaaba.
+  ring.style.transform = 'rotate(' + (-qiblaHeading) + 'deg)';
+  arrow.style.transform = 'translate(-50%,-100%) rotate(' + qiblaTargetDeg + 'deg)';
+  const diff = Math.abs(((qiblaTargetDeg - qiblaHeading + 540) % 360) - 180);
+  const info = document.getElementById('qibla-info');
+  if (diff < 6) {
+    info.innerHTML = '✅ <b style="color:var(--p)">Facing the Kaaba!</b> Hold steady for prayer.';
+  } else {
+    info.textContent = '🧭 Live compass active — rotate your body until the Kaaba icon points straight up.';
+  }
+}
+
+function handleOrientation(e) {
+  let heading;
+  if (typeof e.webkitCompassHeading === 'number') {
+    heading = e.webkitCompassHeading; // iOS Safari — already true north heading
+  } else if (typeof e.alpha === 'number') {
+    heading = 360 - e.alpha; // Android — alpha increases counter-clockwise
+  } else {
+    return;
+  }
+  qiblaHeading = heading;
+  applyQiblaRotation();
+}
+
 function calibrateQibla() {
   const calib = document.getElementById('qibla-calib');
+  const btn = document.querySelector('.qibla-calib-btn');
   calib.style.display = 'block';
-  setTimeout(() => { calib.style.display = 'none'; initQibla(); }, 3000);
+  calib.textContent = 'Requesting compass access…';
+
+  const startLive = () => {
+    qiblaLiveActive = true;
+    if (btn) { btn.textContent = '🟢 Live Compass Active'; btn.disabled = true; }
+    calib.style.display = 'none';
+    window.addEventListener('deviceorientationabsolute', handleOrientation, true);
+    window.addEventListener('deviceorientation', handleOrientation, true);
+    if (qiblaTargetDeg === null) initQibla();
+  };
+
+  // iOS 13+ requires an explicit user-gesture permission prompt
+  if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+    DeviceOrientationEvent.requestPermission().then(state => {
+      if (state === 'granted') { startLive(); }
+      else { calib.style.display = 'none'; document.getElementById('qibla-info').textContent = 'Compass permission denied — showing manual angle instead.'; initQibla(); }
+    }).catch(() => { calib.style.display = 'none'; initQibla(); });
+  } else if (window.DeviceOrientationEvent) {
+    // Android / other browsers — no explicit permission API, just attach
+    setTimeout(startLive, 400);
+  } else {
+    calib.style.display = 'none';
+    document.getElementById('qibla-info').textContent = 'Live compass not supported on this device — showing manual angle.';
+    initQibla();
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -5890,11 +5950,11 @@ function updateFsapBtn() {
     <div class="qibla-angle" id="qibla-angle">— °<span class="unit">from North</span></div>
     <div class="qibla-city" id="qibla-city">📍 Tap to calibrate</div>
     <div class="qibla-info" id="qibla-info">Find true North with a compass, then turn clockwise by the shown angle to face the Kaaba.</div>
-    <button class="qibla-calib-btn" onclick="calibrateQibla()">🧭 Calibrate Qibla</button>
+    <button class="qibla-calib-btn" onclick="calibrateQibla()">🧭 Enable Live Compass</button>
     <div class="qibla-calibrating" id="qibla-calib" style="display:none">Calibrating... Move phone in figure-8</div>
     <div class="qibla-tip">
       <div class="qibla-tip-title">💡 How to use</div>
-      <div class="qibla-tip-text">1. Open a compass app on your phone to find true North<br>2. Face North<br>3. Turn clockwise by the angle shown above<br>4. You are now facing the Kaaba in Makkah 🕋</div>
+      <div class="qibla-tip-text">1. Tap "Enable Live Compass" and allow access<br>2. Hold your phone flat, face up<br>3. Slowly turn your body until the Kaaba 🕋 icon points straight up<br>4. You are now facing the Qibla — the app confirms with a ✅</div>
     </div>
   </div>
 </div>
