@@ -1174,6 +1174,12 @@ body { font-family:'Poppins',sans-serif;
 
   <div class="wudu-body">
 
+    <!-- In-App Browser Notice -->
+    <div class="inapp-banner" id="inapp-notice">
+      <div class="inapp-banner-title">📱 Open in Browser for Full Features</div>
+      <div class="inapp-banner-desc">Audio features need a full browser. Tap below to open this page in your phone's browser.</div>
+      <a class="inapp-banner-btn" href="https://juz-amma-pro-max.vercel.app" target="_blank" rel="noopener">Open in Browser →</a>
+    </div>
     <!-- Audio Guide -->
     <div class="wudu-audio-bar">
       <button class="wudu-audio-btn play" id="wudu-read-all" onclick="wuduReadAll()">🔊 Listen to Guide</button>
@@ -1765,6 +1771,39 @@ document.addEventListener('click', e => { if (!e.target.closest('#tfab') && !e.t
     dragging=false;
   });
   fab.addEventListener('click', () => { if (!moved) toggleTP(); moved=false; });
+})();
+
+// ================================================================
+// WHATSAPP IN-APP BROWSER DETECTION
+// ================================================================
+function detectInAppBrowser() {
+  const ua = navigator.userAgent || navigator.vendor || window.opera;
+  const isWhatsApp = /WhatsApp/i.test(ua);
+  const isInstagram = /Instagram/i.test(ua);
+  const isFacebook = /FBAN|FBAV/i.test(ua);
+  const isTwitter = /Twitter/i.test(ua);
+  const isSnapchat = /Snapchat/i.test(ua);
+  const isLine = /Line/i.test(ua);
+  return { isWhatsApp, isInstagram, isFacebook, isTwitter, isSnapchat, isLine, any: isWhatsApp || isInstagram || isFacebook || isTwitter || isSnapchat || isLine };
+}
+(function() {
+  const d = detectInAppBrowser();
+  if (d.any) {
+    document.addEventListener('DOMContentLoaded', function() {
+      const banner = document.getElementById('inapp-notice');
+      if (banner) banner.classList.add('show');
+      // Also show on home page
+      const homeView = document.getElementById('view-home');
+      if (homeView) {
+        const hBanner = document.createElement('div');
+        hBanner.className = 'inapp-banner show';
+        hBanner.style.margin = '14px 16px';
+        hBanner.innerHTML = '<div class="inapp-banner-title">📱 Open in Browser for Audio</div><div class="inapp-banner-desc">Audio playback works best in your phone browser. Tap below.</div><a class="inapp-banner-btn" href="https://juz-amma-pro-max.vercel.app" target="_blank" rel="noopener">Open in Browser →</a>';
+        const firstCard = homeView.querySelector('.hcard') || homeView.querySelector('.hstats');
+        if (firstCard) firstCard.parentNode.insertBefore(hBanner, firstCard);
+      }
+    });
+  }
 })();
 
 // ================================================================
@@ -2533,28 +2572,33 @@ let wuduSpeech = null;
 let wuduReadingAll = false;
 let wuduStepCounter = 0;
 
+// Wudu audio guide — uses TTS with graceful fallback
+let wuduAudio = new Audio();
 function wuduSpeak(text, onDone) {
-  if (!('speechSynthesis' in window)) {
-    const status = document.getElementById('wudu-audio-status');
-    if (status) status.textContent = 'Voice audio needs Chrome/Safari — open this page in your phone browser (not inside WhatsApp) to use it.';
-    wuduReadingAll = false;
-    const playBtn = document.getElementById('wudu-read-all');
-    if (playBtn) { playBtn.innerHTML = '🔊 Listen to Guide'; playBtn.classList.remove('active'); }
-    if (onDone) onDone();
-    return;
+  // Try TTS first
+  if ('speechSynthesis' in window) {
+    wuduStopReading();
+    try {
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = 0.85;
+      u.pitch = 1;
+      const voices = speechSynthesis.getVoices();
+      const enVoice = voices.find(v => v.lang.startsWith('en'));
+      if (enVoice) u.voice = enVoice;
+      u.onend = () => { if (onDone) onDone(); };
+      u.onerror = () => { if (onDone) onDone(); };
+      wuduSpeech = u;
+      speechSynthesis.speak(u);
+      return;
+    } catch(e) { /* fall through to no-support */ }
   }
-  wuduStopReading();
-  const u = new SpeechSynthesisUtterance(text);
-  u.rate = 0.85;
-  u.pitch = 1;
-  // Try to find an English voice
-  const voices = speechSynthesis.getVoices();
-  const enVoice = voices.find(v => v.lang.startsWith('en'));
-  if (enVoice) u.voice = enVoice;
-  u.onend = () => { if (onDone) onDone(); };
-  u.onerror = () => { if (onDone) onDone(); };
-  wuduSpeech = u;
-  speechSynthesis.speak(u);
+  // Fallback: no TTS available
+  const status = document.getElementById('wudu-audio-status');
+  if (status) status.textContent = '📱 Open in your phone browser (Chrome/Safari) to hear audio. Not supported inside WhatsApp.';
+  wuduReadingAll = false;
+  const playBtn = document.getElementById('wudu-read-all');
+  if (playBtn) { playBtn.innerHTML = '🔊 Listen to Guide'; playBtn.classList.remove('active'); }
+  if (onDone) onDone();
 }
 
 function wuduStopReading() {
