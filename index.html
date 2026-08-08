@@ -5089,17 +5089,14 @@ function initQibla() {
     const qiblaDeg = (qibla * 180 / Math.PI + 360) % 360;
     document.getElementById('qibla-angle').textContent = Math.round(qiblaDeg) + '° from North';
     document.getElementById('qibla-city').textContent = 'Location: ' + lat.toFixed(2) + ', ' + lon.toFixed(2);
-    document.getElementById('qibla-info').textContent = 'The arrow points toward the Kaaba in Makkah. Use a real compass app for precise direction.';
+    document.getElementById('qibla-info').textContent = 'First find true North with a compass, then face North and turn clockwise by this angle to face the Kaaba.';
     const arrow = document.getElementById('qibla-dir');
+    // Fixed bearing arrow: N is always shown at top of the ring, so the
+    // arrow always points qiblaDeg clockwise from that fixed N — this stays
+    // consistent with the ring's static N/S labels. (Phone magnetometer
+    // readings inside WebViews are unreliable/uncalibrated and previously
+    // caused the arrow to visually contradict the printed degree value.)
     arrow.style.transform = 'translate(-50%,-100%) rotate(' + qiblaDeg + 'deg)';
-    if (window.DeviceOrientationEvent) {
-      window.addEventListener('deviceorientation', e => {
-        if (e.alpha !== null && e.alpha !== undefined) {
-          const heading = 360 - e.alpha;
-          arrow.style.transform = 'translate(-50%,-100%) rotate(' + (qiblaDeg - heading) + 'deg)';
-        }
-      });
-    }
   }, () => {
     document.getElementById('qibla-info').innerHTML = 'Location access needed. <button onclick="initQibla()" style="color:var(--p);background:none;border:none;text-decoration:underline;cursor:pointer">Try again</button>';
   });
@@ -5593,7 +5590,7 @@ function updateFsapBtn() {
   <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goToView('home')">← Home</button><div class="htitle">🧭 Qibla</div><div style="width:60px"></div></div></div>
   <div class="qibla-wrap"><div class="qibla-compass"><div class="qibla-ring" id="qibla-ring"><div class="qibla-kaaba">🕋</div><div class="qibla-dir" id="qibla-dir"></div></div></div>
   <div class="qibla-angle" id="qibla-angle">— °</div><div class="qibla-city" id="qibla-city">Tap to calibrate</div>
-  <div class="qibla-info" id="qibla-info">Point your phone forward and the arrow shows direction to the Kaaba in Makkah.</div>
+  <div class="qibla-info" id="qibla-info">Find true North (with a compass), then turn clockwise by the shown angle to face the Kaaba.</div>
   <button class="azan-test-btn" onclick="calibrateQibla()" style="margin-top:14px">🧭 Calibrate</button>
   <div class="qibla-calibrating" id="qibla-calib" style="display:none">Calibrating... Move phone in figure-8</div></div>
 </div>
