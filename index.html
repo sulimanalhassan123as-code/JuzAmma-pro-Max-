@@ -287,6 +287,14 @@ body { font-family:'Poppins',sans-serif;
 .m-audio-bar { height:3px; background:var(--bdr); border-radius:2px; margin-top:8px; overflow:hidden; display:none; }
 .m-audio-bar.on { display:block; }
 .m-audio-fill { height:100%; background:var(--p); width:0%; transition:width .3s linear; }
+
+/* In-app browser banner */
+.inapp-banner { display:none; background:linear-gradient(135deg,#1a3a5c,#0d1b2a); color:#fff; padding:12px 16px; border-radius:14px; margin:0 0 14px; text-align:center; border:1.5px solid rgba(212,175,55,.3); }
+.inapp-banner.show { display:block; }
+.inapp-banner-title { font-size:.85rem; font-weight:700; margin-bottom:6px; color:#d4af37; }
+.inapp-banner-desc { font-size:.75rem; color:#a0aec8; margin-bottom:10px; line-height:1.4; }
+.inapp-banner-btn { display:inline-block; background:linear-gradient(135deg,#d4af37,#a07830); color:#0d1b2a; border:none; border-radius:20px; padding:10px 22px; font-size:.82rem; font-weight:700; cursor:pointer; text-decoration:none; }
+.inapp-banner-btn:active { transform:scale(.97); }
 /* stars celebration */
 @keyframes pop { 0%{transform:scale(0) rotate(-20deg);opacity:0} 60%{transform:scale(1.3) rotate(5deg);opacity:1} 100%{transform:scale(1) rotate(0);opacity:1} }
 .star-pop { animation:pop .4s ease forwards; display:inline-block; }
