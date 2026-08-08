@@ -854,6 +854,118 @@ body { font-family:'Poppins',sans-serif;
   .hero-title { font-size:1.5rem; }
 }
 
+
+/* DAILY DUA */
+.dua-cat-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:10px; padding:14px; max-width:520px; margin:0 auto; }
+.dua-cat { background:var(--card); border:1px solid var(--bdr); border-radius:14px; padding:16px 12px; text-align:center; cursor:pointer; transition:all .2s; }
+.dua-cat:active { transform:scale(.97); }
+.dua-cat.active { border-color:var(--p); background:rgba(16,185,129,.08); }
+.dua-cat-ico { font-size:1.8rem; margin-bottom:6px; }
+.dua-cat-nm { font-size:.82rem; font-weight:600; color:var(--txt); }
+.dua-cat-cnt { font-size:.65rem; color:var(--txt2); margin-top:2px; }
+.dua-list { padding:12px 14px; max-width:540px; margin:0 auto; }
+.dua-item { background:var(--card); border:1px solid var(--bdr); border-radius:14px; padding:14px; margin-bottom:12px; }
+.dua-item-hd { display:flex; justify-content:space-between; align-items:start; margin-bottom:8px; }
+.dua-item-t { font-size:.85rem; font-weight:600; color:var(--txt); }
+.dua-item-n { font-size:.65rem; background:rgba(16,185,129,.15); color:var(--p); padding:2px 8px; border-radius:10px; }
+.dua-ar { font-size:1.4rem; line-height:2.2; text-align:right; direction:rtl; color:var(--txt); margin:10px 0; font-family:'Noto Naskh Arabic','Amiri',serif; }
+.dua-tr { font-size:.78rem; color:var(--txt2); font-style:italic; margin:6px 0; line-height:1.5; }
+.dua-en { font-size:.8rem; color:var(--txt); line-height:1.5; margin-top:6px; }
+.dua-src { font-size:.65rem; color:var(--txt2); opacity:.6; margin-top:8px; }
+.dua-share { background:rgba(16,185,129,.1); border:none; border-radius:8px; padding:6px 14px; font-size:.7rem; color:var(--p); cursor:pointer; margin-top:8px; }
+/* QIBLA */
+.qibla-wrap { display:flex; flex-direction:column; align-items:center; padding:20px 14px; }
+.qibla-compass { position:relative; width:240px; height:240px; margin:20px auto; }
+.qibla-ring { width:100%; height:100%; border-radius:50%; border:3px solid var(--bdr); background:radial-gradient(circle at center,rgba(16,185,129,.05),transparent); position:relative; }
+.qibla-ring::before { content:'N'; position:absolute; top:4px; left:50%; transform:translateX(-50%); font-size:.7rem; font-weight:700; color:var(--txt2); }
+.qibla-ring::after { content:'S'; position:absolute; bottom:4px; left:50%; transform:translateX(-50%); font-size:.7rem; font-weight:700; color:var(--txt2); }
+.qibla-dir { position:absolute; top:50%; left:50%; width:4px; height:100px; background:linear-gradient(to top,transparent,var(--p),var(--p)); transform-origin:bottom center; transform:translate(-50%,-100%); border-radius:2px; transition:transform .3s ease; }
+.qibla-dir::before { content:'\1F9AB'; position:absolute; top:-16px; left:50%; transform:translateX(-50%); font-size:1.2rem; }
+.qibla-kaaba { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:1.5rem; opacity:.3; }
+.qibla-angle { font-size:1.5rem; font-weight:700; color:var(--p); margin-top:10px; }
+.qibla-city { font-size:.8rem; color:var(--txt2); margin-top:4px; }
+.qibla-info { font-size:.72rem; color:var(--txt2); text-align:center; max-width:300px; margin-top:14px; line-height:1.5; padding:0 14px; }
+.qibla-calibrating { font-size:.75rem; color:var(--p); margin-top:10px; animation:pulse 1.5s infinite; }
+/* ZAKAT */
+.zakat-form { padding:14px; max-width:480px; margin:0 auto; }
+.zakat-section { background:var(--card); border:1px solid var(--bdr); border-radius:14px; padding:14px; margin-bottom:12px; }
+.zakat-section-hd { font-size:.85rem; font-weight:600; color:var(--txt); margin-bottom:10px; }
+.zakat-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid rgba(128,128,128,.1); }
+.zakat-row:last-child { border-bottom:none; }
+.zakat-lbl { font-size:.78rem; color:var(--txt2); }
+.zakat-inp { background:rgba(0,0,0,.08); border:1px solid var(--bdr); border-radius:8px; padding:6px 10px; width:110px; font-size:.8rem; color:var(--txt); text-align:right; }
+.zakat-inp:focus { outline:none; border-color:var(--p); }
+.zakat-total { background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(5,150,105,.06)); border:1.5px solid rgba(16,185,129,.3); border-radius:14px; padding:16px; margin-bottom:12px; text-align:center; }
+.zakat-total-lbl { font-size:.78rem; color:var(--txt2); }
+.zakat-total-val { font-size:1.8rem; font-weight:700; color:var(--p); margin:4px 0; }
+.zakat-nisab { font-size:.68rem; color:var(--txt2); margin-top:4px; }
+.zakat-due { background:linear-gradient(135deg,rgba(212,175,55,.12),rgba(168,132,48,.06)); border:1.5px solid rgba(212,175,55,.3); border-radius:14px; padding:16px; text-align:center; }
+.zakat-due-lbl { font-size:.8rem; color:var(--txt); }
+.zakat-due-val { font-size:2rem; font-weight:700; color:#d4af37; margin:6px 0; }
+.zakat-due-note { font-size:.68rem; color:var(--txt2); margin-top:4px; }
+/* HIJRI */
+.hijri-wrap { padding:14px; max-width:480px; margin:0 auto; }
+.hijri-today { background:linear-gradient(135deg,rgba(16,185,129,.1),rgba(5,150,105,.05)); border:1.5px solid rgba(16,185,129,.2); border-radius:14px; padding:16px; text-align:center; margin-bottom:14px; }
+.hijri-today-date { font-size:1.4rem; font-weight:700; color:var(--p); }
+.hijri-today-eg { font-size:.78rem; color:var(--txt2); margin-top:4px; }
+.hijri-month-hd { font-size:.85rem; font-weight:600; color:var(--txt); margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; }
+.hijri-month-nav { background:var(--card); border:1px solid var(--bdr); border-radius:10px; width:32px; height:32px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1rem; color:var(--txt); }
+.hijri-cal { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+.hijri-d-hd { font-size:.6rem; color:var(--txt2); text-align:center; padding:4px 0; font-weight:600; }
+.hijri-d { aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:8px; font-size:.72rem; color:var(--txt); cursor:pointer; }
+.hijri-d:hover { background:rgba(128,128,128,.1); }
+.hijri-d.today { background:var(--p); color:#fff; font-weight:700; }
+.hijri-d.event { border:1px solid #d4af37; }
+.hijri-d-num { font-size:.6rem; color:var(--txt2); }
+.hijri-d.today .hijri-d-num { color:rgba(255,255,255,.7); }
+.hijri-events { margin-top:14px; }
+.hijri-event { background:var(--card); border:1px solid var(--bdr); border-radius:10px; padding:10px 12px; margin-bottom:8px; display:flex; align-items:center; gap:10px; }
+.hijri-event-ico { font-size:1.2rem; }
+.hijri-event-info { flex:1; }
+.hijri-event-nm { font-size:.8rem; font-weight:600; color:var(--txt); }
+.hijri-event-date { font-size:.68rem; color:var(--txt2); }
+/* 40 HADITH */
+.hadith-list { padding:14px; max-width:520px; margin:0 auto; }
+.hadith-card2 { background:var(--card); border:1px solid var(--bdr); border-radius:14px; padding:16px; margin-bottom:12px; cursor:pointer; transition:all .2s; }
+.hadith-card2:active { transform:scale(.98); }
+.hadith-card2-num { font-size:.65rem; background:rgba(16,185,129,.15); color:var(--p); padding:2px 10px; border-radius:10px; display:inline-block; margin-bottom:8px; }
+.hadith-card2-ar { font-size:1.2rem; line-height:2; text-align:right; direction:rtl; color:var(--txt); margin:8px 0; font-family:'Noto Naskh Arabic','Amiri',serif; }
+.hadith-card2-en { font-size:.8rem; color:var(--txt); line-height:1.5; }
+.hadith-card2-src { font-size:.65rem; color:var(--txt2); opacity:.6; margin-top:6px; }
+/* PRAYER TRACKER */
+.ptracker-wrap { padding:14px; max-width:480px; margin:0 auto; }
+.ptracker-day { background:var(--card); border:1px solid var(--bdr); border-radius:14px; padding:14px; margin-bottom:12px; }
+.ptracker-day-hd { font-size:.85rem; font-weight:600; color:var(--txt); margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; }
+.ptracker-day-date { font-size:.72rem; color:var(--txt2); }
+.ptracker-prayers { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; }
+.ptracker-prayer { display:flex; flex-direction:column; align-items:center; gap:4px; }
+.ptracker-pname { font-size:.68rem; color:var(--txt2); }
+.ptracker-pbtn { width:36px; height:36px; border-radius:50%; border:2px solid var(--bdr); background:transparent; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; transition:all .2s; }
+.ptracker-pbtn.done { background:var(--p); border-color:var(--p); color:#fff; }
+.ptracker-pbtn:active { transform:scale(.9); }
+.ptracker-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
+.ptracker-stat { background:var(--card); border:1px solid var(--bdr); border-radius:12px; padding:12px; text-align:center; }
+.ptracker-stat-n { font-size:1.4rem; font-weight:700; color:var(--p); }
+.ptracker-stat-l { font-size:.65rem; color:var(--txt2); margin-top:2px; }
+.ptracker-week { display:flex; gap:6px; margin-top:8px; }
+.ptracker-week-day { flex:1; text-align:center; }
+.ptracker-week-lbl { font-size:.6rem; color:var(--txt2); }
+.ptracker-week-bar { height:30px; background:var(--card); border-radius:6px; margin-top:3px; display:flex; align-items:flex-end; overflow:hidden; }
+.ptracker-week-fill { width:100%; background:var(--p); border-radius:6px; transition:height .3s; }
+/* HAJJ */
+.hajj-wrap { padding:14px; max-width:520px; margin:0 auto; }
+.hajj-tabs { display:flex; gap:8px; margin-bottom:14px; }
+.hajj-tab { flex:1; padding:10px; text-align:center; background:var(--card); border:1px solid var(--bdr); border-radius:10px; font-size:.78rem; font-weight:600; color:var(--txt2); cursor:pointer; }
+.hajj-tab.active { background:var(--p); color:#fff; border-color:var(--p); }
+.hajj-step { background:var(--card); border:1px solid var(--bdr); border-radius:14px; padding:14px; margin-bottom:10px; }
+.hajj-step-hd { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.hajj-step-num { width:28px; height:28px; border-radius:50%; background:rgba(16,185,129,.15); color:var(--p); display:flex; align-items:center; justify-content:center; font-size:.78rem; font-weight:700; flex-shrink:0; }
+.hajj-step-t { font-size:.82rem; font-weight:600; color:var(--txt); }
+.hajj-step-body { font-size:.76rem; color:var(--txt2); line-height:1.5; padding-left:38px; }
+.hajj-step-ar { font-size:1.1rem; text-align:right; direction:rtl; color:var(--txt); margin:6px 0; font-family:'Noto Naskh Arabic','Amiri',serif; }
+.hajj-step-tr { font-size:.72rem; color:var(--txt2); font-style:italic; }
+.hajj-warn { background:rgba(245,158,11,.1); border:1px solid rgba(245,158,11,.3); border-radius:10px; padding:10px 12px; font-size:.72rem; color:var(--txt2); margin:10px 0; line-height:1.5; }
+
 </style>
 </head>
 <body>
@@ -998,6 +1110,27 @@ body { font-family:'Poppins',sans-serif;
     </div>
   </div>
 </div>
+
+<div class="cgrid-wrap" style="margin-top:14px">
+  <div class="cgrid-label">🆕 New Tools</div>
+  <div class="cgrid">
+    <div class="ccard" onclick="goToView('dua')" style="background:linear-gradient(135deg,rgba(34,197,94,.08),rgba(22,163,74,.04));border-color:rgba(34,197,94,.2)">
+      <div class="ccard-ico">🤲</div><div class="ccard-t">Daily Duas</div><div class="ccard-s">Hisn al-Muslim 130+ duas</div><span class="ccard-badge badge-new">NEW</span></div>
+    <div class="ccard" onclick="goToView('qibla')" style="background:linear-gradient(135deg,rgba(59,130,246,.08),rgba(37,99,235,.04));border-color:rgba(59,130,246,.2)">
+      <div class="ccard-ico">🧭</div><div class="ccard-t">Qibla Compass</div><div class="ccard-s">Find prayer direction</div><span class="ccard-badge badge-new">NEW</span></div>
+    <div class="ccard" onclick="goToView('zakat')" style="background:linear-gradient(135deg,rgba(212,175,55,.08),rgba(168,132,48,.04));border-color:rgba(212,175,55,.2)">
+      <div class="ccard-ico">💰</div><div class="ccard-t">Zakat Calculator</div><div class="ccard-s">Calculate 2.5% easily</div><span class="ccard-badge badge-new">NEW</span></div>
+    <div class="ccard" onclick="goToView('hijri')" style="background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(124,58,237,.04));border-color:rgba(139,92,246,.2)">
+      <div class="ccard-ico">📅</div><div class="ccard-t">Hijri Calendar</div><div class="ccard-s">Islamic dates & events</div><span class="ccard-badge badge-new">NEW</span></div>
+    <div class="ccard" onclick="goToView('hadith40')" style="background:linear-gradient(135deg,rgba(236,72,153,.08),rgba(219,39,119,.04));border-color:rgba(236,72,153,.2)">
+      <div class="ccard-ico">📜</div><div class="ccard-t">40 Hadith</div><div class="ccard-s">Imam Nawawi collection</div><span class="ccard-badge badge-new">NEW</span></div>
+    <div class="ccard" onclick="goToView('ptracker')" style="background:linear-gradient(135deg,rgba(20,184,166,.08),rgba(13,148,136,.04));border-color:rgba(20,184,166,.2)">
+      <div class="ccard-ico">✅</div><div class="ccard-t">Prayer Tracker</div><div class="ccard-s">Track 5 daily prayers</div><span class="ccard-badge badge-new">NEW</span></div>
+    <div class="ccard" onclick="goToView('hajj')" style="background:linear-gradient(135deg,rgba(217,119,6,.08),rgba(180,83,9,.04));border-color:rgba(217,119,6,.2)">
+      <div class="ccard-ico">🕋</div><div class="ccard-t">Hajj & Umrah</div><div class="ccard-s">Step-by-step guide</div><span class="ccard-badge badge-new">NEW</span></div>
+  </div>
+</div>
+
 <div style="height:10px"></div>
 
 
@@ -1707,6 +1840,13 @@ function goToView(v) {
   if(document.getElementById('tajweed-view')) document.getElementById('tajweed-view').classList.remove('active');
   if(document.getElementById('wudu-view')) document.getElementById('wudu-view').classList.remove('active');
   if(document.getElementById('names-view')) document.getElementById('names-view').classList.remove('active');
+  if(document.getElementById('dua-view')) document.getElementById('dua-view').classList.remove('active');
+  if(document.getElementById('qibla-view')) document.getElementById('qibla-view').classList.remove('active');
+  if(document.getElementById('zakat-view')) document.getElementById('zakat-view').classList.remove('active');
+  if(document.getElementById('hijri-view')) document.getElementById('hijri-view').classList.remove('active');
+  if(document.getElementById('hadith40-view')) document.getElementById('hadith40-view').classList.remove('active');
+  if(document.getElementById('ptracker-view')) document.getElementById('ptracker-view').classList.remove('active');
+  if(document.getElementById('hajj-view')) document.getElementById('hajj-view').classList.remove('active');
 
   // 2. Show target view
   document.getElementById(v + '-view').classList.add('active');
@@ -1716,7 +1856,7 @@ function goToView(v) {
 
   // 4. Player bar visibility
   const pb = document.getElementById('pbar');
-  if (v === 'tasbih' || v === 'ai' || v === 'memorize' || v === 'admin' || v === 'prophets' || v === 'night' || v === 'progress' || v === 'groupstudy' || v === 'tajweed' || v === 'wudu' || v === 'names') {
+  if (v === 'tasbih' || v === 'ai' || v === 'memorize' || v === 'admin' || v === 'prophets' || v === 'night' || v === 'progress' || v === 'groupstudy' || v === 'tajweed' || v === 'wudu' || v === 'names' || v === 'dua' || v === 'qibla' || v === 'zakat' || v === 'hijri' || v === 'hadith40' || v === 'ptracker' || v === 'hajj') {
     pb.style.display = 'none';
   } else {
     pb.style.display = 'flex';
@@ -1733,6 +1873,13 @@ function goToView(v) {
   if (v === 'progress') initProgress();
   if (v === 'night')    initNight();
   if (v === 'groupstudy') initGroupStudy();
+  if (v === 'dua') initDua();
+  if (v === 'qibla') initQibla();
+  if (v === 'zakat') calcZakat();
+  if (v === 'hijri') initHijri();
+  if (v === 'hadith40') initHadith40();
+  if (v === 'ptracker') initPTracker();
+  if (v === 'hajj') initHajj();
   if (v === 'tajweed')  initTajweed();
   if ((v === 'list' || v === 'memorize') && !qData.length) loadQ();
 
@@ -4770,6 +4917,411 @@ async function tjAnalyze() {
   }
 }
 
+
+// ═══════════════════════════════════════════════════════════
+// DAILY DUA — Hisn al-Muslim
+// ═══════════════════════════════════════════════════════════
+const DUA_CATS = [
+  {id:'morning', ico:'🌅', name:'Morning', count:7},
+  {id:'evening', ico:'🌙', name:'Evening', count:7},
+  {id:'sleep',   ico:'😴', name:'Before Sleep', count:6},
+  {id:'eat',     ico:'🍽️', name:'Eating', count:5},
+  {id:'travel',  ico:'✈️', name:'Travel', count:4},
+  {id:'anxiety', ico:'💙', name:'Anxiety & Distress', count:6},
+  {id:'home',    ico:'🏠', name:'Home', count:4},
+  {id:'bathroom',ico:'🚿', name:'Bathroom', count:3},
+  {id:'protection',ico:'🛡️',name:'Protection', count:5},
+  {id:'forgiveness',ico:'🤲',name:'Forgiveness', count:5},
+];
+
+const DUAS = {
+  morning: [
+    {t:'Morning Remembrance', ar:'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ', tr:'Asbahnaa wa asbahal-mulku lillaah, walhamdu lillaah', en:'We have entered the morning and dominion belongs to Allah, all praise is for Allah.', src:'Muslim 4/2088'},
+    {t:'Protection from Evil', ar:'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ', tr:'Allahumma inneee as-alukal-afwa wal-aafiyata fid-dunyaa wal-aakhirah', en:'O Allah, I ask You for forgiveness and well-being in this world and the Hereafter.', src:'Abu Dawud'},
+    {t:'Three Pillars', ar:'اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي', tr:'Allahumma aafinee fee badanee, Allahumma aafinee fee sameee, Allahumma aafinee fee basaree', en:'O Allah, make my body healthy, make my hearing healthy, make my sight healthy.', src:'Abu Dawud'},
+    {t:'Sayyid al-Istighfar', ar:'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ', tr:'Allahumma anta Rabbee laa ilaaha illaa anta, khalaqtanee wa abduka', en:'O Allah, You are my Lord. None has the right to be worshipped except You. You created me and I am Your servant.', src:'Bukhari 7/150'},
+    {t:'Morning Protection', ar:'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ', tr:'Bismillaahil-ladhee laa yadurru ma-asmihee shayun', en:'In the name of Allah with whose name nothing on earth or in heaven can cause harm.', src:'Abu Dawud, Tirmidhi'},
+    {t:'Praise for Morning', ar:'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ', tr:'SubhaanAllaahi wa bihamdih', en:'Glory be to Allah and praise Him.', src:'Bukhari, Muslim'},
+    {t:'Seeking Good', ar:'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْخَيْرَ كُلَّهُ عَاجِلِهِ وَآجِلِهِ', tr:'Allahumma inneee as-alukal-khayra kullahu aa-jilihi wa aajilihi', en:'O Allah, I ask You for all good, both immediate and delayed.', src:'Ibn Majah'},
+  ],
+  evening: [
+    {t:'Evening Remembrance', ar:'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ', tr:'Amsaynaa wa amsal-mulku lillaah, walhamdu lillaah', en:'We have reached the evening and dominion belongs to Allah, all praise is for Allah.', src:'Muslim 4/2088'},
+    {t:'Evening Protection', ar:'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ', tr:'Bismillaahil-ladhee laa yadurru ma-asmihee shayun', en:'In the name of Allah with whose name nothing can cause harm on earth or in heaven.', src:'Abu Dawud'},
+    {t:'Evening Well-being', ar:'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَالْعَجْزِ وَالْكَسَلِ', tr:'Allahumma inneee aoodhu bika minal-hammi wal-hazan, wal-ajzi wal-kasal', en:'O Allah, I seek refuge in You from worry and grief, from incapacity and laziness.', src:'Bukhari'},
+    {t:'Threefold Protection', ar:'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ', tr:'Aoodhu bikalimaatil-laahit-taammaati min sharri maa khalaq', en:'I seek refuge in the perfect words of Allah from the evil of what He has created.', src:'Muslim 4/2081'},
+    {t:'Sufficiency of Allah', ar:'حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ عَلَيْهِ تَوَكَّلْتُ', tr:'Hasbi-yallaahu laa ilaaha illaa huwa alayhi tawakkaltu', en:'Allah is sufficient for me. None has the right to be worshipped except Him. Upon Him I rely.', src:'Abu Dawud'},
+    {t:'Forgiveness Evening', ar:'رَبِّ اغْفِرْ لِي وَارْحَمْنِي وَتُبْ عَلَيَّ', tr:'Rabbee-ghfir lee warhamnee wa tub alayya', en:'My Lord, forgive me, have mercy on me, and accept my repentance.', src:'Bukhari, Muslim'},
+    {t:'Praise Evening', ar:'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ عَدَدَ خَلْقِهِ', tr:'SubhaanAllaahi wa bihamdihi adada khalqihi', en:'Glory be to Allah and praise Him, the number of His creation.', src:'Muslim 4/2090'},
+  ],
+  sleep: [
+    {t:'Before Sleep', ar:'بِاسْمِكَ اللَّهُمَّ أَحْيَا وَأَمُوتُ', tr:'Bismika Allahumma ahyaa wa amoot', en:'In Your name O Allah, I live and die.', src:'Bukhari 11/113'},
+    {t:'Sleep Protection', ar:'اللَّهُمَّ قِنِي عَذَابَكَ يَوْمَ تَبْعَثُ عِبَادَكَ', tr:'Allahumma qinee adhaabaka yawma tab-athu ibaadak', en:'O Allah, protect me from Your punishment on the day You raise Your servants.', src:'Abu Dawud'},
+    {t:'Surrender to Allah', ar:'اللَّهُمَّ أَسْلَمْتُ نَفْسِي إِلَيْكَ، وَوَجَّهْتُ وَجْهِي إِلَيْكَ', tr:'Allahumma aslamtu nafsee ilayka, wa wajjahtu wajhee ilayka', en:'O Allah, I submit my soul to You, and I turn my face to You.', src:'Bukhari'},
+    {t:'Sleep Ayatul Kursi', ar:'اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ', tr:'Allaahu laa ilaaha illaa huwal-hayyul-qayyoom', en:'Allah! None has the right to be worshipped except Him, the Ever-Living, the Sustainer.', src:'Bukhari'},
+    {t:'Dua for Night', ar:'سُبْحَانَ اللَّهِ ثَلَاثًا وَثَلَاثِينَ، وَالْحَمْدُ لِلَّهِ ثَلَاثًا وَثَلَاثِينَ', tr:'SubhaanAllaahi thalaathan wa thalaatheen, walhamdu lillaahi thalaathan wa thalaatheen', en:'Glory be to Allah thirty-three times, praise be to Allah thirty-three times.', src:'Bukhari, Muslim'},
+    {t:'Last Verses', ar:'آمَنَ الرَّسُولُ بِمَا أُنْزِلَ إِلَيْهِ مِنْ رَبِّهِ', tr:'Aamanar-rasoolu bimaa onzila ilayhi min rabbihi', en:'The Messenger believes in what has been revealed to him from his Lord, and so do the believers.', src:'Bukhari'},
+  ],
+  eat: [
+    {t:'Before Eating', ar:'بِسْمِ اللَّهِ', tr:'Bismillaah', en:'In the name of Allah.', src:'Abu Dawud, Tirmidhi'},
+    {t:'Forgot Bismillah', ar:'بِسْمِ اللَّهِ أَوَّلَهُ وَآخِرَهُ', tr:'Bismillaahi awwalahu wa aakhirah', en:'In the name of Allah, at the beginning and at the end.', src:'Abu Dawud, Tirmidhi'},
+    {t:'After Eating', ar:'الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مُسْلِمِينَ', tr:'Alhamdu lillaahil-ladhee at-amanaa wa saqaanaa wa ja-alanaa muslimeen', en:'Praise is to Allah Who has given us food and drink and made us Muslims.', src:'Abu Dawud, Tirmidhi'},
+    {t:'After Milk', ar:'اللَّهُمَّ بَارِكْ لَنَا فِيمَا رَزَقْتَنَا', tr:'Allahumma baarik lanaa feemaa razaqtanaa', en:'O Allah, bless us in what You have provided for us.', src:'Abu Dawud'},
+    {t:'Guest Dua', ar:'اللَّهُمَّ بَارِكْ لَهُمْ فِيمَا رَزَقْتَهُمْ وَاغْفِرْ لَهُمْ', tr:'Allahumma baarik lahum feemaa razaqtahum, waghfir lahum', en:'O Allah, bless them in what You have provided them, forgive them and have mercy on them.', src:'Muslim'},
+  ],
+  travel: [
+    {t:'Before Travel', ar:'سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ', tr:'Subhaanalladhee sakh-khara lanaa hadhaa wa maa kunnaa lahu muqrineen', en:'Glory to Him Who has subjected this to us, for we could never have accomplished it by ourselves.', src:'Abu Dawud, Muslim'},
+    {t:'Travel Protection', ar:'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ وَعْثَاءِ السَّفَرِ', tr:'Allahumma inneee aoodhu bika min wathaa-is-safar', en:'O Allah, I seek refuge in You from the hardships of travel.', src:'Bukhari, Muslim'},
+    {t:'Entering Vehicle', ar:'بِسْمِ اللَّهِ، تَوَكَّلْتُ عَلَى اللَّهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ', tr:'Bismillaah, tawakkaltu aalAllaah, wa laa hawla wa laa quwwata illaa billaah', en:'In the name of Allah, I place my trust in Allah, and there is no power except with Allah.', src:'Abu Dawud, Tirmidhi'},
+    {t:'Returning Travel', ar:'آيِبُونَ تَائِبُونَ عَابِدُونَ لِرَبِّنَا حَامِدُونَ', tr:'Aa-iboona taa-iboona aabidoona li-Rabbinnaa haamidoon', en:'We are returning, repenting, worshipping, and praising our Lord.', src:'Bukhari, Muslim'},
+  ],
+  anxiety: [
+    {t:'Distress Dua', ar:'لَا إِلَهَ إِلَّا اللَّهُ الْعَظِيمُ الْحَلِيمُ، لَا إِلَهَ إِلَّا اللَّهُ رَبُّ الْعَرْشِ الْعَظِيمِ', tr:'Laa ilaaha illAllaahul-azeemul-haleem, laa ilaaha illAllaahu Rabbul-arshil-azeem', en:'None has the right to be worshipped except Allah, the Mighty, the Forbearing. Lord of the magnificent throne.', src:'Bukhari 7/154'},
+    {t:'Anxiety Relief', ar:'اللَّهُمَّ رَحْمَتَكَ أَرْجُو فَلَا تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ', tr:'Allahumma rahmataka arjoo falaa takilnee ilaa nafsee tarfata ayn', en:'O Allah, I hope for Your mercy, so do not leave me to myself even for the blink of an eye.', src:'Abu Dawud'},
+    {t:'Worry & Grief', ar:'اللَّهُمَّ إِنِّي عَبْدُكَ، ابْنُ عَبْدِكَ، نَاصِيَتِي بِيَدِكَ، مَاضٍ فِيَّ حُكْمُكَ', tr:'Allahumma inneee abduka, ibnu abdika, naasiyatee biyadik, maadin fiyya hukmuk', en:'O Allah, I am Your servant, son of Your servant. My forelock is in Your Hand. Your judgment upon me is carried out.', src:'Ahmad'},
+    {t:'Sorrow Relief', ar:'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَالْعَجْزِ وَالْكَسَلِ، وَالْبُخْلِ وَالْجُبْنِ', tr:'Allahumma inneee aoodhu bika minal-hammi wal-hazan, wal-ajzi wal-kasal, wal-bukhli wal-jubn', en:'O Allah, I seek refuge in You from worry and grief, from incapacity and laziness, from stinginess and cowardice.', src:'Bukhari 7/158'},
+    {t:'Patience Dua', ar:'اللَّهُمَّ اصْرِفْ عَنِّي السَّوْءَ وَاكْفِنِيهِ', tr:'Allahummas-rif annees-saw-a wakfineeh', en:'O Allah, turn away from me evil and suffice me against it.', src:'Muslim'},
+    {t:'Allah is Enough', ar:'حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ', tr:'HasbunAllaahu wa namal-wakeel', en:'Allah is sufficient for us and the best of trustees.', src:'Bukhari, Muslim'},
+  ],
+  home: [
+    {t:'Entering Home', ar:'بِسْمِ اللَّهِ وَلَجْنَا، وَبِسْمِ اللَّهِ خَرَجْنَا، وَعَلَى اللَّهِ رَبِّنَا تَوَكَّلْنَا', tr:'Bismillaahi walajnaa, wa bismillaahi kharajnaa, wa aalAllaahi Rabbinnaa tawakkalnaa', en:'In the name of Allah we enter, in the name of Allah we leave, and upon our Lord we rely.', src:'Abu Dawud'},
+    {t:'Leaving Home', ar:'بِسْمِ اللَّهِ، تَوَكَّلْتُ عَلَى اللَّهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ', tr:'Bismillaah, tawakkaltu aalAllaah, wa laa hawla wa laa quwwata illaa billaah', en:'In the name of Allah, I place my trust in Allah, and there is no power except with Allah.', src:'Abu Dawud, Tirmidhi'},
+    {t:'Home Blessing', ar:'اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ الْمَوْلِجِ وَخَيْرَ الْمَخْرَجِ', tr:'Allahumma inneee as-aluka khayral-mawliji wa khayral-makhraji', en:'O Allah, I ask You for the best of entering and the best of leaving.', src:'Abu Dawud'},
+    {t:'Home Gratitude', ar:'الْحَمْدُ لِلَّهِ الَّذِي أَوَانَا وَأَطْعَمَنَا وَسَقَانَا', tr:'Alhamdu lillaahil-ladhee awaanaa wa at-amanaa wa saqaanaa', en:'Praise be to Allah Who has sheltered us, fed us, and given us drink.', src:'Muslim'},
+  ],
+  bathroom: [
+    {t:'Entering Bathroom', ar:'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْخُبُثِ وَالْخَبَائِثِ', tr:'Allahumma inneee aoodhu bika minal-khubuthi wal-khabaaith', en:'O Allah, I seek refuge with You from all evil and wicked things.', src:'Bukhari, Muslim'},
+    {t:'Leaving Bathroom', ar:'غُفْرَانَكَ', tr:'Ghufranaka', en:'I seek Your forgiveness.', src:'Abu Dawud, Tirmidhi'},
+    {t:'Before Wudu', ar:'بِسْمِ اللَّهِ', tr:'Bismillaah', en:'In the name of Allah.', src:'Abu Dawud, Tirmidhi'},
+  ],
+  protection: [
+    {t:'General Protection', ar:'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ', tr:'Aoodhu bikalimaatil-laahit-taammaati min sharri maa khalaq', en:'I seek refuge in the perfect words of Allah from the evil of what He has created.', src:'Muslim 4/2081'},
+    {t:'Morning Evening Protection', ar:'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ', tr:'Bismillaahil-ladhee laa yadurru ma-asmihee shayun', en:'In the name of Allah with whose name nothing can cause harm.', src:'Abu Dawud, Tirmidhi'},
+    {t:'From Satan', ar:'أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ', tr:'Aoodhu billaahi minash-shaytaanir-rajeem', en:'I seek refuge in Allah from the accursed Satan.', src:'Bukhari, Muslim'},
+    {t:'From Evil Eye', ar:'اللَّهُمَّ ذَا السُّلْطَانِ الْعَظِيمِ، ذَا الْمَنِّ الْقَدِيمِ، اكْفِنِي السُّوءَ', tr:'Allahumma dhas-sultaanil-azeem, dhal-mannil-qadeem, ikfinees-sooa', en:'O Allah, Owner of great authority, eternal bounty — suffice me against all evil.', src:'Ahmad, Tabarani'},
+    {t:'From Calamity', ar:'اللَّهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ وَمِنْ خَلْفِي وَعَنْ يَمِينِي وَعَنْ شِمَالِي', tr:'Allahumma ahfadhnee min bayni yadayya wa min khalfee wa an yameenee wa an shimaalee', en:'O Allah, protect me from before me and behind me, from my right and my left.', src:'Abu Dawud, Ibn Majah'},
+  ],
+  forgiveness: [
+    {t:'Master of Forgiveness', ar:'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ', tr:'Allahumma anta Rabbee laa ilaaha illaa anta, khalaqtanee wa abduka', en:'O Allah, You are my Lord. None has the right to be worshipped except You. You created me and I am Your servant.', src:'Bukhari 7/150'},
+    {t:'Seeking Forgiveness', ar:'أَسْتَغْفِرُ اللَّهَ الَّذِي لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ وَأَتُوبُ إِلَيْهِ', tr:'Astaghfirullaahal-ladhee laa ilaaha illaa huwal-hayyul-qayyoomu wa atoobu ilayh', en:'I seek forgiveness from Allah, the Ever-Living, the Sustainer, and I repent to Him.', src:'Abu Dawud, Bukhari'},
+    {t:'Comprehensive Dua', ar:'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ', tr:'Rabbanaa aatinaa fid-dunyaa hasanatan wa fil-aakhirati hasanatan wa qinaa adhaaban-naar', en:'Our Lord, give us good in this world and good in the Hereafter, and protect us from the Fire.', src:'Bukhari, Muslim'},
+    {t:'Repentance', ar:'اللَّهُمَّ تُبْ عَلَيَّ إِنَّكَ أَنْتَ التَّوَّابُ الرَّحِيمُ', tr:'Allahumma tub alayya innaka antat-tawwaabur-raheem', en:'O Allah, accept my repentance, for You are the Accepting of Repentance, the Most Merciful.', src:'Tirmidhi'},
+    {t:'All Pardon', ar:'اللَّهُمَّ اغْفِرْ لِي ذَنْبِي كُلَّهُ، دِقَّهُ وَجِلَّهُ، وَأَوَّلَهُ وَآخِرَهُ', tr:'Allahumma-ghfir lee dhanbee kullahu, diqqahu wa jallahu, wa awwalahu wa aakhirahu', en:'O Allah, forgive me all my sins, the small and the great, the first and the last.', src:'Muslim 4/2086'},
+  ],
+};
+
+function initDua() {
+  const catsDiv = document.getElementById('dua-cats');
+  if (!catsDiv) return;
+  catsDiv.style.display = 'grid';
+  catsDiv.innerHTML = DUA_CATS.map(c =>
+    '<div class="dua-cat" onclick="showDuas(\''+c.id+'\')"><div class="dua-cat-ico">'+c.ico+'</div><div class="dua-cat-nm">'+c.name+'</div><div class="dua-cat-cnt">'+c.count+' duas</div></div>'
+  ).join('');
+  document.getElementById('dua-list').style.display = 'none';
+}
+
+function showDuas(catId) {
+  const catsDiv = document.getElementById('dua-cats');
+  const listDiv = document.getElementById('dua-list');
+  const duas = DUAS[catId] || [];
+  const cat = DUA_CATS.find(c => c.id === catId);
+  catsDiv.style.display = 'none';
+  listDiv.style.display = 'block';
+  listDiv.innerHTML = '<div style="margin-bottom:12px;display:flex;align-items:center;gap:8px"><button class="dua-cat" style="padding:8px 14px" onclick="initDua()">← Back</button><span style="font-size:1.1rem">'+(cat?cat.ico:'')+'</span><span style="font-size:.9rem;font-weight:600">'+(cat?cat.name:'')+'</span></div>' +
+    duas.map((d,i) =>
+      '<div class="dua-item"><div class="dua-item-hd"><div class="dua-item-t">'+d.t+'</div><div class="dua-item-n">'+(i+1)+'</div></div>' +
+      '<div class="dua-ar">'+d.ar+'</div><div class="dua-tr">'+d.tr+'</div><div class="dua-en">'+d.en+'</div>' +
+      '<div class="dua-src">— '+d.src+'</div>' +
+      '<button class="dua-share" onclick="shareDua(\''+catId+'\','+i+')">📤 Share</button></div>'
+    ).join('');
+}
+
+function shareDua(catId, idx) {
+  const d = DUAS[catId][idx];
+  const text = d.t + '\n\n' + d.ar + '\n\n' + d.tr + '\n\n' + d.en + '\n\n— ' + d.src + '\n\nFrom Juz Amma Pro Max';
+  if (navigator.share) { navigator.share({text: text}); }
+  else { navigator.clipboard.writeText(text); alert('Dua copied! Paste to share.'); }
+}
+
+// ═══════════════════════════════════════════════════════════
+// QIBLA COMPASS
+// ═══════════════════════════════════════════════════════════
+function initQibla() {
+  if (!navigator.geolocation) { document.getElementById('qibla-info').textContent = 'Geolocation not supported.'; return; }
+  navigator.geolocation.getCurrentPosition(pos => {
+    const lat = pos.coords.latitude;
+    const lon = pos.coords.longitude;
+    const kaabaLat = 21.4225, kaabaLon = 39.8262;
+    const phiK = kaabaLat * Math.PI / 180;
+    const lambdaK = kaabaLon * Math.PI / 180;
+    const phi = lat * Math.PI / 180;
+    const lambda = lon * Math.PI / 180;
+    const qibla = Math.atan2(Math.sin(lambdaK - lambda), Math.cos(phi) * Math.tan(phiK) - Math.sin(phi) * Math.cos(lambdaK - lambda));
+    const qiblaDeg = (qibla * 180 / Math.PI + 360) % 360;
+    document.getElementById('qibla-angle').textContent = Math.round(qiblaDeg) + '° from North';
+    document.getElementById('qibla-city').textContent = 'Location: ' + lat.toFixed(2) + ', ' + lon.toFixed(2);
+    document.getElementById('qibla-info').textContent = 'The arrow points toward the Kaaba in Makkah. Use a real compass app for precise direction.';
+    const arrow = document.getElementById('qibla-dir');
+    arrow.style.transform = 'translate(-50%,-100%) rotate(' + qiblaDeg + 'deg)';
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener('deviceorientation', e => {
+        if (e.alpha !== null && e.alpha !== undefined) {
+          const heading = 360 - e.alpha;
+          arrow.style.transform = 'translate(-50%,-100%) rotate(' + (qiblaDeg - heading) + 'deg)';
+        }
+      });
+    }
+  }, () => {
+    document.getElementById('qibla-info').innerHTML = 'Location access needed. <button onclick="initQibla()" style="color:var(--p);background:none;border:none;text-decoration:underline;cursor:pointer">Try again</button>';
+  });
+}
+
+function calibrateQibla() {
+  const calib = document.getElementById('qibla-calib');
+  calib.style.display = 'block';
+  setTimeout(() => { calib.style.display = 'none'; initQibla(); }, 3000);
+}
+
+// ═══════════════════════════════════════════════════════════
+// ZAKAT CALCULATOR
+// ═══════════════════════════════════════════════════════════
+function calcZakat() {
+  const get = id => parseFloat(document.getElementById(id).value) || 0;
+  const goldPrice = 65;
+  const cash = get('z-cash') + get('z-bank') + get('z-fx');
+  const goldVal = get('z-gold') * goldPrice;
+  const silverVal = get('z-silver') * 0.77;
+  const investments = get('z-stocks') + get('z-biz');
+  const total = cash + goldVal + silverVal + investments + get('z-debts-in') - get('z-debts-out');
+  const nisab = 85 * goldPrice;
+  document.getElementById('z-total').textContent = '$' + total.toFixed(2);
+  if (total >= nisab) {
+    document.getElementById('z-due').textContent = '$' + (total * 0.025).toFixed(2);
+    document.getElementById('z-note').textContent = 'Assets exceed Nisab (~$' + nisab.toFixed(0) + '). Zakat due at 2.5%.';
+  } else {
+    document.getElementById('z-due').textContent = '$0.00';
+    document.getElementById('z-note').textContent = 'Assets (' + total.toFixed(2) + ') below Nisab (~$' + nisab.toFixed(0) + '). No Zakat due.';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// HIJRI CALENDAR
+// ═══════════════════════════════════════════════════════════
+const HIJRI_MONTHS = ['Muharram','Safar','Rabi al-Awwal','Rabi al-Thani','Jumada al-Awwal','Jumada al-Thani','Rajab','Shaban','Ramadan','Shawwal','Dhu al-Qidah','Dhu al-Hijjah'];
+const HIJRI_DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const HIJRI_EVENTS = [
+  {day:1, month:1, name:'Islamic New Year', ico:'🎉'},
+  {day:10, month:1, name:'Day of Ashura', ico:'🖤'},
+  {day:12, month:3, name:'Mawlid an-Nabi', ico:'💚'},
+  {day:27, month:7, name:'Laylat al-Mi\'raj', ico:'✨'},
+  {day:15, month:8, name:'Laylat al-Bara\'ah', ico:'🌙'},
+  {day:1, month:9, name:'First Day of Ramadan', ico:'🌙'},
+  {day:27, month:9, name:'Laylat al-Qadr (approx)', ico:'⭐'},
+  {day:1, month:10, name:'Eid al-Fitr', ico:'🎊'},
+  {day:9, month:12, name:'Day of Arafah', ico:'🤲'},
+  {day:10, month:12, name:'Eid al-Adha', ico:'🐑'},
+];
+let hijriCurrentDate = new Date();
+
+function gregToHijri(date) {
+  const jd = Math.floor((date.getTime() / 86400000) + 2440587.5);
+  const l = jd - 1948440 + 10632;
+  const n = Math.floor((l - 1) / 10631);
+  const l2 = l - 10631 * n + 354;
+  const j = Math.floor((10985 - l2) / 5316) * Math.floor((50 * l2) / 17719);
+  const l3 = l2 - Math.floor((30 * j) / 15) * Math.floor((17719 * j) / 50);
+  const k = Math.floor((l3 - 1) / 10631) * Math.floor((15 * l3) / 5316);
+  const l4 = l3 - Math.floor((10631 * k) / 15) * Math.floor((5316 * k) / 15);
+  const m = Math.floor((l4 - 1) / 29);
+  const d = l4 - Math.floor((29 * m) / 15) * Math.floor((15 * m) / 29);
+  const month = Math.floor((m * 15 - d + 1) / 29);
+  const day = Math.floor((d - Math.floor((15 * month) / 15) + 1) % 30);
+  return { year: 30 * n + j - 1, month: month, day: day > 0 ? day : 1 };
+}
+
+function initHijri() { hijriCurrentDate = new Date(); renderHijri(); }
+
+function renderHijri() {
+  const today = new Date();
+  const ht = gregToHijri(today);
+  document.getElementById('hijri-today').textContent = ht.day + ' ' + HIJRI_MONTHS[ht.month - 1] + ' ' + ht.year + ' AH';
+  document.getElementById('hijri-today-eg').textContent = today.toLocaleDateString('en-GB', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+  const hm = gregToHijri(hijriCurrentDate);
+  document.getElementById('hijri-month-name').textContent = HIJRI_MONTHS[hm.month - 1] + ' ' + hm.year + ' AH';
+  let html = HIJRI_DAYS.map(d => '<div class="hijri-d-hd">' + d + '</div>').join('');
+  const firstGreg = new Date(hijriCurrentDate.getFullYear(), hijriCurrentDate.getMonth(), 1);
+  const firstDayWeek = firstGreg.getDay();
+  for (let i = 0; i < firstDayWeek; i++) html += '<div class="hijri-d"></div>';
+  const daysInMonth = new Date(hijriCurrentDate.getFullYear(), hijriCurrentDate.getMonth() + 1, 0).getDate();
+  for (let d = 1; d <= daysInMonth; d++) {
+    const cellDate = new Date(hijriCurrentDate.getFullYear(), hijriCurrentDate.getMonth(), d);
+    const hijri = gregToHijri(cellDate);
+    const isToday = cellDate.toDateString() === today.toDateString();
+    const event = HIJRI_EVENTS.find(e => e.day === hijri.day && e.month === hijri.month);
+    let cls = 'hijri-d' + (isToday ? ' today' : '') + (event ? ' event' : '');
+    html += '<div class="' + cls + '"><div>' + d + '</div><div class="hijri-d-num">' + hijri.day + '</div></div>';
+  }
+  document.getElementById('hijri-cal').innerHTML = html;
+  const events = HIJRI_EVENTS.filter(e => e.month === hm.month).map(e =>
+    '<div class="hijri-event"><div class="hijri-event-ico">' + e.ico + '</div><div class="hijri-event-info"><div class="hijri-event-nm">' + e.name + '</div><div class="hijri-event-date">' + e.day + ' ' + HIJRI_MONTHS[e.month-1] + '</div></div></div>'
+  ).join('');
+  document.getElementById('hijri-events').innerHTML = events || '<div style="font-size:.75rem;color:var(--txt2);text-align:center;padding:10px">No major events this month</div>';
+}
+
+function hijriPrev() { hijriCurrentDate.setMonth(hijriCurrentDate.getMonth() - 1); renderHijri(); }
+function hijriNext() { hijriCurrentDate.setMonth(hijriCurrentDate.getMonth() + 1); renderHijri(); }
+
+// ═══════════════════════════════════════════════════════════
+// 40 HADITH — Imam Nawawi
+// ═══════════════════════════════════════════════════════════
+const HADITH40 = [
+  {n:1, ar:'إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى', en:'Actions are but by intentions, and every man shall have only that which he intended.', src:'Bukhari & Muslim'},
+  {n:2, ar:'الْإِسْلَامُ أَنْ تَشْهَدَ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَأَنَّ مُحَمَّدًا رَسُولُ اللَّهِ', en:'Islam is to testify that there is no god but Allah and Muhammad is His Messenger, to establish prayer, give zakat, fast Ramadan, and perform Hajj if able.', src:'Bukhari & Muslim'},
+  {n:3, ar:'الْحَلَالُ بَيِّنٌ وَالْحَرَامُ بَيِّنٌ، وَبَيْنَ ذَلِكَ أُمُورٌ مُشْتَبِهَاتٌ', en:'The halal is clear and the haram is clear, and between them are matters that are doubtful.', src:'Bukhari & Muslim'},
+  {n:4, ar:'مَا نَهَيْتُكُمْ عَنْهُ فَاجْتَنِبُوهُ، وَمَا أَمَرْتُكُمْ بِهِ فَأْتُوا مِنْهُ مَا اسْتَطَعْتُمْ', en:'What I have forbidden you, avoid; what I have commanded you, do as much as you can.', src:'Bukhari & Muslim'},
+  {n:5, ar:'إِنَّ اللَّهَ طَيِّبٌ لَا يَقْبَلُ إِلَّا طَيِّبًا', en:'Allah is Good and accepts only what is good.', src:'Muslim'},
+  {n:6, ar:'دَعْ مَا يَرِيبُكَ إِلَى مَا لَا يَرِيبُكَ', en:'Leave what makes you doubt for what does not make you doubt.', src:'Tirmidhi'},
+  {n:7, ar:'مِنْ حُسْنِ إِسْلَامِ الْمَرْءِ تَرْكُهُ مَا لَا يَعْنِيهِ', en:'Part of the excellence of a person\'s Islam is leaving alone what does not concern him.', src:'Tirmidhi'},
+  {n:8, ar:'لَا يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لِأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ', en:'None of you truly believes until he loves for his brother what he loves for himself.', src:'Bukhari & Muslim'},
+  {n:9, ar:'مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الْآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ', en:'Whoever believes in Allah and the Last Day should speak good or remain silent.', src:'Bukhari & Muslim'},
+  {n:10, ar:'لَا تَغْضَبْ وَلَكَ الْجَنَّةُ', en:'Do not get angry, and Paradise is yours.', src:'Bukhari'},
+  {n:11, ar:'إِنَّ اللَّهَ كَتَبَ الْإِحْسَانَ عَلَى كُلِّ شَيْءٍ', en:'Allah has prescribed excellence in all things.', src:'Muslim'},
+  {n:12, ar:'اتَّقِ اللَّهَ حَيْثُمَا كُنْتَ، وَأَتْبِعِ السَّيِّئَةَ الْحَسَنَةَ تَمْحُهَا', en:'Fear Allah wherever you are, and follow a bad deed with a good one to erase it.', src:'Tirmidhi'},
+  {n:13, ar:'احْفَظِ اللَّهَ يَحْفَظْكَ، احْفَظِ اللَّهَ تَجِدْهُ تُجَاهَكَ', en:'Guard Allah\'s commands and Allah will guard you.', src:'Tirmidhi'},
+  {n:14, ar:'الْحَيَاءُ مِنَ الْإِيمَانِ', en:'Modesty is part of faith.', src:'Bukhari & Muslim'},
+  {n:15, ar:'قُلْ آمَنْتُ بِاللَّهِ ثُمَّ اسْتَقِمْ', en:'Say: I have believed in Allah, then be steadfast.', src:'Muslim'},
+  {n:16, ar:'الْإِسْلَامُ بَنَاءٌ عَلَى بِنَاءٍ، فَأَتِمَّ الْبِنَاءَ', en:'Islam is built on five: testifying there is no god but Allah, prayer, zakat, fasting Ramadan, and Hajj.', src:'Bukhari & Muslim'},
+  {n:17, ar:'الطُّهُورُ شَطْرُ الْإِيمَانِ، وَالْحَمْدُ لِلَّهِ تَمْلَأُ الْمِيزَانَ', en:'Purity is half of faith, and praise be to Allah fills the scale.', src:'Muslim'},
+  {n:18, ar:'الصَّدَقَةُ تُطْفِئُ الْخَطِيئَةَ كَمَا يُطْفِئُ الْمَاءُ النَّارَ', en:'Charity extinguishes sin as water extinguishes fire.', src:'Tirmidhi'},
+  {n:19, ar:'الْمُسْلِمُ مَنْ سَلِمَ الْمُسْلِمُونَ مِنْ لِسَانِهِ وَيَدِهِ', en:'A Muslim is the one from whose tongue and hand Muslims are safe.', src:'Bukhari & Muslim'},
+  {n:20, ar:'الْبِرُّ حُسْنُ الْخُلُقِ، وَالْإِثْمُ مَا حَاكَ فِي صَدْرِكَ', en:'Righteousness is good character, and sin is what makes your heart uneasy.', src:'Muslim'},
+  {n:21, ar:'لَا تَحْقِرَنَّ مِنَ الْمَعْرُوفِ شَيْئًا، وَلَوْ أَنْ تَلْقَى أَخَاكَ بِوَجْهٍ طَلِيقٍ', en:'Do not belittle any good deed, even meeting your brother with a cheerful face.', src:'Muslim'},
+  {n:22, ar:'مَنْ دَلَّ عَلَى خَيْرٍ فَلَهُ مِثْلُ أَجْرِ فَاعِلِهِ', en:'Whoever guides someone to goodness will have a reward like the one who does it.', src:'Muslim'},
+  {n:23, ar:'لَا ضَرَرَ وَلَا ضِرَارَ', en:'There should be no harm and no reciprocating of harm.', src:'Ibn Majah'},
+  {n:24, ar:'مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الْآخِرِ فَلْيُكْرِمْ ضَيْفَهُ', en:'Whoever believes in Allah and the Last Day should honor his guest.', src:'Bukhari & Muslim'},
+  {n:25, ar:'السَّمْعُ وَالطَّاعَةُ عَلَى الْمَرْءِ الْمُسْلِمِ', en:'Listening and obedience are upon the Muslim in what he loves and dislikes.', src:'Bukhari & Muslim'},
+  {n:26, ar:'اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ', en:'O Allah, You are Peace and from You comes peace. Blessed are You, O Owner of Majesty and Honor.', src:'Muslim'},
+  {n:27, ar:'مَنْ صَلَّى الصُّبْحَ فَهُوَ فِي ذِمَّةِ اللَّهِ', en:'Whoever prays Fajr is in Allah\'s protection.', src:'Muslim'},
+  {n:28, ar:'الْأَرْضُ مَسْجِدٌ وَطَهُورُهَا تُرَبَتُهَا', en:'The earth has been made a mosque and pure for me, so pray wherever prayer time comes.', src:'Bukhari & Muslim'},
+  {n:29, ar:'ابْنُ آدَمَ كَلَامُهُ عَلَيْكَ مَقَالَةٌ وَبَقِيَّةٌ', en:'The son of Adam: his speech is a proof for or against him.', src:'Bukhari & Muslim'},
+  {n:30, ar:'مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللَّهُ لَهُ طَرِيقًا إِلَى الْجَنَّةِ', en:'Whoever takes a path seeking knowledge, Allah makes easy for him a path to Paradise.', src:'Muslim'},
+  {n:31, ar:'كُلُّ أُمَّتِي مُعَافًى إِلَّا الْمُجَاهِرِينَ', en:'All of my ummah is forgiven except those who sin openly.', src:'Bukhari & Muslim'},
+  {n:32, ar:'إِنَّ اللَّهَ لَا يَنْظُرُ إِلَى صُورِكُمْ وَأَمْوَالِكُمْ وَلَكِنْ يَنْظُرُ إِلَى قُلُوبِكُمْ', en:'Allah does not look at your appearances or wealth, but at your hearts and deeds.', src:'Muslim'},
+  {n:33, ar:'مَنْ لَا يَرْحَمُ النَّاسَ لَا يَرْحَمُهُ اللَّهُ', en:'Whoever does not show mercy to people, Allah will not show mercy to him.', src:'Bukhari & Muslim'},
+  {n:34, ar:'الطَّعَامُ وَاحِدٌ وَالشَّرَابُ وَاحِدٌ، وَنَحْنُ شُرَكَاءُ فِي ثَلَاثٍ', en:'We are partners in three: water, pasture, and fire.', src:'Abu Dawud'},
+  {n:35, ar:'مَنْ قَالَ لَا إِلَهَ إِلَّا اللَّهُ دَخَلَ الْجَنَّةَ', en:'Whoever says there is no god but Allah will enter Paradise.', src:'Ahmad'},
+  {n:36, ar:'الْحَيَاءُ لَا يَأْتِي إِلَّا بِخَيْرٍ', en:'Modesty brings nothing but good.', src:'Bukhari & Muslim'},
+  {n:37, ar:'النَّظَافَةُ مِنَ الْإِيمَانِ', en:'Cleanliness is part of faith.', src:'Muslim'},
+  {n:38, ar:'خَيْرُ النَّاسِ أَنْفَعُهُمْ لِلنَّاسِ', en:'The best of people are those most beneficial to people.', src:'Ahmad'},
+  {n:39, ar:'الْعِلْمُ بِالْعِلْمِ يَتَعَلَّمُهُ الْعَبْدُ خَيْرٌ مِنْ عِبَادَةٍ', en:'Learning knowledge is better than worship.', src:'Tabarani'},
+  {n:40, ar:'كُنْ فِي الدُّنْيَا كَأَنَّكَ غَرِيبٌ أَوْ عَابِرُ سَبِيلٍ', en:'Be in this world as a stranger or a traveler.', src:'Bukhari'},
+  {n:41, ar:'مَنْ صَلَّى عَلَيَّ صَلَاةً صَلَّى اللَّهُ عَلَيْهِ بِهَا عَشْرًا', en:'Whoever sends one blessing upon me, Allah sends ten blessings upon him.', src:'Muslim'},
+  {n:42, ar:'رَبِّ اغْفِرْ لِي ذَنْبِي كُلَّهُ، دِقَّهُ وَجِلَّهُ', en:'My Lord, forgive me all my sins, the small and the great.', src:'Muslim'},
+];
+
+function initHadith40() {
+  const div = document.getElementById('hadith40-list');
+  if (!div) return;
+  div.innerHTML = HADITH40.map(h =>
+    '<div class="hadith-card2" onclick="this.classList.toggle(\'expand\')"><div class="hadith-card2-num">Hadith #' + h.n + '</div><div class="hadith-card2-ar">' + h.ar + '</div><div class="hadith-card2-en">' + h.en + '</div><div class="hadith-card2-src">— ' + h.src + '</div></div>'
+  ).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// PRAYER TRACKER
+// ═══════════════════════════════════════════════════════════
+const PRAYER_NAMES = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
+
+function getPTKey(date) { return 'pt_' + date.toISOString().slice(0,10); }
+function getPTData(date) { return JSON.parse(localStorage.getItem(getPTKey(date)) || '[]'); }
+function savePTData(date, prayers) { localStorage.setItem(getPTKey(date), JSON.stringify(prayers)); }
+
+function togglePrayer(dateMs, idx) {
+  const date = new Date(dateMs);
+  let prayers = getPTData(date);
+  const i = prayers.indexOf(idx);
+  if (i >= 0) prayers.splice(i, 1);
+  else prayers.push(idx);
+  savePTData(date, prayers);
+  initPTracker();
+}
+
+function initPTracker() {
+  const today = new Date();
+  const daysDiv = document.getElementById('ptracker-days');
+  let html = '';
+  for (let d = 0; d < 7; d++) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - d);
+    const prayers = getPTData(date);
+    const isToday = d === 0;
+    html += '<div class="ptracker-day"><div class="ptracker-day-hd"><span>' + (isToday ? 'Today' : date.toLocaleDateString('en', {weekday:'short', month:'short', day:'numeric'})) + '</span><span class="ptracker-day-date">' + prayers.length + '/5</span></div><div class="ptracker-prayers">';
+    for (let p = 0; p < 5; p++) {
+      const done = prayers.includes(p);
+      html += '<div class="ptracker-prayer"><div class="ptracker-pname">' + PRAYER_NAMES[p] + '</div><button class="ptracker-pbtn ' + (done?'done':'') + '" onclick="togglePrayer(' + date.getTime() + ',' + p + ')">' + (done?'✓':'') + '</button></div>';
+    }
+    html += '</div></div>';
+  }
+  daysDiv.innerHTML = html;
+  document.getElementById('pt-today').textContent = getPTData(today).length + '/5';
+  let weekCount = 0;
+  for (let d = 0; d < 7; d++) { const date = new Date(today); date.setDate(date.getDate() - d); weekCount += getPTData(date).length; }
+  document.getElementById('pt-week').textContent = weekCount + '/35';
+  let streak = 0;
+  for (let d = 0; d < 365; d++) {
+    const date = new Date(today); date.setDate(date.getDate() - d);
+    if (getPTData(date).length === 5) streak++;
+    else if (d > 0) break;
+  }
+  document.getElementById('pt-streak').textContent = streak;
+  let weekHtml = '';
+  for (let d = 6; d >= 0; d--) {
+    const date = new Date(today); date.setDate(date.getDate() - d);
+    const count = getPTData(date).length;
+    weekHtml += '<div class="ptracker-week-day"><div class="ptracker-week-lbl">' + date.toLocaleDateString('en',{weekday:'narrow'}) + '</div><div class="ptracker-week-bar"><div class="ptracker-week-fill" style="height:' + (count/5*100) + '%"></div></div></div>';
+  }
+  document.getElementById('ptracker-week').innerHTML = weekHtml;
+}
+
+// ═══════════════════════════════════════════════════════════
+// HAJJ & UMRAH GUIDE
+// ═══════════════════════════════════════════════════════════
+const HAJJ_STEPS = {
+  umrah: [
+    {n:1, t:'Ihram (Sacred State)', body:'Enter the state of Ihram at the Miqat. Declare intention for Umrah. Wear the Ihram garments (two white unstitched cloths for men).', ar:'لَبَّيْكَ اللَّهُمَّ عُمْرَةً', tr:'Labbayka Allahumma Umrah'},
+    {n:2, t:'Talbiyah', body:'Recite the Talbiyah frequently after entering Ihram:', ar:'لَبَّيْكَ اللَّهُمَّ لَبَّيْكَ، لَبَّيْكَ لَا شَرِيكَ لَكَ لَبَّيْكَ', tr:'Labbayka Allahumma labbayk, labbayka laa shareeka laka labbayk'},
+    {n:3, t:'Tawaf (Circling Kaaba)', body:'Perform Tawaf — circle the Kaaba 7 times counterclockwise, starting from the Black Stone corner. Men walk briskly in first 3 rounds.', ar:'بِسْمِ اللَّهِ وَاللَّهُ أَكْبَر', tr:'Bismillaahi wallaahu Akbar'},
+    {n:4, t:'Maqam Ibrahim & Prayer', body:'After Tawaf, pray 2 rakats behind Maqam Ibrahim if possible. Drink Zamzam water.', ar:'', tr:''},
+    {n:5, t:'Sa\'i (Safa & Marwa)', body:'Walk/run between Safa and Marwa 7 times, starting at Safa. This commemorates Hajar\'s search for water for Ismail.', ar:'إِنَّ الصَّفَا وَالْمَرْوَةَ مِنْ شَعَائِرِ اللَّهِ', tr:'Innas-safaa wal-marwata min sha-aa-irillaah'},
+    {n:6, t:'Halq/Taqsir (Hair)', body:'After Sa\'i, men shave head (halq) or trim (taqsir). Women trim a fingertip\'s length. This completes Umrah.', ar:'', tr:''},
+  ],
+  hajj: [
+    {n:1, t:'Ihram', body:'At the Miqat, enter Ihram with intention of Hajj. Recite Talbiyah frequently.', ar:'لَبَّيْكَ اللَّهُمَّ حَجًّا', tr:'Labbayka Allahumma Hajjan'},
+    {n:2, t:'Tawaf Qudum', body:'Perform arrival Tawaf — 7 circuits around the Kaaba. First Tawaf of Hajj.', ar:'', tr:''},
+    {n:3, t:'Sa\'i', body:'Walk between Safa and Marwa 7 times.', ar:'', tr:''},
+    {n:4, t:'8th Dhul-Hijjah — Mina', body:'Travel to Mina. Pray Dhuhr, Asr, Maghrib, Isha, Fajr shortened. Spend the night in Mina.', ar:'', tr:''},
+    {n:5, t:'9th — Arafah', body:'Travel to Arafah after Fajr. Make dua and dhikr. Most important day of Hajj. Leave at sunset for Muzdalifah.', ar:'لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ', tr:'Laa ilaaha illAllaahu wahdahu laa shareeka lah'},
+    {n:6, t:'Muzdalifah', body:'Collect 49 pebbles for Jamarat. Pray Maghrib and Isha combined. Rest overnight.', ar:'', tr:''},
+    {n:7, t:'10th — Eid Day', body:'Throw 7 pebbles at Jamarat al-Aqaba. Sacrifice animal. Shave/trim hair. Tawaf Ifadah. Return to Mina.', ar:'اللَّهُ أَكْبَر', tr:'Allahu Akbar'},
+    {n:8, t:'11th-12th — Stoning', body:'Throw 7 pebbles at each of three Jamarat after Dhuhr. May leave after sunset if desired.', ar:'', tr:''},
+    {n:9, t:'Tawaf Wada\' (Farewell)', body:'Before leaving Makkah, perform farewell Tawaf — 7 circuits. Final rite of Hajj.', ar:'', tr:''},
+  ]
+};
+
+function initHajj() { renderHajj('umrah'); }
+
+function switchHajjTab(tab) {
+  document.getElementById('hajj-tab-umrah').classList.toggle('active', tab === 'umrah');
+  document.getElementById('hajj-tab-hajj').classList.toggle('active', tab === 'hajj');
+  renderHajj(tab);
+}
+
+function renderHajj(tab) {
+  const steps = HAJJ_STEPS[tab] || [];
+  document.getElementById('hajj-steps').innerHTML = steps.map(s =>
+    '<div class="hajj-step"><div class="hajj-step-hd"><div class="hajj-step-num">' + s.n + '</div><div class="hajj-step-t">' + s.t + '</div></div><div class="hajj-step-body">' + s.body + (s.ar ? '<div class="hajj-step-ar">' + s.ar + '</div>' : '') + (s.tr ? '<div class="hajj-step-tr">' + s.tr + '</div>' : '') + '</div></div>'
+  ).join('') + '<div class="hajj-warn">This is a simplified guide. Please consult a qualified scholar for complete rulings.</div>';
+}
+
 </script>
 
 <!-- AZAN PLAYING MODAL -->
@@ -4943,5 +5495,62 @@ async function tjAnalyze() {
     </div>
   </div>
 </div>
+
+<div id="dua-view" class="view">
+  <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goToView('home')">← Home</button><div class="htitle">🤲 Daily Duas</div><div style="width:60px"></div></div></div>
+  <div class="dua-cat-grid" id="dua-cats"></div><div class="dua-list" id="dua-list" style="display:none"></div><div style="height:60px"></div>
+</div>
+<div id="qibla-view" class="view">
+  <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goToView('home')">← Home</button><div class="htitle">🧭 Qibla</div><div style="width:60px"></div></div></div>
+  <div class="qibla-wrap"><div class="qibla-compass"><div class="qibla-ring" id="qibla-ring"><div class="qibla-kaaba">🕋</div><div class="qibla-dir" id="qibla-dir"></div></div></div>
+  <div class="qibla-angle" id="qibla-angle">— °</div><div class="qibla-city" id="qibla-city">Tap to calibrate</div>
+  <div class="qibla-info" id="qibla-info">Point your phone forward and the arrow shows direction to the Kaaba in Makkah.</div>
+  <button class="azan-test-btn" onclick="calibrateQibla()" style="margin-top:14px">🧭 Calibrate</button>
+  <div class="qibla-calibrating" id="qibla-calib" style="display:none">Calibrating... Move phone in figure-8</div></div>
+</div>
+<div id="zakat-view" class="view">
+  <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goToView('home')">← Home</button><div class="htitle">💰 Zakat</div><div style="width:60px"></div></div></div>
+  <div class="zakat-form">
+    <div class="zakat-section"><div class="zakat-section-hd">💵 Cash & Savings</div>
+      <div class="zakat-row"><span class="zakat-lbl">Cash on hand</span><input class="zakat-inp" type="number" id="z-cash" placeholder="0" oninput="calcZakat()"></div>
+      <div class="zakat-row"><span class="zakat-lbl">Bank savings</span><input class="zakat-inp" type="number" id="z-bank" placeholder="0" oninput="calcZakat()"></div>
+      <div class="zakat-row"><span class="zakat-lbl">Foreign currency</span><input class="zakat-inp" type="number" id="z-fx" placeholder="0" oninput="calcZakat()"></div></div>
+    <div class="zakat-section"><div class="zakat-section-hd">🥇 Gold & Silver</div>
+      <div class="zakat-row"><span class="zakat-lbl">Gold (grams)</span><input class="zakat-inp" type="number" id="z-gold" placeholder="0" oninput="calcZakat()"></div>
+      <div class="zakat-row"><span class="zakat-lbl">Silver (grams)</span><input class="zakat-inp" type="number" id="z-silver" placeholder="0" oninput="calcZakat()"></div></div>
+    <div class="zakat-section"><div class="zakat-section-hd">📈 Investments</div>
+      <div class="zakat-row"><span class="zakat-lbl">Stocks/shares</span><input class="zakat-inp" type="number" id="z-stocks" placeholder="0" oninput="calcZakat()"></div>
+      <div class="zakat-row"><span class="zakat-lbl">Business inventory</span><input class="zakat-inp" type="number" id="z-biz" placeholder="0" oninput="calcZakat()"></div></div>
+    <div class="zakat-section"><div class="zakat-section-hd">⏳ Debts</div>
+      <div class="zakat-row"><span class="zakat-lbl">Debts owed to you</span><input class="zakat-inp" type="number" id="z-debts-in" placeholder="0" oninput="calcZakat()"></div>
+      <div class="zakat-row"><span class="zakat-lbl">Debts you owe</span><input class="zakat-inp" type="number" id="z-debts-out" placeholder="0" oninput="calcZakat()"></div></div>
+    <div class="zakat-total"><div class="zakat-total-lbl">Total Zakatable Assets</div><div class="zakat-total-val" id="z-total">0.00</div><div class="zakat-nisab">Nisab (85g gold): ~$5,525</div></div>
+    <div class="zakat-due"><div class="zakat-due-lbl">🕌 Your Zakat (2.5%)</div><div class="zakat-due-val" id="z-due">0.00</div><div class="zakat-due-note" id="z-note">Enter your assets above</div></div>
+  </div><div style="height:60px"></div>
+</div>
+<div id="hijri-view" class="view">
+  <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goToView('home')">← Home</button><div class="htitle">📅 Hijri Calendar</div><div style="width:60px"></div></div></div>
+  <div class="hijri-wrap"><div class="hijri-today"><div class="hijri-today-date" id="hijri-today">—</div><div class="hijri-today-eg" id="hijri-today-eg">—</div></div>
+  <div class="hijri-month-hd"><div class="hijri-month-nav" onclick="hijriPrev()">‹</div><span id="hijri-month-name">—</span><div class="hijri-month-nav" onclick="hijriNext()">›</div></div>
+  <div class="hijri-cal" id="hijri-cal"></div><div class="hijri-events" id="hijri-events"></div></div><div style="height:60px"></div>
+</div>
+<div id="hadith40-view" class="view">
+  <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goToView('home')">← Home</button><div class="htitle">📜 40 Hadith</div><div style="width:60px"></div></div></div>
+  <div class="hadith-list" id="hadith40-list"></div><div style="height:60px"></div>
+</div>
+<div id="ptracker-view" class="view">
+  <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goToView('home')">← Home</button><div class="htitle">✅ Prayer Tracker</div><div style="width:60px"></div></div></div>
+  <div class="ptracker-wrap"><div class="ptracker-stats">
+    <div class="ptracker-stat"><div class="ptracker-stat-n" id="pt-today">0/5</div><div class="ptracker-stat-l">Today</div></div>
+    <div class="ptracker-stat"><div class="ptracker-stat-n" id="pt-week">0/35</div><div class="ptracker-stat-l">This Week</div></div>
+    <div class="ptracker-stat"><div class="ptracker-stat-n" id="pt-streak">0</div><div class="ptracker-stat-l">Day Streak</div></div>
+  </div><div id="ptracker-days"></div><div class="ptracker-week" id="ptracker-week"></div></div><div style="height:60px"></div>
+</div>
+<div id="hajj-view" class="view">
+  <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goToView('home')">← Home</button><div class="htitle">🕋 Hajj & Umrah</div><div style="width:60px"></div></div></div>
+  <div class="hajj-wrap"><div class="hajj-tabs"><div class="hajj-tab active" id="hajj-tab-umrah" onclick="switchHajjTab('umrah')">Umrah</div><div class="hajj-tab" id="hajj-tab-hajj" onclick="switchHajjTab('hajj')">Hajj</div></div>
+  <div id="hajj-steps"></div></div><div style="height:60px"></div>
+</div>
+
 </body>
 </html>
