@@ -402,6 +402,23 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
 
         @JavascriptInterface
+        public void openExternalUrl(final String url) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        // Fallback: load in WebView
+                        webView.loadUrl(url);
+                    }
+                }
+            });
+        }
+
+        @JavascriptInterface
         public void setCompassLocation(final double lat, final double lon) {
             runOnUiThread(() -> {
                 userLat = lat;
