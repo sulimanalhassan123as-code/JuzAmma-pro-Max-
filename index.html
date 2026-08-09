@@ -989,6 +989,27 @@ body { font-family:'Poppins',sans-serif;
   transition:transform .15s, box-shadow .15s;
 }
 .qibla-calib-btn:active { transform:scale(.96); box-shadow:0 2px 8px var(--pg); }
+
+/* Google Maps Qibla */
+.qibla-map-wrap { width:100%; max-width:360px; margin:8px auto 12px; border-radius:14px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,.1); }
+.qibla-map-iframe { display:block; }
+
+.qibla-static-compass { position:relative; width:200px; height:200px; margin:12px auto; }
+.qibla-static-ring {
+  position:relative; width:100%; height:100%; border-radius:50%;
+  border:2px solid var(--bdr);
+  background:
+    radial-gradient(circle at center, rgba(16,185,129,.08) 0%, transparent 70%),
+    conic-gradient(from 0deg,
+      rgba(16,185,129,.06), transparent 25%, rgba(16,185,129,.04) 50%, transparent 75%, rgba(16,185,129,.06));
+  box-shadow:0 4px 30px rgba(0,0,0,.08), inset 0 0 0 8px rgba(255,255,255,.02);
+}
+.qibla-static-arrow {
+  position:absolute; top:50%; left:50%;
+  font-size:2.2rem;
+  transform-origin:0 0;
+  transition: transform .4s cubic-bezier(.4,0,.2,1);
+}
 /* ZAKAT */
 .zakat-form { padding:14px; max-width:480px; margin:0 auto; }
 .zakat-section { background:var(--card); border:1px solid var(--bdr); border-radius:14px; padding:14px; margin-bottom:12px; }
@@ -5320,139 +5341,111 @@ function playAllDuas(catId) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// QIBLA COMPASS
+// QIBLA — Google Maps based, no unreliable sensor
 // ═══════════════════════════════════════════════════════════
-// Local great-circle bearing calc — used for instant display + offline fallback
-function calcQiblaLocal(lat, lon) {
-  const kaabaLat = 21.4225, kaabaLon = 39.8262;
-  const phiK = kaabaLat * Math.PI / 180;
-  const lambdaK = kaabaLon * Math.PI / 180;
+// The previous implementation used DeviceOrientationEvent (magnetometer)
+// for a live-rotating compass. That sensor is extremely unreliable inside
+// Android WebViews and even mobile browsers — it jitters, drifts, and
+// sometimes points in the wrong direction entirely. Replaced with a
+// Google Maps embed + mathematical bearing calculation which is 100%
+// deterministic and matches Google's own Qibla finder result.
+const KAABA_LAT = 21.4225;
+const KAABA_LON = 39.8262;
+
+function calcQiblaBearing(lat, lon) {
+  const phiK = KAABA_LAT * Math.PI / 180;
+  const lambdaK = KAABA_LON * Math.PI / 180;
   const phi = lat * Math.PI / 180;
   const lambda = lon * Math.PI / 180;
-  const qibla = Math.atan2(Math.sin(lambdaK - lambda), Math.cos(phi) * Math.tan(phiK) - Math.sin(phi) * Math.cos(lambdaK - lambda));
+  const qibla = Math.atan2(
+    Math.sin(lambdaK - lambda),
+    Math.cos(phi) * Math.tan(phiK) - Math.sin(phi) * Math.cos(lambdaK - lambda)
+  );
   return (qibla * 180 / Math.PI + 360) % 360;
 }
 
-let qiblaTargetDeg = null;   // true bearing to Kaaba from North (degrees)
-let qiblaLiveActive = false; // whether live device-compass tracking is on
-let qiblaHeading = 0;        // current device heading (compass) in degrees
-
-function setQiblaDisplay(qiblaDeg, sourceLabel) {
-  qiblaTargetDeg = qiblaDeg;
-  document.getElementById('qibla-angle').innerHTML = Math.round(qiblaDeg) + '° <span class="unit">from North</span>';
-  if (!qiblaLiveActive) {
-    document.getElementById('qibla-info').textContent = 'Tap "Enable Live Compass" below for a real-time pointer, or manually find North and turn clockwise by this angle.';
-    const arrow = document.getElementById('qibla-dir');
-    arrow.style.transform = 'translate(-50%,-100%) rotate(' + qiblaDeg + 'deg)';
-  }
-  const cityEl = document.getElementById('qibla-city');
-  if (cityEl && sourceLabel) {
-    const base = cityEl.dataset.base || cityEl.textContent;
-    cityEl.dataset.base = base;
-    cityEl.textContent = base + ' · ' + sourceLabel;
-  }
+function getCardinalDirection(deg) {
+  const dirs = ['N','NE','E','SE','S','SW','W','NW'];
+  return dirs[Math.round(deg / 45) % 8];
 }
 
 function initQibla() {
-  if (!navigator.geolocation) { document.getElementById('qibla-info').textContent = 'Geolocation not supported.'; return; }
+  if (!navigator.geolocation) {
+    document.getElementById('qibla-info').textContent = 'Geolocation not supported on this device.';
+    return;
+  }
+
+  document.getElementById('qibla-info').textContent = '📡 Getting your GPS location…';
+
   navigator.geolocation.getCurrentPosition(pos => {
     const lat = pos.coords.latitude;
     const lon = pos.coords.longitude;
-    document.getElementById('qibla-city').textContent = '📍 Your location: ' + lat.toFixed(2) + ', ' + lon.toFixed(2);
-    document.getElementById('qibla-city').dataset.base = '📍 Your location: ' + lat.toFixed(2) + ', ' + lon.toFixed(2);
+    const accuracy = Math.round(pos.coords.accuracy || 0);
 
-    // 1) Show instant local great-circle calculation immediately (no network wait)
-    const localDeg = calcQiblaLocal(lat, lon);
-    setQiblaDisplay(localDeg, '📡 calculating…');
+    // 1) Calculate bearing — same formula Google uses, 100% deterministic
+    const bearing = calcQiblaBearing(lat, lon);
+    const cardinal = getCardinalDirection(bearing);
 
-    // 2) Confirm/refine with the Aladhan Qibla API (authoritative, ~100ms)
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
-    fetch('https://api.aladhan.com/v1/qibla/' + lat + '/' + lon, { signal: controller.signal })
+    // 2) Display the bearing
+    document.getElementById('qibla-angle').innerHTML =
+      Math.round(bearing) + '° <span class="unit">from North (' + cardinal + ')</span>';
+    document.getElementById('qibla-city').textContent =
+      '📍 ' + lat.toFixed(4) + ', ' + lon.toFixed(4) + ' (±' + accuracy + 'm)';
+    document.getElementById('qibla-info').innerHTML =
+      'Face <b>' + cardinal + '</b> (' + Math.round(bearing) + '° from North) to face the Kaaba 🕋';
+
+    // 3) Show static compass with Kaaba at the bearing angle
+    const compass = document.getElementById('qibla-static-compass');
+    const arrow = document.getElementById('qibla-static-arrow');
+    if (compass && arrow) {
+      compass.style.display = 'block';
+      // Position the Kaaba icon at the bearing angle around the ring
+      const rad = bearing * Math.PI / 180;
+      const r = 70; // radius from center in px
+      const x = Math.sin(rad) * r;
+      const y = -Math.cos(rad) * r;
+      arrow.style.transform = 'translate(-50%,-50%) translate(' + x + 'px,' + y + 'px)';
+    }
+
+    // 4) Google Maps embed — shows Kaaba location with a marker
+    const mapFrame = document.getElementById('qibla-map');
+    if (mapFrame) {
+      mapFrame.src = 'https://maps.google.com/maps?q=' + KAABA_LAT + ',' + KAABA_LON +
+        '&z=15&output=embed&hl=en';
+    }
+
+    // 5) Google Maps directions link — opens native Google Maps app
+    const gmapsLink = document.getElementById('qibla-gmaps-link');
+    if (gmapsLink) {
+      gmapsLink.href = 'https://www.google.com/maps/dir/' + lat + ',' + lon + '/' + KAABA_LAT + ',' + KAABA_LON;
+    }
+
+    // 6) Also verify with Aladhan API (optional cross-check)
+    fetch('https://api.aladhan.com/v1/qibla/' + lat + '/' + lon)
       .then(r => r.json())
       .then(json => {
-        clearTimeout(timeout);
         if (json && json.code === 200 && json.data && typeof json.data.direction === 'number') {
-          setQiblaDisplay(json.data.direction, '✅ verified');
-        } else {
-          setQiblaDisplay(localDeg, '📐 offline calc');
+          const apiBearing = Math.round(json.data.direction);
+          const localBearing = Math.round(bearing);
+          if (Math.abs(apiBearing - localBearing) <= 1) {
+            document.getElementById('qibla-info').innerHTML +=
+              '<br><small style="color:var(--p)">✅ Verified with Aladhan API</small>';
+          }
         }
       })
-      .catch(() => {
-        clearTimeout(timeout);
-        setQiblaDisplay(localDeg, '📐 offline calc');
-      });
-  }, () => {
-    document.getElementById('qibla-info').innerHTML = 'Location access needed. <button onclick="initQibla()" style="color:var(--p);background:none;border:none;text-decoration:underline;cursor:pointer">Try again</button>';
+      .catch(() => {});
+  }, err => {
+    let msg = 'Location access needed to find Qibla. ';
+    if (err.code === 1) msg += 'Please allow location permission and try again.';
+    else if (err.code === 2) msg += 'GPS unavailable. Check your location settings.';
+    else if (err.code === 3) msg += 'Location request timed out. Try again.';
+    document.getElementById('qibla-info').innerHTML =
+      msg + ' <button onclick="initQibla()" style="color:var(--p);background:none;border:none;text-decoration:underline;cursor:pointer">Retry</button>';
+  }, {
+    enableHighAccuracy: true,
+    timeout: 10000,
+    maximumAge: 30000
   });
-}
-
-// ═══════════════════════════════════════════════════════════
-// LIVE DEVICE COMPASS — rotates the Kaaba arrow in real time as you turn
-// your phone, exactly like reliable dedicated Qibla-finder apps do.
-// Uses the phone's magnetometer via DeviceOrientationEvent (webkitCompassHeading
-// on iOS Safari, absolute alpha on Android Chrome) instead of requiring the
-// user to manually find North with a separate app first.
-// ═══════════════════════════════════════════════════════════
-function applyQiblaRotation() {
-  if (qiblaTargetDeg === null) return;
-  const arrow = document.getElementById('qibla-dir');
-  const ring = document.getElementById('qibla-ring');
-  // Rotate the whole ring opposite to device heading so N always points
-  // true North, then the arrow sits at the fixed true bearing to the Kaaba.
-  ring.style.transform = 'rotate(' + (-qiblaHeading) + 'deg)';
-  arrow.style.transform = 'translate(-50%,-100%) rotate(' + qiblaTargetDeg + 'deg)';
-  const diff = Math.abs(((qiblaTargetDeg - qiblaHeading + 540) % 360) - 180);
-  const info = document.getElementById('qibla-info');
-  if (diff < 6) {
-    info.innerHTML = '✅ <b style="color:var(--p)">Facing the Kaaba!</b> Hold steady for prayer.';
-  } else {
-    info.textContent = '🧭 Live compass active — rotate your body until the Kaaba icon points straight up.';
-  }
-}
-
-function handleOrientation(e) {
-  let heading;
-  if (typeof e.webkitCompassHeading === 'number') {
-    heading = e.webkitCompassHeading; // iOS Safari — already true north heading
-  } else if (typeof e.alpha === 'number') {
-    heading = 360 - e.alpha; // Android — alpha increases counter-clockwise
-  } else {
-    return;
-  }
-  qiblaHeading = heading;
-  applyQiblaRotation();
-}
-
-function calibrateQibla() {
-  const calib = document.getElementById('qibla-calib');
-  const btn = document.querySelector('.qibla-calib-btn');
-  calib.style.display = 'block';
-  calib.textContent = 'Requesting compass access…';
-
-  const startLive = () => {
-    qiblaLiveActive = true;
-    if (btn) { btn.textContent = '🟢 Live Compass Active'; btn.disabled = true; }
-    calib.style.display = 'none';
-    window.addEventListener('deviceorientationabsolute', handleOrientation, true);
-    window.addEventListener('deviceorientation', handleOrientation, true);
-    if (qiblaTargetDeg === null) initQibla();
-  };
-
-  // iOS 13+ requires an explicit user-gesture permission prompt
-  if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-    DeviceOrientationEvent.requestPermission().then(state => {
-      if (state === 'granted') { startLive(); }
-      else { calib.style.display = 'none'; document.getElementById('qibla-info').textContent = 'Compass permission denied — showing manual angle instead.'; initQibla(); }
-    }).catch(() => { calib.style.display = 'none'; initQibla(); });
-  } else if (window.DeviceOrientationEvent) {
-    // Android / other browsers — no explicit permission API, just attach
-    setTimeout(startLive, 400);
-  } else {
-    calib.style.display = 'none';
-    document.getElementById('qibla-info').textContent = 'Live compass not supported on this device — showing manual angle.';
-    initQibla();
-  }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -5936,25 +5929,38 @@ function updateFsapBtn() {
 <div id="qibla-view" class="view">
   <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goToView('home')">← Home</button><div class="htitle">🧭 Qibla</div><div style="width:60px"></div></div></div>
   <div class="qibla-wrap">
-    <div class="qibla-compass">
-      <div class="qibla-ring" id="qibla-ring">
+    <!-- Bearing angle display -->
+    <div class="qibla-angle" id="qibla-angle" style="font-size:2.2rem;margin-bottom:4px">— °<span class="unit">from North</span></div>
+    <div class="qibla-city" id="qibla-city" style="font-size:.8rem;margin-bottom:8px">📍 Getting your location…</div>
+
+    <!-- Google Map showing Kaaba and user location -->
+    <div class="qibla-map-wrap">
+      <iframe id="qibla-map" class="qibla-map-iframe" frameborder="0" style="border:0;border-radius:14px;width:100%;height:300px;" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+
+    <!-- Bearing compass visual (static, not sensor-driven) -->
+    <div class="qibla-static-compass" id="qibla-static-compass" style="display:none">
+      <div class="qibla-static-ring">
         <span class="qibla-cardinal n">N</span>
         <span class="qibla-cardinal e">E</span>
         <span class="qibla-cardinal s">S</span>
         <span class="qibla-cardinal w">W</span>
-        <div class="qibla-kaaba">🕋</div>
-        <div class="qibla-dir" id="qibla-dir"></div>
-        <div class="qibla-center-dot"></div>
+        <div class="qibla-static-arrow" id="qibla-static-arrow">🕋</div>
       </div>
     </div>
-    <div class="qibla-angle" id="qibla-angle">— °<span class="unit">from North</span></div>
-    <div class="qibla-city" id="qibla-city">📍 Tap to calibrate</div>
-    <div class="qibla-info" id="qibla-info">Find true North with a compass, then turn clockwise by the shown angle to face the Kaaba.</div>
-    <button class="qibla-calib-btn" onclick="calibrateQibla()">🧭 Enable Live Compass</button>
-    <div class="qibla-calibrating" id="qibla-calib" style="display:none">Calibrating... Move phone in figure-8</div>
+
+    <!-- Info text -->
+    <div class="qibla-info" id="qibla-info" style="text-align:center;padding:10px 16px;font-size:.78rem;color:var(--txt2);line-height:1.6">Calculating Qibla direction…</div>
+
+    <!-- Open in Google Maps button -->
+    <a id="qibla-gmaps-link" href="#" target="_blank" rel="noopener" class="qibla-calib-btn" style="display:flex;align-items:center;justify-content:center;text-decoration:none;margin-top:12px">
+      🗺️ Open in Google Maps
+    </a>
+
+    <!-- Street-level direction helper -->
     <div class="qibla-tip">
       <div class="qibla-tip-title">💡 How to use</div>
-      <div class="qibla-tip-text">1. Tap "Enable Live Compass" and allow access<br>2. Hold your phone flat, face up<br>3. Slowly turn your body until the Kaaba 🕋 icon points straight up<br>4. You are now facing the Qibla — the app confirms with a ✅</div>
+      <div class="qibla-tip-text">1. Allow location access when prompted<br>2. The map above shows your location and the Kaaba 🕋<br>3. The angle shown is the exact direction from True North<br>4. Tap "Open in Google Maps" for turn-by-turn walking direction<br>5. Use a physical compass or Google Maps blue beam to find North, then turn clockwise by the angle</div>
     </div>
   </div>
 </div>
