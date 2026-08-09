@@ -2282,7 +2282,7 @@ async function loadQ() {
   // Juz 30 (surahs 78-114), never the full Quran, no matter how long they
   // used the app. Fixed by switching to the single full-Quran endpoint
   // (/v1/quran/...) which returns all 114 surahs in one reliable call.
-  const cached = localStorage.getItem('quranProMax_v13');
+  const cached = localStorage.getItem('quranProMax_v14');
   if (cached) {
     try {
       const parsed = JSON.parse(cached);
@@ -2312,7 +2312,7 @@ async function loadQ() {
       });
       return { id: surah.number, name: surah.englishName, ar: surah.name, verses };
     });
-    localStorage.setItem('quranProMax_v13', JSON.stringify(qData));
+    localStorage.setItem('quranProMax_v14', JSON.stringify(qData));
     renderList(); populateMemSel();
   } catch(e) {
     document.getElementById('surah-container').innerHTML = '<div style="padding:40px;text-align:center;color:#ef4444">⚠️ No internet.<br><small>Please connect and reload.</small></div>';
@@ -3252,7 +3252,7 @@ let azanAudio = null;
 let azanCheckInterval = null;
 let _swReady = false;
 
-// Register service worker for background alarm support
+// Register service worker for background alarm support + auto-update
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('./sw.js').then(reg => {
     _swReady = true;
@@ -3261,7 +3261,20 @@ if('serviceWorker' in navigator){
     if(azanEnabled){
       syncAzanToSW();
     }
+    // Check for SW updates every 30 seconds and force update immediately
+    reg.update();
+    setInterval(() => reg.update(), 30000);
   }).catch(err => console.log('[SW] Registration failed:', err));
+
+  // When a new SW takes control, reload the page once to get fresh content
+  let _swReloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!_swReloaded) {
+      _swReloaded = true;
+      console.log('[SW] New controller took over — reloading for fresh content');
+      window.location.reload();
+    }
+  });
   
   // Listen for azan messages from service worker
   navigator.serviceWorker.addEventListener('message', event => {
