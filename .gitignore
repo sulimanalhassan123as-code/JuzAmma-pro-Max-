@@ -1,2 +1,7 @@
 .vercel
 .env*
+
+# Android build artifacts — never commit these
+apk-build/build/
+apk-build/.gradle/
+apk-build/*.apk
