@@ -16,8 +16,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.hardware.GeomagneticField;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
+import android.view.Surface;
+import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.GeolocationPermissions;
 import android.webkit.PermissionRequest;
@@ -36,13 +43,38 @@ import androidx.core.content.ContextCompat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
+public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener, SensorEventListener {
 
     private WebView webView;
     private static final String APP_URL = "https://juz-amma-pro-max.vercel.app";
     private SharedPreferences prefs;
     private TextToSpeech nativeTts;
     private boolean nativeTtsReady = false;
+
+    // ===== Native compass (fixes jittery/unstable WebView deviceorientation) =====
+    // Real compass apps fuse accelerometer + gyroscope + magnetometer via the
+    // Rotation Vector sensor, which is FAR more stable than the browser's
+    // deviceorientation event inside a WebView. We read it natively here and
+    // push clean, low-pass-filtered heading values into the web page.
+    private SensorManager sensorManager;
+    private Sensor rotationVectorSensor;
+    private Sensor accelerometerSensor;
+    private Sensor magnetometerSensor;
+    private boolean hasRotationVectorSensor = false;
+    private boolean compassActive = false;
+    private final float[] rotationVectorReading = new float[5];
+    private final float[] accelReading = new float[3];
+    private final float[] magnetReading = new float[3];
+    private boolean haveAccel = false;
+    private boolean haveMagnet = false;
+    private float smoothSin = 0f;
+    private float smoothCos = 1f;
+    private boolean smoothInit = false;
+    private long lastCompassSendMs = 0L;
+    private double userLat = 0;
+    private double userLon = 0;
+    private float magneticDeclination = 0f;
+    private boolean haveDeclination = false;
 
     // All permissions to request at startup
     private final String[] ALL_PERMISSIONS = {
@@ -148,6 +180,15 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         // Load the app
         webView.loadUrl(APP_URL);
+
+        // Init native compass sensors
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        if (sensorManager != null) {
+            rotationVectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+            accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            magnetometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+            hasRotationVectorSensor = rotationVectorSensor != null;
+        }
     }
 
     // JavaScript bridge — callable from web code as AndroidBridge.methodName()
@@ -324,6 +365,185 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 if (nativeTts != null) nativeTts.stop();
             });
         }
+
+        // ===== Native compass bridge (called from Qibla page JS) =====
+        @JavascriptInterface
+        public boolean isNativeCompassAvailable() {
+            return sensorManager != null && (hasRotationVectorSensor || (accelerometerSensor != null && magnetometerSensor != null));
+        }
+
+        @JavascriptInterface
+        public void startNativeCompass() {
+            runOnUiThread(() -> {
+                compassActive = true;
+                smoothInit = false;
+                registerCompassListeners();
+            });
+        }
+
+        @JavascriptInterface
+        public void stopNativeCompass() {
+            runOnUiThread(() -> {
+                compassActive = false;
+                unregisterCompassListeners();
+            });
+        }
+
+        @JavascriptInterface
+        public void setCompassLocation(final double lat, final double lon) {
+            runOnUiThread(() -> {
+                userLat = lat;
+                userLon = lon;
+                try {
+                    GeomagneticField field = new GeomagneticField(
+                        (float) lat, (float) lon, 0f, System.currentTimeMillis());
+                    magneticDeclination = field.getDeclination();
+                    haveDeclination = true;
+                } catch (Exception e) {
+                    haveDeclination = false;
+                }
+            });
+        }
+    }
+
+    private void registerCompassListeners() {
+        if (sensorManager == null) return;
+        if (hasRotationVectorSensor) {
+            sensorManager.registerListener(this, rotationVectorSensor, SensorManager.SENSOR_DELAY_GAME);
+        } else {
+            if (accelerometerSensor != null) {
+                sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_GAME);
+            }
+            if (magnetometerSensor != null) {
+                sensorManager.registerListener(this, magnetometerSensor, SensorManager.SENSOR_DELAY_GAME);
+            }
+        }
+    }
+
+    private void unregisterCompassListeners() {
+        if (sensorManager != null) {
+            sensorManager.unregisterListener(this);
+        }
+        haveAccel = false;
+        haveMagnet = false;
+    }
+
+    // Applies the WebView's/device's current rotation so the heading is
+    // correct whether the phone is held in portrait (locked orientation here,
+    // but keeps this robust if that ever changes).
+    private int getDeviceRotationDegrees() {
+        int rotation = Surface.ROTATION_0;
+        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        if (wm != null) {
+            rotation = wm.getDefaultDisplay().getRotation();
+        }
+        switch (rotation) {
+            case Surface.ROTATION_90: return 90;
+            case Surface.ROTATION_180: return 180;
+            case Surface.ROTATION_270: return 270;
+            default: return 0;
+        }
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (!compassActive) return;
+
+        float azimuthDeg;
+
+        if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
+            System.arraycopy(event.values, 0, rotationVectorReading, 0, event.values.length);
+            float[] rotationMatrix = new float[9];
+            SensorManager.getRotationMatrixFromVector(rotationMatrix, rotationVectorReading);
+
+            // Remap for current device rotation (keeps heading correct if the
+            // system ever rotates the screen)
+            int rot = getDeviceRotationDegrees();
+            float[] remapped = new float[9];
+            if (rot == 90) {
+                SensorManager.remapCoordinateSystem(rotationMatrix, SensorManager.AXIS_Y, SensorManager.AXIS_MINUS_X, remapped);
+            } else if (rot == 180) {
+                SensorManager.remapCoordinateSystem(rotationMatrix, SensorManager.AXIS_MINUS_X, SensorManager.AXIS_MINUS_Y, remapped);
+            } else if (rot == 270) {
+                SensorManager.remapCoordinateSystem(rotationMatrix, SensorManager.AXIS_MINUS_Y, SensorManager.AXIS_X, remapped);
+            } else {
+                remapped = rotationMatrix;
+            }
+
+            float[] orientation = new float[3];
+            SensorManager.getOrientation(remapped, orientation);
+            azimuthDeg = (float) Math.toDegrees(orientation[0]);
+        } else if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            System.arraycopy(event.values, 0, accelReading, 0, event.values.length);
+            haveAccel = true;
+            azimuthDeg = computeAzimuthFromAccelMag();
+            if (Float.isNaN(azimuthDeg)) return;
+        } else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+            System.arraycopy(event.values, 0, magnetReading, 0, event.values.length);
+            haveMagnet = true;
+            azimuthDeg = computeAzimuthFromAccelMag();
+            if (Float.isNaN(azimuthDeg)) return;
+        } else {
+            return;
+        }
+
+        azimuthDeg = (azimuthDeg + 360f) % 360f;
+
+        // Apply magnetic declination to get TRUE north heading (matches how
+        // professional Qibla/compass apps display direction)
+        if (haveDeclination) {
+            azimuthDeg = (azimuthDeg + magneticDeclination + 360f) % 360f;
+        }
+
+        // Smooth using sin/cos low-pass filter to avoid 0/360 wraparound glitches
+        // and eliminate the jitter the raw sensor / browser event produces.
+        double rad = Math.toRadians(azimuthDeg);
+        float sinVal = (float) Math.sin(rad);
+        float cosVal = (float) Math.cos(rad);
+        final float ALPHA = 0.12f; // lower = smoother but slightly more lag
+        if (!smoothInit) {
+            smoothSin = sinVal;
+            smoothCos = cosVal;
+            smoothInit = true;
+        } else {
+            smoothSin += ALPHA * (sinVal - smoothSin);
+            smoothCos += ALPHA * (cosVal - smoothCos);
+        }
+        float smoothedHeading = (float) Math.toDegrees(Math.atan2(smoothSin, smoothCos));
+        if (smoothedHeading < 0) smoothedHeading += 360f;
+
+        // Throttle updates to ~20fps — plenty smooth, avoids flooding the WebView bridge
+        long now = System.currentTimeMillis();
+        if (now - lastCompassSendMs < 50) return;
+        lastCompassSendMs = now;
+
+        final float finalHeading = smoothedHeading;
+        if (webView != null) {
+            webView.post(() -> webView.evaluateJavascript(
+                "window.onNativeCompassHeading && window.onNativeCompassHeading(" + finalHeading + ");", null));
+        }
+    }
+
+    private float computeAzimuthFromAccelMag() {
+        if (!haveAccel || !haveMagnet) return Float.NaN;
+        float[] rotationMatrix = new float[9];
+        float[] orientation = new float[3];
+        boolean success = SensorManager.getRotationMatrix(rotationMatrix, null, accelReading, magnetReading);
+        if (!success) return Float.NaN;
+        SensorManager.getOrientation(rotationMatrix, orientation);
+        return (float) Math.toDegrees(orientation[0]);
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // Low accuracy triggers a "calibrate" hint on the web side
+        if (accuracy == SensorManager.SENSOR_STATUS_UNRELIABLE
+            || accuracy == SensorManager.SENSOR_STATUS_ACCURACY_LOW) {
+            if (webView != null && compassActive) {
+                webView.post(() -> webView.evaluateJavascript(
+                    "window.onNativeCompassNeedsCalibration && window.onNativeCompassNeedsCalibration();", null));
+            }
+        }
     }
 
     // Notifies the web page that the current native TTS utterance has finished,
@@ -419,11 +639,19 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         super.onPause();
         // Don't pause the WebView — allows background audio/JS to keep running
         // For PWA wrapper, we keep it active
+        // But do stop the compass sensor listeners to save battery while backgrounded
+        if (compassActive) {
+            unregisterCompassListeners();
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        // Re-attach compass sensors if the Qibla live compass was active before pause
+        if (compassActive) {
+            registerCompassListeners();
+        }
         // Restore alarms from SharedPreferences
         if (prefs.getBoolean("azan_enabled", false)) {
             String[] prayers = {"Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"};
@@ -459,6 +687,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             nativeTts.stop();
             nativeTts.shutdown();
         }
+        unregisterCompassListeners();
         super.onDestroy();
     }
 }

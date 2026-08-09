@@ -2279,7 +2279,7 @@ async function loadQ() {
   // Juz 30 (surahs 78-114), never the full Quran, no matter how long they
   // used the app. Fixed by switching to the single full-Quran endpoint
   // (/v1/quran/...) which returns all 114 surahs in one reliable call.
-  const cached = localStorage.getItem('quranProMax_v10');
+  const cached = localStorage.getItem('quranProMax_v11');
   if (cached) {
     try {
       const parsed = JSON.parse(cached);
@@ -2309,7 +2309,7 @@ async function loadQ() {
       });
       return { id: surah.number, name: surah.englishName, ar: surah.name, verses };
     });
-    localStorage.setItem('quranProMax_v10', JSON.stringify(qData));
+    localStorage.setItem('quranProMax_v11', JSON.stringify(qData));
     renderList(); populateMemSel();
   } catch(e) {
     document.getElementById('surah-container').innerHTML = '<div style="padding:40px;text-align:center;color:#ef4444">⚠️ No internet.<br><small>Please connect and reload.</small></div>';
@@ -5527,13 +5527,14 @@ function initQibla() {
     // 1) Calculate bearing using our formula
     qiblaBearing = calcQiblaBearing(qiblaLat, qiblaLon);
     const cardinal = getCardinalDirection(qiblaBearing);
+    const distanceKm = Math.round(calcDistanceToKaaba(qiblaLat, qiblaLon));
 
     // 2) Display bearing
     document.getElementById('qibla-angle').innerHTML =
       Math.round(qiblaBearing) + '° <span class="unit">from North</span>';
     document.getElementById('qibla-cardinal-badge').textContent = cardinal;
     document.getElementById('qibla-city').textContent =
-      '📍 ' + qiblaLat.toFixed(4) + ', ' + qiblaLon.toFixed(4) + ' (±' + accuracy + 'm)';
+      '📍 ' + distanceKm.toLocaleString() + ' km to Mecca · ±' + accuracy + 'm GPS accuracy';
     document.getElementById('qibla-info').innerHTML =
       'Face <b>' + cardinal + '</b> (' + Math.round(qiblaBearing) + '° from North) to face the Kaaba 🕋';
 
@@ -5543,7 +5544,13 @@ function initQibla() {
       qiblaArrow.style.transform = 'translate(-50%,-50%) rotate(' + qiblaBearing + 'deg)';
     }
 
-    // 4) Google Maps embed with DIRECTION LINE from user to Kaaba
+    // 4) Give the native Android bridge our location so it can compute true
+    // magnetic declination (matches how professional compass apps work)
+    if (window.AndroidBridge && typeof AndroidBridge.setCompassLocation === 'function') {
+      try { AndroidBridge.setCompassLocation(qiblaLat, qiblaLon); } catch (e) {}
+    }
+
+    // 5) Google Maps embed with DIRECTION LINE from user to Kaaba
     const mapFrame = document.getElementById('qibla-map');
     if (mapFrame) {
       mapFrame.src = 'https://maps.google.com/maps?saddr=' + qiblaLat + ',' + qiblaLon +
@@ -5551,13 +5558,13 @@ function initQibla() {
         '&output=embed&hl=en';
     }
 
-    // 5) Google Maps directions link for turn-by-turn
+    // 6) Google Maps directions link for turn-by-turn
     const gmapsLink = document.getElementById('qibla-gmaps-link');
     if (gmapsLink) {
       gmapsLink.href = 'https://www.google.com/maps/dir/' + qiblaLat + ',' + qiblaLon + '/' + KAABA_LAT + ',' + KAABA_LON;
     }
 
-    // 6) Cross-verify with Aladhan API (third-party verification)
+    // 7) Cross-verify with Aladhan API (third-party verification)
     fetch('https://api.aladhan.com/v1/qibla/' + qiblaLat + '/' + qiblaLon)
       .then(r => r.json())
       .then(json => {
@@ -5581,9 +5588,46 @@ function initQibla() {
   }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 });
 }
 
-// ═══ LIVE COMPASS — device orientation sensor ═══
+function calcDistanceToKaaba(lat, lon) {
+  const R = 6371; // km
+  const dLat = (KAABA_LAT - lat) * Math.PI / 180;
+  const dLon = (KAABA_LON - lon) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat * Math.PI / 180) * Math.cos(KAABA_LAT * Math.PI / 180) *
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+// ═══ LIVE COMPASS ═══
+// Prefers the NATIVE Android sensor-fusion compass (Rotation Vector sensor —
+// combines accelerometer + gyroscope + magnetometer) which is rock-solid
+// stable, exactly like dedicated compass apps. Falls back to the browser's
+// deviceorientation event only when running outside the APK (e.g. in a
+// regular mobile browser or installed PWA where no native bridge exists).
+let usingNativeCompass = false;
+
 function enableLiveCompass() {
   if (liveCompassActive) { disableLiveCompass(); return; }
+
+  const hasNativeBridge = window.AndroidBridge &&
+    typeof AndroidBridge.isNativeCompassAvailable === 'function' &&
+    AndroidBridge.isNativeCompassAvailable();
+
+  if (hasNativeBridge) {
+    usingNativeCompass = true;
+    liveCompassActive = true;
+    liveCompassSmooth = 0;
+    const btn = document.getElementById('qibla-live-btn');
+    if (btn) { btn.textContent = '⏹ Stop Compass'; btn.classList.add('active'); }
+    const status = document.getElementById('qibla-live-status');
+    if (status) status.textContent = '🧭 Live! Rotate your phone to find Qibla';
+    try { AndroidBridge.startNativeCompass(); } catch (e) {}
+    return;
+  }
+
+  // ── Browser fallback (no native bridge available) ──
+  usingNativeCompass = false;
 
   function startListening() {
     liveCompassActive = true;
@@ -5620,9 +5664,16 @@ function enableLiveCompass() {
 
 function disableLiveCompass() {
   liveCompassActive = false;
+
+  if (usingNativeCompass && window.AndroidBridge && typeof AndroidBridge.stopNativeCompass === 'function') {
+    try { AndroidBridge.stopNativeCompass(); } catch (e) {}
+  }
+  usingNativeCompass = false;
+
   window.removeEventListener('deviceorientationabsolute', handleOrientation, true);
   window.removeEventListener('deviceorientation', handleOrientation, true);
   window.removeEventListener('compassneedscalibration', showCalibration, true);
+
   const btn = document.getElementById('qibla-live-btn');
   if (btn) { btn.textContent = '🧭 Enable Live Compass'; btn.classList.remove('active'); }
   const status = document.getElementById('qibla-live-status');
@@ -5638,8 +5689,21 @@ function showCalibration() {
   if (status) status.innerHTML = '📱 <b>Calibrate compass:</b> Move your phone in a figure-8 motion to improve accuracy.';
 }
 
+// ── Called directly by the native Android sensor-fusion compass ──
+// Already smoothed natively (low-pass filtered rotation vector), so we
+// apply it straight to the UI for a rock-stable needle.
+window.onNativeCompassHeading = function(heading) {
+  if (!liveCompassActive || !usingNativeCompass) return;
+  applyCompassHeading(heading);
+};
+
+window.onNativeCompassNeedsCalibration = function() {
+  if (liveCompassActive && usingNativeCompass) showCalibration();
+};
+
+// ── Browser fallback handler (deviceorientation event) ──
 function handleOrientation(event) {
-  if (!liveCompassActive) return;
+  if (!liveCompassActive || usingNativeCompass) return;
 
   // Get compass heading (direction phone is facing, in degrees from North)
   let heading = null;
@@ -5659,12 +5723,16 @@ function handleOrientation(event) {
   let diff = heading - liveCompassSmooth;
   if (diff > 180) diff -= 360;
   if (diff < -180) diff += 360;
-  liveCompassSmooth += diff * 0.25;
+  liveCompassSmooth += diff * 0.15;
   if (liveCompassSmooth < 0) liveCompassSmooth += 360;
   if (liveCompassSmooth >= 360) liveCompassSmooth -= 360;
 
-  const smoothHeading = liveCompassSmooth;
+  applyCompassHeading(liveCompassSmooth);
+}
 
+// Shared UI update — rotates the compass ring, checks Qibla alignment,
+// and updates the status text. Used by both native and browser paths.
+function applyCompassHeading(smoothHeading) {
   // Rotate the compass ring so N always points to actual North
   const ringRotation = -smoothHeading;
   const rotate = document.getElementById('qibla-live-rotate');
