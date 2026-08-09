@@ -991,24 +991,118 @@ body { font-family:'Poppins',sans-serif;
 .qibla-calib-btn:active { transform:scale(.96); box-shadow:0 2px 8px var(--pg); }
 
 /* Google Maps Qibla */
-.qibla-map-wrap { width:100%; max-width:360px; margin:8px auto 12px; border-radius:14px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,.1); }
+.qibla-map-wrap { width:100%; max-width:360px; margin:12px auto 12px; border-radius:14px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,.1); }
 .qibla-map-iframe { display:block; }
 
-.qibla-static-compass { position:relative; width:200px; height:200px; margin:12px auto; }
-.qibla-static-ring {
-  position:relative; width:100%; height:100%; border-radius:50%;
-  border:2px solid var(--bdr);
+/* Big bearing display with directional arrow */
+.qibla-bearing-display {
+  display:flex; flex-direction:column; align-items:center;
+  padding:16px 20px 8px;
+}
+.qibla-bearing-arrow-wrap {
+  position:relative; width:120px; height:120px;
+  margin-bottom:8px;
+  display:flex; align-items:center; justify-content:center;
+}
+.qibla-big-arrow {
+  position:relative; width:80px; height:80px;
+  display:flex; flex-direction:column; align-items:center;
+  transform-origin:center center;
+  transition:transform .6s cubic-bezier(.34,1.56,.64,1);
+}
+.qibla-big-arrow-head {
+  width:0; height:0;
+  border-left:22px solid transparent;
+  border-right:22px solid transparent;
+  border-bottom:36px solid var(--p);
+  filter:drop-shadow(0 0 10px var(--pg));
+  animation:qiblaArrowPulse 2s ease-in-out infinite;
+}
+.qibla-big-arrow-shaft {
+  width:14px; height:40px;
+  background:linear-gradient(to bottom, var(--p), var(--pd));
+  margin-top:-2px;
+  border-radius:4px;
+  box-shadow:0 0 12px var(--pg);
+}
+@keyframes qiblaArrowPulse {
+  0%,100% { filter:drop-shadow(0 0 6px var(--pg)); }
+  50% { filter:drop-shadow(0 0 18px var(--pg)); }
+}
+.qibla-cardinal-badge {
+  margin-top:4px; padding:4px 18px;
+  background:var(--p); color:#fff;
+  font-size:1.1rem; font-weight:800; border-radius:20px;
+  letter-spacing:1px;
+  box-shadow:0 3px 12px var(--pg);
+}
+
+/* Visual compass dial */
+.qibla-dial-wrap { margin:8px auto 12px; }
+.qibla-dial {
+  position:relative; width:220px; height:220px; margin:0 auto;
+}
+.qibla-dial-ring {
+  position:absolute; top:0; left:0; width:100%; height:100%;
+  border-radius:50%;
+  border:3px solid var(--bdr);
   background:
-    radial-gradient(circle at center, rgba(16,185,129,.08) 0%, transparent 70%),
-    conic-gradient(from 0deg,
-      rgba(16,185,129,.06), transparent 25%, rgba(16,185,129,.04) 50%, transparent 75%, rgba(16,185,129,.06));
+    radial-gradient(circle at center, rgba(16,185,129,.06) 0%, transparent 70%),
+    conic-gradient(from 0deg, rgba(16,185,129,.05), transparent 25%, rgba(16,185,129,.03) 50%, transparent 75%, rgba(16,185,129,.05));
   box-shadow:0 4px 30px rgba(0,0,0,.08), inset 0 0 0 8px rgba(255,255,255,.02);
 }
-.qibla-static-arrow {
+.qibla-dial-ticks {
+  position:absolute; top:2px; left:2px; right:2px; bottom:2px;
+  border-radius:50%;
+  background:repeating-conic-gradient(from 0deg, var(--bdr) 0deg .5deg, transparent .5deg 30deg);
+  -webkit-mask:radial-gradient(circle, transparent 60%, black 62%, black 68%, transparent 70%);
+  mask:radial-gradient(circle, transparent 60%, black 62%, black 68%, transparent 70%);
+  opacity:.4;
+}
+.qibla-dial-cardinal {
+  position:absolute; font-size:.85rem; font-weight:800; z-index:2;
+  text-shadow:0 1px 4px rgba(0,0,0,.1);
+}
+.qibla-dial-cardinal.n { top:8px; left:50%; transform:translateX(-50%); color:var(--p); font-size:1rem; }
+.qibla-dial-cardinal.s { bottom:8px; left:50%; transform:translateX(-50%); color:var(--txt2); }
+.qibla-dial-cardinal.e { right:8px; top:50%; transform:translateY(-50%); color:var(--txt2); }
+.qibla-dial-cardinal.w { left:8px; top:50%; transform:translateY(-50%); color:var(--txt2); }
+
+/* The arrow inside the dial — points from center toward Qibla bearing */
+.qibla-dial-arrow {
   position:absolute; top:50%; left:50%;
-  font-size:2.2rem;
-  transform-origin:0 0;
-  transition: transform .4s cubic-bezier(.4,0,.2,1);
+  width:0; height:0;
+  transform-origin:center center;
+  transition:transform .6s cubic-bezier(.34,1.56,.64,1);
+  z-index:5;
+}
+.qibla-dial-arrow-tip {
+  position:absolute; top:-92px; left:-14px;
+  width:0; height:0;
+  border-left:14px solid transparent;
+  border-right:14px solid transparent;
+  border-bottom:28px solid var(--p);
+  filter:drop-shadow(0 0 8px var(--pg));
+}
+.qibla-dial-arrow-glow {
+  position:absolute; top:-86px; left:-4px;
+  width:8px; height:80px;
+  background:linear-gradient(to top, transparent, var(--pg));
+  border-radius:4px;
+  opacity:.6;
+  filter:blur(3px);
+}
+.qibla-dial-kaaba {
+  position:absolute; top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  font-size:1.8rem;
+  z-index:3;
+  width:44px; height:44px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:50%;
+  background:var(--card);
+  border:2px solid var(--bdr);
+  box-shadow:0 2px 12px rgba(0,0,0,.1);
 }
 /* ZAKAT */
 .zakat-form { padding:14px; max-width:480px; margin:0 auto; }
@@ -2136,7 +2230,7 @@ async function loadQ() {
   // Juz 30 (surahs 78-114), never the full Quran, no matter how long they
   // used the app. Fixed by switching to the single full-Quran endpoint
   // (/v1/quran/...) which returns all 114 surahs in one reliable call.
-  const cached = localStorage.getItem('quranProMax_v8');
+  const cached = localStorage.getItem('quranProMax_v9');
   if (cached) {
     try {
       const parsed = JSON.parse(cached);
@@ -2166,7 +2260,7 @@ async function loadQ() {
       });
       return { id: surah.number, name: surah.englishName, ar: surah.name, verses };
     });
-    localStorage.setItem('quranProMax_v8', JSON.stringify(qData));
+    localStorage.setItem('quranProMax_v9', JSON.stringify(qData));
     renderList(); populateMemSel();
   } catch(e) {
     document.getElementById('surah-container').innerHTML = '<div style="padding:40px;text-align:center;color:#ef4444">⚠️ No internet.<br><small>Please connect and reload.</small></div>';
@@ -5394,17 +5488,26 @@ function initQibla() {
     document.getElementById('qibla-info').innerHTML =
       'Face <b>' + cardinal + '</b> (' + Math.round(bearing) + '° from North) to face the Kaaba 🕋';
 
-    // 3) Show static compass with Kaaba at the bearing angle
-    const compass = document.getElementById('qibla-static-compass');
-    const arrow = document.getElementById('qibla-static-arrow');
-    if (compass && arrow) {
-      compass.style.display = 'block';
-      // Position the Kaaba icon at the bearing angle around the ring
-      const rad = bearing * Math.PI / 180;
-      const r = 70; // radius from center in px
-      const x = Math.sin(rad) * r;
-      const y = -Math.cos(rad) * r;
-      arrow.style.transform = 'translate(-50%,-50%) translate(' + x + 'px,' + y + 'px)';
+    // 3) Show the big directional arrow pointing toward Qibla
+    const bigArrow = document.getElementById('qibla-big-arrow');
+    if (bigArrow) {
+      bigArrow.style.transform = 'rotate(' + bearing + 'deg)';
+    }
+
+    // 4) Show cardinal badge
+    const cardinalBadge = document.getElementById('qibla-cardinal-badge');
+    if (cardinalBadge) {
+      cardinalBadge.textContent = cardinal + ' →';
+    }
+
+    // 5) Rotate the compass dial arrow to point toward Qibla
+    const dialArrow = document.getElementById('qibla-dial-arrow');
+    if (dialArrow) {
+      dialArrow.style.transform = 'rotate(' + bearing + 'deg)';
+    }
+    const dialWrap = document.getElementById('qibla-dial-wrap');
+    if (dialWrap) {
+      dialWrap.style.opacity = '1';
     }
 
     // 4) Google Maps embed — shows Kaaba location with a marker
@@ -5929,38 +6032,64 @@ function updateFsapBtn() {
 <div id="qibla-view" class="view">
   <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goToView('home')">← Home</button><div class="htitle">🧭 Qibla</div><div style="width:60px"></div></div></div>
   <div class="qibla-wrap">
-    <!-- Bearing angle display -->
-    <div class="qibla-angle" id="qibla-angle" style="font-size:2.2rem;margin-bottom:4px">— °<span class="unit">from North</span></div>
-    <div class="qibla-city" id="qibla-city" style="font-size:.8rem;margin-bottom:8px">📍 Getting your location…</div>
 
-    <!-- Google Map showing Kaaba and user location -->
-    <div class="qibla-map-wrap">
-      <iframe id="qibla-map" class="qibla-map-iframe" frameborder="0" style="border:0;border-radius:14px;width:100%;height:300px;" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=21.4225,39.8262&z=16&output=embed&hl=en"></iframe>
+    <!-- Big bearing angle + cardinal direction -->
+    <div class="qibla-bearing-display" id="qibla-bearing-display">
+      <div class="qibla-bearing-arrow-wrap" id="qibla-bearing-arrow-wrap">
+        <div class="qibla-big-arrow" id="qibla-big-arrow">
+          <div class="qibla-big-arrow-head"></div>
+          <div class="qibla-big-arrow-shaft"></div>
+        </div>
+      </div>
+      <div class="qibla-angle" id="qibla-angle">— °<span class="unit">from North</span></div>
+      <div class="qibla-cardinal-badge" id="qibla-cardinal-badge">—</div>
     </div>
 
-    <!-- Bearing compass visual (static, not sensor-driven) -->
-    <div class="qibla-static-compass" id="qibla-static-compass" style="display:none">
-      <div class="qibla-static-ring">
-        <span class="qibla-cardinal n">N</span>
-        <span class="qibla-cardinal e">E</span>
-        <span class="qibla-cardinal s">S</span>
-        <span class="qibla-cardinal w">W</span>
-        <div class="qibla-static-arrow" id="qibla-static-arrow">🕋</div>
+    <div class="qibla-city" id="qibla-city">📍 Getting your location…</div>
+
+    <!-- Visual compass dial -->
+    <div class="qibla-dial-wrap" id="qibla-dial-wrap">
+      <div class="qibla-dial">
+        <div class="qibla-dial-ring" id="qibla-dial-ring">
+          <span class="qibla-dial-cardinal n">N</span>
+          <span class="qibla-dial-cardinal e">E</span>
+          <span class="qibla-dial-cardinal s">S</span>
+          <span class="qibla-dial-cardinal w">W</span>
+          <div class="qibla-dial-ticks"></div>
+        </div>
+        <!-- The arrow points toward Qibla from center -->
+        <div class="qibla-dial-arrow" id="qibla-dial-arrow">
+          <div class="qibla-dial-arrow-glow"></div>
+          <div class="qibla-dial-arrow-tip"></div>
+        </div>
+        <!-- Kaaba icon at center -->
+        <div class="qibla-dial-kaaba">🕋</div>
       </div>
     </div>
 
-    <!-- Info text -->
-    <div class="qibla-info" id="qibla-info" style="text-align:center;padding:10px 16px;font-size:.78rem;color:var(--txt2);line-height:1.6">Calculating Qibla direction…</div>
+    <!-- Direction info text -->
+    <div class="qibla-info" id="qibla-info">Calculating Qibla direction…</div>
+
+    <!-- Google Map showing Kaaba -->
+    <div class="qibla-map-wrap">
+      <iframe id="qibla-map" class="qibla-map-iframe" frameborder="0" style="border:0;border-radius:14px;width:100%;height:280px;" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=21.4225,39.8262&z=16&output=embed&hl=en"></iframe>
+    </div>
 
     <!-- Open in Google Maps button -->
     <a id="qibla-gmaps-link" href="#" target="_blank" rel="noopener" class="qibla-calib-btn" style="display:flex;align-items:center;justify-content:center;text-decoration:none;margin-top:12px">
-      🗺️ Open in Google Maps
+      🗺️ Open in Google Maps for Directions
     </a>
 
-    <!-- Street-level direction helper -->
+    <!-- Tips -->
     <div class="qibla-tip">
-      <div class="qibla-tip-title">💡 How to use</div>
-      <div class="qibla-tip-text">1. Allow location access when prompted<br>2. The map above shows your location and the Kaaba 🕋<br>3. The angle shown is the exact direction from True North<br>4. Tap "Open in Google Maps" for turn-by-turn walking direction<br>5. Use a physical compass or Google Maps blue beam to find North, then turn clockwise by the angle</div>
+      <div class="qibla-tip-title">💡 How to find Qibla</div>
+      <div class="qibla-tip-text">
+        <b>1.</b> The arrow above points toward the Kaaba from your location<br>
+        <b>2.</b> The angle is measured clockwise from True North<br>
+        <b>3.</b> Open Google Maps below and use the blue beam to find North<br>
+        <b>4.</b> Turn clockwise by the angle shown to face the Qibla<br>
+        <b>5.</b> The map shows the Kaaba location in Makkah 🕋
+      </div>
     </div>
   </div>
 </div>
