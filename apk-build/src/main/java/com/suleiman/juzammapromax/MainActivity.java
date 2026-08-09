@@ -138,6 +138,16 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
         settings.setSupportMultipleWindows(false);
 
+        // Set mobile user agent so Google Qibla Finder (and other mobile-only sites)
+        // serve the mobile experience instead of the desktop "go to mobile" message.
+        String ua = settings.getUserAgentString();
+        if (ua != null && ua.contains("Mobile")) {
+            // Already mobile — keep as-is
+        } else {
+            // Force mobile UA by adding Mobile token
+            settings.setUserAgentString(ua + " Mobile");
+        }
+
         // Enable hardware acceleration
         webView.setLayerType(android.view.View.LAYER_TYPE_HARDWARE, null);
 
@@ -149,11 +159,13 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         // fails inside this APK. This gives the web app a reliable native fallback.
         nativeTts = new TextToSpeech(this, this);
 
-        // Geolocation support
+        // Geolocation support — grant for ALL origins including iframes
+        // (Google Qibla Finder iframe at qiblafinder.withgoogle.com needs this)
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
-                callback.invoke(origin, true, false);
+                // Grant geolocation for the requesting origin AND remember it
+                callback.invoke(origin, true, true);
             }
 
             @Override
