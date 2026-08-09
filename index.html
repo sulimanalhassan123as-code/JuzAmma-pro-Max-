@@ -1108,7 +1108,7 @@ body { font-family:'Poppins',sans-serif;
 .qibla-live-w { left:10px; top:50%; transform:translateY(-50%); color:var(--txt2); }
 .qibla-live-rotate {
   position:absolute; top:0; left:0; width:100%; height:100%;
-  transform-origin:center center; transition:transform .08s linear; z-index:4;
+  transform-origin:center center; transition:transform .15s ease-out; z-index:4;
 }
 .qibla-fixed-pointer {
   position:absolute; top:-4px; left:50%; transform:translateX(-50%);
@@ -2287,7 +2287,7 @@ async function loadQ() {
   // Juz 30 (surahs 78-114), never the full Quran, no matter how long they
   // used the app. Fixed by switching to the single full-Quran endpoint
   // (/v1/quran/...) which returns all 114 surahs in one reliable call.
-  const cached = localStorage.getItem('quranProMax_v16');
+  const cached = localStorage.getItem('quranProMax_v17');
   if (cached) {
     try {
       const parsed = JSON.parse(cached);
@@ -2317,7 +2317,7 @@ async function loadQ() {
       });
       return { id: surah.number, name: surah.englishName, ar: surah.name, verses };
     });
-    localStorage.setItem('quranProMax_v16', JSON.stringify(qData));
+    localStorage.setItem('quranProMax_v17', JSON.stringify(qData));
     renderList(); populateMemSel();
   } catch(e) {
     document.getElementById('surah-container').innerHTML = '<div style="padding:40px;text-align:center;color:#ef4444">⚠️ No internet.<br><small>Please connect and reload.</small></div>';
@@ -5658,8 +5658,14 @@ function enableLiveCompass() {
     const status = document.getElementById('qibla-live-status');
     if (status) status.textContent = '🧭 Live! Rotate your phone to find Qibla';
 
-    window.addEventListener('deviceorientationabsolute', handleOrientation, true);
-    window.addEventListener('deviceorientation', handleOrientation, true);
+    // Only listen to ONE event to avoid double-fire jitter.
+    // Prefer 'deviceorientationabsolute' (gives true compass heading),
+    // fall back to 'deviceorientation' if not supported.
+    if ('ondeviceorientationabsolute' in window) {
+      window.addEventListener('deviceorientationabsolute', handleOrientation, true);
+    } else {
+      window.addEventListener('deviceorientation', handleOrientation, true);
+    }
     window.addEventListener('compassneedscalibration', showCalibration, true);
   }
 
@@ -5733,7 +5739,12 @@ function handleOrientation(event) {
   if (event.webkitCompassHeading !== undefined && event.webkitCompassHeading !== null) {
     heading = event.webkitCompassHeading;
   }
-  // Android: alpha is rotation around Z axis (0-360)
+  // Android absolute: webkitCompassHeading may not exist, use alpha directly
+  else if (event.absolute && event.alpha !== null && event.alpha !== undefined) {
+    // For deviceorientationabsolute, alpha IS the compass heading (0=North)
+    heading = 360 - event.alpha;
+  }
+  // Android non-absolute: alpha is rotation around Z axis (0-360)
   else if (event.alpha !== undefined && event.alpha !== null) {
     heading = 360 - event.alpha;
   }
@@ -5741,10 +5752,15 @@ function handleOrientation(event) {
   if (heading === null || isNaN(heading)) return;
 
   // Smooth the heading (exponential moving average to reduce jitter)
+  // Use a gentler factor (0.08) for slower, more stable movement
   let diff = heading - liveCompassSmooth;
   if (diff > 180) diff -= 360;
   if (diff < -180) diff += 360;
-  liveCompassSmooth += diff * 0.15;
+
+  // Dead zone: ignore tiny changes (< 0.5°) to prevent micro-jitter
+  if (Math.abs(diff) < 0.5) return;
+
+  liveCompassSmooth += diff * 0.08;
   if (liveCompassSmooth < 0) liveCompassSmooth += 360;
   if (liveCompassSmooth >= 360) liveCompassSmooth -= 360;
 
