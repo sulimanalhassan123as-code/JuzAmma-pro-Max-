@@ -529,7 +529,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         double rad = Math.toRadians(azimuthDeg);
         float sinVal = (float) Math.sin(rad);
         float cosVal = (float) Math.cos(rad);
-        final float ALPHA = 0.12f; // lower = smoother but slightly more lag
+        final float ALPHA = 0.35f; // 0.35 = responsive yet smooth; 0.12 was too laggy (compass kept drifting after stopping)
         if (!smoothInit) {
             smoothSin = sinVal;
             smoothCos = cosVal;
@@ -540,6 +540,26 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
         float smoothedHeading = (float) Math.toDegrees(Math.atan2(smoothSin, smoothCos));
         if (smoothedHeading < 0) smoothedHeading += 360f;
+
+        // Dead zone: if the raw heading hasn't moved meaningfully, skip the
+        // smoothing update so the needle doesn't creep/drift on its own.
+        float rawDeg = azimuthDeg;
+        float smoothDeg = (float) Math.toDegrees(Math.atan2(smoothSin, smoothCos));
+        if (smoothDeg < 0) smoothDeg += 360f;
+        float dDiff = Math.abs(rawDeg - smoothDeg);
+        if (dDiff > 180f) dDiff = 360f - dDiff;
+        if (dDiff < 1.5f) {
+            // Needle is stable — just send current smoothed value (no creep)
+            long now = System.currentTimeMillis();
+            if (now - lastCompassSendMs < 200) return; // throttle stable updates to 5fps
+            lastCompassSendMs = now;
+            final float stableHeading = smoothDeg;
+            if (webView != null) {
+                webView.post(() -> webView.evaluateJavascript(
+                    "window.onNativeCompassHeading && window.onNativeCompassHeading(" + stableHeading + ");", null));
+            }
+            return;
+        }
 
         // Throttle updates to ~20fps — plenty smooth, avoids flooding the WebView bridge
         long now = System.currentTimeMillis();

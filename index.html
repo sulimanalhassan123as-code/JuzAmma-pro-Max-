@@ -1124,7 +1124,7 @@ body { font-family:'Poppins',sans-serif;
 .qibla-live-w { left:10px; top:50%; transform:translateY(-50%); color:var(--txt2); }
 .qibla-live-rotate {
   position:absolute; top:0; left:0; width:100%; height:100%;
-  transform-origin:center center; transition:transform .15s ease-out; z-index:4;
+  transform-origin:center center; transition:none; z-index:4;
 }
 .qibla-fixed-pointer {
   position:absolute; top:-4px; left:50%; transform:translateX(-50%);
@@ -1164,6 +1164,8 @@ body { font-family:'Poppins',sans-serif;
   transition:transform .3s cubic-bezier(.34,1.56,.64,1); box-shadow:0 4px 16px var(--pg);
 }
 .qibla-aligned-badge.show { transform:translateX(-50%) scale(1); }
+.qibla-live-ring.aligned { border-color:#10b981; box-shadow:0 0 30px rgba(16,185,129,.4), inset 0 0 20px rgba(16,185,129,.15); }
+.qibla-live-ring.aligned .qibla-fixed-pointer { color:#10b981; }
 .qibla-live-status { font-size:.78rem; color:var(--txt2); text-align:center; margin-bottom:10px; max-width:280px; }
 .qibla-live-btn {
   padding:12px 30px; background:linear-gradient(135deg,var(--p),var(--pd));
@@ -5974,15 +5976,15 @@ function handleOrientation(event) {
   if (heading === null || isNaN(heading)) return;
 
   // Smooth the heading (exponential moving average to reduce jitter)
-  // Use a gentler factor (0.08) for slower, more stable movement
+  // 0.25 = responsive enough to feel direct, still filters sensor noise
   let diff = heading - liveCompassSmooth;
   if (diff > 180) diff -= 360;
   if (diff < -180) diff += 360;
 
-  // Dead zone: ignore tiny changes (< 0.5°) to prevent micro-jitter
-  if (Math.abs(diff) < 0.5) return;
+  // Dead zone: ignore tiny changes (< 1.5°) to prevent drift/creep when phone is still
+  if (Math.abs(diff) < 1.5) return;
 
-  liveCompassSmooth += diff * 0.08;
+  liveCompassSmooth += diff * 0.25;
   if (liveCompassSmooth < 0) liveCompassSmooth += 360;
   if (liveCompassSmooth >= 360) liveCompassSmooth -= 360;
 
@@ -6005,15 +6007,19 @@ function applyCompassHeading(smoothHeading) {
 
   const badge = document.getElementById('qibla-aligned-badge');
   const status = document.getElementById('qibla-live-status');
+  const ring = document.querySelector('.qibla-live-ring');
 
   if (diffToQibla < 5) {
     if (badge) badge.classList.add('show');
-    if (status) status.innerHTML = '✅ <b>You are facing the Qibla!</b> (' + Math.round(qiblaBearing) + '°)';
+    if (ring) ring.classList.add('aligned');
+    if (status) status.innerHTML = '✅ <b>You are facing the Qibla!</b> 🕋 (' + Math.round(qiblaBearing) + '°)';
   } else if (diffToQibla < 15) {
     if (badge) badge.classList.remove('show');
+    if (ring) ring.classList.remove('aligned');
     if (status) status.innerHTML = '🎯 Almost there! Turn ' + (smoothHeading > qiblaBearing ? 'left' : 'right') + ' slightly';
   } else {
     if (badge) badge.classList.remove('show');
+    if (ring) ring.classList.remove('aligned');
     const turn = smoothHeading > qiblaBearing ? 'left' : 'right';
     if (status) status.innerHTML = '🧭 Turn ' + turn + ' (' + Math.round(diffToQibla) + '° to go)';
   }
