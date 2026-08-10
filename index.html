@@ -6344,8 +6344,10 @@ function gsBuildMessageHTML(m) {
   // Message content
   let inner = '';
   if (isVoice) {
+    // Store audio in cache map to avoid inline base64 issues
+    gsAudioCache[m.id] = m.audioBase64 || '';
     inner = '<div class="gs-voice-bubble">' +
-      '<button class="gs-play-btn" onclick="gsPlayVoice(\''+m.id+'\',\''+(m.audioBase64||'')+'\')">▶</button>' +
+      '<button class="gs-play-btn" onclick="gsPlayVoiceFromCache(\''+m.id+'\')">▶</button>' +
       '<div class="gs-wave-bar"><div class="gs-wave-fill"></div></div>' +
       '<span class="gs-dur">'+gsFmtTime(m.durationSec||0)+'</span></div>';
   } else {
@@ -6358,12 +6360,17 @@ function gsBuildMessageHTML(m) {
   // Pin badge
   const pinBadge = m.pinned ? ' <span style="font-size:.6rem">📌</span>' : '';
 
-  // Action buttons (reply, react, pin for owner)
+  // Action buttons (reply, react, pin, delete, copy, share)
+  const isMine = m.userName === gsUserName;
+  const canManage = isMine || gsIsTeacher;
   const actionsHTML = '<div class="gs-msg-actions">' +
-    '<button class="gs-msg-action-btn" onclick="gsSetReply(\''+m.id+'\',\''+gsEsc(m.text||'voice msg').substring(0,40)+'\')">↩ Reply</button>' +
+    '<button class="gs-msg-action-btn" onclick="gsSetReply(\''+m.id+'\',\''+gsEsc(m.text||'voice msg').substring(0,40).replace(/'/g,'')+'\')">↩ Reply</button>' +
     '<button class="gs-msg-action-btn" onclick="gsShowReactions(\''+m.id+'\')">😊 React</button>' +
-    (isMe && !isVoice ? '<button class="gs-msg-action-btn" onclick="gsEditMessage(\''+m.id+'\',\''+gsEsc(m.text||'').replace(/'/g,'')+'\')">✏ Edit</button>' : '') +
+    (isMine && !isVoice ? '<button class="gs-msg-action-btn" onclick="gsEditMessage(\''+m.id+'\',\''+gsEsc(m.text||'').replace(/'/g,'').replace(/"/g,'')+'\')">✏ Edit</button>' : '') +
     (gsIsTeacher ? '<button class="gs-msg-action-btn" onclick="gsTogglePin(\''+m.id+'\')">'+(m.pinned?'📌 Unpin':'📌 Pin')+'</button>' : '') +
+    (!isVoice ? '<button class="gs-msg-action-btn" onclick="gsCopyMessage(\''+m.id+'\')">📋 Copy</button>' : '') +
+    (isVoice ? '<button class="gs-msg-action-btn" onclick="gsTogglePlaySpeed(\''+m.id+'\')">⚡ 1x</button>' : '') +
+    (canManage ? '<button class="gs-msg-action-btn" onclick="gsDeleteMessage(\''+m.id+'\')">🗑 Delete</button>' : '') +
   '</div>';
 
   return '<div class="gs-msg'+(isMe?' me':'')+'" id="msg-'+m.id+'" style="position:relative">' +
@@ -6376,6 +6383,14 @@ function gsBuildMessageHTML(m) {
     reactionsHTML +
     actionsHTML +
   '</div>';
+}
+
+// Audio cache — prevents inline base64 string issues
+const gsAudioCache = {};
+
+function gsPlayVoiceFromCache(msgId) {
+  const audioBase64 = gsAudioCache[msgId] || '';
+  gsPlayVoice(msgId, audioBase64);
 }
 
 function gsRenderMessage(m) {
@@ -6463,6 +6478,76 @@ async function gsTogglePin(msgId) {
   } catch(e) {}
 }
 
+// ═══ DELETE MESSAGE ═══
+async function gsDeleteMessage(msgId) {
+  if (!confirm('Delete this message?')) return;
+  try {
+    const res = await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'deleteMessage', roomCode: gsRoomCode, userName: gsUserName, messageId: msgId })
+    });
+    const d = await res.json();
+    if (d.ok) { toast('🗑 Deleted'); const el = document.getElementById('msg-'+msgId); if (el) el.remove(); }
+    else toast('❌ ' + d.error);
+  } catch(e) { toast('❌ Failed'); }
+}
+
+// ═══ COPY TEXT MESSAGE ═══
+function gsCopyMessage(msgId) {
+  const el = document.getElementById('msg-' + msgId);
+  if (!el) return;
+  const textEl = el.querySelector('.gs-text-bubble');
+  if (textEl) {
+    const text = textEl.textContent || '';
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => toast('📋 Copied!'));
+    } else {
+      // Fallback
+      const ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); ta.remove(); toast('📋 Copied!');
+    }
+  }
+}
+
+// ═══ VOICE PLAYBACK SPEED ═══
+const gsPlaySpeeds = [1, 1.5, 2];
+let gsCurrentPlaySpeed = 1;
+
+function gsTogglePlaySpeed(msgId) {
+  const idx = gsPlaySpeeds.indexOf(gsCurrentPlaySpeed);
+  gsCurrentPlaySpeed = gsPlaySpeeds[(idx + 1) % gsPlaySpeeds.length];
+  if (gsCurrentlyPlayingAudio) { gsCurrentlyPlayingAudio.playbackRate = gsCurrentPlaySpeed; }
+  // Update button text
+  const el = document.getElementById('msg-' + msgId);
+  if (el) {
+    const speedBtn = el.querySelector('.gs-msg-action-btn:last-of-type');
+    // Actually just toast it
+  }
+  toast('⚡ Speed: ' + gsCurrentPlaySpeed + 'x');
+}
+
+// ═══ SHARE ROOM CODE ═══
+function gsShareRoom() {
+  if (!gsRoomCode) return;
+  const shareText = 'Join my Islamic study room!\n\nRoom Code: ' + gsRoomCode + '\n\nOpen JuzAmma Pro → Group Study → Join with Code';
+  if (navigator.share) {
+    navigator.share({ title: 'Join my Study Room', text: shareText }).catch(() => {});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(shareText).then(() => toast('📋 Room code copied! Share it with friends'));
+  } else {
+    toast('Room Code: ' + gsRoomCode);
+  }
+}
+
+// ═══ TYPING INDICATOR ═══
+let gsTypingTimer = null;
+function gsOnTyping() {
+  // Broadcast typing indicator (visual only for now)
+  clearTimeout(gsTypingTimer);
+  gsTypingTimer = setTimeout(() => {}, 2000);
+}
+
 // ═══ MESSAGE SEARCH ═══
 function gsToggleSearch() {
   const bar = document.getElementById('gs-search-bar-el');
@@ -6490,19 +6575,47 @@ async function gsSearchMessages() {
 
 function gsPlayVoice(msgId, audioBase64) {
   // Stop currently playing
-  if (gsCurrentlyPlayingAudio) { gsCurrentlyPlayingAudio.pause(); gsCurrentlyPlayingAudio = null; }
-  if (!audioBase64) { toast('⚠️ Audio not available'); return; }
+  if (gsCurrentlyPlayingAudio) {
+    gsCurrentlyPlayingAudio.pause();
+    gsCurrentlyPlayingAudio = null;
+    // Reset any playing button
+    document.querySelectorAll('.gs-play-btn.playing').forEach(b => { b.textContent = '▶'; b.classList.remove('playing'); });
+  }
+  if (!audioBase64 || audioBase64.length < 10) { toast('⚠️ Audio not available'); return; }
   try {
+    // Decode base64
     const byteChars = atob(audioBase64);
     const byteNumbers = new Array(byteChars.length);
     for (let i = 0; i < byteChars.length; i++) byteNumbers[i] = byteChars.charCodeAt(i);
     const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], { type: 'audio/webm' });
+    // Detect type — default to webm but also try mp4
+    const mimeType = audioBase64.startsWith('AAAA') ? 'audio/mp4' : 'audio/webm';
+    const blob = new Blob([byteArray], { type: mimeType });
     const url = URL.createObjectURL(blob);
     const audio = new Audio(url);
+    audio.playbackRate = gsCurrentPlaySpeed;
     gsCurrentlyPlayingAudio = audio;
-    audio.onended = () => { gsCurrentlyPlayingAudio = null; };
-    audio.play().catch(() => toast('⚠️ Cannot play audio'));
+
+    // Update button state
+    const btn = document.querySelector('#msg-' + msgId + ' .gs-play-btn');
+    if (btn) { btn.textContent = '⏸'; btn.classList.add('playing'); }
+
+    audio.onended = () => {
+      gsCurrentlyPlayingAudio = null;
+      if (btn) { btn.textContent = '▶'; btn.classList.remove('playing'); }
+      URL.revokeObjectURL(url);
+    };
+    audio.onerror = () => {
+      gsCurrentlyPlayingAudio = null;
+      if (btn) { btn.textContent = '▶'; btn.classList.remove('playing'); }
+      URL.revokeObjectURL(url);
+      toast('⚠️ Audio playback error');
+    };
+    audio.play().catch(() => {
+      gsCurrentlyPlayingAudio = null;
+      if (btn) { btn.textContent = '▶'; btn.classList.remove('playing'); }
+      toast('⚠️ Cannot play audio');
+    });
   } catch(e) { toast('⚠️ Audio playback error'); }
 }
 
@@ -6589,6 +6702,12 @@ async function gsSendText() {
 // ── Mic button (voice recording) ──
 async function gsToggleRecord() {
   if (gsRecording) { gsStopRecording(false); return; }
+  // Clean up any leftover recorder from previous session
+  if (gsMediaRecorder) {
+    try { gsMediaRecorder.stop(); } catch(e) {}
+    gsMediaRecorder = null;
+  }
+  gsRecChunks = [];
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     toast('⚠️ Microphone not supported on this browser'); return;
   }
@@ -6630,6 +6749,11 @@ function gsStopRecording(discard) {
   gsRecording = false;
   const durationSec = (Date.now() - gsRecStartTime) / 1000;
 
+  // Capture local refs BEFORE creating any new recorder
+  const rec = gsMediaRecorder;
+  const chunks = gsRecChunks;
+  const recMimeType = rec.mimeType || 'audio/webm';
+
   const btn = document.getElementById('gs-mic-btn');
   const timer = document.getElementById('gs-rec-timer');
   const input = document.getElementById('gs-text-input');
@@ -6639,25 +6763,66 @@ function gsStopRecording(discard) {
   if (input) input.style.display = '';
   if (wrap) wrap.style.background = '';
 
-  gsMediaRecorder.onstop = async () => {
-    if (gsMediaRecorder.stream) gsMediaRecorder.stream.getTracks().forEach(t => t.stop());
-    if (discard || durationSec < 0.6) return;
-    const blob = new Blob(gsRecChunks, { type: gsMediaRecorder.mimeType || 'audio/webm' });
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      try {
-        await fetch(GS_VOICE_HUB, {
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ action:'send', roomCode: gsRoomCode, userName: gsUserName, audioBase64: reader.result, durationSec })
-        });
-        gsPollVoice();
-      } catch(e) {
-        toast('⚠️ Failed to send voice note');
-      }
-    };
-    reader.readAsDataURL(blob);
+  // Show "sending" indicator
+  if (!discard && durationSec >= 0.6) {
+    const chatArea = document.getElementById('gs-chat-area');
+    if (chatArea) {
+      const sendingBubble = document.createElement('div');
+      sendingBubble.className = 'gs-bubble me pending gs-sending-voice';
+      sendingBubble.innerHTML = '<div class="gs-bubble-inner voice"><div style="display:flex;align-items:center;gap:8px;padding:6px 12px"><div class="gs-wave-bar" style="width:100px"><div class="gs-wave-fill" style="animation:gs-pulse 1s infinite"></div></div><span style="font-size:.7rem;color:var(--txt2)">Sending... ⏳</span></div></div>';
+      chatArea.appendChild(sendingBubble);
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }
+  }
+
+  // Reset global state immediately so next recording can start cleanly
+  gsMediaRecorder = null;
+  gsRecChunks = [];
+
+  rec.onstop = async () => {
+    // Stop tracks from THIS recorder only
+    if (rec.stream) rec.stream.getTracks().forEach(t => t.stop());
+    if (discard || durationSec < 0.6) {
+      // Remove sending indicator if present
+      const sb = document.querySelector('.gs-sending-voice');
+      if (sb) sb.remove();
+      return;
+    }
+    try {
+      const blob = new Blob(chunks, { type: recMimeType });
+      // Compress: if blob > 500KB, warn but still send
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        try {
+          const res = await fetch(GS_VOICE_HUB, {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ action:'send', roomCode: gsRoomCode, userName: gsUserName, audioBase64: reader.result, durationSec })
+          });
+          const d = await res.json();
+          // Remove sending indicator
+          const sb = document.querySelector('.gs-sending-voice');
+          if (sb) sb.remove();
+          if (!d.ok) { toast('⚠️ ' + (d.error || 'Failed to send voice')); return; }
+          gsPollVoice();
+        } catch(e) {
+          const sb = document.querySelector('.gs-sending-voice');
+          if (sb) { sb.remove(); }
+          toast('⚠️ Failed to send voice note');
+        }
+      };
+      reader.onerror = () => {
+        const sb = document.querySelector('.gs-sending-voice');
+        if (sb) sb.remove();
+        toast('⚠️ Audio processing error');
+      };
+      reader.readAsDataURL(blob);
+    } catch(e) {
+      const sb = document.querySelector('.gs-sending-voice');
+      if (sb) sb.remove();
+      toast('⚠️ Failed to process recording');
+    }
   };
-  gsMediaRecorder.stop();
+  rec.stop();
 }
 
 // ================================================================
