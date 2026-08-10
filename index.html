@@ -745,6 +745,9 @@ body { font-family:'Poppins',sans-serif;
 /* Community room disclaimer */
 .gs-community-disclaimer { background:rgba(255,193,7,.1); border:1px solid rgba(255,193,7,.3); border-radius:8px; padding:8px 12px; font-size:.66rem; color:var(--txt2); margin-bottom:8px; text-align:center; }
 
+
+.gs-load-more-btn { background:var(--p); color:#fff; border:none; padding:6px 16px; border-radius:16px; font-size:.72rem; font-weight:600; cursor:pointer; font-family:Poppins,sans-serif; }
+.gs-load-more-btn:active { transform:scale(.96); }
 /* ═══ CLASSROOM UI (teacher-student) ═══ */
 .gs-tabs { display:flex; gap:0; background:var(--hdr); border-bottom:1px solid var(--bdr); flex-shrink:0; }
 .gs-tab { flex:1; padding:10px 4px; border:none; background:none; color:var(--txt2); font-size:.72rem; font-weight:600; font-family:Poppins,sans-serif; cursor:pointer; border-bottom:3px solid transparent; transition:color .15s, border .15s; }
@@ -5282,6 +5285,17 @@ async function gsJoin() {
   gsUserName = name;
   gsSetLobbyStatus('Joining room ' + code + '...');
   try {
+    // First join the room (creates membership record)
+    const joinRes = await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'joinRoom', roomCode: code, userName: name })
+    });
+    const joinData = await joinRes.json();
+    if (!joinData.ok) {
+      if (joinData.alreadyMember) { /* fine, already a member */ }
+      else throw new Error(joinData.error || 'Failed to join room');
+    }
+    // Then get room data
     const res = await fetch(GS_VOICE_HUB, {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'getRoom', roomCode: code, userName: name })
@@ -5289,7 +5303,7 @@ async function gsJoin() {
     const d = await res.json();
     if (!d.ok) throw new Error(d.error || 'Room not found');
     gsRoomCode = code;
-    toast('✅ Joined class!');
+    toast('✅ Joined room!');
     gsEnterRoom(d);
   } catch(e) {
     gsSetLobbyStatus('❌ ' + e.message);
@@ -5364,6 +5378,9 @@ function gsEnterRoom(roomData) {
   gsUpdateClassUI();
   gsUpdateHands();
   gsSwitchTab('class');
+  gsVoiceCount = 0; // Reset so messages reload from scratch
+  const chatArea = document.getElementById('gs-chat-area');
+  if (chatArea) chatArea.innerHTML = '<div class="gs-chat-date-sep">💬 Loading messages...</div>';
   gsStartRoomPoll();
   gsStartVoicePoll();
 }
@@ -5440,6 +5457,12 @@ async function gsPollRoom() {
     if (notesArea) notesArea.readOnly = !gsIsTeacher;
     const surahSel = document.getElementById('gs-surah-sel');
     if (surahSel) surahSel.disabled = !gsIsTeacher;
+    // Update member count
+    const peersEl = document.getElementById('gs-room-peers');
+    if (peersEl) {
+      const count = r.memberCount || 0;
+      peersEl.textContent = (gsIsTeacher ? '👩\u200d🏫 ' : '👨\u200d🎓 ') + (gsIsTeacher ? 'Teacher' : 'Student') + ' · ' + count + ' members';
+    }
   } catch(e) {}
 }
 
@@ -5801,6 +5824,7 @@ async function gsLeave() {
   }
   gsRoomCode = null; gsUserName = null;
   gsVoiceCount = 0; gsIsTeacher = false;
+  gsMsgCursor = null; gsLoadingMore = false;
   gsPinnedVerses = []; gsCompletedSurahs = []; gsRaisedHands = [];
   const chatArea = document.getElementById('gs-chat-area');
   if (chatArea) chatArea.innerHTML = '<div class="gs-chat-date-sep">💬 Messages appear here</div>';
@@ -5849,93 +5873,133 @@ function gsEsc(s) {
   return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
+// Cursor-based message pagination
+let gsMsgCursor = null;
+let gsLoadingMore = false;
+
 async function gsPollVoice() {
-  if (!gsRoomCode) return;
+  if (!gsRoomCode || !gsUserName) return;
   try {
+    // Only fetch new messages (first load or refresh)
     const res = await fetch(GS_VOICE_HUB, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'list', roomCode: gsRoomCode })
+      body: JSON.stringify({ action:'list', roomCode: gsRoomCode, userName: gsUserName, limit: 50 })
     });
     const d = await res.json();
-    if (!d.ok) return;
-    const chatArea = document.getElementById('gs-chat-area');
-    if (!chatArea) return;
-    const isNew = d.messages.length > gsVoiceCount;
-    gsVoiceCount = d.messages.length;
-
-    if (!d.messages.length) {
-      chatArea.innerHTML = '<div class="gs-chat-date-sep">No messages yet — say hello! 👋</div>';
+    if (!d.ok) {
+      if (d.error && d.error.includes('Access denied')) {
+        // Access revoked — kick out
+        toast('⚠️ ' + d.error);
+        gsLeave();
+      }
       return;
     }
-
-    chatArea.innerHTML = d.messages.map((m, i) => {
-      const mine = m.userName === gsUserName;
-      const timeTxt = gsFmtClock(m.created_date || m.createdAt);
-      const isText = (m.messageType || m.message_type || 'voice') === 'text';
-
-      if (isText) {
-        // TEXT BUBBLE
-        return '<div class="gs-bubble ' + (mine ? 'me' : 'other') + '">' +
-          '<div class="gs-bubble-inner text">' +
-            '<div style="flex:1">' +
-              (mine ? '' : '<div class="gs-vc-name" style="margin-bottom:2px">' + gsEsc(m.userName || 'Unknown') + '</div>') +
-              '<div class="gs-text-body">' + gsEsc(m.text || '') + '</div>' +
-              '<div class="gs-text-meta"><span class="gs-text-time">' + timeTxt + '</span>' +
-              (mine ? '<span class="gs-text-tick">✓✓</span>' : '') + '</div>' +
-            '</div>' +
-          '</div>' +
-        '</div>';
-      } else {
-        // VOICE BUBBLE
-        const dur = m.durationSec || m.duration_sec || 0;
-        const durTxt = gsFmtTime(dur);
-        const bars = Array.from({length: 18}, (_, j) => {
-          const h = 6 + Math.round(Math.abs(Math.sin(j * 0.7 + (m.userName || '').length)) * 18);
-          return '<div class="gs-vc-bar" style="height:' + h + 'px;animation-delay:' + (j * 0.04) + 's"></div>';
-        }).join('');
-
-        return '<div class="gs-bubble ' + (mine ? 'me' : 'other') + '" id="gs-vb-' + i + '">' +
-          '<div class="gs-bubble-inner voice">' +
-            '<button class="gs-vc-play" id="gs-vp-' + i + '" onclick="gsPlayVoice(' + i + ')">▶</button>' +
-            '<div class="gs-vc-wave">' + bars + '</div>' +
-            '<div class="gs-vc-info">' +
-              (mine ? '' : '<div class="gs-vc-name">' + gsEsc(m.userName || 'Unknown') + '</div>') +
-              '<div class="gs-vc-dur">' + durTxt + '</div>' +
-              '<div class="gs-vc-time">' + timeTxt + '</div>' +
-            '</div>' +
-          '</div>' +
-        '</div>';
+    // Compare with what we already have
+    const newMsgs = (d.messages || []).filter(m => !gsVoiceCount || !document.getElementById('msg-' + m.id));
+    if (newMsgs.length > 0 || gsVoiceCount === 0) {
+      const chatArea = document.getElementById('gs-chat-area');
+      if (chatArea) {
+        if (gsVoiceCount === 0) {
+          // First load — render all
+          chatArea.innerHTML = '';
+          // Show archived messages banner if hasMore
+          if (d.hasMore) {
+            chatArea.innerHTML = '<div class="gs-chat-date-sep" id="gs-load-archive-sep"><button class="gs-load-more-btn" onclick="gsLoadArchived()">📦 Load older messages</button></div>';
+          }
+          (d.messages || []).reverse().forEach(m => gsRenderMessage(m));
+          gsVoiceCount = (d.messages || []).length;
+        } else {
+          // Append only new messages (they come newest-first, so prepend)
+          newMsgs.reverse().forEach(m => gsRenderMessage(m));
+          gsVoiceCount += newMsgs.length;
+        }
       }
-    }).join('');
-
-    window.__gsVoiceData = d.messages;
-    if (isNew) chatArea.scrollTop = chatArea.scrollHeight;
+    }
   } catch(e) {}
 }
 
-function gsPlayVoice(idx) {
-  const msgs = window.__gsVoiceData || [];
-  const m = msgs[idx];
-  if (!m) return;
-  if (gsCurrentlyPlayingAudio) {
-    gsCurrentlyPlayingAudio.pause();
-    document.querySelectorAll('.gs-bubble.playing').forEach(b => b.classList.remove('playing'));
-    document.querySelectorAll('.gs-vc-play').forEach(b => b.textContent = '▶');
+async function gsLoadArchived() {
+  if (gsLoadingMore) return;
+  gsLoadingMore = true;
+  try {
+    const res = await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'listArchived', roomCode: gsRoomCode, userName: gsUserName, limit: 50 })
+    });
+    const d = await res.json();
+    if (!d.ok) { toast('⚠️ ' + (d.error || 'Failed to load')); gsLoadingMore = false; return; }
+    const chatArea = document.getElementById('gs-chat-area');
+    if (chatArea && d.messages && d.messages.length > 0) {
+      // Insert before existing messages
+      const sep = document.getElementById('gs-load-archive-sep');
+      const banner = sep ? sep.outerHTML : '';
+      let html = '';
+      if (d.hasMore) {
+        html += '<div class="gs-chat-date-sep"><button class="gs-load-more-btn" onclick="gsLoadArchived()">📦 Load even older messages</button></div>';
+      } else {
+        html += '<div class="gs-chat-date-sep">📜 Beginning of conversation</div>';
+      }
+      d.messages.reverse().forEach(m => {
+        html += gsBuildMessageHTML(m);
+      });
+      if (sep) {
+        sep.insertAdjacentHTML('beforebegin', html);
+      } else {
+        chatArea.insertAdjacentHTML('afterbegin', html);
+      }
+      if (sep && !d.hasMore) sep.remove();
+    } else if (d.messages && d.messages.length === 0) {
+      toast('📦 No more archived messages');
+    }
+  } catch(e) {
+    toast('⚠️ Failed to load archive');
   }
-  const bubble = document.getElementById('gs-vb-' + idx);
-  const btn = document.getElementById('gs-vp-' + idx);
-  const audio = new Audio(m.audioBase64 || m.audio_base64);
-  gsCurrentlyPlayingAudio = audio;
-  if (bubble) bubble.classList.add('playing');
-  if (btn) btn.textContent = '⏸';
-  audio.play().catch(() => toast('⚠️ Could not play voice note'));
-  audio.onended = () => {
-    if (bubble) bubble.classList.remove('playing');
-    if (btn) btn.textContent = '▶';
-  };
+  gsLoadingMore = false;
 }
 
-// ── Text input handling ──
+function gsBuildMessageHTML(m) {
+  const isMe = m.userName === gsUserName;
+  const isVoice = m.messageType === 'voice';
+  const time = gsFmtClock(m.created_date);
+  let inner = '';
+  if (isVoice) {
+    inner = '<div class="gs-voice-bubble">' +
+      '<button class="gs-play-btn" onclick="gsPlayVoice(\''+m.id+'\',\''+(m.audioBase64||'')+'\')">▶</button>' +
+      '<div class="gs-wave-bar"><div class="gs-wave-fill"></div></div>' +
+      '<span class="gs-dur">'+gsFmtTime(m.durationSec||0)+'</span></div>';
+  } else {
+    inner = '<div class="gs-text-bubble">'+gsEsc(m.text||'')+'</div>';
+  }
+  return '<div class="gs-msg'+(isMe?' me':'')+'" id="msg-'+m.id+'">' +
+    (!isMe ? '<div class="gs-msg-name">'+gsEsc(m.userName)+'</div>' : '') +
+    inner + '<div class="gs-msg-time">'+time+(m.archived?' 📦':'')+'</div></div>';
+}
+
+function gsRenderMessage(m) {
+  const chatArea = document.getElementById('gs-chat-area');
+  if (!chatArea) return;
+  chatArea.insertAdjacentHTML('beforeend', gsBuildMessageHTML(m));
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function gsPlayVoice(msgId, audioBase64) {
+  // Stop currently playing
+  if (gsCurrentlyPlayingAudio) { gsCurrentlyPlayingAudio.pause(); gsCurrentlyPlayingAudio = null; }
+  if (!audioBase64) { toast('⚠️ Audio not available'); return; }
+  try {
+    const byteChars = atob(audioBase64);
+    const byteNumbers = new Array(byteChars.length);
+    for (let i = 0; i < byteChars.length; i++) byteNumbers[i] = byteChars.charCodeAt(i);
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: 'audio/webm' });
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    gsCurrentlyPlayingAudio = audio;
+    audio.onended = () => { gsCurrentlyPlayingAudio = null; };
+    audio.play().catch(() => toast('⚠️ Cannot play audio'));
+  } catch(e) { toast('⚠️ Audio playback error'); }
+}
+
 function gsOnTextInput() {
   const input = document.getElementById('gs-text-input');
   const micBtn = document.getElementById('gs-mic-btn');
