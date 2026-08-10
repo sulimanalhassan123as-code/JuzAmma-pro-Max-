@@ -707,6 +707,59 @@ body { font-family:'Poppins',sans-serif;
 .gs-verse-nav { display:none; }
 .gs-vnav-btn { flex:1; padding:11px; background:var(--dark2); border:1px solid var(--bdr); border-radius:10px; color:var(--txt); font-size:.88rem; font-weight:600; cursor:pointer; text-align:center; }
 .gs-vnav-btn.primary { background:var(--p); color:#fff; border-color:transparent; }
+/* ═══ CLASSROOM UI (teacher-student) ═══ */
+.gs-tabs { display:flex; gap:0; background:var(--hdr); border-bottom:1px solid var(--bdr); flex-shrink:0; }
+.gs-tab { flex:1; padding:10px 4px; border:none; background:none; color:var(--txt2); font-size:.72rem; font-weight:600; font-family:Poppins,sans-serif; cursor:pointer; border-bottom:3px solid transparent; transition:color .15s, border .15s; }
+.gs-tab.active { color:var(--p); border-bottom-color:var(--p); }
+.gs-tab:active { transform:scale(.97); }
+.gs-tab-content { display:none; flex:1; flex-direction:column; overflow:hidden; min-height:0; }
+.gs-tab-content.active { display:flex; }
+/* Class tab */
+.gs-class-surah-bar { display:flex; align-items:center; gap:6px; padding:8px 10px; background:var(--hdr); border-bottom:1px solid var(--bdr); flex-shrink:0; }
+.gs-class-surah-bar .gs-sel { flex:1; }
+.gs-class-controls { display:flex; align-items:center; gap:4px; flex-shrink:0; }
+.gs-verse-num { font-size:.78rem; font-weight:700; color:var(--txt); min-width:60px; text-align:center; }
+.gs-tool-btn { width:32px; height:32px; border-radius:8px; border:1px solid var(--bdr); background:var(--card); color:var(--txt); font-size:.85rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .12s; }
+.gs-tool-btn:hover { background:var(--p); color:#fff; border-color:var(--p); }
+.gs-tool-btn:active { transform:scale(.92); }
+.gs-tool-btn.lg { width:auto; padding:8px 12px; font-size:.75rem; font-weight:600; gap:4px; border-radius:20px; }
+.gs-teacher-toolbar { display:flex; gap:6px; padding:8px 10px; background:var(--hdr); border-bottom:1px solid var(--bdr); overflow-x:auto; -webkit-overflow-scrolling:touch; flex-shrink:0; }
+.gs-teacher-toolbar::-webkit-scrollbar { display:none; }
+.gs-progress-wrap { padding:6px 14px; background:var(--hdr); border-bottom:1px solid var(--bdr); flex-shrink:0; }
+.gs-progress-label { font-size:.66rem; color:var(--txt2); margin-bottom:4px; }
+.gs-progress-bar { height:6px; background:var(--bdr); border-radius:3px; overflow:hidden; }
+.gs-progress-fill { height:100%; background:linear-gradient(90deg,var(--p),#4caf50); border-radius:3px; transition:width .4s ease; }
+.gs-hands-bar { padding:6px 14px; background:rgba(255,193,7,.1); border-bottom:1px solid var(--bdr); flex-shrink:0; display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+.gs-hand-chip { background:#ffc107; color:#000; padding:3px 10px; border-radius:12px; font-size:.7rem; font-weight:600; display:flex; align-items:center; gap:3px; }
+.gs-student-tools { padding:8px 10px; background:var(--hdr); border-top:1px solid var(--bdr); flex-shrink:0; display:flex; gap:8px; }
+.gs-tool-btn.raise-hand { background:#ffc107; color:#000; border-color:#ffc107; }
+.gs-tool-btn.raise-hand.active { background:#ff9800; color:#fff; animation:gsHandPulse 1s infinite; }
+@keyframes gsHandPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,152,0,.4);} 50%{box-shadow:0 0 0 8px rgba(255,152,0,0);} }
+/* Verse area in class tab */
+#gs-panel-class .gs-verse-area { flex:1; overflow-y:auto; padding:14px 16px; display:flex; flex-direction:column; gap:8px; -webkit-overflow-scrolling:touch; scroll-behavior:smooth; }
+.gs-verse-card { background:var(--card); border:1px solid var(--bdr); border-radius:12px; padding:14px 16px; transition:all .2s; }
+.gs-verse-card.pinned { border-color:var(--p); box-shadow:0 0 0 2px rgba(0,150,136,.15); }
+.gs-verse-card.completed { opacity:.55; border-style:dashed; }
+.gs-verse-card .vs-num { font-size:.7rem; color:var(--txt2); margin-bottom:4px; font-weight:600; }
+.gs-verse-card .vs-ar { font-size:1.4rem; text-align:right; line-height:2.2; direction:rtl; margin-bottom:6px; font-family:'Noto Naskh Arabic',serif; }
+.gs-verse-card .vs-en { font-size:.78rem; color:var(--txt2); line-height:1.4; }
+.gs-verse-card .vs-pin { display:inline-block; font-size:.65rem; background:var(--p); color:#fff; padding:2px 8px; border-radius:8px; margin-top:4px; }
+/* Homework tab */
+.gs-hw-list { flex:1; overflow-y:auto; padding:12px 14px; -webkit-overflow-scrolling:touch; }
+.gs-hw-item { background:var(--card); border:1px solid var(--bdr); border-radius:12px; padding:14px; margin-bottom:10px; }
+.gs-hw-item h4 { font-size:.88rem; margin-bottom:4px; }
+.gs-hw-item .gs-hw-desc { font-size:.78rem; color:var(--txt2); margin-bottom:6px; }
+.gs-hw-item .gs-hw-meta { font-size:.66rem; color:var(--txt2); display:flex; gap:10px; flex-wrap:wrap; }
+.gs-hw-item .gs-hw-done-btn { margin-top:8px; padding:6px 14px; border-radius:20px; border:1px solid var(--bdr); background:var(--bg); color:var(--txt); font-size:.72rem; font-weight:600; cursor:pointer; transition:all .15s; }
+.gs-hw-item .gs-hw-done-btn.done { background:#4caf50; color:#fff; border-color:#4caf50; }
+.gs-hw-item .gs-hw-del { margin-left:6px; padding:4px 8px; border-radius:6px; border:none; background:transparent; color:#f44336; font-size:.72rem; cursor:pointer; }
+.gs-hw-completed-count { font-size:.66rem; color:#4caf50; font-weight:600; }
+/* Notes tab */
+.gs-notes-wrap { flex:1; display:flex; flex-direction:column; padding:12px 14px; overflow:hidden; }
+.gs-notes-area { flex:1; width:100%; border:1px solid var(--bdr); border-radius:12px; padding:14px; font-size:.85rem; font-family:Poppins,sans-serif; color:var(--txt); background:var(--card); resize:none; outline:none; line-height:1.5; }
+.gs-notes-area:focus { border-color:var(--p); }
+.gs-notes-save { margin-top:8px; }
+
 /* WhatsApp-style chat (text + voice) */
 .gs-chat-area { flex:1; overflow-y:auto; padding:12px 10px 4px; display:flex; flex-direction:column; gap:3px; background:var(--bg); scroll-behavior:smooth; -webkit-overflow-scrolling:touch; }
 .gs-chat-date-sep { text-align:center; font-size:.68rem; color:var(--txt2); padding:6px 0; }
@@ -4948,48 +5001,39 @@ function setLangAndGo(lang) {
 // ================================================================
 // GROUP STUDY — Real-time Quran reading with friends
 // ================================================================
-const GS_HUB = 'https://solas-e2b9da08.base44.app/functions/groupStudyHub';
-let gsRoomCode = null, gsUserName = null, gsPollTimer = null;
-let gsCurSurah = 78, gsCurVerse = 0, gsHostName = null;
-
-function initGroupStudy() {
-  // Show lobby, hide room
-  document.getElementById('gs-lobby-wrap').style.display = '';
-  document.getElementById('gs-room-wrap').classList.remove('active');
-  // If we're already in a room, show the room
-  if (gsRoomCode) {
-    gsShowRoom();
-  }
-  // Populate surah list if qData is loaded
-  if (qData.length) gsPopulateSurahSel();
-}
-
-function gsPopulateSurahSel() {
-  const sel = document.getElementById('gs-surah-sel');
-  if (!sel || sel.options.length > 1) return; // already done
-  sel.innerHTML = qData.map(s => `<option value="${s.id}">${s.id} · ${s.name}</option>`).join('');
-}
+// ═══ CLASSROOM STATE ═══
+const GS_VOICE_HUB = 'https://superagent-7ce6afb1.base44.app/functions/groupVoiceHub';
+let gsIsTeacher = false, gsRoomState = null, gsRoomPollTimer = null;
+let gsCurrentSurah = 78, gsCurrentVerse = 1;
+let gsPinnedVerses = [], gsCompletedSurahs = [], gsRaisedHands = [];
+let gsHandRaised = false, gsActiveTab = 'class';
 
 async function gsCreate() {
   const name = document.getElementById('gs-myname').value.trim();
   if (!name) { toast('✋ Enter your name first'); return; }
   gsUserName = name;
   gsSetLobbyStatus('Creating room...');
+  const code = gsGenCode();
   try {
-    const res = await fetch(GS_HUB, {
+    const res = await fetch(GS_VOICE_HUB, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'create', userName: name, surahId: 78, verseIdx: 0 })
+      body: JSON.stringify({ action:'getRoom', roomCode: code, userName: name })
     });
     const d = await res.json();
     if (!d.ok) throw new Error(d.error);
-    gsRoomCode = d.roomCode;
-    gsCurSurah = 78; gsCurVerse = 0; gsHostName = name;
-    toast('✅ Room ' + gsRoomCode + ' created!');
-    gsShowRoom();
-    gsStartPoll();
+    gsRoomCode = code;
+    toast('✅ Room ' + code + ' created — you are the teacher!');
+    gsEnterRoom(d);
   } catch(e) {
     gsSetLobbyStatus('❌ ' + e.message);
   }
+}
+
+function gsGenCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  return code;
 }
 
 async function gsJoin() {
@@ -5000,35 +5044,57 @@ async function gsJoin() {
   gsUserName = name;
   gsSetLobbyStatus('Joining room ' + code + '...');
   try {
-    const res = await fetch(GS_HUB, {
+    const res = await fetch(GS_VOICE_HUB, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'join', roomCode: code, userName: name })
+      body: JSON.stringify({ action:'getRoom', roomCode: code, userName: name })
     });
     const d = await res.json();
-    if (!d.ok) throw new Error(d.error || 'Room not found — check the code');
+    if (!d.ok) throw new Error(d.error || 'Room not found');
     gsRoomCode = code;
-    gsCurSurah = d.currentSurah || 78;
-    gsCurVerse = d.currentVerse || 0;
-    gsHostName = d.hostName || name;
-    toast('✅ Joined room ' + code);
-    gsShowRoom();
-    gsRenderVerse();
-    gsStartPoll();
+    toast('✅ Joined class!');
+    gsEnterRoom(d);
   } catch(e) {
     gsSetLobbyStatus('❌ ' + e.message);
     toast('❌ ' + e.message);
   }
 }
 
-function gsShowRoom() {
+function gsEnterRoom(roomData) {
+  const r = roomData.room;
+  gsIsTeacher = r.isTeacher;
+  gsCurrentSurah = r.currentSurah || 78;
+  gsCurrentVerse = r.currentVerse || 1;
+  try { gsPinnedVerses = JSON.parse(r.pinnedVerses || '[]'); } catch(e) { gsPinnedVerses = []; }
+  try { gsCompletedSurahs = JSON.parse(r.completedSurahs || '[]'); } catch(e) { gsCompletedSurahs = []; }
+  try { gsRaisedHands = JSON.parse(r.raisedHands || '[]'); } catch(e) { gsRaisedHands = []; }
+  
   document.getElementById('gs-lobby-wrap').style.display = 'none';
   document.getElementById('gs-room-wrap').classList.add('active');
   document.getElementById('gs-room-code-lbl').textContent = gsRoomCode;
-  document.getElementById('gs-room-title').textContent = '👥 Room ' + gsRoomCode;
-  // Set surah selector
+  document.getElementById('gs-room-title').textContent = (r.teacherName || gsUserName) + "'s Class";
+  document.getElementById('gs-room-peers').textContent = gsIsTeacher ? '👩‍🏫 Teacher' : '👨‍🎓 Student';
+  
   const sel = document.getElementById('gs-surah-sel');
-  if (sel) sel.value = gsCurSurah;
-  gsRenderVerse();
+  if (sel) { sel.value = gsCurrentSurah; sel.disabled = !gsIsTeacher; }
+  
+  // Show/hide teacher vs student tools
+  document.getElementById('gs-teacher-toolbar').style.display = gsIsTeacher ? 'flex' : 'none';
+  document.getElementById('gs-student-tools').style.display = gsIsTeacher ? 'none' : 'flex';
+  document.getElementById('gs-hw-add').style.display = gsIsTeacher ? 'block' : 'none';
+  
+  const notesArea = document.getElementById('gs-notes-area');
+  if (notesArea) {
+    notesArea.readOnly = !gsIsTeacher;
+    notesArea.value = r.classNotes || '';
+    document.getElementById('gs-notes-save').style.display = gsIsTeacher ? 'block' : 'none';
+  }
+  
+  gsUpdateHomework(roomData.homework);
+  gsLoadVerses();
+  gsUpdateClassUI();
+  gsUpdateHands();
+  gsSwitchTab('class');
+  gsStartRoomPoll();
   gsStartVoicePoll();
 }
 
@@ -5037,136 +5103,439 @@ function gsSetLobbyStatus(msg) {
   if (el) el.textContent = msg;
 }
 
-function gsRenderVerse() {
-  if (!qData.length) {
-    document.getElementById('gs-verse-area').innerHTML = '<div class="gs-status">⏳ Loading Quran data...</div>';
-    loadQ();
-    setTimeout(gsRenderVerse, 2000);
-    return;
-  }
-  const surah = qData.find(s => s.id === gsCurSurah);
-  if (!surah) return;
-  const v = surah.verses[gsCurVerse];
-  if (!v) return;
-  document.getElementById('gs-verse-lbl').textContent = surah.name + ' — Verse ' + (gsCurVerse + 1) + ' of ' + surah.verses.length;
-  document.getElementById('gs-verse-area').innerHTML =
-    '<div class="gs-ar">' + (v.a || '') + '</div>' +
-    '<div class="gs-en">' + (v.e || '') + '</div>';
-  const sel = document.getElementById('gs-surah-sel');
-  if (sel) sel.value = gsCurSurah;
+// ═══ ROOM POLLING ═══
+async function gsStartRoomPoll() {
+  clearInterval(gsRoomPollTimer);
+  gsRoomPollTimer = setInterval(gsPollRoom, 4000);
+  await gsPollRoom();
 }
 
-async function gsNextVerse() {
-  if (!qData.length) return;
-  const surah = qData.find(s => s.id === gsCurSurah);
-  if (!surah) return;
-  if (gsCurVerse + 1 < surah.verses.length) {
-    gsCurVerse++;
-  } else {
-    const allIds = qData.map(s => s.id);
-    const ci = allIds.indexOf(gsCurSurah);
-    if (ci + 1 < allIds.length) { gsCurSurah = allIds[ci+1]; gsCurVerse = 0; }
-    else { toast('🌙 End of Juz Amma'); return; }
-  }
-  gsRenderVerse();
-  await gsSyncPosition();
+function gsStopRoomPoll() {
+  clearInterval(gsRoomPollTimer);
+  gsRoomPollTimer = null;
 }
 
-async function gsPrevVerse() {
-  if (gsCurVerse > 0) {
-    gsCurVerse--;
-  } else {
-    if (!qData.length) return;
-    const allIds = qData.map(s => s.id);
-    const ci = allIds.indexOf(gsCurSurah);
-    if (ci > 0) {
-      gsCurSurah = allIds[ci-1];
-      const prevS = qData.find(s => s.id === gsCurSurah);
-      gsCurVerse = prevS ? prevS.verses.length - 1 : 0;
-    }
-  }
-  gsRenderVerse();
-  await gsSyncPosition();
-}
-
-function gsChangeSurah() {
-  const sel = document.getElementById('gs-surah-sel');
-  if (!sel) return;
-  gsCurSurah = parseInt(sel.value);
-  gsCurVerse = 0;
-  gsRenderVerse();
-  gsSyncPosition();
-}
-
-async function gsSyncPosition() {
+async function gsPollRoom() {
   if (!gsRoomCode) return;
   try {
-    await fetch(GS_HUB, {
+    const res = await fetch(GS_VOICE_HUB, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'sync', roomCode: gsRoomCode, userName: gsUserName, surahId: gsCurSurah, verseIdx: gsCurVerse })
-    });
-  } catch(e) {}
-}
-
-function gsStartPoll() {
-  clearInterval(gsPollTimer);
-  gsPollTimer = setInterval(gsPoll, 3000);
-}
-
-async function gsPoll() {
-  if (!gsRoomCode) return;
-  try {
-    const res = await fetch(GS_HUB, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'poll', roomCode: gsRoomCode, userName: gsUserName })
+      body: JSON.stringify({ action:'getRoom', roomCode: gsRoomCode, userName: gsUserName })
     });
     const d = await res.json();
     if (!d.ok) return;
-    // Update participants bar
-    const bar = document.getElementById('gs-participants-bar');
-    if (bar) {
-      bar.innerHTML = (d.participants || []).map(n =>
-        '<span class="gs-peer' + (n === (d.hostName||gsHostName) ? ' host' : '') + '">' +
-        (n === gsUserName ? '👤 ' : '') + n + '</span>'
-      ).join('');
-      document.getElementById('gs-room-peers').textContent = d.participants.length + ' reading';
+    const r = d.room;
+    gsIsTeacher = r.isTeacher;
+    
+    let surahChanged = (r.currentSurah !== gsCurrentSurah);
+    let verseChanged = (r.currentVerse !== gsCurrentVerse);
+    
+    gsCurrentSurah = r.currentSurah || gsCurrentSurah;
+    gsCurrentVerse = r.currentVerse || gsCurrentVerse;
+    try { gsPinnedVerses = JSON.parse(r.pinnedVerses || '[]'); } catch(e) { gsPinnedVerses = []; }
+    try { gsCompletedSurahs = JSON.parse(r.completedSurahs || '[]'); } catch(e) { gsCompletedSurahs = []; }
+    try { gsRaisedHands = JSON.parse(r.raisedHands || '[]'); } catch(e) { gsRaisedHands = []; }
+    
+    if (surahChanged) {
+      const sel = document.getElementById('gs-surah-sel');
+      if (sel) sel.value = gsCurrentSurah;
+      gsLoadVerses();
+      if (!gsIsTeacher) toast('📖 Teacher moved to a new surah');
     }
-    // Sync verse position if it changed (another user navigated)
-    if (d.currentSurah !== gsCurSurah || d.currentVerse !== gsCurVerse) {
-      gsCurSurah = d.currentSurah;
-      gsCurVerse = d.currentVerse;
-      gsRenderVerse();
-      toast('📖 ' + (d.hostName||'Someone') + ' moved to a new verse');
+    if (verseChanged && !surahChanged) {
+      gsScrollToVerse();
     }
+    if (surahChanged || verseChanged) {
+      document.getElementById('gs-verse-lbl').textContent = 'Verse ' + gsCurrentVerse;
+    }
+    
+    gsUpdateClassUI();
+    gsUpdateHomework(d.homework);
+    gsUpdateHands();
+    gsUpdateNotes(r.classNotes);
+    
+    // Show/hide tools
+    document.getElementById('gs-teacher-toolbar').style.display = gsIsTeacher ? 'flex' : 'none';
+    document.getElementById('gs-student-tools').style.display = gsIsTeacher ? 'none' : 'flex';
+    document.getElementById('gs-hw-add').style.display = gsIsTeacher ? 'block' : 'none';
+    document.getElementById('gs-notes-save').style.display = gsIsTeacher ? 'block' : 'none';
+    const notesArea = document.getElementById('gs-notes-area');
+    if (notesArea) notesArea.readOnly = !gsIsTeacher;
+    const surahSel = document.getElementById('gs-surah-sel');
+    if (surahSel) surahSel.disabled = !gsIsTeacher;
   } catch(e) {}
 }
 
+// ═══ TABS ═══
+function gsSwitchTab(tab) {
+  gsActiveTab = tab;
+  document.querySelectorAll('.gs-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.gs-tab-content').forEach(p => p.classList.remove('active'));
+  const tabBtn = document.getElementById('gs-tab-' + tab);
+  const panel = document.getElementById('gs-panel-' + tab);
+  if (tabBtn) tabBtn.classList.add('active');
+  if (panel) panel.classList.add('active');
+}
+
+// ═══ CLASS UI ═══
+function gsUpdateClassUI() {
+  const total = 37;
+  const done = gsCompletedSurahs.length;
+  const pct = Math.round((done / total) * 100);
+  const pl = document.getElementById('gs-progress-label');
+  const pf = document.getElementById('gs-progress-fill');
+  if (pl) pl.textContent = 'Progress: ' + done + ' surahs completed (' + pct + '%)';
+  if (pf) pf.style.width = pct + '%';
+}
+
+function gsUpdateHands() {
+  const bar = document.getElementById('gs-hands-bar');
+  if (!bar) return;
+  if (gsRaisedHands.length === 0) {
+    bar.style.display = 'none';
+  } else {
+    bar.style.display = 'flex';
+    let html = '✋ <b>Raised:</b> ';
+    html += gsRaisedHands.map(h => '<span class="gs-hand-chip">' + h + '</span>').join('');
+    if (gsIsTeacher) {
+      html += ' <button class="gs-tool-btn" style="width:auto;padding:2px 8px;font-size:.65rem;margin-left:4px" onclick="gsClearHands()">Clear All</button>';
+    }
+    bar.innerHTML = html;
+  }
+  const rBtn = document.getElementById('gs-raise-hand-btn');
+  if (rBtn) {
+    if (gsHandRaised) { rBtn.classList.add('active'); rBtn.textContent = '✋ Lower Hand'; }
+    else { rBtn.classList.remove('active'); rBtn.textContent = '✋ Raise Hand'; }
+  }
+}
+
+async function gsToggleRaiseHand() {
+  if (!gsRoomCode) return;
+  gsHandRaised = !gsHandRaised;
+  try {
+    await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'raiseHand', roomCode: gsRoomCode, userName: gsUserName, lower: !gsHandRaised })
+    });
+    gsPollRoom();
+  } catch(e) {}
+}
+
+async function gsClearHands() {
+  if (!gsIsTeacher) return;
+  try {
+    await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'updateRoom', roomCode: gsRoomCode, userName: gsUserName, raisedHands: '[]' })
+    });
+    gsPollRoom();
+  } catch(e) {}
+}
+
+// ═══ SURAH NAVIGATION (teacher only) ═══
+async function gsChangeSurah() {
+  const sel = document.getElementById('gs-surah-sel');
+  if (!sel || !gsIsTeacher) return;
+  gsCurrentSurah = parseInt(sel.value);
+  gsCurrentVerse = 1;
+  gsLoadVerses();
+  document.getElementById('gs-verse-lbl').textContent = 'Verse 1';
+  try {
+    await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'updateRoom', roomCode: gsRoomCode, userName: gsUserName, currentSurah: gsCurrentSurah, currentVerse: 1 })
+    });
+  } catch(e) {}
+}
+
+async function gsNextVerse() {
+  if (!gsIsTeacher) return;
+  const surah = qData.find(s => s.id === gsCurrentSurah);
+  if (!surah) return;
+  if (gsCurrentVerse < surah.verses.length) {
+    gsCurrentVerse++;
+  } else {
+    gsNextSurah();
+    return;
+  }
+  document.getElementById('gs-verse-lbl').textContent = 'Verse ' + gsCurrentVerse;
+  gsScrollToVerse();
+  try {
+    await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'updateRoom', roomCode: gsRoomCode, userName: gsUserName, currentVerse: gsCurrentVerse })
+    });
+  } catch(e) {}
+}
+
+async function gsPrevVerse() {
+  if (!gsIsTeacher) return;
+  if (gsCurrentVerse > 1) {
+    gsCurrentVerse--;
+  } else {
+    const prevSurah = gsCurrentSurah - 1;
+    if (prevSurah >= 78) {
+      const prevData = qData.find(s => s.id === prevSurah);
+      gsCurrentSurah = prevSurah;
+      gsCurrentVerse = prevData ? prevData.verses.length : 1;
+      const sel = document.getElementById('gs-surah-sel');
+      if (sel) sel.value = gsCurrentSurah;
+      gsLoadVerses();
+      try {
+        await fetch(GS_VOICE_HUB, {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ action:'updateRoom', roomCode: gsRoomCode, userName: gsUserName, currentSurah: gsCurrentSurah, currentVerse: gsCurrentVerse })
+        });
+      } catch(e) {}
+      return;
+    }
+  }
+  document.getElementById('gs-verse-lbl').textContent = 'Verse ' + gsCurrentVerse;
+  gsScrollToVerse();
+  try {
+    await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'updateRoom', roomCode: gsRoomCode, userName: gsUserName, currentVerse: gsCurrentVerse })
+    });
+  } catch(e) {}
+}
+
+async function gsNextSurah() {
+  if (!gsIsTeacher) return;
+  const next = gsCurrentSurah + 1;
+  if (next > 114) { toast('✅ You have completed Juz Amma!'); return; }
+  gsCurrentSurah = next;
+  gsCurrentVerse = 1;
+  const sel = document.getElementById('gs-surah-sel');
+  if (sel) sel.value = next;
+  gsLoadVerses();
+  document.getElementById('gs-verse-lbl').textContent = 'Verse 1';
+  try {
+    await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'updateRoom', roomCode: gsRoomCode, userName: gsUserName, currentSurah: next, currentVerse: 1 })
+    });
+  } catch(e) {}
+  toast('⏭ Moved to next surah');
+}
+
+function gsScrollToVerse() {
+  const area = document.getElementById('gs-verse-area');
+  if (!area) return;
+  const card = area.querySelector('[data-verse="' + gsCurrentVerse + '"]');
+  if (card) {
+    card.scrollIntoView({ behavior:'smooth', block:'center' });
+    area.querySelectorAll('.gs-verse-card').forEach(c => c.style.borderColor = '');
+    card.style.borderColor = 'var(--p)';
+    setTimeout(() => { card.style.borderColor = ''; }, 2500);
+  }
+}
+
+// ═══ PIN & COMPLETE ═══
+async function gsPinVerse() {
+  if (!gsIsTeacher) return;
+  const pin = { surah: gsCurrentSurah, verse: gsCurrentVerse };
+  const exists = gsPinnedVerses.find(p => p.surah === pin.surah && p.verse === pin.verse);
+  if (exists) {
+    gsPinnedVerses = gsPinnedVerses.filter(p => !(p.surah === pin.surah && p.verse === pin.verse));
+    toast('📌 Unpinned verse ' + pin.verse);
+  } else {
+    gsPinnedVerses.push(pin);
+    toast('📌 Pinned verse ' + pin.verse);
+  }
+  try {
+    await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'updateRoom', roomCode: gsRoomCode, userName: gsUserName, pinnedVerses: JSON.stringify(gsPinnedVerses) })
+    });
+    gsLoadVerses();
+  } catch(e) {}
+}
+
+async function gsMarkComplete() {
+  if (!gsIsTeacher) return;
+  const idx = gsCompletedSurahs.indexOf(gsCurrentSurah);
+  if (idx >= 0) {
+    gsCompletedSurahs.splice(idx, 1);
+    toast('↩️ Marked as not complete');
+  } else {
+    gsCompletedSurahs.push(gsCurrentSurah);
+    const surah = qData.find(s => s.id === gsCurrentSurah);
+    toast('✅ ' + (surah ? surah.name : 'Surah') + ' marked complete!');
+  }
+  try {
+    await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'updateRoom', roomCode: gsRoomCode, userName: gsUserName, completedSurahs: JSON.stringify(gsCompletedSurahs) })
+    });
+    gsLoadVerses();
+    gsUpdateClassUI();
+  } catch(e) {}
+}
+
+// ═══ PLAY AUDIO ═══
+function gsPlayClassAudio() {
+  const surah = qData.find(s => s.id === gsCurrentSurah);
+  if (!surah) return;
+  const url = 'https://everyayah.com/data/Alafasy_128kbps/' + 
+    String(gsCurrentSurah).padStart(3,'0') + String(gsCurrentVerse).padStart(3,'0') + '.mp3';
+  const audio = new Audio(url);
+  audio.play().catch(() => toast('⚠️ Could not load audio'));
+  toast('🔊 Playing verse ' + gsCurrentVerse);
+}
+
+// ═══ VERSE LOADING (uses qData) ═══
+function gsLoadVerses() {
+  const area = document.getElementById('gs-verse-area');
+  if (!area) return;
+  if (!qData.length) {
+    area.innerHTML = '<div class="gs-status">⏳ Loading Quran data...</div>';
+    loadQ();
+    setTimeout(gsLoadVerses, 2000);
+    return;
+  }
+  const surah = qData.find(s => s.id === gsCurrentSurah);
+  if (!surah) {
+    area.innerHTML = '<div class="gs-status">Surah not found</div>';
+    return;
+  }
+  const isCompleted = gsCompletedSurahs.includes(gsCurrentSurah);
+  let html = '<div style="text-align:center;margin-bottom:8px;padding:10px">' +
+    '<div style="font-size:1.3rem;font-weight:700">' + surah.name + '</div>' +
+    '<div style="font-size:.72rem;color:var(--txt2);margin-top:2px">Surah ' + gsCurrentSurah + ' · ' + surah.verses.length + ' verses</div>' +
+    (isCompleted ? '<div style="font-size:.72rem;color:#4caf50;font-weight:600;margin-top:2px">✅ Completed</div>' : '') +
+    '</div>';
+  
+  surah.verses.forEach((v, i) => {
+    const verseNum = i + 1;
+    const isPinned = gsPinnedVerses.some(p => p.surah === gsCurrentSurah && p.verse === verseNum);
+    const isCurrent = verseNum === gsCurrentVerse;
+    html += '<div class="gs-verse-card' + (isPinned ? ' pinned' : '') + '" data-verse="' + verseNum + '"' +
+      (isCurrent ? ' style="border-color:var(--p);box-shadow:0 0 0 2px rgba(0,150,136,.1)"' : '') + '>' +
+      '<div class="vs-num">Verse ' + verseNum + (isPinned ? ' <span class="vs-pin">📌 Pinned</span>' : '') + '</div>' +
+      '<div class="vs-ar">' + (v.a || v.text || '') + '</div>' +
+      '<div class="vs-en">' + (v.e || '') + '</div>' +
+      '</div>';
+  });
+  
+  area.innerHTML = html;
+  // Scroll to current verse
+  setTimeout(() => gsScrollToVerse(), 100);
+}
+
+// ═══ HOMEWORK ═══
+function gsUpdateHomework(homework) {
+  const list = document.getElementById('gs-hw-list');
+  if (!list) return;
+  if (!homework || homework.length === 0) {
+    list.innerHTML = '<div class="gs-chat-date-sep">' + (gsIsTeacher ? 'No homework yet — assign one below! 👇' : 'No homework assigned yet') + '</div>';
+    return;
+  }
+  list.innerHTML = homework.map(hw => {
+    let completedBy = [];
+    try { completedBy = JSON.parse(hw.completedBy || '[]'); } catch(e) {}
+    const done = completedBy.includes(gsUserName);
+    const doneCount = completedBy.length;
+    let html = '<div class="gs-hw-item"><h4>📝 ' + gsEsc(hw.title) + '</h4>';
+    if (hw.description) html += '<div class="gs-hw-desc">' + gsEsc(hw.description) + '</div>';
+    html += '<div class="gs-hw-meta">';
+    html += '<span>👨‍🏫 ' + gsEsc(hw.assignedBy) + '</span>';
+    if (hw.dueDate) html += '<span>📅 ' + gsEsc(hw.dueDate) + '</span>';
+    html += '<span class="gs-hw-completed-count">' + doneCount + ' done</span>';
+    html += '</div><div style="margin-top:6px">';
+    html += '<button class="gs-hw-done-btn ' + (done ? 'done' : '') + '" onclick="gsToggleHomework(\'' + hw.id + '\')">' + (done ? '✅ Completed' : 'Mark as done') + '</button>';
+    if (gsIsTeacher) {
+      html += '<button class="gs-hw-del" onclick="gsDeleteHomework(\'' + hw.id + '\')">🗑 Delete</button>';
+    }
+    html += '</div></div>';
+    return html;
+  }).join('');
+}
+
+async function gsAssignHomework() {
+  const title = document.getElementById('gs-hw-title').value.trim();
+  if (!title) { toast('⚠️ Please enter a title'); return; }
+  const desc = document.getElementById('gs-hw-desc').value.trim();
+  const due = document.getElementById('gs-hw-due').value;
+  document.getElementById('gs-hw-title').value = '';
+  document.getElementById('gs-hw-desc').value = '';
+  document.getElementById('gs-hw-due').value = '';
+  try {
+    await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'assignHomework', roomCode: gsRoomCode, userName: gsUserName, title, description: desc, dueDate: due })
+    });
+    toast('✅ Homework assigned!');
+    gsPollRoom();
+  } catch(e) { toast('⚠️ Failed'); }
+}
+
+async function gsToggleHomework(hwId) {
+  try {
+    await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'toggleHomework', roomCode: gsRoomCode, userName: gsUserName, homeworkId: hwId })
+    });
+    gsPollRoom();
+  } catch(e) { toast('⚠️ Failed'); }
+}
+
+async function gsDeleteHomework(hwId) {
+  try {
+    await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'deleteHomework', roomCode: gsRoomCode, userName: gsUserName, homeworkId: hwId })
+    });
+    gsPollRoom();
+  } catch(e) { toast('⚠️ Failed'); }
+}
+
+// ═══ NOTES ═══
+function gsUpdateNotes(notes) {
+  const area = document.getElementById('gs-notes-area');
+  if (!area) return;
+  if (document.activeElement !== area) area.value = notes || '';
+}
+
+async function gsSaveNotes() {
+  const area = document.getElementById('gs-notes-area');
+  if (!area) return;
+  try {
+    await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'updateRoom', roomCode: gsRoomCode, userName: gsUserName, classNotes: area.value })
+    });
+    toast('💾 Notes saved!');
+  } catch(e) { toast('⚠️ Failed'); }
+}
+
+// ═══ LEAVE ═══
 async function gsLeave() {
-  clearInterval(gsPollTimer);
   gsStopVoicePoll();
-  gsStopRecording(true);
-  if (gsRoomCode && gsUserName) {
+  gsStopRoomPoll();
+  if (gsHandRaised && gsRoomCode) {
     try {
-      await fetch(GS_HUB, {
+      await fetch(GS_VOICE_HUB, {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ action:'leave', roomCode: gsRoomCode, userName: gsUserName })
+        body: JSON.stringify({ action:'raiseHand', roomCode: gsRoomCode, userName: gsUserName, lower: true })
       });
     } catch(e) {}
+    gsHandRaised = false;
   }
   gsRoomCode = null; gsUserName = null;
-  gsVoiceCount = 0;
+  gsVoiceCount = 0; gsIsTeacher = false;
+  gsPinnedVerses = []; gsCompletedSurahs = []; gsRaisedHands = [];
   const chatArea = document.getElementById('gs-chat-area');
   if (chatArea) chatArea.innerHTML = '<div class="gs-chat-date-sep">💬 Messages appear here</div>';
   document.getElementById('gs-room-wrap').classList.remove('active');
   document.getElementById('gs-lobby-wrap').style.display = '';
   document.getElementById('gs-lobby-status').textContent = '';
-  toast('👋 Left the room');
+  toast('👋 Left the class');
 }
 
 // ================================================================
 // GROUP STUDY — CHAT (WhatsApp-style text + voice messages)
 // ================================================================
-const GS_VOICE_HUB = 'https://superagent-7ce6afb1.base44.app/functions/groupVoiceHub';
 let gsMediaRecorder = null, gsRecChunks = [], gsRecStartTime = 0, gsRecording = false;
 let gsVoicePollTimer = null, gsVoiceCount = 0, gsCurrentlyPlayingAudio = null;
 let gsRecTimerInt = null;
@@ -6583,78 +6952,108 @@ function updateFsapBtn() {
     </div>
   </div>
 
-  <!-- ROOM (shown after joining) -->
+  <!-- CLASSROOM (shown after joining) -->
   <div class="gs-room" id="gs-room-wrap">
+    <!-- Header with room info + teacher badge -->
     <div class="gs-room-hdr">
+      <button class="btn-back" onclick="gsLeave()">←</button>
       <div class="gs-room-info">
         <div class="gs-room-name" id="gs-room-title">Room</div>
         <div class="gs-room-peers" id="gs-room-peers">Loading...</div>
       </div>
       <div class="gs-room-code" id="gs-room-code-lbl">------</div>
-      <button class="gs-leave-btn" onclick="gsLeave()">Leave</button>
     </div>
 
-    <div class="gs-participants" id="gs-participants-bar"></div>
-
-    <div class="gs-surah-sel">
-      <select id="gs-surah-sel" class="gs-sel" onchange="gsChangeSurah()">
-        <option value="78">78 · An-Naba</option>
-        <option value="79">79 · An-Naazi'aat</option>
-        <option value="80">80 · Abasa</option>
-        <option value="81">81 · At-Takwir</option>
-        <option value="82">82 · Al-Infitaar</option>
-        <option value="83">83 · Al-Mutaffifin</option>
-        <option value="84">84 · Al-Inshiqaaq</option>
-        <option value="85">85 · Al-Burooj</option>
-        <option value="86">86 · At-Tariq</option>
-        <option value="87">87 · Al-A'la</option>
-        <option value="88">88 · Al-Ghaashiya</option>
-        <option value="89">89 · Al-Fajr</option>
-        <option value="90">90 · Al-Balad</option>
-        <option value="91">91 · Ash-Shams</option>
-        <option value="92">92 · Al-Layl</option>
-        <option value="93">93 · Ad-Dhuha</option>
-        <option value="94">94 · Ash-Sharh</option>
-        <option value="95">95 · At-Tin</option>
-        <option value="96">96 · Al-Alaq</option>
-        <option value="97">97 · Al-Qadr</option>
-        <option value="98">98 · Al-Bayyina</option>
-        <option value="99">99 · Az-Zalzala</option>
-        <option value="100">100 · Al-Aadiyaat</option>
-        <option value="101">101 · Al-Qaari'a</option>
-        <option value="102">102 · At-Takaathur</option>
-        <option value="103">103 · Al-Asr</option>
-        <option value="104">104 · Al-Humaza</option>
-        <option value="105">105 · Al-Feel</option>
-        <option value="106">106 · Quraysh</option>
-        <option value="107">107 · Al-Maa'oon</option>
-        <option value="108">108 · Al-Kawthar</option>
-        <option value="109">109 · Al-Kaafiroon</option>
-        <option value="110">110 · An-Nasr</option>
-        <option value="111">111 · Al-Masad</option>
-        <option value="112">112 · Al-Ikhlaas</option>
-        <option value="113">113 · Al-Falaq</option>
-        <option value="114">114 · An-Naas</option>
-      </select>
-      <button class="gs-sync-btn" onclick="gsSyncPosition()">🔄 Sync</button>
+    <!-- Tab bar -->
+    <div class="gs-tabs">
+      <button class="gs-tab active" id="gs-tab-class" onclick="gsSwitchTab('class')">📚 Class</button>
+      <button class="gs-tab" id="gs-tab-chat" onclick="gsSwitchTab('chat')">💬 Chat</button>
+      <button class="gs-tab" id="gs-tab-hw" onclick="gsSwitchTab('hw')">📝 Homework</button>
+      <button class="gs-tab" id="gs-tab-notes" onclick="gsSwitchTab('notes')">🗒️ Notes</button>
     </div>
 
-    <div class="gs-verse-lbl" id="gs-verse-lbl">Verse 1</div>
-    <div class="gs-verse-area" id="gs-verse-area">
-      <div class="gs-status">Loading room...</div>
-    </div>
-
-    <div class="gs-chat-area" id="gs-chat-area">
-      <div class="gs-chat-date-sep">💬 Messages appear here</div>
-    </div>
-
-    <div class="gs-chat-bar" id="gs-chat-bar">
-      <div class="gs-chat-input-wrap" id="gs-chat-input">
-        <textarea class="gs-chat-text-input" id="gs-text-input" placeholder="Type a message..." rows="1" oninput="gsOnTextInput()" onkeydown="gsOnTextKey(event)"></textarea>
-        <span class="gs-rec-timer" id="gs-rec-timer" style="display:none">0:00</span>
+    <!-- ═══ TAB: CLASS (surah navigation + verse display + tools) ═══ -->
+    <div class="gs-tab-content active" id="gs-panel-class">
+      <!-- Surah selector + controls -->
+      <div class="gs-class-surah-bar">
+        <select id="gs-surah-sel" class="gs-sel" onchange="gsChangeSurah()">
+          <option value="78">78 · An-Naba</option><option value="79">79 · An-Naazi'aat</option><option value="80">80 · Abasa</option><option value="81">81 · At-Takwir</option><option value="82">82 · Al-Infitaar</option><option value="83">83 · Al-Mutaffifin</option><option value="84">84 · Al-Inshiqaaq</option><option value="85">85 · Al-Burooj</option><option value="86">86 · At-Tariq</option><option value="87">87 · Al-A'la</option><option value="88">88 · Al-Ghaashiya</option><option value="89">89 · Al-Fajr</option><option value="90">90 · Al-Balad</option><option value="91">91 · Ash-Shams</option><option value="92">92 · Al-Layl</option><option value="93">93 · Ad-Dhuha</option><option value="94">94 · Ash-Sharh</option><option value="95">95 · At-Tin</option><option value="96">96 · Al-Alaq</option><option value="97">97 · Al-Qadr</option><option value="98">98 · Al-Bayyina</option><option value="99">99 · Az-Zalzala</option><option value="100">100 · Al-Aadiyaat</option><option value="101">101 · Al-Qaari'a</option><option value="102">102 · At-Takaathur</option><option value="103">103 · Al-Asr</option><option value="104">104 · Al-Humaza</option><option value="105">105 · Al-Feel</option><option value="106">106 · Quraysh</option><option value="107">107 · Al-Maa'oun</option><option value="108">108 · Al-Kawthar</option><option value="109">109 · Al-Kaafiroon</option><option value="110">110 · An-Nasr</option><option value="111">111 · Al-Masad</option><option value="112">112 · Al-Ikhlaas</option><option value="113">113 · Al-Falaq</option><option value="114">114 · An-Naas</option>
+        </select>
+        <div class="gs-class-controls" id="gs-class-controls">
+          <button class="gs-tool-btn" onclick="gsPrevVerse()" title="Previous verse">⬅</button>
+          <span class="gs-verse-num" id="gs-verse-lbl">Verse 1</span>
+          <button class="gs-tool-btn" onclick="gsNextVerse()" title="Next verse">➡</button>
+        </div>
       </div>
-      <button class="gs-send-btn" id="gs-mic-btn" onclick="gsOnSendClick()">🎤</button>
+
+      <!-- Verse display (scrollable) -->
+      <div class="gs-verse-area" id="gs-verse-area">
+        <div class="gs-status">Loading room...</div>
+      </div>
+
+      <!-- Teacher toolbar -->
+      <div class="gs-teacher-toolbar" id="gs-teacher-toolbar" style="display:none">
+        <button class="gs-tool-btn lg" onclick="gsPlayClassAudio()" title="Play verse audio">🔊 Play</button>
+        <button class="gs-tool-btn lg" onclick="gsPinVerse()" title="Pin this verse">📌 Pin</button>
+        <button class="gs-tool-btn lg" onclick="gsMarkComplete()" title="Mark surah complete">✅ Done</button>
+        <button class="gs-tool-btn lg" onclick="gsNextSurah()" title="Next surah">⏭ Next Surah</button>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="gs-progress-wrap">
+        <div class="gs-progress-label" id="gs-progress-label">Progress: 0 surahs completed</div>
+        <div class="gs-progress-bar"><div class="gs-progress-fill" id="gs-progress-fill" style="width:0%"></div></div>
+      </div>
+
+      <!-- Raised hands -->
+      <div class="gs-hands-bar" id="gs-hands-bar" style="display:none"></div>
+
+      <!-- Student controls -->
+      <div class="gs-student-tools" id="gs-student-tools" style="display:none">
+        <button class="gs-tool-btn lg raise-hand" id="gs-raise-hand-btn" onclick="gsToggleRaiseHand()">✋ Raise Hand</button>
+      </div>
     </div>
+
+    <!-- ═══ TAB: CHAT (text + voice) ═══ -->
+    <div class="gs-tab-content" id="gs-panel-chat">
+      <div class="gs-chat-area" id="gs-chat-area">
+        <div class="gs-chat-date-sep">💬 Messages appear here</div>
+      </div>
+      <div class="gs-chat-bar" id="gs-chat-bar">
+        <div class="gs-chat-input-wrap" id="gs-chat-input">
+          <textarea class="gs-chat-text-input" id="gs-text-input" placeholder="Type a message..." rows="1" oninput="gsOnTextInput()" onkeydown="gsOnTextKey(event)"></textarea>
+          <span class="gs-rec-timer" id="gs-rec-timer" style="display:none">0:00</span>
+        </div>
+        <button class="gs-send-btn" id="gs-mic-btn" onclick="gsOnSendClick()">🎤</button>
+      </div>
+    </div>
+
+    <!-- ═══ TAB: HOMEWORK ═══ -->
+    <div class="gs-tab-content" id="gs-panel-hw">
+      <div class="gs-hw-list" id="gs-hw-list">
+        <div class="gs-chat-date-sep">No homework assigned yet</div>
+      </div>
+      <div class="gs-hw-add" id="gs-hw-add" style="display:none">
+        <input class="gs-input" id="gs-hw-title" placeholder="Homework title (e.g. Memorize Al-Fatiha)" maxlength="200">
+        <textarea class="gs-input" id="gs-hw-desc" placeholder="Description (optional)" rows="2" style="margin-top:8px"></textarea>
+        <input class="gs-input" id="gs-hw-due" type="date" style="margin-top:8px">
+        <button class="gs-btn gs-btn-create" onclick="gsAssignHomework()" style="margin-top:8px">📌 Assign Homework</button>
+      </div>
+    </div>
+
+    <!-- ═══ TAB: NOTES ═══ -->
+    <div class="gs-tab-content" id="gs-panel-notes">
+      <div class="gs-notes-wrap">
+        <textarea class="gs-notes-area" id="gs-notes-area" placeholder="Class notes will appear here... The teacher can write lesson summaries, key points, or reminders for students." readonly></textarea>
+        <div class="gs-notes-save" id="gs-notes-save" style="display:none">
+          <button class="gs-btn gs-btn-create" onclick="gsSaveNotes()">💾 Save Notes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ TAJWEED CHECKER VIEW    </div>
   </div>
 </div>
 
