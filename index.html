@@ -748,6 +748,74 @@ body { font-family:'Poppins',sans-serif;
 
 .gs-load-more-btn { background:var(--p); color:#fff; border:none; padding:6px 16px; border-radius:16px; font-size:.72rem; font-weight:600; cursor:pointer; font-family:Poppins,sans-serif; }
 .gs-load-more-btn:active { transform:scale(.96); }
+
+/* ═══ ROOM HUB & MY ROOMS ═══ */
+.hub-view { max-width:600px; margin:0 auto; padding:14px 12px; }
+.hub-search-bar { display:flex; gap:8px; margin-bottom:12px; }
+.hub-search-input { flex:1; padding:10px 14px; border:1px solid var(--bdr); border-radius:24px; font-size:.85rem; background:var(--card); color:var(--txt); font-family:Poppins,sans-serif; }
+.hub-search-btn { padding:10px 16px; border:none; border-radius:24px; background:var(--p); color:#fff; font-weight:600; font-size:.8rem; cursor:pointer; font-family:Poppins,sans-serif; }
+.hub-search-btn:active { transform:scale(.95); }
+.hub-cat-scroll { display:flex; gap:6px; overflow-x:auto; padding:4px 0 10px; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+.hub-cat-scroll::-webkit-scrollbar { display:none; }
+.hub-cat-chip { white-space:nowrap; padding:6px 14px; border:1px solid var(--bdr); border-radius:20px; font-size:.74rem; font-weight:600; background:var(--card); color:var(--txt); cursor:pointer; font-family:Poppins,sans-serif; }
+.hub-cat-chip.active { background:var(--p); color:#fff; border-color:var(--p); }
+.hub-rooms-list { display:flex; flex-direction:column; gap:10px; }
+.hub-room-card { background:var(--card); border:1px solid var(--bdr); border-radius:14px; padding:14px; cursor:pointer; transition:all .15s; }
+.hub-room-card:active { transform:scale(.98); border-color:var(--p); }
+.hub-room-header { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+.hub-room-icon { font-size:1.6rem; }
+.hub-room-info { flex:1; min-width:0; }
+.hub-room-name { font-size:.88rem; font-weight:700; color:var(--txt); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.hub-room-meta { font-size:.66rem; color:var(--txt2); margin-top:1px; }
+.hub-room-desc { font-size:.74rem; color:var(--txt2); line-height:1.4; margin-top:4px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.hub-room-badge { font-size:.6rem; padding:2px 8px; border-radius:10px; font-weight:600; }
+.hub-badge-teacher { background:rgba(76,175,80,.15); color:#4caf50; }
+.hub-badge-student { background:rgba(33,150,243,.15); color:#2196f3; }
+.hub-tab-row { display:flex; gap:4px; margin-bottom:10px; }
+.hub-tab { flex:1; padding:8px; text-align:center; font-size:.76rem; font-weight:600; border:none; border-bottom:2px solid transparent; background:none; color:var(--txt2); cursor:pointer; font-family:Poppins,sans-serif; }
+.hub-tab.active { border-bottom-color:var(--p); color:var(--p); }
+.hub-empty { text-align:center; padding:40px 20px; color:var(--txt2); font-size:.85rem; }
+.hub-empty-icon { font-size:3rem; margin-bottom:10px; }
+.my-rooms-section { margin-bottom:20px; }
+.my-rooms-title { font-size:.82rem; font-weight:700; margin-bottom:8px; color:var(--txt); }
+
+/* ═══ ENHANCED CHAT FEATURES ═══ */
+.gs-msg-reply-ref { font-size:.66rem; color:var(--p); margin-bottom:3px; padding:4px 8px; border-left:2px solid var(--p); background:rgba(0,0,0,.03); border-radius:0 6px 6px 0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.gs-msg-reactions { display:flex; flex-wrap:wrap; gap:3px; margin-top:3px; }
+.gs-msg-reaction { background:var(--card); border:1px solid var(--bdr); border-radius:12px; padding:2px 7px; font-size:.66rem; cursor:pointer; display:flex; align-items:center; gap:2px; }
+.gs-msg-reaction.mine { background:rgba(76,175,80,.15); border-color:#4caf50; }
+.gs-msg-pin-badge { position:absolute; top:-2px; right:-2px; background:#f44336; color:#fff; font-size:.5rem; padding:1px 4px; border-radius:8px; }
+.gs-msg-edit-badge { font-size:.6rem; color:var(--txt2); font-style:italic; }
+.gs-msg-actions { display:flex; gap:4px; margin-top:3px; flex-wrap:wrap; }
+.gs-msg-action-btn { font-size:.62rem; padding:2px 8px; border:1px solid var(--bdr); border-radius:10px; background:var(--card); color:var(--txt2); cursor:pointer; font-family:Poppins,sans-serif; }
+.gs-msg-action-btn:active { transform:scale(.95); }
+.gs-reply-bar { display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--card); border-top:1px solid var(--bdr); }
+.gs-reply-bar .gs-reply-text { flex:1; font-size:.72rem; color:var(--txt2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.gs-reply-cancel { font-size:.8rem; color:var(--p); cursor:pointer; font-weight:600; }
+.gs-search-bar { padding:8px 12px; background:var(--card); border-bottom:1px solid var(--bdr); display:flex; gap:6px; }
+.gs-search-input { flex:1; padding:6px 12px; border:1px solid var(--bdr); border-radius:20px; font-size:.76rem; background:var(--bg); color:var(--txt); font-family:Poppins,sans-serif; }
+
+/* ═══ MEMBER MANAGEMENT ═══ */
+.gs-members-list { display:flex; flex-direction:column; gap:8px; }
+.gs-member-row { display:flex; align-items:center; gap:10px; padding:10px; background:var(--card); border:1px solid var(--bdr); border-radius:10px; }
+.gs-member-avatar { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:700; background:var(--p); color:#fff; flex-shrink:0; }
+.gs-member-info { flex:1; min-width:0; }
+.gs-member-name { font-size:.8rem; font-weight:600; color:var(--txt); }
+.gs-member-role { font-size:.64rem; color:var(--txt2); }
+.gs-member-actions { display:flex; gap:4px; flex-wrap:wrap; }
+.gs-member-btn { font-size:.6rem; padding:3px 8px; border:1px solid var(--bdr); border-radius:8px; background:var(--bg); color:var(--txt); cursor:pointer; font-family:Poppins,sans-serif; }
+.gs-member-btn:active { transform:scale(.95); }
+.gs-member-btn.danger { color:#f44336; border-color:#f44336; }
+.gs-member-btn.success { color:#4caf50; border-color:#4caf50; }
+
+/* ═══ ROOM SETTINGS ═══ */
+.gs-settings-section { margin-bottom:14px; }
+.gs-settings-label { font-size:.74rem; font-weight:700; margin-bottom:4px; color:var(--txt); }
+.gs-settings-textarea { width:100%; padding:10px; border:1px solid var(--bdr); border-radius:10px; font-size:.8rem; background:var(--card); color:var(--txt); font-family:Poppins,sans-serif; resize:vertical; min-height:60px; box-sizing:border-box; }
+.gs-save-btn { margin-top:8px; padding:8px 20px; border:none; border-radius:20px; background:var(--p); color:#fff; font-weight:600; font-size:.78rem; cursor:pointer; font-family:Poppins,sans-serif; }
+.gs-save-btn:active { transform:scale(.95); }
+.gs-announcement-banner { background:rgba(255,193,7,.1); border:1px solid rgba(255,193,7,.3); border-radius:8px; padding:8px 12px; margin:8px 12px; font-size:.74rem; color:var(--txt); }
+.gs-announcement-banner b { color:#f57c00; }
 /* ═══ CLASSROOM UI (teacher-student) ═══ */
 .gs-tabs { display:flex; gap:0; background:var(--hdr); border-bottom:1px solid var(--bdr); flex-shrink:0; }
 .gs-tab { flex:1; padding:10px 4px; border:none; background:none; color:var(--txt2); font-size:.72rem; font-weight:600; font-family:Poppins,sans-serif; cursor:pointer; border-bottom:3px solid transparent; transition:color .15s, border .15s; }
@@ -5087,11 +5155,13 @@ function gsCreateStudentRoom() {
 async function gsCreateRoomWithCategory(catId) {
   const name = document.getElementById('gs-myname').value.trim();
   if (!name) { toast('✋ Enter your name first'); return; }
+  const roomName = (document.getElementById('gs-room-name-input')?.value || '').trim();
+  const desc = (document.getElementById('gs-room-desc-input')?.value || '').trim();
   gsSetLobbyStatus('Creating room...');
   try {
     const res = await fetch(GS_VOICE_HUB, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'createRoom', userName: name, roomType:'student', category: catId })
+      body: JSON.stringify({ action:'createRoom', userName: name, roomType:'student', category: catId, roomName: roomName, description: desc, isPublic: true })
     });
     const d = await res.json();
     if (!d.ok) throw new Error(d.error);
@@ -5253,10 +5323,12 @@ async function gsSubmitQualification() {
 }
 
 async function gsCreateTeacherRoom() {
+  const roomName = (document.getElementById('gs-room-name-input')?.value || '').trim() || (gsUserName + "'s Classroom");
+  const desc = (document.getElementById('gs-room-desc-input')?.value || '').trim();
   try {
     const res = await fetch(GS_VOICE_HUB, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'createRoom', userName: gsUserName, roomType:'teacher', category:'teacher' })
+      body: JSON.stringify({ action:'createRoom', userName: gsUserName, roomType:'teacher', category:'teacher', roomName: roomName, description: desc, isPublic: true })
     });
     const d = await res.json();
     if (!d.ok) throw new Error(d.error);
@@ -5873,6 +5945,205 @@ function gsEsc(s) {
   return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
+// ═══ ROOM HUB NAVIGATION ═══
+function gsShowLobby() {
+  document.getElementById('gs-hub-wrap').style.display = 'none';
+  document.getElementById('gs-myrooms-wrap').style.display = 'none';
+  document.getElementById('gs-lobby-wrap').style.display = '';
+}
+
+function gsShowHub() {
+  const name = document.getElementById('gs-myname').value.trim();
+  if (!name) { toast('✋ Enter your name first'); return; }
+  gsUserName = name;
+  document.getElementById('gs-lobby-wrap').style.display = 'none';
+  document.getElementById('gs-hub-wrap').style.display = '';
+  hubLoad();
+}
+
+function gsShowMyRooms() {
+  const name = document.getElementById('gs-myname').value.trim();
+  if (!name) { toast('✋ Enter your name first'); return; }
+  gsUserName = name;
+  document.getElementById('gs-lobby-wrap').style.display = 'none';
+  document.getElementById('gs-myrooms-wrap').style.display = '';
+  myRoomsLoad();
+}
+
+// ═══ ROOM HUB ═══
+let hubCurrentTab = 'all';
+let hubCurrentCat = 'all';
+let hubAllRooms = [];
+let hubActiveRooms = [];
+let hubNewRooms = [];
+
+async function hubLoad() {
+  try {
+    const res = await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'getHub', userName: gsUserName })
+    });
+    const d = await res.json();
+    if (!d.ok) return;
+    hubAllRooms = d.rooms || [];
+    hubActiveRooms = d.active || [];
+    hubNewRooms = d.newest || [];
+    // Render categories
+    const catScroll = document.getElementById('hub-cats');
+    if (catScroll) {
+      let html = '<button class="hub-cat-chip active" onclick="hubSetCat(\'all\',this)">All</button>';
+      (d.categories || []).forEach(c => {
+        html += '<button class="hub-cat-chip" onclick="hubSetCat(\''+c.id+'\',this)">'+c.icon+' '+c.name+'</button>';
+      });
+      catScroll.innerHTML = html;
+    }
+    hubRender();
+  } catch(e) { toast('Failed to load hub'); }
+}
+
+function hubSetTab(tab, btn) {
+  hubCurrentTab = tab;
+  document.querySelectorAll('.hub-tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  hubRender();
+}
+
+function hubSetCat(cat, btn) {
+  hubCurrentCat = cat;
+  document.querySelectorAll('.hub-cat-chip').forEach(c => c.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  hubRender();
+}
+
+function hubRender() {
+  let rooms;
+  if (hubCurrentTab === 'active') rooms = hubActiveRooms;
+  else if (hubCurrentTab === 'new') rooms = hubNewRooms;
+  else if (hubCurrentTab === 'teacher') rooms = hubAllRooms.filter(r => r.roomType === 'teacher');
+  else rooms = hubAllRooms;
+  // Apply category filter
+  if (hubCurrentCat !== 'all') {
+    if (hubCurrentCat === 'teacher') rooms = rooms.filter(r => r.roomType === 'teacher');
+    else rooms = rooms.filter(r => r.category === hubCurrentCat);
+  }
+  const container = document.getElementById('hub-rooms');
+  const empty = document.getElementById('hub-empty');
+  if (!container) return;
+  if (!rooms || rooms.length === 0) {
+    container.innerHTML = '';
+    if (empty) empty.style.display = 'block';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+  container.innerHTML = rooms.map(r => {
+    const icon = r.roomType === 'teacher' ? '🕌' : (HUB_ICONS[r.category] || '💬');
+    const badge = r.roomType === 'teacher'
+      ? '<span class="hub-room-badge hub-badge-teacher">Teacher</span>'
+      : '<span class="hub-room-badge hub-badge-student">Study</span>';
+    return '<div class="hub-room-card" onclick="hubJoinRoom(\''+r.roomCode+'\')">' +
+      '<div class="hub-room-header">' +
+        '<div class="hub-room-icon">'+icon+'</div>' +
+        '<div class="hub-room-info">' +
+          '<div class="hub-room-name">'+gsEsc(r.roomName)+'</div>' +
+          '<div class="hub-room-meta">👤 '+(r.memberCount||1)+' members · 💬 '+(r.msgCount||0)+' msgs '+badge+'</div>' +
+        '</div>' +
+      '</div>' +
+      (r.description ? '<div class="hub-room-desc">'+gsEsc(r.description)+'</div>' : '') +
+      '<div class="hub-room-meta" style="margin-top:4px">Code: '+r.roomCode+'</div>' +
+    '</div>';
+  }).join('');
+}
+
+const HUB_ICONS = {
+  teacher:'🕌', quran_study:'📖', revision:'🤝', discussion:'🧠',
+  memorization:'📚', recitation:'🎙️', ramadan:'🌙', general:'💬', friends:'👥',
+  hadith:'📚', dua:'🤲', salah:'🕌', community:'👥'
+};
+
+async function hubJoinRoom(code) {
+  try {
+    const res = await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'joinRoom', roomCode: code, userName: gsUserName })
+    });
+    const d = await res.json();
+    if (!d.ok && !d.alreadyMember) { toast('❌ ' + d.error); return; }
+    const roomRes = await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'getRoom', roomCode: code, userName: gsUserName })
+    });
+    const roomData = await roomRes.json();
+    if (!roomData.ok) { toast('❌ ' + roomData.error); return; }
+    gsRoomCode = code;
+    document.getElementById('gs-hub-wrap').style.display = 'none';
+    toast('✅ Joined room!');
+    gsEnterRoom(roomData);
+  } catch(e) { toast('❌ Failed to join'); }
+}
+
+let hubSearchTimer = null;
+function hubSearch() {
+  clearTimeout(hubSearchTimer);
+  hubSearchTimer = setTimeout(async () => {
+    const query = document.getElementById('hub-search').value.trim();
+    if (!query) { hubRender(); return; }
+    try {
+      const res = await fetch(GS_VOICE_HUB, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'searchRooms', search: query })
+      });
+      const d = await res.json();
+      if (d.ok) {
+        hubAllRooms = d.rooms || [];
+        hubCurrentTab = 'all';
+        document.querySelectorAll('.hub-tab').forEach(t => t.classList.remove('active'));
+        document.querySelector('.hub-tab')?.classList.add('active');
+        hubRender();
+      }
+    } catch(e) {}
+  }, 300);
+}
+
+// ═══ MY ROOMS ═══
+async function myRoomsLoad() {
+  try {
+    const res = await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'myRooms', userName: gsUserName })
+    });
+    const d = await res.json();
+    if (!d.ok) return;
+    const ownedEl = document.getElementById('myrooms-owned');
+    const joinedEl = document.getElementById('myrooms-joined');
+    const emptyEl = document.getElementById('myrooms-empty');
+    const hasOwned = (d.owned || []).length > 0;
+    const hasJoined = (d.joined || []).length > 0;
+    if (ownedEl) {
+      ownedEl.innerHTML = (d.owned || []).map(r => {
+        const icon = r.roomType === 'teacher' ? '🕌' : (HUB_ICONS[r.category] || '💬');
+        return '<div class="hub-room-card" onclick="hubJoinRoom(\''+r.roomCode+'\')">' +
+          '<div class="hub-room-header"><div class="hub-room-icon">'+icon+'</div>' +
+          '<div class="hub-room-info"><div class="hub-room-name">'+gsEsc(r.roomName)+'</div>' +
+          '<div class="hub-room-meta">Code: '+r.roomCode+'</div></div></div>' +
+          (r.description ? '<div class="hub-room-desc">'+gsEsc(r.description)+'</div>' : '') +
+        '</div>';
+      }).join('') || '<div style="color:var(--txt2);font-size:.78rem;padding:8px">No rooms created yet.</div>';
+    }
+    if (joinedEl) {
+      joinedEl.innerHTML = (d.joined || []).map(r => {
+        const icon = r.roomType === 'teacher' ? '🕌' : (HUB_ICONS[r.category] || '💬');
+        return '<div class="hub-room-card" onclick="hubJoinRoom(\''+r.roomCode+'\')">' +
+          '<div class="hub-room-header"><div class="hub-room-icon">'+icon+'</div>' +
+          '<div class="hub-room-info"><div class="hub-room-name">'+gsEsc(r.roomName)+'</div>' +
+          '<div class="hub-room-meta">Code: '+r.roomCode+'</div></div></div>' +
+          (r.description ? '<div class="hub-room-desc">'+gsEsc(r.description)+'</div>' : '') +
+        '</div>';
+      }).join('') || '<div style="color:var(--txt2);font-size:.78rem;padding:8px">No rooms joined yet.</div>';
+    }
+    if (emptyEl) emptyEl.style.display = (!hasOwned && !hasJoined) ? 'block' : 'none';
+  } catch(e) { toast('Failed to load rooms'); }
+}
+
 // Cursor-based message pagination
 let gsMsgCursor = null;
 let gsLoadingMore = false;
@@ -5961,6 +6232,25 @@ function gsBuildMessageHTML(m) {
   const isMe = m.userName === gsUserName;
   const isVoice = m.messageType === 'voice';
   const time = gsFmtClock(m.created_date);
+  // Parse reactions
+  let reactionsHTML = '';
+  try {
+    const reactions = JSON.parse(m.reactions || '[]');
+    if (reactions.length > 0) {
+      reactionsHTML = '<div class="gs-msg-reactions">';
+      reactions.forEach(r => {
+        const mine = r.users.includes(gsUserName);
+        reactionsHTML += '<span class="gs-msg-reaction'+(mine?' mine':'')+'" onclick="gsToggleReaction(\''+m.id+'\',\''+r.emoji+'\')">'+r.emoji+' '+r.users.length+'</span>';
+      });
+      reactionsHTML += '</div>';
+    }
+  } catch(e) {}
+
+  // Reply reference
+  let replyHTML = '';
+  if (m.replyTo) replyHTML = '<div class="gs-msg-reply-ref">↩ Reply</div>';
+
+  // Message content
   let inner = '';
   if (isVoice) {
     inner = '<div class="gs-voice-bubble">' +
@@ -5970,9 +6260,31 @@ function gsBuildMessageHTML(m) {
   } else {
     inner = '<div class="gs-text-bubble">'+gsEsc(m.text||'')+'</div>';
   }
-  return '<div class="gs-msg'+(isMe?' me':'')+'" id="msg-'+m.id+'">' +
+
+  // Edit badge
+  const editBadge = m.edited ? '<span class="gs-msg-edit-badge"> (edited)</span>' : '';
+
+  // Pin badge
+  const pinBadge = m.pinned ? ' <span style="font-size:.6rem">📌</span>' : '';
+
+  // Action buttons (reply, react, pin for owner)
+  const actionsHTML = '<div class="gs-msg-actions">' +
+    '<button class="gs-msg-action-btn" onclick="gsSetReply(\''+m.id+'\',\''+gsEsc(m.text||'voice msg').substring(0,40)+'\')">↩ Reply</button>' +
+    '<button class="gs-msg-action-btn" onclick="gsShowReactions(\''+m.id+'\')">😊 React</button>' +
+    (isMe && !isVoice ? '<button class="gs-msg-action-btn" onclick="gsEditMessage(\''+m.id+'\',\''+gsEsc(m.text||'').replace(/'/g,'')+'\')">✏ Edit</button>' : '') +
+    (gsIsTeacher ? '<button class="gs-msg-action-btn" onclick="gsTogglePin(\''+m.id+'\')">'+(m.pinned?'📌 Unpin':'📌 Pin')+'</button>' : '') +
+  '</div>';
+
+  return '<div class="gs-msg'+(isMe?' me':'')+'" id="msg-'+m.id+'" style="position:relative">' +
+    (m.pinned ? '<span class="gs-msg-pin-badge">PIN</span>' : '') +
     (!isMe ? '<div class="gs-msg-name">'+gsEsc(m.userName)+'</div>' : '') +
-    inner + '<div class="gs-msg-time">'+time+(m.archived?' 📦':'')+'</div></div>';
+    replyHTML +
+    inner +
+    editBadge + pinBadge +
+    '<div class="gs-msg-time">'+time+(m.archived?' 📦':'')+'</div>' +
+    reactionsHTML +
+    actionsHTML +
+  '</div>';
 }
 
 function gsRenderMessage(m) {
@@ -5980,6 +6292,109 @@ function gsRenderMessage(m) {
   if (!chatArea) return;
   chatArea.insertAdjacentHTML('beforeend', gsBuildMessageHTML(m));
   chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+// ═══ CHAT INTERACTIONS ═══
+let gsReplyTo = null;
+
+function gsSetReply(msgId, preview) {
+  gsReplyTo = msgId;
+  let bar = document.getElementById('gs-reply-bar');
+  if (!bar) {
+    const inputArea = document.querySelector('.gs-chat-input-bar') || document.querySelector('.gs-text-input-bar');
+    if (inputArea) {
+      bar = document.createElement('div');
+      bar.id = 'gs-reply-bar';
+      bar.className = 'gs-reply-bar';
+      inputArea.insertBefore(bar, inputArea.firstChild);
+    }
+  }
+  if (bar) {
+    bar.innerHTML = '<span class="gs-reply-text">↩ Replying to: '+gsEsc(preview.substring(0,50))+'</span><span class="gs-reply-cancel" onclick="gsCancelReply()">✕ Cancel</span>';
+    bar.style.display = 'flex';
+  }
+}
+
+function gsCancelReply() {
+  gsReplyTo = null;
+  const bar = document.getElementById('gs-reply-bar');
+  if (bar) bar.style.display = 'none';
+}
+
+async function gsToggleReaction(msgId, emoji) {
+  try {
+    const res = await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'addReaction', roomCode: gsRoomCode, userName: gsUserName, messageId: msgId, emoji })
+    });
+    const d = await res.json();
+    if (d.ok) { /* will update on next poll */ }
+  } catch(e) {}
+}
+
+function gsShowReactions(msgId) {
+  // Simple emoji picker
+  const emojis = ['👍','❤️','🤲','🕌','📖','😊','🤝','🙏'];
+  let picker = document.getElementById('gs-emoji-picker');
+  if (!picker) {
+    picker = document.createElement('div');
+    picker.id = 'gs-emoji-picker';
+    picker.style.cssText = 'position:fixed;bottom:120px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:8px;display:none;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.15)';
+    document.body.appendChild(picker);
+  }
+  picker.innerHTML = emojis.map(e => '<span style="font-size:1.4rem;cursor:pointer;padding:4px" onclick="gsToggleReaction(\''+msgId+'\',\''+e+'\');document.getElementById(\'gs-emoji-picker\').style.display=\'none\'">'+e+'</span>').join('');
+  picker.style.display = 'flex';
+  picker.style.gap = '4px';
+}
+
+async function gsEditMessage(msgId, oldText) {
+  const newText = prompt('Edit message:', oldText);
+  if (!newText || newText === oldText) return;
+  try {
+    const res = await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'editMessage', roomCode: gsRoomCode, userName: gsUserName, messageId: msgId, text: newText })
+    });
+    const d = await res.json();
+    if (d.ok) toast('✅ Message edited');
+    else toast('❌ ' + d.error);
+  } catch(e) { toast('❌ Failed'); }
+}
+
+async function gsTogglePin(msgId) {
+  try {
+    const res = await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'togglePin', roomCode: gsRoomCode, userName: gsUserName, messageId: msgId })
+    });
+    const d = await res.json();
+    if (d.ok) toast(d.pinned ? '📌 Pinned' : '📌 Unpinned');
+  } catch(e) {}
+}
+
+// ═══ MESSAGE SEARCH ═══
+function gsToggleSearch() {
+  const bar = document.getElementById('gs-search-bar-el');
+  if (!bar) return;
+  bar.style.display = bar.style.display === 'none' ? 'flex' : 'none';
+}
+
+async function gsSearchMessages() {
+  const query = (document.getElementById('gs-search-input')?.value || '').trim();
+  if (!query) return;
+  try {
+    const res = await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'searchMessages', roomCode: gsRoomCode, userName: gsUserName, query })
+    });
+    const d = await res.json();
+    if (d.ok && d.results) {
+      const results = d.results;
+      if (results.length === 0) { toast('No messages found'); return; }
+      toast('Found ' + results.length + ' messages');
+      // Highlight — will scroll to the most recent result
+    }
+  } catch(e) {}
 }
 
 function gsPlayVoice(msgId, audioBase64) {
@@ -6063,10 +6478,11 @@ async function gsSendText() {
     chatArea.scrollTop = chatArea.scrollHeight;
   }
   
+  gsCancelReply();
   try {
     await fetch(GS_VOICE_HUB, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'sendText', roomCode: gsRoomCode, userName: gsUserName, text })
+      body: JSON.stringify({ action:'sendText', roomCode: gsRoomCode, userName: gsUserName, text, replyTo: gsReplyTo || '' })
     });
     gsPollVoice(); // refresh to get the server-stored version with proper timestamp
   } catch(e) {
@@ -7257,6 +7673,60 @@ function updateFsapBtn() {
 
 <!-- ════════════════ GROUP STUDY VIEW ════════════════ -->
 <div id="groupstudy-view">
+  <!-- ROOM HUB (browse all public rooms) -->
+  <div id="gs-hub-wrap" style="display:none">
+    <div class="stickyh">
+      <div class="hrow">
+        <button class="btn-back" onclick="gsShowLobby()">← Back</button>
+        <div class="htitle">🌐 Room Hub</div>
+        <div style="width:60px"></div>
+      </div>
+    </div>
+    <div class="hub-view">
+      <div class="hub-search-bar">
+        <input id="hub-search" class="hub-search-input" placeholder="Search rooms by name, description..." oninput="hubSearch()">
+        <button class="hub-search-btn" onclick="hubSearch()">🔎</button>
+      </div>
+      <div class="hub-cat-scroll" id="hub-cats"></div>
+      <div class="hub-tab-row">
+        <button class="hub-tab active" onclick="hubSetTab('all',this)">All</button>
+        <button class="hub-tab" onclick="hubSetTab('active',this)">🔥 Active</button>
+        <button class="hub-tab" onclick="hubSetTab('new',this)">🆕 New</button>
+        <button class="hub-tab" onclick="hubSetTab('teacher',this)">🕌 Teachers</button>
+      </div>
+      <div class="hub-rooms-list" id="hub-rooms"></div>
+      <div class="hub-empty" id="hub-empty" style="display:none">
+        <div class="hub-empty-icon">🔍</div>
+        <div>No rooms found. Try a different search or category.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MY ROOMS (rooms I own or joined) -->
+  <div id="gs-myrooms-wrap" style="display:none">
+    <div class="stickyh">
+      <div class="hrow">
+        <button class="btn-back" onclick="gsShowLobby()">← Back</button>
+        <div class="htitle">📚 My Rooms</div>
+        <div style="width:60px"></div>
+      </div>
+    </div>
+    <div class="hub-view">
+      <div class="my-rooms-section">
+        <div class="my-rooms-title">🏠 Rooms I Created</div>
+        <div class="hub-rooms-list" id="myrooms-owned"></div>
+      </div>
+      <div class="my-rooms-section">
+        <div class="my-rooms-title">👥 Rooms I Joined</div>
+        <div class="hub-rooms-list" id="myrooms-joined"></div>
+      </div>
+      <div class="hub-empty" id="myrooms-empty" style="display:none">
+        <div class="hub-empty-icon">📚</div>
+        <div>You haven't joined any rooms yet.<br>Browse the Room Hub or create one!</div>
+      </div>
+    </div>
+  </div>
+
   <!-- LOBBY (shown before joining a room) -->
   <div id="gs-lobby-wrap">
     <div class="stickyh">
@@ -7291,14 +7761,30 @@ function updateFsapBtn() {
             <div class="gs-rt-desc">Official teaching (requires qualification)</div>
           </button>
         </div>
-        <!-- Student room category picker (hidden by default) -->
+        <!-- Student room creation (hidden by default) -->
         <div id="gs-student-categories" style="display:none">
-          <div class="gs-sub" style="margin:10px 0 6px;font-size:.72rem">Pick a room type:</div>
+          <input id="gs-room-name-input" class="gs-input" placeholder="Room name (e.g. Surah Al-Mulk Study)" maxlength="80" style="margin-bottom:8px">
+          <textarea id="gs-room-desc-input" class="gs-settings-textarea" placeholder="What is this room about? (optional)" maxlength="400" style="min-height:50px;margin-bottom:8px"></textarea>
+          <div class="gs-sub" style="margin:6px 0;font-size:.72rem">Pick a room type:</div>
           <div class="gs-cat-grid" id="gs-cat-grid"></div>
         </div>
       </div>
 
-      <div class="gs-divider">— or join an existing room —</div>
+      <!-- Browse & My Rooms -->
+      <div class="gs-card" style="display:flex; gap:8px;">
+        <button class="gs-room-type-btn" style="flex:1" onclick="gsShowHub()">
+          <div class="gs-rt-icon">🌐</div>
+          <div class="gs-rt-title">Room Hub</div>
+          <div class="gs-rt-desc">Browse & join rooms</div>
+        </button>
+        <button class="gs-room-type-btn" style="flex:1" onclick="gsShowMyRooms()">
+          <div class="gs-rt-icon">📚</div>
+          <div class="gs-rt-title">My Rooms</div>
+          <div class="gs-rt-desc">Your rooms & joined</div>
+        </button>
+      </div>
+
+      <div class="gs-divider">— or join with a code —</div>
 
       <div class="gs-card">
         <h3>🔑 Join with Room Code</h3>
@@ -7368,6 +7854,7 @@ function updateFsapBtn() {
     <div class="gs-tabs">
       <button class="gs-tab active" id="gs-tab-class" onclick="gsSwitchTab('class')">📚 Class</button>
       <button class="gs-tab" id="gs-tab-chat" onclick="gsSwitchTab('chat')">💬 Chat</button>
+        <button class="gs-tab-btn" style="flex:0;width:36px;font-size:.9rem" onclick="gsToggleSearch()" title="Search">🔎</button>
       <button class="gs-tab" id="gs-tab-hw" onclick="gsSwitchTab('hw')">📝 Homework</button>
       <button class="gs-tab" id="gs-tab-notes" onclick="gsSwitchTab('notes')">🗒️ Notes</button>
     </div>
@@ -7416,6 +7903,11 @@ function updateFsapBtn() {
 
     <!-- ═══ TAB: CHAT (text + voice) ═══ -->
     <div class="gs-tab-content" id="gs-panel-chat">
+      <div class="gs-search-bar" id="gs-search-bar-el" style="display:none">
+        <input id="gs-search-input" class="gs-search-input" placeholder="Search messages..." onkeyup="if(event.key==='Enter')gsSearchMessages()">
+        <button class="gs-msg-action-btn" onclick="gsSearchMessages()">🔎</button>
+        <button class="gs-msg-action-btn" onclick="document.getElementById('gs-search-bar-el').style.display='none'">✕</button>
+      </div>
       <div class="gs-chat-area" id="gs-chat-area">
         <div class="gs-chat-date-sep">💬 Messages appear here</div>
       </div>
