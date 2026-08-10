@@ -707,6 +707,44 @@ body { font-family:'Poppins',sans-serif;
 .gs-verse-nav { display:none; }
 .gs-vnav-btn { flex:1; padding:11px; background:var(--dark2); border:1px solid var(--bdr); border-radius:10px; color:var(--txt); font-size:.88rem; font-weight:600; cursor:pointer; text-align:center; }
 .gs-vnav-btn.primary { background:var(--p); color:#fff; border-color:transparent; }
+/* ═══ ROOM TYPE SELECTION ═══ */
+.gs-room-type-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; }
+.gs-room-type-btn { background:var(--card); border:2px solid var(--bdr); border-radius:12px; padding:14px 10px; cursor:pointer; text-align:center; transition:all .15s; }
+.gs-room-type-btn:active { transform:scale(.96); border-color:var(--p); }
+.gs-rt-icon { font-size:1.8rem; margin-bottom:4px; }
+.gs-rt-title { font-size:.78rem; font-weight:700; color:var(--txt); }
+.gs-rt-desc { font-size:.62rem; color:var(--txt2); margin-top:2px; }
+.gs-cat-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.gs-cat-btn { background:var(--card); border:1px solid var(--bdr); border-radius:10px; padding:10px 8px; cursor:pointer; text-align:center; transition:all .15s; }
+.gs-cat-btn:active { transform:scale(.95); border-color:var(--p); background:var(--p); color:#fff; }
+.gs-cat-btn .gs-cat-icon { font-size:1.4rem; }
+.gs-cat-btn .gs-cat-name { font-size:.66rem; font-weight:600; margin-top:2px; }
+
+/* ═══ TEACHER QUALIFICATION ═══ */
+.gs-qual-body { max-width:500px; margin:0 auto; padding:16px 14px; }
+.gs-qual-step { display:none; flex-direction:column; align-items:center; }
+.gs-qual-step.active { display:flex; }
+.gs-qual-logo { font-size:3rem; margin-bottom:8px; }
+.gs-qual-title { font-size:1.2rem; font-weight:700; text-align:center; margin-bottom:6px; }
+.gs-qual-sub { font-size:.8rem; color:var(--txt2); text-align:center; margin-bottom:14px; }
+.gs-qual-disclaimer { background:var(--card); border:1px solid var(--bdr); border-radius:10px; padding:14px; font-size:.72rem; line-height:1.6; color:var(--txt2); }
+.gs-qual-progress { display:flex; justify-content:space-between; width:100%; font-size:.72rem; color:var(--txt2); margin-bottom:10px; font-weight:600; }
+.gs-qual-q-card { background:var(--card); border:1px solid var(--bdr); border-radius:12px; padding:14px; margin-bottom:10px; width:100%; }
+.gs-qual-q-cat { font-size:.62rem; text-transform:uppercase; letter-spacing:.05em; color:var(--p); font-weight:700; margin-bottom:4px; }
+.gs-qual-q-text { font-size:.85rem; font-weight:600; margin-bottom:10px; line-height:1.4; }
+.gs-qual-opt { display:block; width:100%; padding:10px 12px; border:1px solid var(--bdr); border-radius:8px; background:var(--bg); margin-bottom:6px; cursor:pointer; font-size:.8rem; text-align:left; transition:all .12s; font-family:Poppins,sans-serif; color:var(--txt); }
+.gs-qual-opt:active { transform:scale(.98); }
+.gs-qual-opt.selected { background:var(--p); color:#fff; border-color:var(--p); }
+.gs-qual-result { width:100%; text-align:center; }
+.gs-qual-result-score { font-size:3rem; font-weight:800; margin:10px 0; }
+.gs-qual-result-pass { color:#4caf50; }
+.gs-qual-result-fail { color:#f44336; }
+.gs-qual-feedback { background:var(--card); border:1px solid var(--bdr); border-radius:10px; padding:14px; font-size:.75rem; line-height:1.6; text-align:left; margin-top:12px; white-space:pre-wrap; }
+.gs-qual-create-btn { margin-top:16px; padding:12px 24px; font-size:.9rem; }
+
+/* Community room disclaimer */
+.gs-community-disclaimer { background:rgba(255,193,7,.1); border:1px solid rgba(255,193,7,.3); border-radius:8px; padding:8px 12px; font-size:.66rem; color:var(--txt2); margin-bottom:8px; text-align:center; }
+
 /* ═══ CLASSROOM UI (teacher-student) ═══ */
 .gs-tabs { display:flex; gap:0; background:var(--hdr); border-bottom:1px solid var(--bdr); flex-shrink:0; }
 .gs-tab { flex:1; padding:10px 4px; border:none; background:none; color:var(--txt2); font-size:.72rem; font-weight:600; font-family:Poppins,sans-serif; cursor:pointer; border-bottom:3px solid transparent; transition:color .15s, border .15s; }
@@ -5008,32 +5046,232 @@ let gsCurrentSurah = 78, gsCurrentVerse = 1;
 let gsPinnedVerses = [], gsCompletedSurahs = [], gsRaisedHands = [];
 let gsHandRaised = false, gsActiveTab = 'class';
 
-async function gsCreate() {
+// ═══ ROOM TYPE SELECTION & CREATION ═══
+const GS_STUDENT_CATS = [
+  { id:'quran_study', icon:'📖', name:'Quran Study' },
+  { id:'revision', icon:'🤝', name:'Revision Group' },
+  { id:'discussion', icon:'🧠', name:'Discussion' },
+  { id:'memorization', icon:'📚', name:'Memorization' },
+  { id:'recitation', icon:'🎙️', name:'Recitation' },
+  { id:'ramadan', icon:'🌙', name:'Ramadan Study' },
+  { id:'general', icon:'💬', name:'General Chat' },
+  { id:'friends', icon:'👥', name:"Friends' Room" }
+];
+
+function gsCheckName() {
+  const name = document.getElementById('gs-myname').value.trim();
+  // Hide categories if name is empty
+  const catSection = document.getElementById('gs-student-categories');
+  if (catSection && !name) catSection.style.display = 'none';
+}
+
+function gsCreateStudentRoom() {
   const name = document.getElementById('gs-myname').value.trim();
   if (!name) { toast('✋ Enter your name first'); return; }
-  gsUserName = name;
+  // Show category picker
+  const catSection = document.getElementById('gs-student-categories');
+  const grid = document.getElementById('gs-cat-grid');
+  if (grid) {
+    grid.innerHTML = GS_STUDENT_CATS.map(c =>
+      '<button class="gs-cat-btn" onclick="gsCreateRoomWithCategory(\'' + c.id + '\')">' +
+      '<div class="gs-cat-icon">' + c.icon + '</div>' +
+      '<div class="gs-cat-name">' + c.name + '</div></button>'
+    ).join('');
+  }
+  if (catSection) catSection.style.display = 'block';
+}
+
+async function gsCreateRoomWithCategory(catId) {
+  const name = document.getElementById('gs-myname').value.trim();
+  if (!name) { toast('✋ Enter your name first'); return; }
   gsSetLobbyStatus('Creating room...');
-  const code = gsGenCode();
   try {
     const res = await fetch(GS_VOICE_HUB, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'getRoom', roomCode: code, userName: name })
+      body: JSON.stringify({ action:'createRoom', userName: name, roomType:'student', category: catId })
     });
     const d = await res.json();
     if (!d.ok) throw new Error(d.error);
-    gsRoomCode = code;
-    toast('✅ Room ' + code + ' created — you are the teacher!');
-    gsEnterRoom(d);
+    gsRoomCode = d.roomCode;
+    toast('✅ Room ' + d.roomCode + ' created!');
+    // Get room data
+    const roomRes = await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'getRoom', roomCode: d.roomCode, userName: name })
+    });
+    const roomData = await roomRes.json();
+    if (roomData.ok) {
+      gsUserName = name;
+      gsEnterRoom(roomData);
+    }
+    document.getElementById('gs-student-categories').style.display = 'none';
   } catch(e) {
     gsSetLobbyStatus('❌ ' + e.message);
   }
 }
 
-function gsGenCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let code = '';
-  for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
-  return code;
+async function gsShowTeacherFlow() {
+  const name = document.getElementById('gs-myname').value.trim();
+  if (!name) { toast('✋ Enter your name first'); return; }
+  gsUserName = name;
+  // Check if already qualified
+  try {
+    const res = await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'checkQualification', userName: name })
+    });
+    const d = await res.json();
+    if (d.ok && d.qualified) {
+      toast('✅ You are already qualified! Creating teacher room...');
+      gsCreateTeacherRoom();
+      return;
+    }
+  } catch(e) {}
+  // Show qualification flow
+  document.getElementById('gs-lobby-wrap').style.display = 'none';
+  document.getElementById('gs-qual-wrap').style.display = '';
+  gsShowQualStep(1);
+}
+
+function gsBackToLobby() {
+  document.getElementById('gs-qual-wrap').style.display = 'none';
+  document.getElementById('gs-lobby-wrap').style.display = '';
+  // Reset steps
+  gsShowQualStep(1);
+}
+
+function gsShowQualStep(n) {
+  document.querySelectorAll('.gs-qual-step').forEach(s => s.classList.remove('active'));
+  const step = document.getElementById('gs-qual-step' + n);
+  if (step) { step.classList.add('active'); }
+}
+
+// ═══ QUALIFICATION FLOW ═══
+let gsQualQuestions = [];
+let gsQualAnswers = [];
+let gsQualId = null;
+
+async function gsStartQualification() {
+  gsSetLobbyStatus('');
+  try {
+    const res = await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'startQualification', userName: gsUserName })
+    });
+    const d = await res.json();
+    if (d.alreadyQualified) {
+      toast('✅ Already qualified!');
+      gsBackToLobby();
+      gsCreateTeacherRoom();
+      return;
+    }
+    if (d.cooldown) {
+      toast('⏳ ' + d.message);
+      return;
+    }
+    if (!d.ok) throw new Error(d.error || 'Failed to start assessment');
+    
+    gsQualQuestions = d.questions;
+    gsQualAnswers = new Array(d.questions.length).fill(-1);
+    gsQualId = d.qualificationId;
+    
+    // Render questions
+    const container = document.getElementById('gs-qual-questions');
+    if (container) {
+      container.innerHTML = d.questions.map((q, i) =>
+        '<div class="gs-qual-q-card" id="gs-qual-q' + i + '">' +
+        '<div class="gs-qual-q-cat">' + q.category.replace(/_/g,' ') + '</div>' +
+        '<div class="gs-qual-q-text">' + (i+1) + '. ' + gsEsc(q.question) + '</div>' +
+        q.options.map((opt, j) =>
+          '<button class="gs-qual-opt" id="gs-qual-q' + i + '-o' + j + '" onclick="gsSelectAnswer(' + i + ',' + j + ')">' + gsEsc(opt) + '</button>'
+        ).join('') +
+        '</div>'
+      ).join('');
+    }
+    document.getElementById('gs-qual-q-num').textContent = d.questions.length + ' questions total';
+    gsShowQualStep(2);
+  } catch(e) {
+    toast('❌ ' + e.message);
+  }
+}
+
+function gsSelectAnswer(qIdx, optIdx) {
+  gsQualAnswers[qIdx] = optIdx;
+  // Update UI
+  const card = document.getElementById('gs-qual-q' + qIdx);
+  if (card) {
+    card.querySelectorAll('.gs-qual-opt').forEach(btn => btn.classList.remove('selected'));
+    const selected = document.getElementById('gs-qual-q' + qIdx + '-o' + optIdx);
+    if (selected) selected.classList.add('selected');
+  }
+  // Update tracker
+  const answered = gsQualAnswers.filter(a => a >= 0).length;
+  document.getElementById('gs-qual-score-tracker').textContent = 'Answered: ' + answered + '/' + gsQualAnswers.length;
+  // Show submit button if all answered
+  const submitBtn = document.getElementById('gs-qual-submit-btn');
+  if (submitBtn) submitBtn.style.display = answered === gsQualAnswers.length ? 'block' : 'none';
+}
+
+async function gsSubmitQualification() {
+  // Check all answered
+  const unanswered = gsQualAnswers.filter(a => a < 0).length;
+  if (unanswered > 0) {
+    toast('⚠️ Please answer all questions (' + unanswered + ' remaining)');
+    return;
+  }
+  try {
+    const res = await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'submitQualification', qualificationId: gsQualId, userName: gsUserName, answers: gsQualAnswers })
+    });
+    const d = await res.json();
+    if (!d.ok) throw new Error(d.error);
+    
+    // Show results
+    const resultDiv = document.getElementById('gs-qual-result');
+    if (resultDiv) {
+      const passClass = d.passed ? 'gs-qual-result-pass' : 'gs-qual-result-fail';
+      const passIcon = d.passed ? '✅' : '❌';
+      let html = '<div class="gs-qual-result-score ' + passClass + '">' + d.score + '%</div>';
+      html += '<div style="font-size:1.1rem;font-weight:700">' + passIcon + ' ' + (d.passed ? 'Qualified!' : 'Not Qualified') + '</div>';
+      html += '<div style="font-size:.78rem;color:var(--txt2);margin-top:4px">' + d.correct + '/' + d.total + ' correct · Minimum: ' + d.minimumScore + '%</div>';
+      html += '<div class="gs-qual-feedback">' + gsEsc(d.feedback) + '</div>';
+      if (d.passed) {
+        html += '<button class="gs-btn gs-btn-create gs-qual-create-btn" onclick="gsCreateTeacherRoom()">🕌 Create Teacher Classroom →</button>';
+      } else {
+        html += '<button class="gs-btn gs-btn-join gs-qual-create-btn" onclick="gsBackToLobby()">← Back to Lobby</button>';
+      }
+      resultDiv.innerHTML = html;
+    }
+    gsShowQualStep(3);
+  } catch(e) {
+    toast('❌ ' + e.message);
+  }
+}
+
+async function gsCreateTeacherRoom() {
+  try {
+    const res = await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'createRoom', userName: gsUserName, roomType:'teacher', category:'teacher' })
+    });
+    const d = await res.json();
+    if (!d.ok) throw new Error(d.error);
+    gsRoomCode = d.roomCode;
+    toast('✅ Teacher classroom created: ' + d.roomCode);
+    // Get room data and enter
+    const roomRes = await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'getRoom', roomCode: d.roomCode, userName: gsUserName })
+    });
+    const roomData = await roomRes.json();
+    if (roomData.ok) {
+      document.getElementById('gs-qual-wrap').style.display = 'none';
+      gsEnterRoom(roomData);
+    }
+  } catch(e) {
+    toast('❌ ' + e.message);
+  }
 }
 
 async function gsJoin() {
@@ -5073,6 +5311,38 @@ function gsEnterRoom(roomData) {
   document.getElementById('gs-room-code-lbl').textContent = gsRoomCode;
   document.getElementById('gs-room-title').textContent = (r.teacherName || gsUserName) + "'s Class";
   document.getElementById('gs-room-peers').textContent = gsIsTeacher ? '👩‍🏫 Teacher' : '👨‍🎓 Student';
+  
+  // Show room type badge
+  const isTeacherRoom = (r.roomType === 'teacher');
+  const roomTitle = document.getElementById('gs-room-title');
+  if (roomTitle) {
+    roomTitle.textContent = (isTeacherRoom ? '🕌 ' : '💬 ') + (r.teacherName || gsUserName) + (isTeacherRoom ? "'s Class" : "'s Room");
+  }
+  
+  // Show/hide community disclaimer for student rooms
+  let disclaimer = document.getElementById('gs-community-disclaimer');
+  if (!isTeacherRoom) {
+    if (!disclaimer) {
+      const classPanel = document.getElementById('gs-panel-class');
+      if (classPanel) {
+        disclaimer = document.createElement('div');
+        disclaimer.id = 'gs-community-disclaimer';
+        disclaimer.className = 'gs-community-disclaimer';
+        disclaimer.innerHTML = '🤝 <b>Community Study Room</b> — This room is for peer learning and discussion. Information shared by members should be verified through reliable Islamic sources.';
+        classPanel.insertBefore(disclaimer, classPanel.firstChild);
+      }
+    }
+    if (disclaimer) disclaimer.style.display = 'block';
+  } else if (disclaimer) {
+    disclaimer.style.display = 'none';
+  }
+  
+  // For student rooms, hide teacher-only tabs (homework) — students still get chat, class, notes
+  const hwTab = document.getElementById('gs-tab-hw');
+  if (hwTab) hwTab.style.display = isTeacherRoom ? '' : 'none';
+  
+  // For student rooms, the room owner is a moderator not teacher — hide surah controls from students
+  // Teacher rooms: owner=teacher controls surah; Student rooms: owner=moderator, everyone can follow along
   
   const sel = document.getElementById('gs-surah-sel');
   if (sel) { sel.value = gsCurrentSurah; sel.disabled = !gsIsTeacher; }
@@ -5126,6 +5396,7 @@ async function gsPollRoom() {
     if (!d.ok) return;
     const r = d.room;
     gsIsTeacher = r.isTeacher;
+    const isTeacherRoom = (r.roomType === 'teacher');
     
     let surahChanged = (r.currentSurah !== gsCurrentSurah);
     let verseChanged = (r.currentVerse !== gsCurrentVerse);
@@ -5158,6 +5429,12 @@ async function gsPollRoom() {
     document.getElementById('gs-teacher-toolbar').style.display = gsIsTeacher ? 'flex' : 'none';
     document.getElementById('gs-student-tools').style.display = gsIsTeacher ? 'none' : 'flex';
     document.getElementById('gs-hw-add').style.display = gsIsTeacher ? 'block' : 'none';
+    // Hide homework tab for student rooms
+    const hwTab = document.getElementById('gs-tab-hw');
+    if (hwTab) hwTab.style.display = isTeacherRoom ? '' : 'none';
+    // Update community disclaimer
+    const disclaimer = document.getElementById('gs-community-disclaimer');
+    if (disclaimer) disclaimer.style.display = isTeacherRoom ? 'none' : 'block';
     document.getElementById('gs-notes-save').style.display = gsIsTeacher ? 'block' : 'none';
     const notesArea = document.getElementById('gs-notes-area');
     if (notesArea) notesArea.readOnly = !gsIsTeacher;
@@ -6928,16 +7205,33 @@ function updateFsapBtn() {
     <div class="gs-lobby">
       <div class="gs-logo">👥</div>
       <div class="gs-title">Read Quran Together, Live</div>
-      <div class="gs-sub">Create a room or join with a 6-letter code. Everyone stays on the same verse.</div>
+      <div class="gs-sub">Join a study room or create your own. Choose between a Teacher Classroom or a Community Study Room.</div>
 
       <div class="gs-card">
         <h3>✦ Your Name</h3>
-        <input id="gs-myname" class="gs-input" placeholder="Enter your name (e.g. Ahmad)" maxlength="20">
+        <input id="gs-myname" class="gs-input" placeholder="Enter your name (e.g. Ahmad)" maxlength="20" oninput="gsCheckName()">
       </div>
 
+      <!-- Room Type Selection -->
       <div class="gs-card">
-        <h3>🚀 Create a New Room</h3>
-        <button class="gs-btn gs-btn-create" onclick="gsCreate()">Create Room</button>
+        <h3>🏫 Create a Room</h3>
+        <div class="gs-room-type-grid">
+          <button class="gs-room-type-btn" onclick="gsCreateStudentRoom()">
+            <div class="gs-rt-icon">💬</div>
+            <div class="gs-rt-title">Community Study Room</div>
+            <div class="gs-rt-desc">Peer learning, discussion & chat</div>
+          </button>
+          <button class="gs-room-type-btn" onclick="gsShowTeacherFlow()">
+            <div class="gs-rt-icon">🕌</div>
+            <div class="gs-rt-title">Teacher Classroom</div>
+            <div class="gs-rt-desc">Official teaching (requires qualification)</div>
+          </button>
+        </div>
+        <!-- Student room category picker (hidden by default) -->
+        <div id="gs-student-categories" style="display:none">
+          <div class="gs-sub" style="margin:10px 0 6px;font-size:.72rem">Pick a room type:</div>
+          <div class="gs-cat-grid" id="gs-cat-grid"></div>
+        </div>
       </div>
 
       <div class="gs-divider">— or join an existing room —</div>
@@ -6952,7 +7246,49 @@ function updateFsapBtn() {
     </div>
   </div>
 
-  <!-- CLASSROOM (shown after joining) -->
+  <!-- TEACHER QUALIFICATION FLOW (hidden by default) -->
+  <div id="gs-qual-wrap" style="display:none">
+    <div class="stickyh">
+      <div class="hrow">
+        <button class="btn-back" onclick="gsBackToLobby()">← Back</button>
+        <div class="htitle">🕌 Teacher Qualification</div>
+        <div style="width:60px"></div>
+      </div>
+    </div>
+    <div class="gs-qual-body" id="gs-qual-body">
+      <!-- Step 1: Intro -->
+      <div id="gs-qual-step1" class="gs-qual-step active">
+        <div class="gs-qual-logo">🕌</div>
+        <div class="gs-qual-title">Become a Qualified Teacher</div>
+        <div class="gs-qual-sub">To create a Teacher Classroom, you must pass a qualification assessment covering Quran knowledge, Tajweed, Islamic studies, teaching ability, and appropriate conduct.</div>
+        <div class="gs-qual-disclaimer">
+          <b>⚠️ Important Notice:</b><br>
+          • Passing this assessment certifies you as <i>knowledgeable enough to create a teaching room according to the platform's criteria</i>.<br>
+          • It does <b>NOT</b> make you an Islamic scholar or grant religious authority (ijazah).<br>
+          • For advanced religious rulings (fatwa), always consult qualified scholars.<br>
+          • The assessment includes randomized questions from a question bank.<br>
+          • A minimum score of 70% is required.<br>
+          • Anti-abuse protections are in place. You can retry after 3 days if you do not pass.
+        </div>
+        <button class="gs-btn gs-btn-create" style="margin-top:16px" onclick="gsStartQualification()">Start Assessment →</button>
+      </div>
+      <!-- Step 2: Quiz -->
+      <div id="gs-qual-step2" class="gs-qual-step" style="display:none">
+        <div class="gs-qual-progress">
+          <span id="gs-qual-q-num">Question 1 of 21</span>
+          <span id="gs-qual-score-tracker">Answered: 0</span>
+        </div>
+        <div id="gs-qual-questions"></div>
+        <button class="gs-btn gs-btn-create" id="gs-qual-submit-btn" style="margin-top:16px;display:none" onclick="gsSubmitQualification()">Submit Assessment</button>
+      </div>
+      <!-- Step 3: Results -->
+      <div id="gs-qual-step3" class="gs-qual-step" style="display:none">
+        <div id="gs-qual-result"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLASSROOM (shown after joining) -->  <!-- CLASSROOM (shown after joining) -->
   <div class="gs-room" id="gs-room-wrap">
     <!-- Header with room info + teacher badge -->
     <div class="gs-room-hdr">
