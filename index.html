@@ -5540,6 +5540,9 @@ async function gsPollRoom() {
 
 // ═══ TABS ═══
 function gsSwitchTab(tab) {
+  const memPanel = document.getElementById('gs-panel-members');
+  if (memPanel) memPanel.style.display = (tab === 'members') ? 'flex' : 'none';
+  if (tab === 'members') { gsLoadMembers(); return; }
   gsActiveTab = tab;
   document.querySelectorAll('.gs-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.gs-tab-content').forEach(p => p.classList.remove('active'));
@@ -5943,6 +5946,94 @@ function gsFmtClock(isoStr) {
 
 function gsEsc(s) {
   return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ═══ MEMBER MANAGEMENT ═══
+async function gsLoadMembers() {
+  if (!gsRoomCode || !gsUserName) return;
+  try {
+    const res = await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'getMembers', roomCode: gsRoomCode, userName: gsUserName })
+    });
+    const d = await res.json();
+    if (!d.ok) return;
+    const container = document.getElementById('gs-members-container');
+    if (!container) return;
+    const members = d.members || [];
+    container.innerHTML = '<div class="gs-members-list">' + members.map(m => {
+      const initial = (m.userName || '?').charAt(0).toUpperCase();
+      const roleBadge = m.role === 'owner' ? '👑 Owner' : m.role === 'moderator' ? '🛡️ Mod' : '👤 Member';
+      const mutedBadge = m.muted ? ' 🔇' : '';
+      const bannedBadge = m.banned ? ' 🚫' : '';
+      let actions = '';
+      if (gsIsTeacher && m.role !== 'owner') {
+        actions = '<div class="gs-member-actions">' +
+          (m.muted
+            ? '<button class="gs-member-btn success" onclick="gsManageMember(\''+m.userName+'\',\'unmute\')">🔊</button>'
+            : '<button class="gs-member-btn" onclick="gsManageMember(\''+m.userName+'\',\'mute\')">🔇</button>') +
+          (m.role === 'member'
+            ? '<button class="gs-member-btn" onclick="gsManageMember(\''+m.userName+'\',\'promote\')">🛡️</button>'
+            : '<button class="gs-member-btn" onclick="gsManageMember(\''+m.userName+'\',\'demote\')">⬇️</button>') +
+          (m.banned
+            ? '<button class="gs-member-btn success" onclick="gsManageMember(\''+m.userName+'\',\'unban\')">✅</button>'
+            : '<button class="gs-member-btn danger" onclick="gsManageMember(\''+m.userName+'\',\'ban\')">🚫</button>') +
+          '<button class="gs-member-btn danger" onclick="gsManageMember(\''+m.userName+'\',\'remove\')">❌</button>' +
+        '</div>';
+      }
+      return '<div class="gs-member-row">' +
+        '<div class="gs-member-avatar">'+initial+'</div>' +
+        '<div class="gs-member-info"><div class="gs-member-name">'+gsEsc(m.userName)+(m.userName===gsUserName?' (You)':'')+'</div>' +
+        '<div class="gs-member-role">'+roleBadge+mutedBadge+bannedBadge+'</div></div>' + actions + '</div>';
+    }).join('') + '</div>';
+    const settings = document.getElementById('gs-room-settings');
+    if (settings) settings.style.display = gsIsTeacher ? 'block' : 'none';
+    const roomRes = await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'getRoom', roomCode: gsRoomCode, userName: gsUserName })
+    });
+    const rd = await roomRes.json();
+    if (rd.ok) {
+      const ri = document.getElementById('gs-rules-input'); if (ri) ri.value = rd.room.roomRules || '';
+      const ai = document.getElementById('gs-announcement-input'); if (ai) ai.value = rd.room.announcement || '';
+    }
+  } catch(e) {}
+}
+
+async function gsManageMember(targetUser, op) {
+  try {
+    const res = await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'manageMember', roomCode: gsRoomCode, userName: gsUserName, targetUser, op })
+    });
+    const d = await res.json();
+    if (d.ok) { toast('✅ Done'); gsLoadMembers(); }
+    else toast('❌ ' + d.error);
+  } catch(e) { toast('❌ Failed'); }
+}
+
+async function gsSaveRules() {
+  const rules = document.getElementById('gs-rules-input')?.value?.trim() || '';
+  try {
+    const res = await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'updateRoom', roomCode: gsRoomCode, userName: gsUserName, roomRules: rules })
+    });
+    const d = await res.json();
+    if (d.ok) toast('✅ Rules saved');
+  } catch(e) {}
+}
+
+async function gsSaveAnnouncement() {
+  const ann = document.getElementById('gs-announcement-input')?.value?.trim() || '';
+  try {
+    const res = await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'updateRoom', roomCode: gsRoomCode, userName: gsUserName, announcement: ann })
+    });
+    const d = await res.json();
+    if (d.ok) toast('✅ Announcement posted');
+  } catch(e) {}
 }
 
 // ═══ ROOM HUB NAVIGATION ═══
@@ -7939,6 +8030,24 @@ function updateFsapBtn() {
         <textarea class="gs-notes-area" id="gs-notes-area" placeholder="Class notes will appear here... The teacher can write lesson summaries, key points, or reminders for students." readonly></textarea>
         <div class="gs-notes-save" id="gs-notes-save" style="display:none">
           <button class="gs-btn gs-btn-create" onclick="gsSaveNotes()">💾 Save Notes</button>
+        </div>
+      </div>
+    </div>
+    <!-- MEMBERS PANEL -->
+    <div class="gs-tab-content" id="gs-panel-members" style="display:none">
+      <div id="gs-members-container" style="padding:12px">
+        <div style="text-align:center;padding:20px;color:var(--txt2);font-size:.8rem">Loading members...</div>
+      </div>
+      <div id="gs-room-settings" style="display:none;padding:12px;margin-top:8px">
+        <div class="gs-settings-section">
+          <div class="gs-settings-label">📜 Room Rules</div>
+          <textarea id="gs-rules-input" class="gs-settings-textarea" placeholder="Set rules for this room..." maxlength="500"></textarea>
+          <button class="gs-save-btn" onclick="gsSaveRules()">Save Rules</button>
+        </div>
+        <div class="gs-settings-section">
+          <div class="gs-settings-label">📢 Announcement</div>
+          <textarea id="gs-announcement-input" class="gs-settings-textarea" placeholder="Post an announcement..." maxlength="500"></textarea>
+          <button class="gs-save-btn" onclick="gsSaveAnnouncement()">Post</button>
         </div>
       </div>
     </div>
