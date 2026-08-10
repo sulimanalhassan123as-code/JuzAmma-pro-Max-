@@ -6583,13 +6583,18 @@ function gsPlayVoice(msgId, audioBase64) {
   }
   if (!audioBase64 || audioBase64.length < 10) { toast('⚠️ Audio not available'); return; }
   try {
+    // Defensive: strip any leftover "data:...;base64," prefix from legacy/bad records
+    let cleanBase64 = audioBase64;
+    if (cleanBase64.indexOf(',') >= 0 && cleanBase64.substring(0, 20).indexOf('data:') === 0) {
+      cleanBase64 = cleanBase64.substring(cleanBase64.indexOf(',') + 1);
+    }
     // Decode base64
-    const byteChars = atob(audioBase64);
+    const byteChars = atob(cleanBase64);
     const byteNumbers = new Array(byteChars.length);
     for (let i = 0; i < byteChars.length; i++) byteNumbers[i] = byteChars.charCodeAt(i);
     const byteArray = new Uint8Array(byteNumbers);
     // Detect type — default to webm but also try mp4
-    const mimeType = audioBase64.startsWith('AAAA') ? 'audio/mp4' : 'audio/webm';
+    const mimeType = cleanBase64.startsWith('AAAA') ? 'audio/mp4' : 'audio/webm';
     const blob = new Blob([byteArray], { type: mimeType });
     const url = URL.createObjectURL(blob);
     const audio = new Audio(url);
@@ -6794,9 +6799,13 @@ function gsStopRecording(discard) {
       const reader = new FileReader();
       reader.onloadend = async () => {
         try {
+          // Strip "data:audio/webm;codecs=opus;base64," prefix — store raw base64 only
+          const dataUrl = reader.result || '';
+          const commaIdx = dataUrl.indexOf(',');
+          const rawBase64 = commaIdx >= 0 ? dataUrl.substring(commaIdx + 1) : dataUrl;
           const res = await fetch(GS_VOICE_HUB, {
             method:'POST', headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({ action:'send', roomCode: gsRoomCode, userName: gsUserName, audioBase64: reader.result, durationSec })
+            body: JSON.stringify({ action:'send', roomCode: gsRoomCode, userName: gsUserName, audioBase64: rawBase64, durationSec })
           });
           const d = await res.json();
           // Remove sending indicator
