@@ -1051,6 +1051,14 @@ body { font-family:'Poppins',sans-serif;
   .teacher-verse { font-size:.95rem; line-height:1.7; }
   .pcard-ar { font-size:.9rem; line-height:1.5; }
   .azan-modal-arabic { font-size:1.2rem; line-height:1.8; }
+  /* Phone viewer: slightly reduce bottom nav min-width so 7 items fit */
+  .ni { min-width:46px; }
+  /* Phone viewer: wrap AI suggestion chips so all 7 are visible without scrolling */
+  .ai-sugs { flex-wrap:wrap; overflow-x:visible; }
+  /* Phone viewer: wrap progress filter buttons */
+  .prog-filter { flex-wrap:wrap; overflow-x:visible; }
+  /* Phone viewer: wrap group study teacher toolbar */
+  .gs-teacher-toolbar { flex-wrap:wrap; overflow-x:visible; }
   /* Phone viewer: WRAP mode tabs onto multiple rows instead of hiding them
      off-screen behind an unlabeled horizontal scroll (was clipping "Teacher"
      tab on narrow Android screens with zero scroll affordance shown). */
@@ -1069,6 +1077,14 @@ body { font-family:'Poppins',sans-serif;
   /* Extra-small phones: tighten mode tabs so wrapped rows sit evenly (3+2) */
   .mem-tabs { gap:5px; padding:8px 8px 0; }
   .mtab { padding:6px 10px; font-size:.68rem; }
+  /* Extra-small phones: shrink bottom nav further (7 items × 42px = 294px) */
+  .ni { min-width:42px; font-size:.52rem; }
+  .ni .ico { font-size:1.1rem; }
+  /* Action buttons in reader: tighten text so 4 fit cleanly */
+  .ract { font-size:.66rem; padding:7px 4px; }
+  /* AI suggestions already wrapped from phone rule above */
+  /* Progress filter already wrapped from phone rule above */
+  /* Group study teacher toolbar already wrapped from phone rule above */
 }
 
 /* Landscape phone — tighter line height */
