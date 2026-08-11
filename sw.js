@@ -4,7 +4,7 @@
 // Strategy: Cache-first for assets, Network-first for Quran API
 // ============================================================
 
-const CACHE_NAME = 'juzamma-pro-v28';
+const CACHE_NAME = 'juzamma-pro-v29';
 const STATIC_ASSETS = [
   './',
   './index.html',

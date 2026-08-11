@@ -2338,7 +2338,7 @@ let lastRead  = JSON.parse(localStorage.getItem('lastRead')||'null');
 let streak    = parseInt(localStorage.getItem('streak')||'0');
 let activeFilter='all';
 let progInt;
-const aud = document.getElementById('aud');
+let aud = document.getElementById('aud');
 visits++; localStorage.setItem('visits', visits);
 
 // ================================================================
@@ -2686,9 +2686,12 @@ function playV(sid, vidx, isRetry) {
   
   const url = getVerseUrl(sid, vidx);
   
-  // If preloaded audio matches, use it (swap aud and preloadAud)
-  if (preloadAud.src.includes(url.split('/').pop())) {
-    const tmp = aud; aud = preloadAud; preloadAud = tmp;
+  // If preloaded audio matches, reuse the already-buffered URL on the SAME
+  // <audio> element (aud) instead of swapping object identity — swapping used
+  // to move playback onto a bare Audio() with no onended/onerror handlers
+  // wired up, which silently broke auto-advance after the first verse.
+  if (preloadAud.src && preloadAud.src.includes(url.split('/').pop())) {
+    aud.src = preloadAud.src;
     preloadAud.src = '';
   } else {
     aud.src = url;
