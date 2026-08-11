@@ -309,6 +309,30 @@ body { font-family:'Poppins',sans-serif;
 .aichip { padding:6px 11px; border-radius:12px; font-size:.72rem; border:1.5px solid var(--p); color:var(--p); background:transparent; cursor:pointer; white-space:nowrap; transition:all .15s; flex-shrink:0; font-family:'Poppins',sans-serif; }
 .aichip:active { background:var(--p); color:#fff; }
 .chat-area { flex:1; overflow-y:auto; padding:11px; display:flex; flex-direction:column; gap:9px; -webkit-overflow-scrolling:touch; }
+/* AI illustrated guide card — used when the AI answers a "how to" question
+   (Wudu, Prayer, Pillars, etc.) so it can visually walk the user through each
+   step with a friendly 3D-style icon instead of a wall of plain text. */
+.cmsg-guide { align-self:flex-start; max-width:88%; animation:fadein .3s ease; }
+.ai-guide-card { background:var(--card); border:1px solid var(--bdr); border-radius:16px; padding:14px; box-shadow:0 4px 14px rgba(0,0,0,.08); }
+.ai-guide-hero { display:flex; align-items:center; gap:10px; margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--bdr); }
+.ai-guide-hero-icon { width:52px; height:52px; min-width:52px; border-radius:50%; position:relative;
+  background:radial-gradient(circle at 32% 26%, rgba(255,255,255,.7), rgba(255,255,255,0) 50%), linear-gradient(150deg, var(--p), var(--pd));
+  box-shadow:0 5px 12px var(--pg), inset 0 -3px 6px rgba(0,0,0,.25), inset 0 2px 4px rgba(255,255,255,.4);
+  display:flex; align-items:center; justify-content:center; font-size:1.6rem; }
+.ai-guide-title { font-size:.92rem; font-weight:800; color:var(--txt); line-height:1.3; }
+.ai-guide-sub { font-size:.72rem; color:var(--txt2); margin-top:2px; }
+.ai-guide-steps { display:flex; flex-direction:column; gap:11px; }
+.ai-guide-step { display:flex; gap:11px; align-items:flex-start; }
+.ai-guide-step-icon { width:38px; height:38px; min-width:38px; border-radius:50%; position:relative;
+  background:radial-gradient(circle at 32% 26%, rgba(255,255,255,.65), rgba(255,255,255,0) 48%), linear-gradient(150deg, var(--gsi, #22d3ee), var(--gsi2, #0891b2));
+  box-shadow:0 3px 8px rgba(0,0,0,.25), inset 0 -2px 4px rgba(0,0,0,.25), inset 0 2px 3px rgba(255,255,255,.35);
+  display:flex; align-items:center; justify-content:center; font-size:1.1rem; }
+.ai-guide-step-icon .ags-num { position:absolute; bottom:-3px; right:-3px; width:15px; height:15px; border-radius:50%;
+  background:var(--card); color:var(--gsi2, #0891b2); font-size:.55rem; font-weight:800; display:flex; align-items:center; justify-content:center;
+  border:2px solid var(--card); }
+.ai-guide-step-title { font-size:.82rem; font-weight:700; color:var(--txt); margin-bottom:2px; }
+.ai-guide-step-desc { font-size:.72rem; color:var(--txt2); line-height:1.5; }
+.ai-guide-footer { margin-top:12px; padding-top:10px; border-top:1px solid var(--bdr); font-size:.7rem; color:var(--txt2); display:flex; align-items:center; gap:6px; }
 .cmsg { max-width:82%; padding:10px 13px; border-radius:17px; font-size:.83rem; line-height:1.65; animation:fadein .3s ease; }
 @keyframes fadein { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
 .cmsg.bot { background:var(--card); border:1.5px solid var(--bdr); color:var(--txt); border-bottom-left-radius:4px; align-self:flex-start; }
@@ -982,6 +1006,23 @@ body { font-family:'Poppins',sans-serif;
 .wudu-step { display:flex; gap:12px; align-items:flex-start; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.05); }
 .wudu-step:last-child { border-bottom:none; padding-bottom:0; }
 .wudu-step-num { width:32px; height:32px; min-width:32px; border-radius:50%; background:rgba(34,211,238,.12); color:#22d3ee; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:.9rem; }
+/* 3D glossy icon badge — used to give each wudu step (and AI-guided answers) a
+   clear, friendly visual "sign" instead of a plain number, per user request to
+   make guidance feel more visual and human. Radial highlight + inset shadows
+   simulate a glossy 3D sphere; the step number rides in a small corner chip. */
+.wudu-step-icon { width:44px; height:44px; min-width:44px; border-radius:50%; position:relative;
+  background:radial-gradient(circle at 32% 26%, rgba(255,255,255,.65), rgba(255,255,255,0) 48%), linear-gradient(150deg, #22d3ee, #0891b2);
+  box-shadow:0 4px 10px rgba(8,145,178,.4), inset 0 -3px 5px rgba(0,0,0,.25), inset 0 2px 3px rgba(255,255,255,.35);
+  display:flex; align-items:center; justify-content:center; font-size:1.3rem; }
+.wudu-step-icon .wsi-num { position:absolute; bottom:-3px; right:-3px; width:18px; height:18px; border-radius:50%;
+  background:var(--card); color:#22d3ee; font-size:.6rem; font-weight:800; display:flex; align-items:center; justify-content:center;
+  border:2px solid var(--card); box-shadow:0 1px 4px rgba(0,0,0,.3); }
+.wudu-step-icon.wsi-fard { background:radial-gradient(circle at 32% 26%, rgba(255,255,255,.65), rgba(255,255,255,0) 48%), linear-gradient(150deg, #34d399, #059669);
+  box-shadow:0 4px 10px rgba(5,150,105,.4), inset 0 -3px 5px rgba(0,0,0,.25), inset 0 2px 3px rgba(255,255,255,.35); }
+.wudu-step-icon.wsi-fard .wsi-num { color:#34d399; }
+.wudu-step-icon.wsi-sunnah { background:radial-gradient(circle at 32% 26%, rgba(255,255,255,.65), rgba(255,255,255,0) 48%), linear-gradient(150deg, #fcd34d, #d97706);
+  box-shadow:0 4px 10px rgba(217,119,6,.4), inset 0 -3px 5px rgba(0,0,0,.25), inset 0 2px 3px rgba(255,255,255,.35); }
+.wudu-step-icon.wsi-sunnah .wsi-num { color:#d97706; }
 .wudu-step-title { font-size:.88rem; font-weight:700; color:#e2e8f0; margin-bottom:3px; }
 .wudu-step-desc { font-size:.76rem; color:#94a3b8; line-height:1.6; }
 
@@ -1887,42 +1928,42 @@ body { font-family:'Poppins',sans-serif;
       <div class="wudu-section-title">✅ The 6 Obligatory Acts (Fard)</div>
       <div class="wudu-note">These are the pillars — wudu is invalid without any of them. (Shaykh Ibn 'Uthaymeen, Ar-Rawd al-Murbi')</div>
       <div class="wudu-step">
-        <div class="wudu-step-num">1</div>
+        <div class="wudu-step-icon wsi-fard">🧼<span class="wsi-num">1</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Wash the Face</div>
           <div class="wudu-step-desc">From hairline to chin, ear to ear. Includes rinsing mouth and nose.</div>
         </div>
       </div>
       <div class="wudu-step">
-        <div class="wudu-step-num">2</div>
+        <div class="wudu-step-icon wsi-fard">💪<span class="wsi-num">2</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Wash the Arms to the Elbows</div>
           <div class="wudu-step-desc">Both arms including the elbows — right arm first, then left.</div>
         </div>
       </div>
       <div class="wudu-step">
-        <div class="wudu-step-num">3</div>
+        <div class="wudu-step-icon wsi-fard">🧠<span class="wsi-num">3</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Wipe the Head</div>
           <div class="wudu-step-desc">With wet hands — the amount differs by school (see below).</div>
         </div>
       </div>
       <div class="wudu-step">
-        <div class="wudu-step-num">4</div>
+        <div class="wudu-step-icon wsi-fard">🦶<span class="wsi-num">4</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Wash the Feet to the Ankles</div>
           <div class="wudu-step-desc">Both feet including the ankles — right foot first, then left.</div>
         </div>
       </div>
       <div class="wudu-step">
-        <div class="wudu-step-num">5</div>
+        <div class="wudu-step-icon wsi-fard">🔢<span class="wsi-num">5</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Sequence (Tartib)</div>
           <div class="wudu-step-desc">Follow the order: face → arms → head → feet. Required by Shafi'i, Maliki, Hanbali. Recommended by Hanafi.</div>
         </div>
       </div>
       <div class="wudu-step">
-        <div class="wudu-step-num">6</div>
+        <div class="wudu-step-icon wsi-fard">⏱️<span class="wsi-num">6</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Continuity (Muwalah)</div>
           <div class="wudu-step-desc">Wash each part before the previous one dries — no long gaps between steps.</div>
@@ -1936,77 +1977,77 @@ body { font-family:'Poppins',sans-serif;
       <div class="wudu-note">Based on the Hadith of Uthman ibn Affan (RA) — Sahih al-Bukhari 1934 & Sahih Muslim 226. Ibn Shihab said: "This is the most complete way of performing wudu."</div>
 
       <div class="wudu-step wudu-step-sunnah">
-        <div class="wudu-step-num wudu-step-num-sunnah">1</div>
+        <div class="wudu-step-icon wsi-sunnah">💭<span class="wsi-num">1</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Make Intention (Niyyah)</div>
           <div class="wudu-step-desc">Intend in your heart to perform wudu for Allah's sake. Shafi'i school also recommends verbal intention.</div>
         </div>
       </div>
       <div class="wudu-step wudu-step-sunnah">
-        <div class="wudu-step-num wudu-step-num-sunnah">2</div>
+        <div class="wudu-step-icon wsi-sunnah">🗣️<span class="wsi-num">2</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Say Bismillah</div>
           <div class="wudu-step-desc">Say "Bismillah" before starting. (Imam Ahmad considered it obligatory; majority consider it Sunnah)</div>
         </div>
       </div>
       <div class="wudu-step wudu-step-sunnah">
-        <div class="wudu-step-num wudu-step-num-sunnah">3</div>
+        <div class="wudu-step-icon wsi-sunnah">🖐️<span class="wsi-num">3</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Wash Hands 3× </div>
           <div class="wudu-step-desc">Wash both hands up to the wrists, three times. Use siwak/miswak if available.</div>
         </div>
       </div>
       <div class="wudu-step wudu-step-sunnah">
-        <div class="wudu-step-num wudu-step-num-sunnah">4</div>
+        <div class="wudu-step-icon wsi-sunnah">👄<span class="wsi-num">4</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Rinse Mouth 3×</div>
           <div class="wudu-step-desc">Circulate water thoroughly throughout the mouth, three times. (When fasting, do so lightly)</div>
         </div>
       </div>
       <div class="wudu-step wudu-step-sunnah">
-        <div class="wudu-step-num wudu-step-num-sunnah">5</div>
+        <div class="wudu-step-icon wsi-sunnah">👃<span class="wsi-num">5</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Rinse Nose 3×</div>
           <div class="wudu-step-desc">Inhale water into the nose and blow it out, three times. (When fasting, do not inhale deeply)</div>
         </div>
       </div>
       <div class="wudu-step wudu-step-sunnah">
-        <div class="wudu-step-num wudu-step-num-sunnah">6</div>
+        <div class="wudu-step-icon wsi-sunnah">🧼<span class="wsi-num">6</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Wash Face 3×</div>
           <div class="wudu-step-desc">From hairline to chin, ear to ear — three times. Run wet fingers through a thick beard.</div>
         </div>
       </div>
       <div class="wudu-step wudu-step-sunnah">
-        <div class="wudu-step-num wudu-step-num-sunnah">7</div>
+        <div class="wudu-step-icon wsi-sunnah">💪<span class="wsi-num">7</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Wash Right Arm 3×, Then Left Arm 3×</div>
           <div class="wudu-step-desc">From fingertips to elbow (including the elbow). Right arm three times first, then left arm three times.</div>
         </div>
       </div>
       <div class="wudu-step wudu-step-sunnah">
-        <div class="wudu-step-num wudu-step-num-sunnah">8</div>
+        <div class="wudu-step-icon wsi-sunnah">🧠<span class="wsi-num">8</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Wipe the Head Once</div>
           <div class="wudu-step-desc">Wet both hands, wipe from front to back of head, then back to front (Hadith of Abdullah bin Zayd, Bukhari 185). </div>
         </div>
       </div>
       <div class="wudu-step wudu-step-sunnah">
-        <div class="wudu-step-num wudu-step-num-sunnah">9</div>
+        <div class="wudu-step-icon wsi-sunnah">👂<span class="wsi-num">9</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Wipe the Ears Once</div>
           <div class="wudu-step-desc">Index fingers inside the ears, thumbs wipe the outer ears — once. (Imam Ahmad considered it obligatory; majority Sunnah)</div>
         </div>
       </div>
       <div class="wudu-step wudu-step-sunnah">
-        <div class="wudu-step-num wudu-step-num-sunnah">10</div>
+        <div class="wudu-step-icon wsi-sunnah">🦶<span class="wsi-num">10</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Wash Right Foot 3×, Then Left Foot 3×</div>
           <div class="wudu-step-desc">From toes to ankle (including the ankle). Run fingers between toes. Right foot three times, then left three times.</div>
         </div>
       </div>
       <div class="wudu-step wudu-step-sunnah">
-        <div class="wudu-step-num wudu-step-num-sunnah">11</div>
+        <div class="wudu-step-icon wsi-sunnah">🤲<span class="wsi-num">11</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Recite the Du'a</div>
           <div class="wudu-step-desc">"Ashhadu an la ilaha ill-Allah wahdahu la sharika lah, wa ashhadu anna Muhammadan 'abduhu wa rasuluhu. Allahummaj'alni min al-tawwabina waj'alni min al-mutatahhirina."</div>
@@ -3186,6 +3227,69 @@ function showMemStats() {
 // ================================================================
 // AI CHAT
 // ================================================================
+// ── Structured illustrated guides for the AI chat ──────────────────────
+// When a question matches one of these, the AI shows a visual, icon-guided
+// step card instead of a plain text wall — much easier to actually follow
+// along with (e.g. while performing wudu with wet hands, glancing at icons
+// is far easier than reading paragraphs).
+const AI_GUIDES = {
+  wudu: {
+    icon:'💧', color:['#22d3ee','#0891b2'],
+    title:'How To Perform Wudu (Ablution)',
+    sub:'The Prophetic Method ﷺ — Bukhari 1934 & Muslim 226',
+    steps:[
+      {icon:'💭', title:'Make Intention (Niyyah)', desc:"Intend in your heart to purify yourself for prayer."},
+      {icon:'🗣️', title:'Say Bismillah', desc:'"In the name of Allah" — said aloud before starting.'},
+      {icon:'🖐️', title:'Wash Hands 3×', desc:'Both hands up to the wrists, three times.'},
+      {icon:'👄', title:'Rinse Mouth 3×', desc:'Swirl water around the whole mouth, three times.'},
+      {icon:'👃', title:'Rinse Nose 3×', desc:'Sniff water in gently, then blow it out — three times.'},
+      {icon:'🧼', title:'Wash Face 3×', desc:'Hairline to chin, ear to ear — three times.'},
+      {icon:'💪', title:'Wash Arms 3×', desc:'Fingertips to elbow — right arm first, then left, three times each.'},
+      {icon:'🧠', title:'Wipe the Head Once', desc:'Wet hands, wipe front-to-back then back-to-front.'},
+      {icon:'👂', title:'Wipe the Ears Once', desc:'Index fingers inside, thumbs wipe the outer ear.'},
+      {icon:'🦶', title:'Wash Feet 3×', desc:'Toes to ankle — right foot first, then left, three times each.'},
+      {icon:'🤲', title:"Recite the Du'a", desc:'"Ashhadu an la ilaha ill-Allah..." — say the shahada dua to seal your wudu.'},
+    ],
+    footer:'📖 Full guide with all 4 madhab opinions is on the Wudu Guide (Home page)'
+  },
+  pillars: {
+    icon:'🕋', color:['#a78bfa','#7c3aed'],
+    title:'The 5 Pillars of Islam',
+    sub:'The foundation every Muslim builds their life on',
+    steps:[
+      {icon:'☝️', title:'Shahada — Testimony of Faith', desc:'Bearing witness there is no god but Allah, and Muhammad ﷺ is His messenger.'},
+      {icon:'🕌', title:'Salah — 5 Daily Prayers', desc:'Fajr, Dhuhr, Asr, Maghrib, Isha — performed at their set times.'},
+      {icon:'💰', title:'Zakat — Charity', desc:"2.5% of savings above the nisab, given yearly to those in need."},
+      {icon:'🌙', title:'Sawm — Fasting in Ramadan', desc:'Fasting from Fajr to Maghrib for the whole month.'},
+      {icon:'🕋', title:'Hajj — Pilgrimage', desc:'To Mecca, once in a lifetime, for those who are able.'},
+    ],
+    footer:'✨ Together these 5 pillars form the complete structure of a Muslim\'s worship'
+  },
+  prayer: {
+    icon:'🕌', color:['#34d399','#059669'],
+    title:'The 5 Daily Prayers',
+    sub:'Salah — the 2nd pillar of Islam',
+    steps:[
+      {icon:'🌅', title:'Fajr', desc:'At dawn, before sunrise — 2 rak\'ahs.'},
+      {icon:'☀️', title:'Dhuhr', desc:'Midday, after the sun passes its peak — 4 rak\'ahs.'},
+      {icon:'🌤️', title:'Asr', desc:'Mid-afternoon — 4 rak\'ahs.'},
+      {icon:'🌇', title:'Maghrib', desc:'Just after sunset — 3 rak\'ahs.'},
+      {icon:'🌃', title:'Isha', desc:'Night, after twilight fades — 4 rak\'ahs.'},
+    ],
+    footer:'🕌 "The key to Paradise is prayer" — Prophet Muhammad ﷺ (Tirmidhi)'
+  },
+  tasbih: {
+    icon:'📿', color:['#fcd34d','#d97706'],
+    title:'Tasbih of Fatimah — After Every Prayer',
+    sub:'100 remembrances that bring peace to the heart',
+    steps:[
+      {icon:'📿', title:'SubhanAllah — 33×', desc:'"Glory be to Allah"'},
+      {icon:'🙏', title:'Alhamdulillah — 33×', desc:'"All praise is due to Allah"'},
+      {icon:'☝️', title:'Allahu Akbar — 34×', desc:'"Allah is the Greatest"'},
+    ],
+    footer:'💚 "In the remembrance of Allah do hearts find rest" — Quran 13:28'
+  },
+};
 const KB={
   fatiha:"Al-Fatiha (The Opening) is the first surah of the Quran, called 'Umm al-Kitab' (Mother of the Book). It has 7 verses and is recited in every unit of prayer. It covers praise of Allah, acknowledgment of His Lordship, and the prayer for guidance to the straight path.",
   prayer:"Muslims perform 5 daily prayers: Fajr (dawn), Dhuhr (midday), Asr (afternoon), Maghrib (sunset), and Isha (night). Prayer is the 2nd pillar of Islam — the Prophet ﷺ said: 'The key to Paradise is prayer.' (Tirmidhi)",
@@ -3528,6 +3632,47 @@ function getAnswer(q) {
   for (const [kws,key] of map) { if (kws.some(k=>l.includes(k))) return KB[key]; }
   return KB.default;
 }
+// Same keyword routing as getAnswer(), but for topics that have a rich
+// illustrated step guide available. Checked first so "how to" questions get
+// the visual walkthrough instead of a text paragraph.
+function getGuide(q) {
+  const l=q.toLowerCase();
+  const map=[
+    [['wudu','ablution','purif'],'wudu'],
+    [['pillar','five pillars'],'pillars'],
+    [['tasbih','subhan','dhikr','zikr'],'tasbih'],
+    [['pray','salah','namaz','salat'],'prayer'],
+  ];
+  for (const [kws,key] of map) { if (kws.some(k=>l.includes(k))) return AI_GUIDES[key]; }
+  return null;
+}
+function addGuideMsg(guide) {
+  const a=document.getElementById('chat-area');
+  const d=document.createElement('div');
+  d.className='cmsg-guide';
+  const [c1,c2]=guide.color;
+  let stepsHtml = guide.steps.map((s,i)=>`
+    <div class="ai-guide-step">
+      <div class="ai-guide-step-icon" style="--gsi:${c1};--gsi2:${c2}">${s.icon}<span class="ags-num" style="color:${c2}">${i+1}</span></div>
+      <div>
+        <div class="ai-guide-step-title">${s.title}</div>
+        <div class="ai-guide-step-desc">${s.desc}</div>
+      </div>
+    </div>`).join('');
+  d.innerHTML = `
+    <div class="ai-guide-card">
+      <div class="ai-guide-hero">
+        <div class="ai-guide-hero-icon" style="background:radial-gradient(circle at 32% 26%, rgba(255,255,255,.7), rgba(255,255,255,0) 50%), linear-gradient(150deg, ${c1}, ${c2})">${guide.icon}</div>
+        <div>
+          <div class="ai-guide-title">${guide.title}</div>
+          <div class="ai-guide-sub">${guide.sub}</div>
+        </div>
+      </div>
+      <div class="ai-guide-steps">${stepsHtml}</div>
+      ${guide.footer ? `<div class="ai-guide-footer">${guide.footer}</div>` : ''}
+    </div>`;
+  a.appendChild(d); a.scrollTop=a.scrollHeight;
+}
 function initAI() {
   const w=localStorage.getItem('aiWelcome')||"As-salamu alaykum wa rahmatullahi wa barakatuh! 🌙\n\nI'm your Islamic AI Guide. Ask me about the Quran, prayer, fasting, Islamic history, or any aspect of daily Islamic life.";
   addMsg(w,'bot');
@@ -3540,7 +3685,18 @@ async function sendChat() {
   const txt=inp.value.trim(); if(!txt) return;
   addMsg(txt,'user'); inp.value=''; inp.style.height='';
   totChats++; localStorage.setItem('totChats',totChats); addTyping();
-  
+
+  // Illustrated step guide takes priority — much easier to follow along with
+  // (e.g. wudu, prayer times, pillars) than a wall of plain text.
+  const guide = getGuide(txt);
+  if (guide) {
+    setTimeout(() => {
+      removeTyping();
+      addGuideMsg(guide);
+    }, 600);
+    return;
+  }
+
   // Check local KB first (verified accurate) before calling remote AI
   const localAnswer = getAnswer(txt);
   const isDefault = (localAnswer === KB.default);
