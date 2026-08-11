@@ -419,7 +419,8 @@ body { font-family:'Poppins',sans-serif;
 .ni { min-width:52px; }
 
 /* ── THEME FAB (draggable) ────────────── */
-.tfab { position:fixed; right:14px; top:78px; z-index:9; width:43px; height:43px; border-radius:50%; background:var(--p); box-shadow:0 4px 14px rgba(0,0,0,.3); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.1rem; touch-action:none; }
+.tfab { position:fixed; right:14px; top:78px; z-index:9; width:43px; height:43px; border-radius:50%; background:var(--p); box-shadow:0 4px 14px rgba(0,0,0,.3); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.1rem; touch-action:none; opacity:1; transition:left .2s ease, top .2s ease, opacity .3s ease; }
+.tfab.dragging { transition:none; }
 .tpanel { position:fixed; right:13px; top:130px; z-index:10; background:var(--dark2); border-radius:17px; padding:11px; display:flex; flex-direction:column; gap:7px; box-shadow:0 8px 28px rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.09); transform:scale(.7) translateY(-20px); opacity:0; transition:transform .25s cubic-bezier(.34,1.56,.64,1),opacity .2s; pointer-events:none; min-width:138px; }
 .tpanel.open { transform:scale(1) translateY(0); opacity:1; pointer-events:all; }
 .topt { display:flex; align-items:center; gap:9px; cursor:pointer; padding:5px 6px; border-radius:10px; transition:background .15s; }
@@ -2448,15 +2449,38 @@ function toggleTP() { document.getElementById('tpanel').classList.toggle('open')
 function closeTP()  { document.getElementById('tpanel').classList.remove('open'); }
 document.addEventListener('click', e => { if (!e.target.closest('#tfab') && !e.target.closest('#tpanel')) closeTP(); });
 
-// Draggable fab
+// Draggable fab — snaps to the nearest screen edge on release so it never
+// ends up parked in the middle of content (was covering chat bubbles / verse
+// cards wherever the user last dropped it, with zero collision avoidance).
 (function(){
   const fab = document.getElementById('tfab');
   const panel = document.getElementById('tpanel');
   let dragging=false, sX, sY, iL, iT, moved=false;
+
+  function snapToEdge(nl, nt){
+    // Snap horizontally to whichever edge is closer; keep whatever vertical
+    // spot the user chose (clamped to stay fully on-screen).
+    const fabW = fab.offsetWidth || 43;
+    const goLeft = (nl + fabW/2) < window.innerWidth/2;
+    const finalL = goLeft ? 6 : window.innerWidth - fabW - 6;
+    const finalT = Math.max(60, Math.min(window.innerHeight - 110, nt));
+    fab.style.left = finalL+'px'; fab.style.right='auto';
+    fab.style.top = finalT+'px';
+    fab.style.opacity = '0.55'; // dim slightly at rest so it's less obtrusive over content
+    // Flip the settings panel to open on the side away from the screen edge
+    // so it never opens off-screen when the fab is snapped to the left/right.
+    if (goLeft) { panel.style.left=(finalL)+'px'; panel.style.right='auto'; }
+    else { panel.style.left='auto'; panel.style.right=(6)+'px'; }
+    panel.style.top=(finalT+52)+'px';
+  }
+
   fab.addEventListener('touchstart', e => {
     const t = e.touches[0]; sX=t.clientX; sY=t.clientY;
     const r=fab.getBoundingClientRect(); iL=r.left; iT=r.top;
-    dragging=true; moved=false; e.preventDefault();
+    dragging=true; moved=false;
+    fab.classList.add('dragging');
+    fab.style.opacity = '1'; // full opacity while actively being dragged/touched
+    e.preventDefault();
   }, {passive:false});
   document.addEventListener('touchmove', e => {
     if (!dragging) return;
@@ -2471,7 +2495,16 @@ document.addEventListener('click', e => { if (!e.target.closest('#tfab') && !e.t
     e.preventDefault();
   }, {passive:false});
   document.addEventListener('touchend', () => {
-    if (dragging && !moved) toggleTP();
+    if (dragging){
+      fab.classList.remove('dragging');
+      if (moved){
+        const r=fab.getBoundingClientRect();
+        snapToEdge(r.left, r.top);
+      } else {
+        toggleTP();
+        fab.style.opacity='1';
+      }
+    }
     dragging=false;
   });
   fab.addEventListener('click', () => { if (!moved) toggleTP(); moved=false; });
