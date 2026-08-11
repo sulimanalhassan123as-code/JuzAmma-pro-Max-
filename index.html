@@ -2345,6 +2345,9 @@ body { font-family:'Poppins',sans-serif;
 <!-- Toast -->
 <div class="toast" id="toast-el"></div>
 <audio id="aud"></audio>
+    <audio id="mem-aud" preload="auto" style="display:none"></audio>
+    <audio id="wudu-aud" preload="none" style="display:none"></audio>
+    <audio id="night-aud" preload="none" style="display:none"></audio>
 
 <script>
 // ================================================================
@@ -2893,7 +2896,7 @@ function resetTasbih() { cnt=0; stg=0; renderChips(); updateTUI(); toast('↺ Re
 let memMode='listen', memReciter='Alafasy_128kbps';
 let memSurahId=0, memVerseIdx=0, memPlaying=false;
 let memLoop=1, memLoopCount=0, memPause=3, memAuto=true, memTransOn=false;
-let memProgress={}, memAudio=new Audio();
+let memProgress={}, memAudio=document.getElementById('mem-aud');
 let memPauseTimer=null, memProgInterval=null;
 const loopOpts=[1,2,3,5,10], pauseOpts=[0,3,5,10,15];
 let loopCycle=0, pauseCycle=1;
@@ -3406,7 +3409,7 @@ let wuduReadingAll = false;
 let wuduStepCounter = 0;
 
 // Wudu audio guide — uses native Android TTS in the APK, Web Speech API on web/PWA
-let wuduAudio = new Audio();
+let wuduAudio = document.getElementById('wudu-aud');
 function wuduSpeak(text, onDone) {
   wuduStopReading();
   const ok = universalSpeak(text, 'en', 0.85, onDone);
@@ -4152,7 +4155,7 @@ function togglePcard(i) {
 // ================================================================
 // NIGHT / QURAN RADIO
 // ================================================================
-let nightAudio = new Audio(), nightPlaying = false, nightLoop = false;
+let nightAudio = document.getElementById('night-aud'), nightPlaying = false, nightLoop = false;
 let nightMode_type = 'full', nightReciter2 = 'Alafasy_128kbps';
 let nightSurahId = 78, nightVerseIdx = 0, nightProgInt2, nightWakeLock = null;
 
