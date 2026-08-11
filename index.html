@@ -3077,8 +3077,21 @@ function memAudioEnded(sid, idx, total) {
 function memPlayPause() {
   if(memPlaying){ memAudio.pause(); memPlaying=false; clearTimeout(memPauseTimer); clearInterval(memProgInterval); document.getElementById('teacher-status').innerText='Paused'; }
   else {
-    if(memSurahId){ memAudio.play().catch(()=>{}); memPlaying=true; document.getElementById('teacher-status').innerText='Playing…'; }
-    else toast('Select a surah first');
+    if(!memSurahId){ toast('Select a surah first'); updateMemPlayBtn(); return; }
+    // If nothing has ever been loaded into memAudio yet (fresh "Tap ▶ to start"
+    // state — e.g. right after picking a surah), memAudio.src is empty and a
+    // bare .play() call silently fails (swallowed by .catch), so nothing ever
+    // starts. Detect that and kick off the first verse properly instead.
+    const hasLoadedSrc = memAudio.src && memAudio.src !== window.location.href;
+    if(!hasLoadedSrc){
+      memPlayVerse(memSurahId, memVerseIdx||0);
+      return; // memPlayVerse already sets memPlaying + updates the button
+    }
+    memAudio.play().catch(()=>{
+      // Resume failed too (e.g. stale/broken src) — reload current verse fresh
+      memPlayVerse(memSurahId, memVerseIdx||0);
+    });
+    memPlaying=true; document.getElementById('teacher-status').innerText='Playing…';
   }
   updateMemPlayBtn();
 }
