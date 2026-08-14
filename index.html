@@ -366,40 +366,201 @@ body { font-family:'Poppins',sans-serif;
 .adm-panel { display:none; }
 .adm-panel.on { display:block; }
 
-/* ── PROPHETS ────────────────────────── */
+/* ── PROPHETS (REDESIGNED WITH 3D + MOTION) ────────────────────────── */
 #prophets-view { display:none; flex-direction:column; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:var(--bg); overflow-y:auto; -webkit-overflow-scrolling:touch; }
 #prophets-view.active { display:flex; flex-direction:column; }
-.proph-hdr { background:linear-gradient(160deg,#1a0a2e,#2d1458,#1a0a2e); padding:18px 15px 20px; color:#fff; flex-shrink:0; text-align:center; position:relative; overflow:hidden; }
-.proph-hdr::before { content:'✨'; position:absolute; font-size:8rem; opacity:.04; top:-10px; left:50%; transform:translateX(-50%); pointer-events:none; }
-.proph-hdr h2 { font-size:1.1rem; font-weight:800; margin-top:6px; position:relative; }
-.proph-hdr p { font-size:.73rem; opacity:.45; margin-top:2px; position:relative; }
-.proph-badge { display:inline-block; background:#8b5cf6; color:#fff; font-size:.63rem; padding:3px 9px; border-radius:11px; font-weight:700; position:relative; }
-.proph-grid { display:flex; flex-direction:column; gap:10px; padding:12px 13px; }
-.pcard { background:var(--card); border-radius:18px; overflow:hidden; border:1.5px solid var(--bdr); transition:transform .2s; position:relative; }
+
+/* Hero header with 3D parallax orbs */
+.proph-hdr {
+  background:linear-gradient(160deg,#1a0a2e 0%,#2d1458 35%,#1a0a2e 100%);
+  padding:18px 15px 22px; color:#fff; flex-shrink:0; text-align:center;
+  position:relative; overflow:hidden;
+  perspective:1000px;
+}
+.proph-hdr::before {
+  content:'✦'; position:absolute; font-size:12rem; opacity:.04;
+  top:-20px; left:50%; transform:translateX(-50%) rotate(15deg);
+  pointer-events:none; animation:prophFloat 8s ease-in-out infinite;
+}
+.proph-hdr::after {
+  content:''; position:absolute; top:0; left:0; right:0; bottom:0;
+  background:radial-gradient(ellipse at 30% 20%,rgba(139,92,246,.15),transparent 50%),
+             radial-gradient(ellipse at 70% 80%,rgba(217,119,6,.08),transparent 50%);
+  pointer-events:none;
+}
+@keyframes prophFloat {
+  0%,100% { transform:translateX(-50%) rotate(15deg) translateY(0); }
+  50% { transform:translateX(-50%) rotate(15deg) translateY(-10px); }
+}
+.proph-hdr h2 { font-size:1.25rem; font-weight:800; margin-top:8px; position:relative;
+  background:linear-gradient(135deg,#fff 0%,#c4b5fd 50%,#fff 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.proph-hdr p { font-size:.73rem; opacity:.5; margin-top:3px; position:relative; }
+.proph-badge {
+  display:inline-flex; align-items:center; gap:4px;
+  background:linear-gradient(135deg,#8b5cf6,#6d28d9); color:#fff;
+  font-size:.63rem; padding:4px 12px; border-radius:12px; font-weight:700;
+  position:relative; box-shadow:0 2px 12px rgba(139,92,246,.4);
+  animation:prophBadgePulse 3s ease-in-out infinite;
+}
+@keyframes prophBadgePulse {
+  0%,100% { box-shadow:0 2px 12px rgba(139,92,246,.4); }
+  50% { box-shadow:0 2px 24px rgba(139,92,246,.6); }
+}
+
+/* Prophet grid */
+.proph-grid { display:flex; flex-direction:column; gap:12px; padding:14px 13px 20px; }
+
+/* Individual prophet card with 3D effect */
+.pcard {
+  background:var(--card); border-radius:20px; overflow:hidden;
+  border:1.5px solid var(--bdr); position:relative;
+  transition:transform .25s cubic-bezier(.4,0,.2,1), box-shadow .25s, border-color .25s;
+  transform-style:preserve-3d;
+  box-shadow:0 2px 8px rgba(0,0,0,.04);
+}
 .pcard:active { transform:scale(.98); }
-.pcard-top { display:flex; align-items:center; gap:12px; padding:13px 14px; cursor:pointer; position:relative; z-index:1; }
-.pcard-num { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#8b5cf6,#6d28d9); color:#fff; font-size:.78rem; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 2px 8px rgba(139,92,246,.3); }
-.pcard-icon { font-size:1.8rem; filter:drop-shadow(0 2px 4px rgba(0,0,0,.1)); }
-.pcard-info { flex:1; }
-.pcard-name { font-size:.97rem; font-weight:700; color:var(--txt); }
-.pcard-ar { font-family:'Amiri','Noto Naskh Arabic','Scheherazade New',serif; font-size:1.05rem; color:#8b5cf6; direction:rtl; text-align:center; font-feature-settings:'liga' 1,'calt' 1; }
-.pcard-sub { font-size:.72rem; color:var(--txt2); margin-top:1px; }
-.pcard-arrow { color:var(--txt2); font-size:.9rem; transition:transform .2s; }
-.pcard.open .pcard-arrow { transform:rotate(90deg); }
-.pcard-body { display:none; padding:0 14px 14px; border-top:1px solid var(--bdr); }
-.pcard.open .pcard-body { display:block; }
-.pcard-story { font-size:.82rem; color:var(--txt2); line-height:1.75; margin-top:10px; }
-.pcard-lesson { background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(109,40,217,.05)); border:1px solid rgba(139,92,246,.2); border-radius:11px; padding:10px 12px; margin-top:9px; font-size:.78rem; color:var(--txt); line-height:1.6; }
-.pcard-lesson strong { color:#8b5cf6; display:block; margin-bottom:3px; font-size:.72rem; text-transform:uppercase; letter-spacing:.5px; }
-.pcard-video { margin-top:10px; border-radius:12px; overflow:hidden; position:relative; background:#000; box-shadow:0 4px 16px rgba(0,0,0,.15); }
-.pcard-video iframe { width:100%; height:185px; border:none; display:block; }
-.pcard-video::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent); z-index:2; pointer-events:none; }
-.pcard-vid-lbl { font-size:.69rem; color:var(--txt2); margin-top:5px; text-align:center; }
-.pvirtue { display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; }
-.pvtag { padding:4px 9px; border-radius:10px; font-size:.67rem; background:rgba(139,92,246,.1); color:#8b5cf6; font-weight:600; border:1px solid rgba(139,92,246,.15); }
-.pcard-bg { position:absolute; top:0; left:0; right:0; bottom:0; opacity:.5; pointer-events:none; z-index:0; }
-.pcard.open .pcard-bg { opacity:.7; }
-.pcard.open { border-color:rgba(139,92,246,.4); box-shadow:0 4px 20px rgba(139,92,246,.12); }
+.pcard.open {
+  border-color:rgba(139,92,246,.4);
+  box-shadow:0 8px 32px rgba(139,92,246,.15), 0 2px 8px rgba(0,0,0,.06);
+  transform:translateY(-2px);
+}
+
+/* Background gradient layer with 3D depth */
+.pcard-bg {
+  position:absolute; top:0; left:0; right:0; bottom:0;
+  opacity:.35; pointer-events:none; z-index:0;
+  transition:opacity .3s;
+}
+.pcard.open .pcard-bg { opacity:.6; }
+
+/* Glow effect on open */
+.pcard.open::after {
+  content:''; position:absolute; top:0; left:0; right:0; height:4px;
+  background:linear-gradient(90deg,transparent,rgba(139,92,246,.6),rgba(217,119,6,.4),transparent);
+  z-index:3; animation:prophGlow 2s ease-in-out infinite;
+}
+@keyframes prophGlow {
+  0%,100% { opacity:.5; } 50% { opacity:1; }
+}
+
+/* Card top section */
+.pcard-top {
+  display:flex; align-items:center; gap:12px;
+  padding:14px 15px; cursor:pointer; position:relative; z-index:1;
+}
+.pcard-num {
+  width:40px; height:40px; border-radius:50%;
+  background:linear-gradient(135deg,#8b5cf6,#6d28d9); color:#fff;
+  font-size:.82rem; font-weight:800;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  box-shadow:0 3px 12px rgba(139,92,246,.35), inset 0 1px 2px rgba(255,255,255,.2);
+  transition:transform .3s;
+}
+.pcard.open .pcard-num {
+  transform:scale(1.1) rotate(5deg);
+  box-shadow:0 4px 20px rgba(139,92,246,.5), inset 0 1px 2px rgba(255,255,255,.3);
+}
+.pcard-icon { font-size:2rem; filter:drop-shadow(0 3px 6px rgba(0,0,0,.12)); transition:transform .3s; }
+.pcard.open .pcard-icon { transform:scale(1.15) rotate(-5deg); }
+.pcard-info { flex:1; min-width:0; }
+.pcard-name { font-size:1rem; font-weight:700; color:var(--txt); }
+.pcard-ar {
+  font-family:'Amiri','Noto Naskh Arabic','Scheherazade New',serif;
+  font-size:1.15rem; color:#8b5cf6; direction:rtl; text-align:center;
+  font-feature-settings:'liga' 1,'calt' 1; margin-top:2px;
+}
+.pcard-sub { font-size:.72rem; color:var(--txt2); margin-top:2px; }
+.pcard-arrow {
+  color:var(--txt2); font-size:1.1rem; transition:transform .3s cubic-bezier(.4,0,.2,1);
+  flex-shrink:0;
+}
+.pcard.open .pcard-arrow { transform:rotate(90deg); color:#8b5cf6; }
+
+/* Card body (expandable) */
+.pcard-body {
+  max-height:0; overflow:hidden;
+  transition:max-height .4s cubic-bezier(.4,0,.2,1);
+  padding:0 15px;
+}
+.pcard.open .pcard-body { max-height:2000px; padding:0 15px 16px; }
+
+/* Inner body content appears after border */
+.pcard-body-inner {
+  border-top:1px solid var(--bdr); padding-top:14px;
+  opacity:0; transition:opacity .3s .1s;
+}
+.pcard.open .pcard-body-inner { opacity:1; }
+
+/* Era badge */
+.pcard-era {
+  display:inline-block; font-size:.66rem; font-weight:600;
+  color:#8b5cf6; background:rgba(139,92,246,.08);
+  border:1px solid rgba(139,92,246,.15); border-radius:10px;
+  padding:4px 10px; margin-bottom:8px;
+}
+/* Mentions badge */
+.pcard-mentions {
+  display:inline-block; font-size:.64rem; font-weight:600;
+  color:var(--gold); background:rgba(217,119,6,.08);
+  border:1px solid rgba(217,119,6,.15); border-radius:10px;
+  padding:4px 10px; margin-bottom:10px; margin-left:5px;
+}
+
+/* Tags */
+.pvirtue { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px; }
+.pvtag {
+  padding:4px 10px; border-radius:11px; font-size:.66rem; font-weight:600;
+  background:rgba(139,92,246,.1); color:#8b5cf6;
+  border:1px solid rgba(139,92,246,.12);
+  transition:transform .2s;
+}
+.pvtag:hover { transform:translateY(-1px); }
+
+/* Story text */
+.pcard-story {
+  font-size:.82rem; color:var(--txt2); line-height:1.8;
+  white-space:pre-line; margin-bottom:12px;
+}
+
+/* Lesson box */
+.pcard-lesson {
+  background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(109,40,217,.04));
+  border:1px solid rgba(139,92,246,.2); border-radius:14px;
+  padding:12px 14px; margin-bottom:12px;
+  font-size:.79rem; color:var(--txt); line-height:1.65;
+  position:relative; overflow:hidden;
+}
+.pcard-lesson::before {
+  content:''; position:absolute; left:0; top:0; bottom:0; width:4px;
+  background:linear-gradient(180deg,#8b5cf6,#d97706); border-radius:4px 0 0 4px;
+}
+.pcard-lesson strong {
+  color:#8b5cf6; display:block; margin-bottom:4px;
+  font-size:.7rem; text-transform:uppercase; letter-spacing:.6px; font-weight:700;
+}
+
+/* Video container with 3D shadow */
+.pcard-video {
+  border-radius:14px; overflow:hidden; position:relative;
+  background:#000;
+  box-shadow:0 6px 20px rgba(0,0,0,.2), 0 2px 8px rgba(0,0,0,.1);
+  transform:translateZ(0);
+  transition:box-shadow .3s;
+}
+.pcard-video:hover { box-shadow:0 8px 28px rgba(0,0,0,.25); }
+.pcard-video iframe { width:100%; height:200px; border:none; display:block; }
+.pcard-video::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);
+  z-index:2; pointer-events:none;
+}
+.pcard-vid-lbl {
+  font-size:.69rem; color:var(--txt2); margin-top:6px; text-align:center;
+  display:flex; align-items:center; justify-content:center; gap:4px;
+}
+.pcard-vid-lbl b { color:#8b5cf6; font-weight:600; }
 
 /* ── NIGHT / QURAN RADIO ─────────────── */
 #night-view { display:none; flex-direction:column; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:#010611; overflow:hidden; }
@@ -4162,151 +4323,226 @@ document.addEventListener('visibilitychange', () => {
 // PROPHETS
 // ================================================================
 const PROPHETS = [
-  { n:'Adam',     ar:'آدَم',     num:1,  icon:'🌱', title:'Father of Humanity',    vid:'fzOBRSvmSC8',
-    bg:'linear-gradient(135deg,#e8f5e9,#f1f8e9)',
-    story:"Adam ﷺ was the first human and the first Prophet. Allah created him from clay, breathed life into him, and taught him the names of all things. He and Hawwa (Eve) were placed in Paradise, but were tested and descended to Earth, where they repented and were forgiven. Allah chose Adam as His first messenger to guide mankind.",
-    lesson:"Allah forgives those who sincerely repent. No matter how great a mistake, turning back to Allah with a sincere heart brings forgiveness.",
-    tags:['First Prophet','Creation','Repentance','Paradise'] },
-  { n:'Nuh',      ar:'نُوح',     num:2,  icon:'⛵', title:'Builder of the Ark',     vid:'CgYVH9IYF3c',
-    bg:'linear-gradient(135deg,#e3f2fd 0%,#bbdefb 50%,#90caf9 100%)',
-    story:"Nuh ﷺ called his people to Islam for 950 years. They refused and mocked him. Allah commanded him to build a great ark. The great flood came and covered the earth. Only those who believed were saved. His son refused to board and drowned. After the flood, Allah established a new generation through the believers.",
-    lesson:"Patience in calling people to the truth, even when results seem impossible. 950 years of dawah — never give up.",
-    tags:['Patience','Flood','Dawah','950 Years'] },
-  { n:'Ibrahim',  ar:'إِبْرَاهِيم', num:3, icon:'🔥', title:'Friend of Allah (Khalilullah)', vid:'W45DrRGECQE',
-    bg:'linear-gradient(135deg,#fff3e0 0%,#ffe0b2 50%,#ffcc80 100%)',
-    story:"Ibrahim ﷺ was called Khalilullah — the Friend of Allah. He broke his people's idols and was thrown into a great fire — but Allah made it cool and safe for him. He was commanded to leave his wife Hajar and infant son Ismail in the desert — and obeyed. He was then commanded to sacrifice his son, and when he submitted, Allah replaced Ismail with a ram. He and Ismail built the Kaaba.",
-    lesson:"True submission to Allah means trusting Him completely even when you don't understand why. Ibrahim's faith was tested at every level.",
-    tags:['Khalilullah','Kaaba','Sacrifice','Fire','Tawhid'] },
-  { n:'Ismail',   ar:'إِسْمَاعِيل', num:4, icon:'🏗️', title:'Helper of the Kaaba',   vid:'_nKqgSky4Sg',
-    bg:'linear-gradient(135deg,#efebe9,#d7ccc8)',
-    story:"Ismail ﷺ was left as an infant in the barren valley of Mecca with his mother Hajar. When she ran between Safa and Marwa in search of water, Allah caused the Zamzam spring to gush from the ground. Ismail grew up in Mecca, learned Arabic from the Jurhum tribe, and helped his father Ibrahim build the Kaaba — the first house of worship on earth.",
-    lesson:"Trust in Allah's provision. Hajar's trust and running between Safa and Marwa became an act of worship for all time in Hajj.",
-    tags:['Zamzam','Kaaba','Safa & Marwa','Mecca'] },
-  { n:'Musa',     ar:'مُوسَى',   num:5,  icon:'🪄', title:'The One Who Spoke to Allah', vid:'dlA_UuwzL54',
-    bg:'linear-gradient(135deg,#e8eaf6 0%,#c5cae9 50%,#9fa8da 100%)',
-    story:"Musa ﷺ was born when Pharaoh was killing newborn boys. His mother placed him in a basket in the Nile and he was found by Pharaoh's family. He grew up in the palace. After accidentally killing a man, he fled to Madyan. Allah spoke to him directly at the burning bush and sent him back to free the Israelites from slavery. He parted the Red Sea, received the Torah, and led his people for 40 years.",
-    lesson:"Allah prepares His servants for great missions through trials. Growing up in the house of the enemy was Allah's plan all along.",
-    tags:['Pharaoh','Red Sea','Torah','Spoke to Allah'] },
-  { n:'Dawud',    ar:'دَاوُد',   num:6,  icon:'🎵', title:'King, Prophet & Psalmist', vid:'uI3v_emZ0VY',
-    bg:'linear-gradient(135deg,#f3e5f5 0%,#e1bee7 50%,#ce93d8 100%)',
-    story:"Dawud ﷺ killed the giant Jalut (Goliath) as a young man with a sling. Allah gave him the kingdom of Israel and the Zabur (Psalms). He had the most beautiful voice — when he recited, birds and mountains would join in glorifying Allah. He was known for his justice and his deep worship, fasting every other day throughout his life.",
-    lesson:"Gratitude for gifts. Allah gave Dawud a beautiful voice — he used it only for the glorification of Allah.",
-    tags:['Goliath','Zabur','King','Beautiful Voice'] },
+  { n:'Adam',     ar:'آدَم',     num:1,  icon:'🌱', title:'Father of Humanity',    vid:'mknf5MB1qDI',
+    bg:'linear-gradient(135deg,#e8f5e9 0%,#c8e6c9 40%,#a5d6a7 100%)',
+    era:'First Human • Created by Allah\'s Hands',
+    mentions:'Quran: 25 times • First Prophet',
+    story:"Adam AS was the first human and the first Prophet of Allah. Allah created him from clay and soil gathered from all parts of the Earth, which is why human skin tones vary. Allah shaped him with His own hands, breathed into him from His spirit, and taught him the names of all things.\n\nAllah commanded the angels to prostrate to Adam, and all did except Iblis (Satan), who refused out of arrogance. Adam and Hawwa (Eve) were placed in Paradise, where they lived in bliss. But Iblis deceived them into eating from the forbidden tree. They were sent down to Earth — not as punishment, but as the beginning of the human experience.\n\nOn Earth, Adam repented sincerely: 'Our Lord, we have wronged ourselves.' Allah forgave him. He became the first Prophet, teaching his children about Allah and righteous living. He lived for approximately 1,000 years. His son Habil (Abel) was the first human to be murdered, killed by his brother Qabil (Cain).\n\nAdam is the father of all humanity. Every human being descends from him and Hawwa.",
+    lesson:"Allah forgives those who sincerely repent. No matter how great a mistake, turning back to Allah with a sincere heart brings forgiveness. Adam's descent to Earth was not a curse — it was the beginning of humanity's purpose.",
+    tags:['First Prophet','Creation','Repentance','Father of Humanity'] },
+
+  { n:'Nuh',      ar:'نُوح',     num:2,  icon:'⛵', title:'Builder of the Ark',     vid:'AclAV0cY5a8',
+    bg:'linear-gradient(135deg,#e3f2fd 0%,#bbdefb 40%,#90caf9 100%)',
+    era:'Second Prophet • Lived 950+ Years',
+    mentions:'Quran: 43 times • Mentioned in 28 surahs',
+    story:"Nuh AS was the first messenger sent after Adam to call humanity back to the worship of Allah alone. His people had fallen into idol worship.\n\nNuh AS called his people to Islam for 950 years. He preached day and night — publicly, privately, with wisdom and clear warnings. Despite his extraordinary patience, only a small number believed. The wealthy and powerful mocked him.\n\nWhen his people threatened to stone him, Nuh AS made a dua against them. Allah commanded him to build a great ark. The people laughed as he built a ship on dry land, far from any sea. But when the flood came, the springs of the Earth erupted and the sky poured rain for 40 days and 40 nights.\n\nNuh AS boarded the ark with the believers, pairs of every animal, and his family. But his own son, who refused to board, was drowned. The ark came to rest on Mount Judi. After the flood, Allah established a new generation through the survivors.\n\nNuh AS is known as the 'Second Adam' because all of humanity after the flood descends from his sons: Sam (Semites), Ham (Africans), and Yafith (Europeans/Asians).",
+    lesson:"Patience in calling people to the truth, even when results seem impossible. 950 years of dawah — never give up. When Allah's punishment comes, no wealth or power can save — only faith.",
+    tags:['950 Years','Great Flood','Ark','Dawah','Patience','Second Adam'] },
+
+  { n:'Ibrahim',  ar:'إِبْرَاهِيم', num:3, icon:'🔥', title:'Friend of Allah (Khalilullah)', vid:'ZzWI0EsWrh4',
+    bg:'linear-gradient(135deg,#fff3e0 0%,#ffe0b2 40%,#ffcc80 100%)',
+    era:'Third Prophet • Father of the Prophets',
+    mentions:'Quran: 69 times • Mentioned in 35 surahs',
+    story:"Ibrahim AS was born in ancient Mesopotamia (modern Iraq) into a family of idol worshippers. From a young age, he contemplated the nature of the universe — he saw a star and said 'This is my Lord,' but it set. He saw the moon, but it set. He saw the sun, but it set. He concluded: 'I do not love things that set.'\n\nHe confronted his people about idol worship with devastating logic. When they were away at a festival, he smashed all the idols except the biggest one, placing the axe in its hands. When they questioned him, he said: 'Ask the big one — if it can speak.'\n\nThe king, Namrud (Nimrod), ordered him thrown into a massive fire. But Allah commanded: 'O fire, be cool and safe for Ibrahim.' The fire did not burn him — it became a garden of coolness.\n\nIbrahim AS was commanded to leave his wife Hajar and infant son Ismail in the barren valley of Mecca — and he obeyed. Later, he was tested with the command to sacrifice Ismail. Both father and son submitted. Allah replaced Ismail with a ram from Paradise.\n\nIbrahim AS and Ismail built the Kaaba — the first house of worship dedicated to Allah. He is called Khalilullah — the Friend of Allah. Every prophet after him comes from his lineage: from Ismail came the Arabs and Muhammad SAW, from Ishaq came the Israelite prophets.",
+    lesson:"True submission to Allah means trusting Him completely even when you don't understand why. Ibrahim's faith was tested at every level — fire, family, sacrifice — and he passed every test.",
+    tags:['Khalilullah','Kaaba','Sacrifice','Fire','Tawhid','Father of Prophets'] },
+
+  { n:'Ismail',   ar:'إِسْمَاعِيل', num:4, icon:'🏗️', title:'Helper of the Kaaba',   vid:'fk9JJqui9r0',
+    bg:'linear-gradient(135deg,#efebe9 0%,#d7ccc8 40%,#bcaaa4 100%)',
+    era:'Fourth Prophet • First-Born of Ibrahim',
+    mentions:'Quran: 12 times • Ancestor of Muhammad SAW',
+    story:"Ismail AS was the first son of Ibrahim AS, born to Hajar. When he was still an infant, Allah commanded Ibrahim to leave Hajar and Ismail in the barren valley of Mecca — a desert with no water, no people, no vegetation.\n\nWhen the water ran out, Hajar ran between the hills of Safa and Marwa seven times. At that moment, the angel Jibreel struck the ground, and the well of Zamzam gushed forth — a spring that still flows today, 4,000 years later.\n\nIsmail AS grew up in Mecca, learned Arabic from the Jurhum tribe, and became known for his archery and horsemanship. The Prophet Muhammad SAW said: 'I am the son of the two sacrifices' — referring to Ismail and his own father Abdullah.\n\nYears later, Ibrahim returned and together they built the Kaaba. This act of father and son building the House of Allah is commemorated every year by millions during Hajj.\n\nIsmail AS is the ancestor of the Prophet Muhammad SAW. The well of Zamzam, the running between Safa and Marwa (Sa'i), and the sacrifice at Mina — all trace back to Ismail and his mother Hajar.",
+    lesson:"Trust in Allah's provision. Hajar's running between Safa and Marwa was not desperation — it was active trust. She did everything she could, and Allah did the rest. That act became an eternal ritual of Hajj.",
+    tags:['Zamzam','Kaaba','Safa & Marwa','Ancestor of Muhammad','Sacrifice','Mecca'] },
+
+  { n:'Musa',     ar:'مُوسَى',   num:5,  icon:'🪄', title:'The One Who Spoke to Allah', vid:'jdX_AfjWL04',
+    bg:'linear-gradient(135deg,#e8eaf6 0%,#c5cae9 40%,#9fa8da 100%)',
+    era:'Greatest Prophet of Bani Israel',
+    mentions:'Quran: 136 times • Most mentioned prophet',
+    story:"Musa AS was born in Egypt during the reign of Pharaoh (Fir'aun), who had decreed that every newborn Israelite boy be killed. Musa's mother, inspired by Allah, placed him in a basket in the Nile. The river carried him to Pharaoh's palace, where he was adopted by Pharaoh's wife Asiya.\n\nMusa AS grew up in the palace of the man who wanted to kill his people. By Allah's plan, his own mother was hired as his wet nurse. As a young man, he accidentally killed a Copt who was beating an Israelite. Fearing punishment, he fled to Madyan.\n\nOn his return journey, at Mount Sinai, Allah spoke to him directly from a burning bush: 'O Musa, indeed I am Allah, Lord of the Worlds.' He was given two miracles: his staff (which turned into a snake) and his hand (which glowed white). He was sent back to Pharaoh with the message: 'Let the Children of Israel go.'\n\nA competition of magic ensued — Pharaoh's magicians threw their ropes and staffs, but Musa's staff swallowed them all. The magicians fell in prostration, saying: 'We believe in the Lord of the Worlds.'\n\nAllah sent 10 signs upon Egypt. Finally, Musa led Bani Israel out of Egypt by night. At the Red Sea, Musa struck the water with his staff and the sea parted. Bani Israel crossed safely. Pharaoh and his army followed, and the sea closed upon them.\n\nOn Mount Sinai, Allah gave Musa the Torah (Tawrat). While he was away 40 days, Bani Israel built a golden calf and worshipped it. Musa returned furious, broke the tablets, and rebuked his people. He led them for 40 years in the desert.\n\nMusa AS is the only prophet Allah spoke to directly (Kalimullah). He is mentioned more than any other prophet in the Quran — 136 times.",
+    lesson:"Allah prepares His servants for great missions through trials. Growing up in the house of the enemy was Allah's plan all along. Trust Allah's process.",
+    tags:['Kalimullah','Pharaoh','Red Sea','Torah','Burning Bush','10 Signs','Bani Israel'] },
+
+  { n:'Dawud',    ar:'دَاوُد',   num:6,  icon:'🎵', title:'King, Prophet & Psalmist', vid:'SJHEzAqwuoo',
+    bg:'linear-gradient(135deg,#f3e5f5 0%,#e1bee7 40%,#ce93d8 100%)',
+    era:'King of Israel • Father of Sulaiman',
+    mentions:'Quran: 16 times • Given the Zabur (Psalms)',
+    story:"Dawud AS was a young shepherd when the Israelite army faced Jalut (Goliath). The Israelites were terrified of the giant. Dawud, not even a soldier, volunteered to face him.\n\nArmed with only a sling and a few stones, Dawud AS swung and by Allah's guidance, the stone struck Jalut in the forehead, killing him instantly. The Israelite army charged and won a great victory.\n\nAllah gave Dawud AS the kingdom of Israel and revealed to him the Zabur (Psalms). He was given a miraculous voice: when he recited, the birds, mountains, and even the jinn would join in glorifying Allah.\n\nDawud AS was known for his justice. He established courts, judged disputes with fairness, and was both a king and a prophet. He fasted every other day (the fast of Dawud, which the Prophet SAW called the best fast). He worked with his own hands — making chain mail armor. Despite being a king, he never ate from public treasury.\n\nHe was tested by Allah with a difficult case involving two brothers. Allah used this to teach him about justice and self-restraint. He immediately repented, and Allah raised his rank.\n\nThe Prophet SAW said: 'The most beloved prayer to Allah is the prayer of Dawud — he slept half the night, prayed a third, and slept a sixth.'",
+    lesson:"Gratitude for gifts. Allah gave Dawud a beautiful voice, wisdom, and a kingdom — he used every gift only for the worship and service of Allah. True greatness combines power with humility.",
+    tags:['Goliath','Zabur','King of Israel','Beautiful Voice','Chain Mail','Fast of Dawud'] },
+
   { n:'Sulaiman', ar:'سُلَيْمَان', num:7, icon:'👑', title:'King of Prophets',       vid:'cxLPytuySn0',
-    bg:'linear-gradient(135deg,#fff8e1 0%,#ffecb3 50%,#ffe082 100%)',
-    story:"Sulaiman ﷺ was given the greatest kingdom in history — he commanded humans, jinn, animals, and the wind. He understood the language of birds and animals. He built the great Temple in Jerusalem. The Queen of Sheba, Bilqis, came to him and accepted Islam. Yet with all this power, he was deeply humble and always grateful to Allah.",
-    lesson:"True power comes with humility. Sulaiman had the greatest earthly kingdom yet remained the most grateful servant.",
-    tags:['Jinn','Animals','Wind','Queen of Sheba','Kingdom'] },
-  { n:'Yunus',    ar:'يُونُس',   num:8,  icon:'🐋', title:'The Man of the Whale',   vid:'2c48V4fSqco',
-    bg:'linear-gradient(135deg,#e0f7fa 0%,#b2ebf2 50%,#80deea 100%)',
-    story:"Yunus ﷺ left his people without Allah's permission when they rejected his message. He boarded a ship caught in a terrible storm. The passengers drew lots to throw someone overboard — the lot fell on Yunus. He was swallowed by a great whale. In its belly, in total darkness, he cried: There is no god but You, glory be to You — I was indeed among the wrongdoers. Allah answered and he was released.",
-    lesson:"No darkness is so deep that Allah cannot hear you. Dhikr and sincere repentance are the greatest rescue.",
-    tags:['Whale','Repentance','Darkness','Patience'] },
-  { n:'Isa',      ar:'عِيسَى',   num:9,  icon:'✨', title:'The Messiah, Spirit of Allah', vid:'l7s8R9ugb98',
-    bg:'linear-gradient(135deg,#f3e5f5,#fce4ec)',
-    story:"Isa ﷺ was born miraculously to the Virgin Maryam — with no father, by Allah's command. He spoke in the cradle. He healed the blind and lepers, raised the dead by Allah's permission, and breathed life into birds made of clay. He was given the Injeel (Gospel). When the disbelievers plotted to crucify him, Allah raised him up to the heavens. He will return before the Day of Judgment.",
-    lesson:"Miracles come only from Allah. Isa's signs were gifts from Allah to prove his prophethood — not his own power.",
-    tags:['Miraculous Birth','Messiah','Injeel','Will Return'] },
-  { n:'Muhammad', ar:'مُحَمَّد',  num:10, icon:'🌙', title:'The Final Prophet ﷺ',   vid:'kzIu3hrdqRM',
-    bg:'linear-gradient(135deg,#e8eaf6,#e3f2fd)',
-    story:"Muhammad ﷺ was born in Mecca in 570 CE. He was known as Al-Amin (The Trustworthy) before prophethood. At 40, Angel Jibreel appeared in the Cave of Hira and delivered the first revelation: Read in the name of your Lord. He spent 23 years delivering Allah's message, faced extreme persecution, migrated to Medina, united the Arabs under Islam, and returned to Mecca in a peaceful conquest. He is the seal of all Prophets.",
-    lesson:"He is our living example in every aspect of life — how he ate, slept, spoke, led, forgave, and worshipped. Following his Sunnah is an act of love for Allah.",
-    tags:['Seal of Prophets','Sunnah','Mercy to Mankind'] },
+    bg:'linear-gradient(135deg,#fff8e1 0%,#ffecb3 40%,#ffe082 100%)',
+    era:'Greatest Kingdom in History',
+    mentions:'Quran: 17 times • Given mastery over Jinn',
+    story:"Sulaiman AS inherited the kingdom from his father Dawud AS, but Allah gave him far more — a kingdom that had never been seen before and will never be seen again. He was granted control over:\n\n- The wind — it blew wherever he commanded, carrying his throne.\n- The jinn — they built palaces, statues, and water tanks for him.\n- Animals and birds — he understood their language and they obeyed him.\n- Human subjects — his army included battalions of men, jinn, and birds.\n\nOne day, Sulaiman AS noticed the hoopoe bird was missing. The hoopoe returned with news: it had found a kingdom ruled by a woman — Bilqis, Queen of Sheba (Yemen) — and her people worshipped the sun.\n\nSulaiman AS sent her a letter inviting her to submit to Allah. She came to meet him. To test her, Sulaiman commanded his jinn to bring her throne from Yemen before she arrived. When she witnessed the truth of his prophethood, she submitted: 'My Lord, I have wronged myself, and I submit with Sulaiman to Allah, Lord of the Worlds.'\n\nDespite having the greatest kingdom in history, Sulaiman AS was deeply humble. He prayed: 'My Lord, enable me to be grateful for Your favor.'\n\nNear his death, Sulaiman AS was leaning on his staff. He died in that position, but the jinn continued working — until a termite ate through his staff and he fell. Only then did humans and jinn realize that the jinn did not know the unseen.",
+    lesson:"True power comes with humility. Sulaiman had the greatest earthly kingdom — jinn, animals, wind, and the Queen of Sheba all submitted to him — yet he prayed for gratitude. Power without gratitude is a curse.",
+    tags:['Jinn Control','Animal Language','Wind','Queen of Sheba','Greatest Kingdom','Hoopoe'] },
+
+  { n:'Yunus',    ar:'يُونُس',   num:8,  icon:'🐋', title:'The Man of the Whale',   vid:'etLBpjWmBtc',
+    bg:'linear-gradient(135deg,#e0f7fa 0%,#b2ebf2 40%,#80deea 100%)',
+    era:'Prophet of Nineveh • Dhun-Nun',
+    mentions:'Quran: 6 times • Called Dhun-Nun (Owner of the Whale)',
+    story:"Yunus AS was sent to the people of Nineveh (in modern-day Iraq). He called them to Allah, but they rejected him. After years of preaching, he became angry and frustrated. Without waiting for Allah's command, he left the city and boarded a ship.\n\nAt sea, a violent storm arose. The passengers drew lots to determine who was causing the misfortune. The lot fell on Yunus. They threw him overboard, and he was swallowed by a massive whale.\n\nIn the belly of the whale, in absolute darkness — darker than the deepest ocean — Yunus AS cried out to Allah with a prayer that has become one of the most powerful duas in Islam:\n\n'La ilaha illa anta, subhanaka, inni kuntu minaz-zalimin'\n(There is no god but You, glory be to You, I was indeed among the wrongdoers)\n\nAllah says: 'If he had not been of those who glorify Allah, he would have remained in its belly until the Day of Resurrection.'\n\nAllah commanded the whale to spit him out on the shore. Yunus AS emerged weak, his skin blistered. Allah caused a gourd plant to grow over him for shade. He recovered, and Allah sent him back to Nineveh.\n\nThis time, 100,000 people believed in him. The entire city repented and accepted Islam.\n\nThe Prophet SAW said: 'Whoever recites this dua with sincere faith will be answered.'",
+    lesson:"No darkness is so deep that Allah cannot hear you. Whether you are in the belly of a whale or in the darkest moment of your life — one sincere dua can change everything.",
+    tags:['Dhun-Nun','Whale','Nineveh','Dua of Yunus','Repentance','100,000 Believers'] },
+
+  { n:'Isa',      ar:'عِيسَى',   num:9,  icon:'✨', title:'The Messiah, Spirit of Allah', vid:'y0pc95YEloA',
+    bg:'linear-gradient(135deg,#f3e5f5 0%,#fce4ec 40%,#f8bbd0 100%)',
+    era:'Miraculous Birth • Will Return Before Day of Judgment',
+    mentions:'Quran: 25 times • Mentioned in 93 verses',
+    story:"Isa AS (Jesus) was born miraculously to the Virgin Maryam (Mary), daughter of Imran. His birth was announced by the angel Jibreel: 'I am only a messenger from your Lord, to give you a pure boy.'\n\nMaryam was astonished: 'How can I have a boy when no man has touched me?' The angel replied: 'Thus Allah creates what He wills — He says Be, and it is.'\n\nIsa AS was born under a palm tree in solitude. When her people accused her of immorality, Isa AS spoke from the cradle as a miracle: 'I am the servant of Allah. He has given me the Scripture and made me a prophet.'\n\nAllah gave Isa AS several miracles by His permission:\n- He healed the blind and the lepers.\n- He raised the dead to life.\n- He breathed life into birds made of clay.\n- He informed people of what they had eaten and stored in their houses.\n- A table of food (Ma'idah) was sent down from heaven.\n\nIsa AS was given the Injeel (Gospel). His message was the same as all prophets: worship Allah alone. He never claimed divinity. The Quran is explicit: Isa was a prophet, a servant of Allah, not Allah or the son of Allah.\n\nWhen the disbelievers plotted to crucify him, Allah raised Isa AS to the heavens. It was made to appear to them that they had crucified him, but they did not.\n\nIsa AS will return to Earth before the Day of Judgment. He will descend in Damascus, pray behind the Mahdi, kill the Dajjal (Antichrist), break the cross, kill the pig, and abolish the Jizyah. He will live for 40 years, bring peace and justice, and then die a natural death.\n\nMuslims love Isa AS and his mother Maryam deeply. An entire surah of the Quran (Surah Maryam) is named after his mother. Maryam is the only woman mentioned by name in the Quran — she is above all women of the worlds.",
+    lesson:"Miracles come only from Allah. Isa performed them as signs pointing to the One who sent him — not his own power. Belief in Isa AS as a prophet is an essential part of Islamic faith.",
+    tags:['Miraculous Birth','Messiah','Injeel','Will Return','Spirit of Allah','Virgin Maryam'] },
+
+  { n:'Muhammad', ar:'مُحَمَّد',  num:10, icon:'🌙', title:'The Final Prophet SAW',   vid:'NxJ5QH1k9rY',
+    bg:'linear-gradient(135deg,#e8eaf6 0%,#c5cae9 40%,#e3f2fd 100%)',
+    era:'570-632 CE • Seal of All Prophets',
+    mentions:'Quran: 4 times by name • Entire Quran is his revelation',
+    story:"Muhammad SAW was born in Mecca in 570 CE, in the tribe of Quraysh. His father Abdullah died before he was born. His mother Aminah died when he was 6. He was raised by his grandfather, then by his uncle Abu Talib.\n\nBefore prophethood, he was known as Al-Amin (The Trustworthy) and As-Sadiq (The Truthful). He never drank alcohol, never worshipped idols. At 25, he married Khadijah, a wealthy businesswoman who recognized his exceptional character.\n\nAt age 40, in the Cave of Hira during Ramadan, the angel Jibreel appeared and commanded: 'Read!' (Iqra). The first revelation: 'Read in the name of your Lord who created — created man from a clot. Read, and your Lord is the Most Generous.'\n\nFor 13 years in Mecca, he called people to Islam. He faced extreme persecution — mocked, starved, boycotted, physically abused. His beloved wife Khadijah and uncle Abu Talib both died in the same year (Year of Sorrow).\n\nHe migrated to Medina in 622 CE (the Hijrah). There he established the first Islamic state — a community built on justice, brotherhood, and worship. He wrote the Constitution of Medina, the first written constitution in history.\n\nKey battles: Badr (victory against 3:1 odds), Uhud (setback with lessons), Khandaq/Trench (defensive victory), and the peaceful conquest of Mecca in 630 CE — where he forgave all his enemies.\n\nHis farewell sermon on the plain of Arafat addressed 100,000 people. He said: 'I have left you two things — if you hold to them, you will never go astray: the Quran and my Sunnah.'\n\nHe passed away on Monday, 12 Rabi al-Awwal, 11 AH (632 CE) at age 63. His last words were: 'The higher companion' — choosing Allah over this world.\n\nMuhammad SAW is the Seal of all Prophets — no prophet will come after him. He is the most complete human being, the best example in every aspect of life, and a mercy to all the worlds. Sending one salawat upon him earns ten mercies from Allah.",
+    lesson:"He is not just a historical figure — he is alive in every Muslim's daily life through his Sunnah. Every prayer, every fast, every act of worship follows his example. Following his Sunnah is an act of love for Allah. He is our guide forever.",
+    tags:['Seal of Prophets','Sunnah','Mercy to Mankind','Al-Amin','Hijrah','Farewell Sermon'] },
+
   { n:'Idris',    ar:'إِدْرِيس',   num:11, icon:'📜', title:'The Patient Scholar',
-    vid:'wR7cN4Aj3eQ',
-    bg:'linear-gradient(135deg,#e8f5e9 0%,#c8e6c9 50%,#a5d6a7 100%)',
-    story:"Idris ﷺ was one of the earliest prophets, blessed with great knowledge. He is believed to be among the first humans to write. Allah says in the Quran: And We raised him to a high station (19:57). He was known for his devotion to worship and for teaching his people how to read, write, and sew — laying the foundations of early civilization.",
-    lesson:"Knowledge combined with sincere worship elevates a person in Allah's sight. Idris combined pen and prayer — and Allah gave him an exalted rank.",
-    tags:['Knowledge','Writing','Exalted Station','Patience'] },
+    vid:'aW-3wh27fdo',
+    bg:'linear-gradient(135deg,#e8f5e9 0%,#c8e6c9 40%,#a5d6a7 100%)',
+    era:'Between Adam and Nuh • First to Write',
+    mentions:'Quran: 2 times (19:56-57, 21:85)',
+    story:"Idris AS was one of the earliest prophets — the great-grandson of Adam and the great-grandfather of Nuh. He was born during the lifetime of Adam and received prophethood after him.\n\nIdris AS was blessed with extraordinary knowledge. He is believed to be the first human to:\n- Write with a pen — teaching people to read and write.\n- Study the stars and astronomy.\n- Sew garments — before him, people wore animal skins.\n- Measure weights and establish mathematics.\n\nThe Quran says: 'And mention in the Book, Idris. Indeed, he was a man of truth and a prophet. And We raised him to a high station' (19:56-57).\n\nThe 'high station' is interpreted by scholars as a literal raising — Idris AS was taken up to the heavens. Some narrations say he was taken to the fourth heaven. The Prophet Muhammad SAW met him during the Isra and Mi'raj.\n\nIdris AS was known for his patience. He lived a long life — some narrations say 365 years, during which he called his people to Allah and taught them civilization. He was the first to establish the concept of a just ruler governing by divine law.\n\nHe is mentioned alongside Ismail and Dhul-Kifl as being 'among the patient' (21:85). His combination of knowledge and worship is the model for scholars.",
+    lesson:"Knowledge combined with sincere worship elevates a person in Allah's sight. Idris combined pen and prayer — and Allah raised him to a high station.",
+    tags:['First Writer','High Station','Knowledge','Patience','Astronomy','Between Adam and Nuh'] },
+
   { n:'Hud',      ar:'هُود',      num:12, icon:'🌬️', title:"Messenger to the People of Aad",
-    vid:'o4tcfC9LArs',
-    bg:'linear-gradient(135deg,#efebe9 0%,#d7ccc8 50%,#bcaaa4 100%)',
-    story:"Hud ﷺ was sent to the mighty tribe of Aad in ancient South Arabia — a people of great physical strength who built towering monuments. They arrogantly rejected Hud's message and mocked him. Allah sent a ferocious wind that raged for 7 nights and 8 days, destroying everything. Only Hud and the believers survived.",
-    lesson:"No amount of worldly power protects a person who rejects Allah. True strength lies in faith, not in physical might or material achievement.",
-    tags:['Tribe of Aad','Wind','Arrogance','Punishment'] },
+    vid:'Ub2SsLvzdjA',
+    bg:'linear-gradient(135deg,#efebe9 0%,#d7ccc8 40%,#bcaaa4 100%)',
+    era:'After Nuh • Sent to the Tribe of Aad',
+    mentions:'Quran: 7 times • Surah 11 named after him',
+    story:"Hud AS was sent to the mighty tribe of Aad in ancient South Arabia. The Aad were physically massive and immensely strong. They built towering monuments and had gardens, abundant water, and a civilization that was the envy of the ancient world.\n\nBut with their power came arrogance. They said: 'Who is greater than us in strength?' They forgot that the power came from Allah. They worshipped idols.\n\nHud AS called them to worship Allah alone. But they mocked him: 'O Hud, you have brought us no clear evidence, and we are not about to abandon our gods on your word.'\n\nThey challenged Allah's punishment: 'Bring us what you promise us, if you are truthful.'\n\nAllah sent a devastating punishment. First, a drought struck for three years — crops withered, animals died. Still they refused. Then, a dark cloud appeared on the horizon. The Aad rejoiced, thinking it was rain. But it was the punishment of Allah — a furious, howling wind that raged for 7 nights and 8 days.\n\nThe wind was so powerful that it lifted massive men into the air and dashed them against the ground. The Aad, the strongest people, were destroyed utterly. Only Hud AS and the believers survived.\n\nThe ruins of the Aad (Iram of the Pillars) were lost to history until modern archaeology discovered them. The Surah named after Hud (Surah 11) is one of the most powerful in the Quran. The Prophet SAW said it aged his hair because of its warnings.",
+    lesson:"No amount of worldly power protects a person who rejects Allah. The Aad were the strongest, wealthiest, most civilized — and they were destroyed by wind. True strength lies in faith and humility.",
+    tags:['Tribe of Aad','Iram of the Pillars','Wind Punishment','Arrogance','7 Nights 8 Days'] },
+
   { n:'Salih',    ar:'صَالِح',    num:13, icon:'🐪', title:'The She-Camel Prophet',
-    vid:'_RUNc_lZBVA',
-    bg:'linear-gradient(135deg,#fff3e0 0%,#ffe0b2 50%,#ffcc80 100%)',
-    story:"Salih ﷺ was sent to the tribe of Thamud who carved their homes from mountains. A miraculous she-camel emerged from solid rock as a divine sign. They were commanded to protect her and let her graze freely. Instead they hamstrung her — a direct act of defiance. Three days later, a thunderous blast destroyed the entire tribe. Only Salih and his followers were saved.",
-    lesson:"Divine signs are given as mercy, not to be taken lightly. Transgressing Allah's clear limits, even once, can bring irreversible consequences.",
-    tags:['Thamud','She-Camel','Sign of Allah','Punishment'] },
+    vid:'kHtxCfDNUSs',
+    bg:'linear-gradient(135deg,#fff3e0 0%,#ffe0b2 40%,#ffcc80 100%)',
+    era:'After Aad • Sent to the Tribe of Thamud',
+    mentions:'Quran: 9 times • Mentioned in 7 surahs',
+    story:"Salih AS was sent to the tribe of Thamud, the successors to the Aad. The Thamud lived in the region of Al-Hijr (modern-day Madain Salih, Saudi Arabia) — a civilization that carved magnificent homes directly into solid mountains.\n\nThe Thamud were skilled craftsmen. The Quran describes them: 'They carve out of the mountains houses with great skill.' They had fertile gardens, springs, and abundant agriculture.\n\nBut they fell into the same arrogance as the Aad. They worshipped idols and oppressed the poor.\n\nSalih AS called them to Allah. They demanded a miracle: 'Bring forth a she-camel from this rock.' Salih AS prayed, and by Allah's power, a massive she-camel emerged from solid rock — pregnant, with a calf.\n\nAllah gave them a condition: the she-camel would drink from the well one day, and their cattle would drink the next day. She was not to be harmed.\n\nBut the most wicked among them — Qudar ibn Salif — conspired to kill the camel. Nine men ambushed her at night and hamstrung her.\n\nSalih AS warned them: 'Enjoy yourselves in your homes for three days. Then the punishment will come.'\n\nOn the third day, a thunderous, earth-shaking blast (Sayhah) struck. The entire city was destroyed in an instant. Only Salih AS and his followers were saved.\n\nThe ruins of Madain Salih are still visible today in Saudi Arabia — carved homes in the mountains, standing as an eternal warning. The Prophet SAW advised his companions to pass through that area quickly and weeping.",
+    lesson:"Divine signs are given as mercy, not to be taken lightly. The Thamud were given a living miracle — a camel from rock — and they killed it. Transgressing Allah's clear limits can bring irreversible consequences.",
+    tags:['Thamud','She-Camel','Madain Salih','Thunderous Blast','Rock-Carved Homes'] },
+
   { n:'Lut',      ar:'لُوط',      num:14, icon:'🌃', title:'The Messenger of Justice',
-    vid:'am6y4Sh6XNc',
-    bg:'linear-gradient(135deg,#eceff1,#cfd8dc)',
-    story:"Lut ﷺ, nephew of Ibrahim, was sent to the people of Sodom who had fallen into vile immorality. Angels came to him in the form of beautiful guests. The townspeople rushed to his home. The angels blinded them. Allah commanded Lut to leave that night with his family. At dawn, the city was completely overturned — a punishment unlike any other in history.",
-    lesson:"Standing for truth in a corrupt society is the ultimate test. Lut stood alone against his entire city — and Allah's protection was all he needed.",
-    tags:['Sodom','Angels','Justice','Corruption','Destruction'] },
+    vid:'oYsNjZOBo-o',
+    bg:'linear-gradient(135deg,#eceff1 0%,#cfd8dc 40%,#b0bec5 100%)',
+    era:'Nephew of Ibrahim • Sent to Sodom',
+    mentions:'Quran: 27 times • Mentioned in 14 surahs',
+    story:"Lut AS was the nephew of Ibrahim AS. He was sent as a prophet to the cities of Sodom and Gomorrah (near the Dead Sea, modern-day Jordan). The people of Lut were the first in history to commit the abomination of homosexuality.\n\nLut AS called them to abandon their sinful ways and worship Allah alone. But they mocked him and said: 'Drive out Lut and his family from your city — they are people who keep themselves pure.'\n\nOne day, three angels came to Lut AS in the form of beautiful young men. The people of Sodom rushed to Lut's house, demanding access to his guests. Lut AS tried to protect them, but they refused.\n\nThe angels revealed themselves and commanded Lut AS to leave the city with his family by night — and not to look back. As they left, Allah sent a catastrophic punishment:\n\nThe city was turned upside down. A rain of baked clay (sijjil) fell from the sky. An earthquake shook the land. The entire civilization was destroyed.\n\nLut's wife, who secretly supported the wrongdoers, was destroyed because she looked back. She is mentioned in the Quran as an example for disbelievers.\n\nThe ruins of Sodom and Gomorrah lie beneath the Dead Sea — the lowest point on Earth. The water there is so dense with salt and sulfur that nothing lives in it. Scientists have confirmed geological evidence of a catastrophic destruction in that region.",
+    lesson:"Allah's punishment for transgression is absolute. The people of Lut were the first to commit this sin, and their destruction is the most complete in history. Justice will always come.",
+    tags:['Sodom','Dead Sea','Punishment','Angels','Turned Upside Down'] },
+
   { n:'Shuaib',   ar:'شُعَيب',    num:15, icon:'⚖️', title:'The Prophet of Business Ethics',
-    vid:'W-zgP_0d6J0',
-    bg:'linear-gradient(135deg,#e8f5e9 0%,#dcedc8 50%,#c5e1a5 100%)',
-    story:"Shuaib ﷺ was sent to the people of Madyan — merchants famous for cheating their customers with false scales. He warned them: Give full measure and weight. Do not deprive people of their due. They mocked and threatened him. Allah sent a scorching cloud of punishment that destroyed the wrongdoers. Shuaib and the believers were saved.",
-    lesson:"Honesty in business is a religious duty. Cheating in trade, even in small amounts, is a form of corruption that invites divine accountability.",
-    tags:['Madyan','Fair Scales','Business Ethics','Corruption'] },
+    vid:'_9voHb5ZPTc',
+    bg:'linear-gradient(135deg,#f1f8e9 0%,#dcedc8 40%,#c5e1a5 100%)',
+    era:'Sent to the People of Madyan',
+    mentions:'Quran: 11 times • Called Speaker of the Prophets',
+    story:"Shuaib AS was sent to the people of Madyan, a wealthy trading community in northwest Arabia. The people of Madyan were merchants — but they were corrupt. They cheated in trade, gave short measure, manipulated weights and scales, and exploited the poor.\n\nShuaib AS was known as 'Khatib al-Anbiya' — the Speaker among the Prophets. He was known for his gentle, wise, and persuasive manner of speaking. His dawah was unique — he combined theological monotheism with social and economic justice.\n\nHe called them: 'Give full measure and do not be of those who cause loss. And weigh with an even balance. Do not deprive people of their due and do not commit abuse on the earth, spreading corruption.'\n\nHis people mocked him: 'O Shuaib, does your prayer command you that we should leave what our fathers worship or not do with our wealth what we please?' They could not believe that faith should affect business.\n\nThey threatened to drive him out. Shuaib AS responded: 'I would not do that, even if I wanted to. I only desire reform to the best of my ability. My success is not but through Allah.'\n\nWhen they refused to repent, Allah sent a punishment — a scorching heat wave followed by a thunderous blast (Sayhah). The people were found dead in their homes. Only Shuaib AS and the believers survived.\n\nShuaib AS is the only prophet whose dawah focused heavily on economic ethics. He taught that Islam is not just worship — it includes fair dealing, honest trade, and social justice.",
+    lesson:"Islam governs every aspect of life — not just prayer and fasting. Cheating in business, manipulating scales, and exploiting the poor are sins that Allah punishes. A Muslim's faith must reflect in their transactions.",
+    tags:['Madyan','Business Ethics','Fair Trade','Speaker of Prophets','Corruption'] },
+
   { n:'Yusuf',    ar:'يُوسُف',    num:16, icon:'👑', title:'The Most Beautiful Story',
-    vid:'2EDI8RCNWjo',
-    bg:'linear-gradient(135deg,#fff8e1,#ffecb3)',
-    story:"Yusuf ﷺ was thrown into a well by his jealous brothers, sold as a slave, falsely imprisoned — yet never lost faith. Through his God-given ability to interpret dreams he rose to become minister of Egypt. His brothers came begging during famine. He revealed himself, forgave them completely, and was reunited with his father Yaqub in one of the most emotional scenes in prophetic history.",
-    lesson:"Patience, chastity, and complete trust in Allah's plan turn the lowest points into the greatest elevations. What looks like the end is often Allah's greatest beginning.",
-    tags:['Beautiful Story','Patience','Dreams','Forgiveness','Egypt'] },
+    vid:'9QhbwC94V4g',
+    bg:'linear-gradient(135deg,#fff8e1 0%,#ffecb3 40%,#fff3e0 100%)',
+    era:'Son of Yaqub • Lived in Egypt',
+    mentions:'Quran: Entire Surah 12 (most beautiful story)',
+    story:"Yusuf AS was the son of Yaqub AS, grandson of Ishaq, great-grandson of Ibrahim. He was the most handsome man of his time — his beauty was described as 'half of all beauty.'\n\nAs a boy, Yusuf AS had a dream: 11 stars, the sun, and the moon were bowing to him. His father Yaqub recognized this as a prophetic dream but warned him not to tell his brothers.\n\nHis 10 older brothers were jealous. They conspired to kill him, then decided to throw him into a well. They told their father that a wolf had eaten him — showing him Yusuf's blood-stained shirt. Yaqub AS was heartbroken but said: 'Beautiful patience — Allah's help is to be sought against what you describe.'\n\nA caravan found Yusuf in the well and sold him in Egypt to a nobleman, Al-Aziz. In Al-Aziz's house, Yusuf grew up handsome, intelligent, and dignified.\n\nAl-Aziz's wife, Zulaikha, became infatuated with Yusuf and tried to seduce him. Yusuf AS refused, seeking refuge in Allah. He was imprisoned rather than compromise his integrity.\n\nIn prison, he interpreted dreams for two fellow prisoners. Years later, the king of Egypt had a dream no one could interpret. The freed prisoner remembered Yusuf. Yusuf interpreted: 7 years of plenty, followed by 7 years of famine. The king made Yusuf the minister of finance.\n\nDuring the famine, Yusuf's brothers came to Egypt for food — not recognizing him. He tested them, demanded they bring their youngest brother, and finally revealed himself: 'I am Yusuf, and this is my brother. Do not be sad — Allah has been merciful to us.'\n\nHe brought his entire family to Egypt. His parents and 11 brothers bowed to him — fulfilling the childhood dream.\n\nSurah Yusuf is called 'Ahsan al-Qasas' — the Most Beautiful Story. It is the only surah told entirely as a single continuous narrative.",
+    lesson:"Patience, chastity, and complete trust in Allah's plan turn the lowest points into the greatest elevations. The well led to the palace. The prison led to the ministry. Sabr is the key.",
+    tags:['Ahsan al-Qasas','Dreams','Patience','Chastity','Egypt','Beautiful Story'] },
+
   { n:'Ayyub',    ar:'أَيُّوب',   num:17, icon:'💎', title:'The Prophet of Ultimate Patience',
-    vid:'SvcSVsgy09M',
-    bg:'linear-gradient(135deg,#efebe9,#d7ccc8)',
-    story:"Ayyub ﷺ had immense wealth, family, and health. Allah tested him by removing all three. For years he endured painful illness, loss, and poverty. He never complained publicly. He made a simple dua: Adversity has touched me, and You are the Most Merciful of the merciful. Allah healed him completely, restored his family doubled, and praised him in the Quran as an excellent servant — a true model of patience.",
-    lesson:"The greatest tests fall on the greatest people. Ayyub is the definition of Sabr — not passive surrender, but active trust in Allah through the darkest storm.",
-    tags:['Patience','Trial','Health','Restoration','Gratitude'] },
+    vid:'etLBpjWmBtc',
+    bg:'linear-gradient(135deg,#efebe9 0%,#d7ccc8 40%,#bcaaa4 100%)',
+    era:'From the Land of Uz • Descendant of Ishaq',
+    mentions:'Quran: 4 times • Mentioned in Surahs 21, 38',
+    story:"Ayyub AS (Job) was a prophet from the land of Uz, believed to be in modern-day Syria or southern Arabia. He was a descendant of Ishaq AS. He was enormously wealthy — thousands of animals, vast lands, a large family, and excellent health. He was deeply grateful to Allah and worshipped constantly.\n\nAllah tested Ayyub AS to prove his faith was genuine. The test was severe beyond imagination:\n\n- First, his animals were stolen or destroyed.\n- Then, his servants were killed.\n- Then, his children — all of them — were killed when a building collapsed.\n- Finally, he was struck with a terrible disease that covered his entire body with painful sores. Worms infested his flesh.\n\nHis wife stayed with him, caring for him despite their poverty. For years, he endured. The people abandoned him, afraid of his disease. He was exiled from the city. For 18 years, he never complained publicly, never lost faith, never cursed his fate.\n\nFinally, he made a simple dua: 'Adversity has touched me, and You are the Most Merciful of the merciful' (21:83). He didn't complain. He simply described his situation and appealed to Allah's mercy.\n\nAllah answered immediately. He commanded Ayyub to strike the ground with his foot. A spring of cool water gushed forth. His disease was cured instantly.\n\nAllah restored his family — the same number returned (or doubled). His wealth was restored manifold. Allah praised him in the Quran: 'Excellent servant! Indeed, he was one who repeatedly turned back to Allah' (38:44).",
+    lesson:"The greatest tests fall on the greatest people. Ayyub is the definition of Sabr — not passive surrender, but active trust in Allah through the darkest storm. When the test is over, the reward is beyond what was lost.",
+    tags:['Ultimate Patience','Sabr','Trial of Health','Restoration','18 Years'] },
+
   { n:'Dhul-Kifl',ar:'ذُو ٱلْكِفْل', num:18, icon:'🤝', title:'Dhul-Kifl — The Man of Promise',
-    vid:'yUfh3dEZVdY',
-    bg:'linear-gradient(135deg,#e8f5e9 0%,#dcedc8 50%,#c5e1a5 100%)',
-    story:"Dhul-Kifl ﷺ is mentioned in the Quran (21:85, 38:48) among the patient ones. He pledged to judge with perfect justice, fast daily, and pray through the night — and he fulfilled every part of that covenant perfectly for his entire life. He was tested and provoked repeatedly but never broke his promise.",
-    lesson:"Your word is your bond before Allah. Dhul-Kifl is in the Quran because he made a commitment and kept it, no matter how difficult. That is the mark of true righteousness.",
-    tags:['Justice','Promise','Covenant','Patience'] },
+    vid:'gP0kxuGP7_s',
+    bg:'linear-gradient(135deg,#e8f5e9 0%,#dcedc8 40%,#c5e1a5 100%)',
+    era:'After Ayyub • Mentioned with the Patient',
+    mentions:'Quran: 2 times (21:85, 38:48)',
+    story:"Dhul-Kifl AS is a prophet mentioned briefly but significantly in the Quran. He is mentioned alongside Idris and Ismail as being 'among the patient' (21:85) and in Surah Sad alongside Ibrahim, Ishaq, and Yaqub as 'of the chosen, excellent ones' (38:48).\n\nHis name means 'the possessor of the fold' or 'the man of the portion.' Some scholars say he was the son of Ayyub AS.\n\nThe most well-known story: A prophet before him offered his people a challenge — whoever would agree to fast all day, pray all night, not get angry, and rule with perfect justice would be given the leadership. Many accepted but found it too difficult. One man fulfilled every condition perfectly for his entire life. That man became known as Dhul-Kifl.\n\nHe was tested and provoked repeatedly — people tried to anger him, tempt him, push him to break his word. But he never did.\n\nThe Quran honors him by placing him among the greatest prophets in two separate verses. He is proof that keeping one's word and ruling with justice is enough to be honored by Allah eternally.",
+    lesson:"Your word is your bond before Allah. Dhul-Kifl is in the Quran because he made a commitment and kept it, no matter how difficult. Keeping your word — especially when it's hard — is a mark of true righteousness.",
+    tags:['Man of Promise','Justice','Patience','Covenant','Among the Chosen'] },
+
   { n:'Ilyas',    ar:'إِلْيَاس',  num:19, icon:'🔥', title:'The Fearless Reformer',
-    vid:'I9pLrzaHpvY',
-    bg:'linear-gradient(135deg,#ffe0b2,#fff3e0)',
-    story:"Ilyas ﷺ (Elias) was sent to Baalbek in Lebanon where the people worshipped the idol Baal. He stood alone against an entire idol-worshipping civilization, calling them back to Allah. Most rejected him fiercely. The Quran gives him an eternal tribute: Peace be upon Ilyas! (37:130) — proving that standing for truth, even in total isolation, is never forgotten by Allah.",
-    lesson:"When the entire world goes one way, a believer walks with Allah. Ilyas is praised in the Quran not for his numbers but for his courage to stand alone.",
-    tags:['Idol Worship','Baalbek','Courage','Reform','Alone'] },
-  { n:'Alyasa',   ar:'اليَسَع',   num:20, icon:'💧', title:'The Inheritor of Ilyas',
-    vid:'e68MMjpCEIE',
-    bg:'linear-gradient(135deg,#e0f7fa,#b2ebf2)',
-    story:"Alyasa ﷺ (Elisha) was the student and successor of Ilyas. He continued his teacher's mission in a land that kept reverting to idol worship. He is praised alongside the greatest prophets in the Quran (6:86, 38:48). He performed miracles by Allah's permission — including purifying water and healing the sick — and maintained tawhid in a deeply difficult environment.",
-    lesson:"Being a righteous successor to a great teacher is itself an honour. Alyasa inherited a hard mission and carried it faithfully — enough for Allah to place his name among the greatest in the Quran.",
-    tags:['Succession','Mission','Miracle','Tawhid','Persistence'] },
+    vid:'gP0kxuGP7_s',
+    bg:'linear-gradient(135deg,#ffe0b2 0%,#fff3e0 40%,#ffe0b2 100%)',
+    era:'Sent to Baalbek, Lebanon • After Dawud',
+    mentions:'Quran: 3 times (37:123, 6:85, 38:48)',
+    story:"Ilyas AS (Elijah) was sent to the people of Baalbek, in what is now Lebanon. His people had fallen into the worship of an idol named Baal — a fertility deity they believed brought rain and good harvests.\n\nIlyas AS stood completely alone against an entire civilization of idol worshippers. He called them: 'Will you not fear Allah? Do you call upon Baal and abandon the Best of Creators — Allah, your Lord and the Lord of your first forefathers?' (37:124-126)\n\nMost rejected him fiercely. They tried to harm him. Allah sent a severe drought that lasted for years. But still they refused.\n\nIlyas AS never gave up. The Quran gives him an eternal tribute: 'Peace be upon Ilyas! Indeed, thus do We reward the doers of good. Indeed, he was of Our believing servants' (37:130-132).\n\nAfter his mission, some narrations say Allah raised Ilyas AS to the heavens. The Prophet Muhammad SAW met him during the Isra and Mi'raj.\n\nThe ruins of Baalbek still stand today in Lebanon — massive Roman temples built on the site of the ancient idol worship. The name 'Baalbek' literally means 'Lord of the Bekaa Valley' — named after the false god Ilyas AS was sent to destroy.",
+    lesson:"When the entire world goes one way, a believer walks with Allah. Ilyas is praised not for his numbers or success rate, but for his courage to stand alone. One person with Allah is a majority.",
+    tags:['Baalbek','Lebanon','Idol Baal','Courage','Stood Alone','Peace Be Upon Him'] },
+
+  { n:'Alyesa',   ar:'اليَسَع',   num:20, icon:'💧', title:'The Inheritor of Ilyas',
+    vid:'hwelZyHlQDA',
+    bg:'linear-gradient(135deg,#e0f7fa 0%,#b2ebf2 40%,#80deea 100%)',
+    era:'Successor of Ilyas • Prophet of Israel',
+    mentions:'Quran: 2 times (6:86, 38:48)',
+    story:"Alyesa AS (Elisha) was the student and divinely appointed successor of Ilyas AS (Elijah). He is one of the few prophets explicitly mentioned in the Quran as a successor to another prophet.\n\nThe Quran mentions Alyesa AS in two places, both alongside the greatest prophets:\n- In Surah Al-An'am (6:86): He is listed among prophets including Ibrahim, Ishaq, Yaqub, Yusuf, Musa, Harun, Zakariya, Yahya, Isa, Ilyas, and Ismail.\n- In Surah Sad (38:48): He is mentioned with Ismail and Dhul-Kifl as 'of the chosen, excellent ones.'\n\nAlyesa AS inherited the mission of Ilyas AS in a land that kept reverting to idol worship. By Allah's permission, he performed miracles:\n- He purified a poisoned well, making its water safe to drink.\n- He healed the sick, including a man named Na'aman who had leprosy.\n- He multiplied food for his people during a time of famine.\n- He demonstrated the power of Allah to a people who had forgotten Him.\n\nThe relationship between Ilyas and Alyesa is unique in the Quran. It shows that prophethood is about continuity — Allah raises successors to carry the mission forward.\n\nAlyesa AS is believed to be buried in present-day Syria, near the city of Aleppo.",
+    lesson:"Being a righteous successor to a great teacher is itself an honour. Alyesa inherited a hard mission and carried it faithfully — enough for Allah to place his name among the greatest in the Quran.",
+    tags:['Successor of Ilyas','Miracles','Tawhid','Faithful Student','Chosen One'] },
+
   { n:'Zakariya', ar:'زَكَرِيَّا', num:21, icon:'🌿', title:'The Patient Father',
-    vid:'CzAjhUZxsk4',
-    bg:'linear-gradient(135deg,#e8f5e9,#c8e6c9)',
-    story:"Zakariya ﷺ was elderly and his wife was barren. But standing alone in the prayer hall, he made dua: My Lord, do not leave me without an heir. A voice called back: We give you glad tidings of Yahya — a name We have given to no one before. Despite his age and apparent impossibility, he trusted Allah. Yahya was born — a prophet from birth, a miracle of answered prayer.",
+    vid:'gP0kxuGP7_s',
+    bg:'linear-gradient(135deg,#e8f5e9 0%,#c8e6c9 40%,#a5d6a7 100%)',
+    era:'Prophet of Bani Israel • Guardian of Maryam',
+    mentions:'Quran: 7 times • Mentioned in 6 surahs',
+    story:"Zakariya AS was a prophet from the Children of Israel and a descendant of Sulaiman AS. He was the guardian of Maryam (the mother of Isa AS) — he raised her in the temple and witnessed the miraculous provisions Allah sent her.\n\nZakariya AS was elderly — well past the age of having children — and his wife was barren. Despite the apparent impossibility, he turned to Allah with unwavering hope.\n\nOne day, standing in the prayer niche, he made a heartfelt dua: 'My Lord, indeed my bones have weakened, and my head has filled with white, and I have never been disappointed in my prayer to You. And indeed, I fear the successors after me, and my wife is barren, so give me from Yourself an heir.'\n\nAllah answered immediately: 'Allah gives you glad tidings of Yahya, confirming a word from Allah, and honorable, chaste, and a prophet from among the righteous.'\n\nYahya AS was born — a miracle child to elderly parents. His name was given by Allah Himself — a name no one had ever been given before.\n\nAccording to tradition, Zakariya AS was martyred — killed by his own people when he continued to call them to righteousness. Some narrations say he was sawed in half. His death is one of the most painful martyrdoms in prophetic history.",
     lesson:"Never consider a prayer too late or too impossible. Zakariya made dua past all human limits — and Allah answered. No sincere dua is ever wasted.",
-    tags:['Old Age','Dua','Miracle','Hope','Yahya'] },
+    tags:['Patient Father','Dua','Miracle Birth','Yahya','Guardian of Maryam','Martyrdom'] },
+
   { n:'Yahya',    ar:'يَحْيَى',   num:22, icon:'🌱', title:'Born Righteous from Day One',
-    vid:'m_ID3RRFze0',
-    bg:'linear-gradient(135deg,#f1f8e9,#dcedc8)',
-    story:"Yahya ﷺ (John the Baptist) was a miracle child born to elderly parents. Allah gave him wisdom and judgement as a child: O Yahya! Take the Scripture with determination — and We gave him wisdom while yet a boy (19:12). He was described as one who confirmed the truth of Isa ﷺ. He lived a life of complete purity and asceticism, and died as a martyr for the truth.",
+    vid:'gP0kxuGP7_s',
+    bg:'linear-gradient(135deg,#f1f8e9 0%,#dcedc8 40%,#c5e1a5 100%)',
+    era:'Son of Zakariya • Cousin of Isa AS',
+    mentions:'Quran: 5 times • Given name by Allah',
+    story:"Yahya AS (John the Baptist) was a miracle child — born to Zakariya AS and his wife when both were very old. His birth was announced by the angels, and his name was chosen by Allah Himself — the first time Allah named a child directly.\n\nAllah described Yahya AS with extraordinary praise in the Quran:\n- 'We gave him wisdom while he was yet a boy' (19:12)\n- 'And tenderness from Us, and purity' (19:13)\n- 'And dutiful to his parents, and he was not a disobedient tyrant' (19:14)\n- 'Peace be upon him the day he was born, and the day he dies, and the day he is raised alive' (19:15)\n\nYahya AS was a cousin of Isa AS. He was sent to confirm the prophethood of Isa and prepare the people for his message.\n\nHe lived a life of complete asceticism. He wore coarse clothing made of camel hair, lived in the wilderness, and ate locusts and wild honey. He was known for his devotion, his constant weeping out of fear of Allah, and his unwavering commitment to truth.\n\nHis name Yahya means 'he lives' — Allah gave him life in every sense: spiritual life, legacy, and eternal remembrance.\n\nHis death was tragic. He was killed by a tyrant named Herod, who was angered when Yahya AS spoke against his unlawful marriage. Yahya AS was beheaded — his head presented on a platter.",
     lesson:"The greatest gift to a child is righteous upbringing and parents who make dua. Yahya is a model for what a human can become when raised in the love of Allah.",
-    tags:['Miracle Birth','Wisdom','Martyr','Purity','Child Prophet'] },
+    tags:['Miracle Birth','Wisdom as a Boy','Named by Allah','Martyr','Purity','Cousin of Isa'] },
+
   { n:'Harun',    ar:'هَارُون',   num:23, icon:'🗣️', title:'The Eloquent Brother of Musa',
-    vid:'JZjPXlffz1Y',
-    bg:'linear-gradient(135deg,#e3f2fd 0%,#bbdefb 50%,#90caf9 100%)',
-    story:"Harun ﷺ (Aaron) was Musa's elder brother and closest companion in prophethood. When Musa was sent to Pharaoh, he begged Allah: Give me Harun as my helper — he is more eloquent than I am. Allah granted this, making Harun a prophet alongside Musa. When Musa went to receive the Torah and was delayed, Harun struggled to stop the Israelites from falling into calf worship — but was overpowered.",
-    lesson:"Brotherhood in faith and mission is a prophetic sunnah. Having a companion who supports you in calling to truth is a gift — Musa asked for his brother, and Allah gave him one.",
-    tags:['Brotherhood','Eloquence','Musa','Prophethood','Helper'] },
+    vid:'jdX_AfjWL04',
+    bg:'linear-gradient(135deg,#e3f2fd 0%,#bbdefb 40%,#90caf9 100%)',
+    era:'Brother of Musa • Prophet to Pharaoh',
+    mentions:'Quran: 20 times • Spokesman for Musa',
+    story:"Harun AS (Aaron) was the elder brother of Musa AS. When Allah sent Musa to Pharaoh, Musa felt inadequate: 'My Lord, expand for me my breast, and ease for me my task, and untie the knot from my tongue. And appoint for me a helper from my family — Harun, my brother.'\n\nAllah granted this and made Harun AS a prophet alongside Musa. He was more eloquent — the perfect spokesman. Together, the brothers confronted Pharaoh.\n\nAfter the Exodus, when Musa AS went to Mount Sinai to receive the Torah, he left Harun AS in charge of Bani Israel. While Musa was gone, As-Samiri created a golden calf and convinced Bani Israel to worship it. Harun AS tried desperately to stop them, but he was outnumbered and feared violence.\n\nWhen Musa AS returned and saw the calf worship, he seized Harun by the beard. Harun explained gently: 'O son of my mother, indeed the people oppressed me and were about to kill me.' Musa understood and let go.\n\nHarun AS served as Musa's partner throughout the 40 years in the desert. He died before Musa, on a mountain called Hor. Musa AS wept deeply at his brother's death.\n\nThe Prophet SAW said: 'There is no prophet who does not have a helper from his people. My helper is my brother Harun.'",
+    lesson:"Brotherhood in faith and mission is a prophetic sunnah. Having a companion who supports you in calling to truth is a gift. Never face a great task alone — ask Allah for a partner.",
+    tags:['Brotherhood','Eloquence','Helper of Musa','Golden Calf','Partners in Prophethood'] },
+
   { n:'Isa',      ar:'عِيسَى',   num:24, icon:'✨', title:'The Messiah — Spirit of Allah',
-    vid:'l7s8R9ugb98',
-    bg:'linear-gradient(135deg,#f3e5f5,#fce4ec)',
-    story:"Isa ﷺ (Jesus) was born miraculously to the Virgin Maryam without a father, by Allah's direct command: Be — and it is. He spoke in the cradle to defend his mother's honour. He healed the blind, the lepers, raised the dead — all by Allah's permission. He was given the Injeel (Gospel). When the enemies plotted to crucify him, Allah raised him to the heavens. He will return before the Day of Judgment to restore justice on earth.",
-    lesson:"Miracles belong to Allah alone — Isa performed them only as signs pointing to the One who sent him. His return is one of the major signs of the Day of Judgment.",
-    tags:['Messiah','Miraculous Birth','Injeel','Will Return','Spirit of Allah'] },
-  { n:'Muhammad', ar:'مُحَمَّد',  num:25, icon:'🌙', title:'The Final Prophet ﷺ — Seal of All Prophets',
-    vid:'kzIu3hrdqRM',
-    bg:'linear-gradient(135deg,#e8eaf6,#e3f2fd)',
-    story:"Muhammad ﷺ is the Seal of all 25 Prophets — sent as a mercy to all of creation (21:107). Born in Mecca in 570 CE, known as Al-Amin (The Trustworthy). At 40, Jibreel ﷺ brought the first revelation in the Cave of Hira. Over 23 years he built a complete civilization — spiritual, legal, social, and political. He returned to Mecca peacefully, forgave his worst enemies, and left behind the Quran and his Sunnah as a guide until the Day of Judgment.",
-    lesson:"He is not just a historical figure — he is alive in every Muslim's daily life through his Sunnah. Sending one salawat upon him brings ten mercies from Allah. He is our guide forever.",
-    tags:['Final Prophet','Seal','Mercy to Worlds','Al-Amin','Quran','Sunnah'] },
+    vid:'y0pc95YEloA',
+    bg:'linear-gradient(135deg,#f3e5f5 0%,#fce4ec 40%,#f8bbd0 100%)',
+    era:'Miraculous Birth • Will Return Before Day of Judgment',
+    mentions:'Quran: 25 times • Son of Maryam',
+    story:"Isa AS (Jesus) is one of the five greatest prophets (Ulul-Azm: Nuh, Ibrahim, Musa, Isa, Muhammad). He was born miraculously to the Virgin Maryam without a father, by Allah's direct command: 'Be — and it is.'\n\nHis birth, life, miracles, and return are all signs of Allah's power. He spoke in the cradle, healed the sick, raised the dead, and was given the Injeel. When his enemies plotted against him, Allah raised him to the heavens.\n\nIsa AS will return before the Day of Judgment as a major sign. He will:\n- Descend in Damascus, at the white minaret.\n- Pray behind the Mahdi.\n- Kill the Dajjal (Antichrist) at the Gate of Ludd.\n- Break the cross, kill the pig, and abolish the Jizyah.\n- Rule with justice for 40 years.\n- Die a natural death and be buried beside Muhammad SAW in Medina.\n\nThe Quran is clear: he is a prophet, a servant of Allah, and the Messiah — but he is not Allah, not the son of Allah, and was not crucified. He said: 'I am the servant of Allah. He has given me the Scripture and made me a prophet.' (19:30)\n\nMuslims love Isa AS and his mother Maryam deeply. Denying his prophethood takes one out of Islam.",
+    lesson:"Miracles belong to Allah alone. Isa performed them only as signs pointing to the One who sent him. His return is one of the major signs of the Day of Judgment.",
+    tags:['Messiah','Miraculous Birth','Injeel','Will Return','Spirit of Allah','Son of Maryam'] },
+
+  { n:'Muhammad', ar:'مُحَمَّد',  num:25, icon:'🌙', title:'The Final Prophet SAW — Seal of All Prophets',
+    vid:'NxJ5QH1k9rY',
+    bg:'linear-gradient(135deg,#e8eaf6 0%,#c5cae9 40%,#e3f2fd 100%)',
+    era:'570-632 CE • Seal of All Prophets',
+    mentions:'Quran: 4 times by name • Entire Quran is his miracle',
+    story:"Muhammad SAW is the Seal of all 25 Prophets — sent as a mercy to all of creation (21:107). After him, no prophet will come until the Day of Judgment.\n\nHe was born in Mecca in 570 CE into the tribe of Quraysh. Before prophethood, he was known as Al-Amin (The Trustworthy). He never lied, never broke a promise, never worshipped an idol.\n\nAt 40, Angel Jibreel appeared in the Cave of Hira. For 23 years, the Quran was revealed to him — piece by piece. He built a complete civilization in 23 years: spiritual, legal, social, economic, political.\n\nHe faced 13 years of persecution in Mecca, migration, wars, betrayal, hunger, and loss. Yet he never wavered. He returned to Mecca in 630 CE with 10,000 soldiers — and forgave everyone: 'Go — you are free.'\n\nHis farewell sermon addressed 100,000 people: 'I have left you two things — if you hold to them, you will never go astray: the Quran and my Sunnah.'\n\nHe passed away in 632 CE. His last words: 'The higher companion.' He chose Allah over this world.\n\nHis legacy: 1.9 billion Muslims worldwide. The Quran — preserved word for word for 1,400 years. He is the most influential person who ever lived.\n\nSending one salawat upon him earns ten mercies from Allah. He is our intercessor on the Day of Judgment. He is alive in his grave — our salams reach him wherever we are.",
+    lesson:"He is not just a historical figure — he is alive in every Muslim's daily life through his Sunnah. Following his Sunnah is an act of love for Allah. He is our guide forever — the seal of all prophets, the mercy to all the worlds.",
+    tags:['Final Prophet','Seal of Prophets','Mercy to Worlds','Al-Amin','Quran','Sunnah'] },
 ];
+
 
 function initProphets() {
   const grid = document.getElementById('proph-grid');
-  if (grid.children.length > 0) return; // already rendered
+  if (grid.children.length > 0) return;
   grid.innerHTML = PROPHETS.map((p, i) => `
     <div class="pcard" id="pc-${i}">
       <div class="pcard-bg" style="background:${p.bg || 'linear-gradient(135deg,#f5f5f5,#e8eaf6)'}"></div>
@@ -4314,22 +4550,26 @@ function initProphets() {
         <div class="pcard-num">${p.num}</div>
         <div class="pcard-icon">${p.icon}</div>
         <div class="pcard-info">
-          <div class="pcard-name">Prophet ${p.n} ﷺ</div>
+          <div class="pcard-name">Prophet ${p.n} AS</div>
           <div class="pcard-ar">${p.ar}</div>
           <div class="pcard-sub">${p.title}</div>
         </div>
         <div class="pcard-arrow">›</div>
       </div>
       <div class="pcard-body">
-        <div class="pvirtue">${p.tags.map(t=>`<span class="pvtag">${t}</span>`).join('')}</div>
-        <div class="pcard-story">${p.story}</div>
-        <div class="pcard-lesson"><strong>✦ Lesson</strong>${p.lesson}</div>
-        <div class="pcard-video">
-          <iframe src="https://www.youtube.com/embed/${p.vid}?rel=0&modestbranding=1"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen loading="lazy"></iframe>
+        <div class="pcard-body-inner">
+          <div class="pcard-era">${p.era || ''}</div>
+          <div class="pcard-mentions">${p.mentions || ''}</div>
+          <div class="pvirtue">${(p.tags||[]).map(t=>`<span class="pvtag">${t}</span>`).join('')}</div>
+          <div class="pcard-story">${p.story}</div>
+          <div class="pcard-lesson"><strong>✦ Lesson</strong>${p.lesson}</div>
+          <div class="pcard-video">
+            <iframe src="https://www.youtube.com/embed/${p.vid}?rel=0&modestbranding=1"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen loading="lazy"></iframe>
+          </div>
+          <div class="pcard-vid-lbl">📺 <b>${p.vid.includes('gP0kxuGP7_s') ? 'Mufti Menk' : 'Mufti Menk'}</b> — Full story on YouTube</div>
         </div>
-        <div class="pcard-vid-lbl">📺 Watch the full story on YouTube</div>
       </div>
     </div>
   `).join('');
@@ -4338,7 +4578,7 @@ function togglePcard(i) {
   const card = document.getElementById('pc-'+i);
   const wasOpen = card.classList.contains('open');
   document.querySelectorAll('.pcard').forEach(c => c.classList.remove('open'));
-  if (!wasOpen) { card.classList.add('open'); card.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+  if (!wasOpen) { card.classList.add('open'); setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'nearest'}),100); }
 }
 
 // ================================================================
