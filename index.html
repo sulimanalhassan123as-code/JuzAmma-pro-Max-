@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Quran Pro Max</title>
-<meta name="description" content="Complete Quran — Read, Listen, Memorize, Duas, Qibla, Zakat, Prayer Tracker, AI Guide">
-<meta name="theme-color" content="#10b981">
+<title>Naba Quran</title>
+<meta name="description" content="Naba Quran — Juz Amma: Read, Listen, Memorize, Duas, Qibla, Zakat, Prayer Tracker, AI Guide">
+<meta name="theme-color" content="#0b1f1a">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Quran Pro Max">
+<meta name="apple-mobile-web-app-title" content="Naba Quran">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
 <link rel="apple-touch-icon" href="icons/icon-192x192.svg">
@@ -20,13 +20,21 @@
 
 /* ── TOKENS ───────────────────────────── */
 :root {
-  /* Default: Pure White Light Mode */
+  /* Default: Naba Quran Royal — dark emerald-black + gold, matches brand */
+  --p:#c9a84c; --pd:#a6864f; --pg:rgba(201,168,76,.20);
+  --dark:#0b1f1a; --dark2:#102a23;
+  --gold:#c9a84c; --gold2:rgba(201,168,76,.14);
+  --bg:#081512; --card:#0f231d; --hdr:#0a1a15;
+  --txt:#f5f0e6; --txt2:#a8b8b0; --bdr:#1f3a30;
+  --nav:60px;
+}
+/* Classic White + Green — the original default, kept as a selectable theme */
+[data-theme="classic"] {
   --p:#10b981; --pd:#059669; --pg:rgba(16,185,129,.15);
   --dark:#F8FAFF; --dark2:#EEF2FF;
   --gold:#D97706; --gold2:rgba(217,119,6,.1);
   --bg:#F8FAFF; --card:#FFFFFF; --hdr:#FFFFFF;
   --txt:#1a2340; --txt2:#6b7a99; --bdr:#E2E8F5;
-  --nav:60px;
 }
 /* Each theme: unique accent + its own dark background */
 [data-theme="ocean"]  {
@@ -372,7 +380,7 @@ body { font-family:'Poppins',sans-serif;
 
 /* Hero header with 3D parallax orbs */
 .proph-hdr {
-  background:linear-gradient(160deg,#1a0a2e 0%,#2d1458 35%,#1a0a2e 100%);
+  background:linear-gradient(160deg,#0a1a15 0%,#102a23 35%,#0a1a15 100%);
   padding:18px 15px 22px; color:#fff; flex-shrink:0; text-align:center;
   position:relative; overflow:hidden;
   perspective:1000px;
@@ -384,8 +392,8 @@ body { font-family:'Poppins',sans-serif;
 }
 .proph-hdr::after {
   content:''; position:absolute; top:0; left:0; right:0; bottom:0;
-  background:radial-gradient(ellipse at 30% 20%,rgba(139,92,246,.15),transparent 50%),
-             radial-gradient(ellipse at 70% 80%,rgba(217,119,6,.08),transparent 50%);
+  background:radial-gradient(ellipse at 30% 20%,rgba(201,168,76,.15),transparent 50%),
+             radial-gradient(ellipse at 70% 80%,rgba(201,168,76,.08),transparent 50%);
   pointer-events:none;
 }
 @keyframes prophFloat {
@@ -393,20 +401,20 @@ body { font-family:'Poppins',sans-serif;
   50% { transform:translateX(-50%) rotate(15deg) translateY(-10px); }
 }
 .proph-hdr h2 { font-size:1.25rem; font-weight:800; margin-top:8px; position:relative;
-  background:linear-gradient(135deg,#fff 0%,#c4b5fd 50%,#fff 100%);
+  background:linear-gradient(135deg,#fff 0%,#e3c478 50%,#fff 100%);
   -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
 }
 .proph-hdr p { font-size:.73rem; opacity:.5; margin-top:3px; position:relative; }
 .proph-badge {
   display:inline-flex; align-items:center; gap:4px;
-  background:linear-gradient(135deg,#8b5cf6,#6d28d9); color:#fff;
+  background:linear-gradient(135deg,#c9a84c,#a6864f); color:#fff;
   font-size:.63rem; padding:4px 12px; border-radius:12px; font-weight:700;
-  position:relative; box-shadow:0 2px 12px rgba(139,92,246,.4);
+  position:relative; box-shadow:0 2px 12px rgba(201,168,76,.4);
   animation:prophBadgePulse 3s ease-in-out infinite;
 }
 @keyframes prophBadgePulse {
-  0%,100% { box-shadow:0 2px 12px rgba(139,92,246,.4); }
-  50% { box-shadow:0 2px 24px rgba(139,92,246,.6); }
+  0%,100% { box-shadow:0 2px 12px rgba(201,168,76,.4); }
+  50% { box-shadow:0 2px 24px rgba(201,168,76,.6); }
 }
 
 /* Prophet grid */
@@ -422,8 +430,8 @@ body { font-family:'Poppins',sans-serif;
 }
 .pcard:active { transform:scale(.98); }
 .pcard.open {
-  border-color:rgba(139,92,246,.4);
-  box-shadow:0 8px 32px rgba(139,92,246,.15), 0 2px 8px rgba(0,0,0,.06);
+  border-color:rgba(201,168,76,.4);
+  box-shadow:0 8px 32px rgba(201,168,76,.15), 0 2px 8px rgba(0,0,0,.06);
   transform:translateY(-2px);
 }
 
@@ -438,7 +446,7 @@ body { font-family:'Poppins',sans-serif;
 /* Glow effect on open */
 .pcard.open::after {
   content:''; position:absolute; top:0; left:0; right:0; height:4px;
-  background:linear-gradient(90deg,transparent,rgba(139,92,246,.6),rgba(217,119,6,.4),transparent);
+  background:linear-gradient(90deg,transparent,rgba(201,168,76,.6),rgba(201,168,76,.4),transparent);
   z-index:3; animation:prophGlow 2s ease-in-out infinite;
 }
 @keyframes prophGlow {
@@ -452,15 +460,15 @@ body { font-family:'Poppins',sans-serif;
 }
 .pcard-num {
   width:40px; height:40px; border-radius:50%;
-  background:linear-gradient(135deg,#8b5cf6,#6d28d9); color:#fff;
+  background:linear-gradient(135deg,#c9a84c,#a6864f); color:#fff;
   font-size:.82rem; font-weight:800;
   display:flex; align-items:center; justify-content:center; flex-shrink:0;
-  box-shadow:0 3px 12px rgba(139,92,246,.35), inset 0 1px 2px rgba(255,255,255,.2);
+  box-shadow:0 3px 12px rgba(201,168,76,.35), inset 0 1px 2px rgba(255,255,255,.2);
   transition:transform .3s;
 }
 .pcard.open .pcard-num {
   transform:scale(1.1) rotate(5deg);
-  box-shadow:0 4px 20px rgba(139,92,246,.5), inset 0 1px 2px rgba(255,255,255,.3);
+  box-shadow:0 4px 20px rgba(201,168,76,.5), inset 0 1px 2px rgba(255,255,255,.3);
 }
 .pcard-icon { font-size:2rem; filter:drop-shadow(0 3px 6px rgba(0,0,0,.12)); transition:transform .3s; }
 .pcard.open .pcard-icon { transform:scale(1.15) rotate(-5deg); }
@@ -468,7 +476,7 @@ body { font-family:'Poppins',sans-serif;
 .pcard-name { font-size:1rem; font-weight:700; color:var(--txt); }
 .pcard-ar {
   font-family:'Amiri','Noto Naskh Arabic','Scheherazade New',serif;
-  font-size:1.15rem; color:#8b5cf6; direction:rtl; text-align:center;
+  font-size:1.15rem; color:#c9a84c; direction:rtl; text-align:center;
   font-feature-settings:'liga' 1,'calt' 1; margin-top:2px;
 }
 .pcard-sub { font-size:.72rem; color:var(--txt2); margin-top:2px; }
@@ -476,7 +484,7 @@ body { font-family:'Poppins',sans-serif;
   color:var(--txt2); font-size:1.1rem; transition:transform .3s cubic-bezier(.4,0,.2,1);
   flex-shrink:0;
 }
-.pcard.open .pcard-arrow { transform:rotate(90deg); color:#8b5cf6; }
+.pcard.open .pcard-arrow { transform:rotate(90deg); color:#c9a84c; }
 
 /* Card body (expandable) */
 .pcard-body {
@@ -493,18 +501,18 @@ body { font-family:'Poppins',sans-serif;
 }
 .pcard.open .pcard-body-inner { opacity:1; }
 
-/* Era badge */
+/* Era badge (green accent, distinct from gold mentions badge) */
 .pcard-era {
   display:inline-block; font-size:.66rem; font-weight:600;
-  color:#8b5cf6; background:rgba(139,92,246,.08);
-  border:1px solid rgba(139,92,246,.15); border-radius:10px;
+  color:#34d399; background:rgba(52,211,153,.08);
+  border:1px solid rgba(52,211,153,.18); border-radius:10px;
   padding:4px 10px; margin-bottom:8px;
 }
 /* Mentions badge */
 .pcard-mentions {
   display:inline-block; font-size:.64rem; font-weight:600;
-  color:var(--gold); background:rgba(217,119,6,.08);
-  border:1px solid rgba(217,119,6,.15); border-radius:10px;
+  color:var(--gold); background:rgba(201,168,76,.08);
+  border:1px solid rgba(201,168,76,.15); border-radius:10px;
   padding:4px 10px; margin-bottom:10px; margin-left:5px;
 }
 
@@ -512,8 +520,8 @@ body { font-family:'Poppins',sans-serif;
 .pvirtue { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px; }
 .pvtag {
   padding:4px 10px; border-radius:11px; font-size:.66rem; font-weight:600;
-  background:rgba(139,92,246,.1); color:#8b5cf6;
-  border:1px solid rgba(139,92,246,.12);
+  background:rgba(201,168,76,.1); color:#c9a84c;
+  border:1px solid rgba(201,168,76,.12);
   transition:transform .2s;
 }
 .pvtag:hover { transform:translateY(-1px); }
@@ -526,18 +534,18 @@ body { font-family:'Poppins',sans-serif;
 
 /* Lesson box */
 .pcard-lesson {
-  background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(109,40,217,.04));
-  border:1px solid rgba(139,92,246,.2); border-radius:14px;
+  background:linear-gradient(135deg,rgba(201,168,76,.08),rgba(166,134,79,.04));
+  border:1px solid rgba(201,168,76,.2); border-radius:14px;
   padding:12px 14px; margin-bottom:12px;
   font-size:.79rem; color:var(--txt); line-height:1.65;
   position:relative; overflow:hidden;
 }
 .pcard-lesson::before {
   content:''; position:absolute; left:0; top:0; bottom:0; width:4px;
-  background:linear-gradient(180deg,#8b5cf6,#d97706); border-radius:4px 0 0 4px;
+  background:linear-gradient(180deg,#c9a84c,#d97706); border-radius:4px 0 0 4px;
 }
 .pcard-lesson strong {
-  color:#8b5cf6; display:block; margin-bottom:4px;
+  color:#c9a84c; display:block; margin-bottom:4px;
   font-size:.7rem; text-transform:uppercase; letter-spacing:.6px; font-weight:700;
 }
 
@@ -560,7 +568,7 @@ body { font-family:'Poppins',sans-serif;
   font-size:.69rem; color:var(--txt2); margin-top:6px; text-align:center;
   display:flex; align-items:center; justify-content:center; gap:4px;
 }
-.pcard-vid-lbl b { color:#8b5cf6; font-weight:600; }
+.pcard-vid-lbl b { color:#c9a84c; font-weight:600; }
 
 /* ── NIGHT / QURAN RADIO ─────────────── */
 #night-view { display:none; flex-direction:column; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:#010611; overflow:hidden; }
@@ -1695,6 +1703,81 @@ body { font-family:'Poppins',sans-serif;
 .fsap-btn.playing { background:#ef4444; }
 .fsap-time { font-size:.7rem; color:var(--txt2); margin-left:6px; }
 
+
+/* ══════════════ NABA QURAN — REDESIGN (royal gold / dark) ══════════════ */
+.app-topbar { display:flex; align-items:center; justify-content:space-between; padding:14px 16px 0; position:relative; z-index:2; }
+.brand-mark { display:flex; align-items:center; gap:9px; }
+.brand-ico { font-size:1.6rem; filter:drop-shadow(0 0 6px rgba(201,168,76,.5)); }
+.brand-name { font-size:1.15rem; font-weight:800; letter-spacing:1.2px; color:var(--p); text-transform:uppercase; }
+.topbar-actions { display:flex; gap:8px; }
+.topbar-btn { width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); display:flex; align-items:center; justify-content:center; font-size:.95rem; cursor:pointer; color:var(--txt); }
+
+.greet-row { padding:14px 16px 0; position:relative; z-index:2; display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+.greet-text { font-size:1.15rem; font-weight:700; color:#fff; }
+.greet-sub { font-size:.74rem; color:rgba(255,255,255,.45); margin-top:2px; }
+.hijri-chip { background:rgba(201,168,76,.14); border:1px solid rgba(201,168,76,.35); border-radius:20px; padding:6px 12px; font-size:.65rem; color:var(--p); font-weight:600; white-space:nowrap; display:flex; align-items:center; gap:4px; }
+
+.home-search { margin:14px 16px 0; position:relative; z-index:2; }
+.home-search-inner { display:flex; align-items:center; gap:9px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:16px; padding:11px 14px; }
+.home-search input { flex:1; background:none; border:none; outline:none; color:var(--txt); font-family:'Poppins',sans-serif; font-size:.82rem; }
+.home-search input::placeholder { color:rgba(255,255,255,.35); }
+.home-search-ico { font-size:.9rem; opacity:.6; }
+
+.row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:13px 16px 0; position:relative; z-index:2; }
+.resume-card.compact { flex-direction:column; align-items:flex-start; text-align:left; padding:14px; gap:8px; margin:0; }
+.resume-card.compact .resume-body { width:100%; }
+.resume-card.compact .resume-btn { align-self:flex-start; margin-top:2px; }
+.np-card { background:linear-gradient(135deg,#0e2620,#0a1a16); border:1px solid rgba(201,168,76,.4); border-radius:17px; padding:14px; display:flex; flex-direction:column; gap:4px; cursor:pointer; position:relative; overflow:hidden; }
+.np-card::after { content:'🕌'; position:absolute; right:-6px; bottom:-14px; font-size:3.4rem; opacity:.14; filter:grayscale(1) brightness(2); pointer-events:none; }
+.np-lbl { font-size:.63rem; color:#c9a84c; font-weight:700; text-transform:uppercase; letter-spacing:.6px; position:relative; z-index:1; }
+.np-name { font-size:.97rem; font-weight:700; color:#fff; margin-top:2px; position:relative; z-index:1; }
+.np-count { font-size:1.15rem; font-weight:800; color:#c9a84c; font-variant-numeric:tabular-nums; letter-spacing:.5px; position:relative; z-index:1; }
+.np-time { font-size:.7rem; color:rgba(255,255,255,.5); position:relative; z-index:1; }
+.np-mini-row { display:grid; grid-template-columns:repeat(5,1fr); gap:3px; margin-top:8px; position:relative; z-index:1; border-top:1px solid rgba(201,168,76,.2); padding-top:8px; }
+.np-mini-cell { display:flex; flex-direction:column; align-items:center; gap:1px; }
+.np-mini-nm { font-size:.55rem; color:rgba(255,255,255,.55); font-weight:600; }
+.np-mini-tm { font-size:.62rem; color:#fff; font-weight:700; font-variant-numeric:tabular-nums; }
+.np-mini-cell.is-next .np-mini-nm, .np-mini-cell.is-next .np-mini-tm { color:#e3c478; }
+
+.qa-row { display:flex; gap:16px; overflow-x:auto; padding:16px 16px 4px; position:relative; z-index:2; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+.qa-row::-webkit-scrollbar { display:none; }
+.qa-item { display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer; flex-shrink:0; -webkit-tap-highlight-color:transparent; }
+.qa-circle { width:54px; height:54px; border-radius:50%; background:rgba(201,168,76,.1); border:1.5px solid rgba(201,168,76,.35); display:flex; align-items:center; justify-content:center; font-size:1.4rem; transition:transform .15s; }
+.qa-item:active .qa-circle { transform:scale(.9); background:rgba(201,168,76,.22); }
+.qa-label { font-size:.62rem; color:rgba(255,255,255,.6); font-weight:600; }
+
+.azan-banner { background:linear-gradient(135deg,#0d2137,#1a3a5c); border:1px solid rgba(201,168,76,.4); border-radius:16px; margin:0 14px 12px; padding:14px 16px; box-sizing:border-box; position:relative; z-index:2; }
+.azan-b-row { display:flex; align-items:center; gap:12px; cursor:pointer; }
+.azan-b-ico { font-size:1.5rem; flex-shrink:0; }
+.azan-b-body { flex:1; }
+.azan-b-title { font-size:.82rem; font-weight:700; color:#fff; }
+.azan-b-status { font-size:.66rem; color:rgba(255,255,255,.5); margin-top:1px; }
+.azan-b-chev { font-size:.7rem; color:#c9a84c; transition:transform .2s; }
+.azan-b-chev.open { transform:rotate(180deg); }
+.azan-details { display:none; margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,.08); }
+.azan-details.open { display:block; }
+
+.featured-carousel { display:flex; gap:10px; overflow-x:auto; scroll-snap-type:x mandatory; padding:0 14px; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+.more-teaser { display:flex; align-items:center; justify-content:space-between; gap:10px; margin:14px 16px 0; padding:13px 16px; background:var(--card); border:1px solid var(--bdr); border-radius:15px; cursor:pointer; transition:transform .15s; }
+.more-teaser:active { transform:scale(.98); }
+.more-teaser-txt { font-size:.82rem; font-weight:700; color:var(--txt); }
+.more-teaser-sub { font-size:.68rem; color:var(--txt2); margin-top:1px; }
+.more-teaser-arrow { font-size:1.1rem; color:var(--gold); flex-shrink:0; }
+.featured-carousel::-webkit-scrollbar { display:none; }
+.featured-carousel .ccard { scroll-snap-align:start; min-width:44%; flex-shrink:0; }
+.carousel-dots { display:flex; gap:5px; justify-content:center; margin:8px 0 2px; }
+.carousel-dot { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.2); transition:background .2s, width .2s; }
+.carousel-dot.active { background:var(--p); width:16px; border-radius:4px; }
+
+.section-hd { display:flex; align-items:center; justify-content:space-between; padding:0 14px; margin-bottom:8px; }
+.section-hd .cgrid-label { margin:0; padding:0; }
+.section-hd .view-all { font-size:.66rem; color:var(--p); font-weight:600; cursor:pointer; }
+.cgrid.cgrid3 { grid-template-columns:repeat(3,1fr); }
+
+.ico-sq { width:46px; height:46px; border-radius:13px; display:flex; align-items:center; justify-content:center; font-size:1.35rem; margin-bottom:2px; box-shadow:0 3px 10px rgba(0,0,0,.25); }
+.cgrid3 .ccard { padding:14px 8px; }
+.cgrid3 .ccard-t { font-size:.72rem; }
+.cgrid3 .ccard-s { font-size:.6rem; }
 </style>
 </head>
 <body>
@@ -1704,9 +1787,9 @@ body { font-family:'Poppins',sans-serif;
   
 <!-- COLOR SWITCHER -->
 <div class="csw">
-  <button class="csw-btn active" style="background:#10b981" onclick="switchColor('','#10b981',this)" title="White + Green"></button>
+  <button class="csw-btn active" style="background:#c9a84c;border:2px solid rgba(255,255,255,.3)" onclick="switchColor('','#c9a84c',this)" title="Royal Gold (Default)"></button>
+  <button class="csw-btn" style="background:#10b981" onclick="switchColor('classic','#10b981',this)" title="Classic White + Green"></button>
   <button class="csw-btn" style="background:#0ea5e9" onclick="switchColor('ocean','#0ea5e9',this)" title="White + Sea Blue"></button>
-  <button class="csw-btn" style="background:#6366f1" onclick="switchColor('indigo','#6366f1',this)" title="White + Indigo"></button>
   <button class="csw-btn" style="background:#a78bfa" onclick="switchColor('purple','#a78bfa',this)" title="White + Purple"></button>
   <button class="csw-btn" style="background:#fb7185" onclick="switchColor('rose','#fb7185',this)" title="White + Rose"></button>
   <button class="csw-btn" style="background:#D97706" onclick="switchColor('light','#D97706',this)" title="Cream + Gold"></button>
@@ -1715,9 +1798,22 @@ body { font-family:'Poppins',sans-serif;
 
 <div class="hero">
     <div class="orb orb1"></div><div class="orb orb2"></div>
+    <div class="app-topbar">
+      <div class="brand-mark"><span class="brand-ico">🕌</span><span class="brand-name">Naba Quran</span></div>
+      <div class="topbar-actions">
+        <div class="topbar-btn" onclick="document.querySelector('.home-search input').focus()">🔍</div>
+        <div class="topbar-btn" onclick="goToView('hijri')">📅</div>
+      </div>
+    </div>
     <div class="hero-bism">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>
-    <div class="hero-title">Quran <em>Pro</em></div>
     <div class="hero-sub">114 Surahs · Read · Listen · Duas · Qibla · More</div>
+    <div class="greet-row" style="padding:10px 0 0">
+      <div>
+        <div class="greet-text">Assalamu Alaikum ❤️</div>
+        <div class="greet-sub">May Allah bless your day 🌙</div>
+      </div>
+      <div class="hijri-chip" id="hijri-header-chip">📅 —</div>
+    </div>
     <div class="hero-stats">
       <div class="hstat"><div class="hstat-n">114</div><div class="hstat-l">Surahs</div></div>
       <div class="hstat"><div class="hstat-n" id="h-tasbih">0</div><div class="hstat-l">Tasbih</div></div>
@@ -1726,142 +1822,110 @@ body { font-family:'Poppins',sans-serif;
     <div id="install-btn" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button onclick="installPWA()">📲 Install App</button><button onclick="requestDailyNotif()" style="background:linear-gradient(135deg,#c9a84c,#a07830);border:none;color:#fff;padding:10px 18px;border-radius:20px;font-size:.8rem;cursor:pointer;font-weight:600">🔔 Daily Ayah</button></div>
   </div>
 
-  <div id="resume-wrap" style="display:none">
-    <div class="resume-card" onclick="resumeRead()">
-      <div style="font-size:2rem">📖</div>
-      <div class="resume-body">
-        <div class="resume-lbl">Continue Reading</div>
-        <div class="resume-title" id="resume-title">—</div>
-        <div class="resume-sub" id="resume-sub">—</div>
+  <div class="home-search">
+    <div class="home-search-inner">
+      <span class="home-search-ico">🔍</span>
+      <input type="text" placeholder="Search Quran, Dua, Prophets, Stories…" oninput="homeSearchGo(this.value)" onfocus="if(!this.value)this.placeholder='Search Quran, Dua, Prophets, Stories…'">
+    </div>
+  </div>
+
+  <div class="row2">
+    <div id="resume-wrap" style="display:none">
+      <div class="resume-card compact" onclick="resumeRead()" style="background:linear-gradient(135deg,#173d2e,#0d2419)">
+        <div style="font-size:1.7rem">📖</div>
+        <div class="resume-body">
+          <div class="resume-lbl">Continue Reading</div>
+          <div class="resume-title" id="resume-title">—</div>
+          <div class="resume-sub" id="resume-sub">—</div>
+        </div>
+        <button class="resume-btn">Resume →</button>
       </div>
-      <button class="resume-btn">Resume →</button>
+    </div>
+    <div class="np-card" onclick="loadPrayerTimes()">
+      <div class="np-lbl">🕐 Next Prayer</div>
+      <div class="np-name" id="np-name">—</div>
+      <div class="np-count" id="np-count">--:--:--</div>
+      <div class="np-time" id="np-time">at --:--</div>
+      <div class="np-mini-row">
+        <div class="np-mini-cell"><span class="np-mini-nm">Fajr</span><span class="np-mini-tm" id="pt-fajr">--:--</span></div>
+        <div class="np-mini-cell"><span class="np-mini-nm">Dhuhr</span><span class="np-mini-tm" id="pt-dhuhr">--:--</span></div>
+        <div class="np-mini-cell"><span class="np-mini-nm">Asr</span><span class="np-mini-tm" id="pt-asr">--:--</span></div>
+        <div class="np-mini-cell"><span class="np-mini-nm">Maghrib</span><span class="np-mini-tm" id="pt-maghrib">--:--</span></div>
+        <div class="np-mini-cell"><span class="np-mini-nm">Isha</span><span class="np-mini-tm" id="pt-isha">--:--</span></div>
+      </div>
     </div>
   </div>
 
-  
-  <div class="pw"><div class="pw-hd">🕌 Prayer Times <span id="pw-city" style="font-weight:400;opacity:.6">— allow location</span></div><div class="pw-grid"><div class="pw-cell"><span class="pw-nm">Fajr</span><span class="pw-tm" id="pt-fajr">--:--</span></div><div class="pw-cell"><span class="pw-nm">Dhuhr</span><span class="pw-tm" id="pt-dhuhr">--:--</span></div><div class="pw-cell"><span class="pw-nm">Asr</span><span class="pw-tm" id="pt-asr">--:--</span></div><div class="pw-cell"><span class="pw-nm">Maghrib</span><span class="pw-tm" id="pt-maghrib">--:--</span></div><div class="pw-cell"><span class="pw-nm">Isha</span><span class="pw-tm" id="pt-isha">--:--</span></div><div class="pw-cell pw-nxt"><span class="pw-nm" id="pt-nxt-nm">⏰ Next</span><span class="pw-tm" id="pt-nxt-tm">--:--</span></div></div></div>
-  <!-- AZAN SETTINGS PANEL -->
-  <div class="azan-panel">
-    <div class="azan-hd">
-      <span>🕌 Azan Alarm</span>
-      <button class="azan-toggle" id="azan-toggle-btn" onclick="toggleAzan()">🔕 OFF</button>
+  <div class="qa-row">
+    <div class="qa-item" onclick="goToView('list')"><div class="qa-circle">📖</div><div class="qa-label">Quran</div></div>
+    <div class="qa-item" onclick="goToView('dua')"><div class="qa-circle">🤲</div><div class="qa-label">Dua</div></div>
+    <div class="qa-item" onclick="goToView('tasbih')"><div class="qa-circle">📿</div><div class="qa-label">Dhikr</div></div>
+    <div class="qa-item" onclick="goToView('memorize')"><div class="qa-circle">🎓</div><div class="qa-label">Learn</div></div>
+    <div class="qa-item" onclick="goToView('qibla')"><div class="qa-circle">🕋</div><div class="qa-label">Qibla</div></div>
+    <div class="qa-item" onclick="goToView('hijri')"><div class="qa-circle">📅</div><div class="qa-label">Calendar</div></div>
+  </div>
+
+  <!-- AZAN SETTINGS PANEL (slim collapsible banner) -->
+  <div class="azan-banner">
+    <div class="azan-b-row" onclick="toggleAzanDetails()">
+      <div class="azan-b-ico">🔔</div>
+      <div class="azan-b-body">
+        <div class="azan-b-title">Azan Alarm</div>
+        <div class="azan-b-status" id="azan-b-status">All prayers · tap to set up</div>
+      </div>
+      <button class="azan-toggle" id="azan-toggle-btn" onclick="event.stopPropagation();toggleAzan()">🔕 OFF</button>
+      <div class="azan-b-chev" id="azan-b-chev">▼</div>
     </div>
-    <div class="azan-voices" id="azan-voices-grid"><!-- filled by JS --></div>
-    <div class="azan-preview" onclick="previewAzan()">
-      <span>▶️ Preview selected Azan</span>
-      <span style="font-size:.65rem;opacity:.5">tap to hear</span>
+    <div class="azan-details" id="azan-details">
+      <div class="azan-voices" id="azan-voices-grid"><!-- filled by JS --></div>
+      <div class="azan-preview" onclick="previewAzan()">
+        <span>▶️ Preview selected Azan</span>
+        <span style="font-size:.65rem;opacity:.5">tap to hear</span>
+      </div>
+      <button class="azan-test-btn" onclick="testAzanNow()">🔔 Test Ring Now</button>
+      <div class="azan-next-info" id="azan-next-info">Enable to get Azan at each prayer time</div>
     </div>
-    <button class="azan-test-btn" onclick="testAzanNow()">🔔 Test Ring Now</button>
-    <div class="azan-next-info" id="azan-next-info">Enable to get Azan at each prayer time</div>
   </div>
 
 
-<!-- ══ CARD GRID: CORE FEATURES ══ -->
+<!-- ══ FEATURED CAROUSEL ══ -->
 <div class="cgrid-wrap">
-  <div class="cgrid-label">📚 Features</div>
-  <div class="cgrid">
-    <div class="ccard" onclick="goToView('list')">
+  <div class="section-hd"><div class="cgrid-label">⭐ Featured</div></div>
+  <div class="featured-carousel" id="featured-carousel" onscroll="syncCarouselDots()">
+    <div class="ccard" onclick="goToView('list')" style="background:linear-gradient(135deg,#173d2e,#0d2419);border-color:rgba(201,168,76,.2)">
       <div class="ccard-ico">📖</div>
       <div class="ccard-t">Read &amp; Listen</div>
-      <div class="ccard-s">All 79 Surahs · Arabic + English</div>
+      <div class="ccard-s">All 114 Surahs · Arabic + English</div>
     </div>
-    <div class="ccard" onclick="goToView('memorize')">
+    <div class="ccard" onclick="goToView('memorize')" style="background:linear-gradient(135deg,#182238,#0d1420);border-color:rgba(201,168,76,.2)">
       <div class="ccard-ico">🧠</div>
       <div class="ccard-t">Memorize</div>
       <div class="ccard-s">Reveal · Hide · Quiz</div>
       <span class="ccard-badge badge-new">NEW</span>
     </div>
-    <div class="ccard" onclick="goToView('tasbih')">
-      <div class="ccard-ico">🏔️</div>
-      <div class="ccard-t">Dhikr Journey</div>
-      <div class="ccard-s">SubhanAllah · Alhamdulillah</div>
-    </div>
-    <div class="ccard" onclick="goToView('ai')">
+    <div class="ccard" onclick="goToView('ai')" style="background:linear-gradient(135deg,#1a4030,#0e2820);border-color:rgba(201,168,76,.2)">
       <div class="ccard-ico">✨</div>
       <div class="ccard-t">Islamic AI Guide</div>
       <div class="ccard-s">Ask anything about Islam</div>
       <span class="ccard-badge badge-ai">AI</span>
     </div>
-    <div class="ccard" onclick="goToView('prophets')">
+    <div class="ccard" onclick="goToView('prophets')" style="background:linear-gradient(135deg,#17253f,#0e1728);border-color:rgba(201,168,76,.2)">
       <div class="ccard-ico">🌟</div>
       <div class="ccard-t">Prophets Stories</div>
       <div class="ccard-s">25 Prophets · Videos</div>
       <span class="ccard-badge badge-new">NEW</span>
     </div>
-    <div class="ccard" onclick="goToView('night')">
-      <div class="ccard-ico">🌙</div>
-      <div class="ccard-t">Night Radio</div>
-      <div class="ccard-s">Sleep to Quran · All night</div>
-      <span class="ccard-badge badge-new">NEW</span>
-    </div>
   </div>
+  <div class="carousel-dots" id="featured-dots"></div>
 </div>
 
-<!-- ══ CARD GRID: MORE FEATURES ══ -->
-<div class="cgrid-wrap" style="margin-top:14px">
-  <div class="cgrid-label">⚡ More Features</div>
-  <div class="cgrid">
-    <div class="ccard" onclick="goToView('wudu')" style="background:linear-gradient(135deg,rgba(34,211,238,.08),rgba(14,165,233,.04));border-color:rgba(34,211,238,.2)">
-      <div class="ccard-ico">💧</div>
-      <div class="ccard-t">Wudu Guide</div>
-      <div class="ccard-s">How to perform ablution</div>
-      <span class="ccard-badge badge-new">NEW</span>
-    </div>
-    <div class="ccard" onclick="goToView('names')" style="background:linear-gradient(135deg,rgba(255,215,0,.08),rgba(245,158,11,.04));border-color:rgba(255,215,0,.2)">
-      <div class="ccard-ico">🌟</div>
-      <div class="ccard-t">99 Names of Allah</div>
-      <div class="ccard-s">Asma ul Husna</div>
-      <span class="ccard-badge badge-new">NEW</span>
-    </div>
-    <div class="ccard" onclick="goToView('progress')">
-      <div class="ccard-ico">📊</div>
-      <div class="ccard-t">Progress Tracker</div>
-      <div class="ccard-s">Surah completion charts</div>
-      <span class="ccard-badge badge-new">NEW</span>
-    </div>
-    <div class="ccard" onclick="goToView('tajweed')">
-      <div class="ccard-ico">🎙️</div>
-      <div class="ccard-t">Tajweed Checker</div>
-      <div class="ccard-s">Record &amp; AI feedback</div>
-      <span class="ccard-badge badge-new">NEW</span>
-    </div>
-    <div class="ccard" onclick="goToView('groupstudy')">
-      <div class="ccard-ico">👥</div>
-      <div class="ccard-t">Group Study</div>
-      <div class="ccard-s">Read with friends live</div>
-      <span class="ccard-badge badge-new">NEW</span>
-    </div>
-    <div class="ccard" onclick="setLangAndGo('ha')">
-      <div class="ccard-ico">🌍</div>
-      <div class="ccard-t">Multi-Language</div>
-      <div class="ccard-s">Hausa · English</div>
-      <span class="ccard-badge badge-new">NEW</span>
-    </div>
+<div class="more-teaser" onclick="goToView('more')">
+  <div>
+    <div class="more-teaser-txt">⚡ 20+ More Tools & Guides</div>
+    <div class="more-teaser-sub">Duas, Qibla, Zakat, Hadith, Tracker & more</div>
   </div>
+  <div class="more-teaser-arrow">→</div>
 </div>
-
-<div class="cgrid-wrap" style="margin-top:14px">
-  <div class="cgrid-label">🆕 New Tools</div>
-  <div class="cgrid">
-    <div class="ccard" onclick="goToView('dua')" style="background:linear-gradient(135deg,rgba(34,197,94,.08),rgba(22,163,74,.04));border-color:rgba(34,197,94,.2)">
-      <div class="ccard-ico">🤲</div><div class="ccard-t">Daily Duas</div><div class="ccard-s">Hisn al-Muslim 130+ duas</div><span class="ccard-badge badge-new">NEW</span></div>
-    <div class="ccard" onclick="goToView('qibla')" style="background:linear-gradient(135deg,rgba(59,130,246,.08),rgba(37,99,235,.04));border-color:rgba(59,130,246,.2)">
-      <div class="ccard-ico">🧭</div><div class="ccard-t">Qibla Compass</div><div class="ccard-s">Find prayer direction</div><span class="ccard-badge badge-new">NEW</span></div>
-    <div class="ccard" onclick="goToView('zakat')" style="background:linear-gradient(135deg,rgba(212,175,55,.08),rgba(168,132,48,.04));border-color:rgba(212,175,55,.2)">
-      <div class="ccard-ico">💰</div><div class="ccard-t">Zakat Calculator</div><div class="ccard-s">Calculate 2.5% easily</div><span class="ccard-badge badge-new">NEW</span></div>
-    <div class="ccard" onclick="goToView('hijri')" style="background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(124,58,237,.04));border-color:rgba(139,92,246,.2)">
-      <div class="ccard-ico">📅</div><div class="ccard-t">Hijri Calendar</div><div class="ccard-s">Islamic dates & events</div><span class="ccard-badge badge-new">NEW</span></div>
-    <div class="ccard" onclick="goToView('hadith40')" style="background:linear-gradient(135deg,rgba(236,72,153,.08),rgba(219,39,119,.04));border-color:rgba(236,72,153,.2)">
-      <div class="ccard-ico">📜</div><div class="ccard-t">40 Hadith</div><div class="ccard-s">Imam Nawawi collection</div><span class="ccard-badge badge-new">NEW</span></div>
-    <div class="ccard" onclick="goToView('ptracker')" style="background:linear-gradient(135deg,rgba(20,184,166,.08),rgba(13,148,136,.04));border-color:rgba(20,184,166,.2)">
-      <div class="ccard-ico">✅</div><div class="ccard-t">Prayer Tracker</div><div class="ccard-s">Track 5 daily prayers</div><span class="ccard-badge badge-new">NEW</span></div>
-    <div class="ccard" onclick="goToView('hajj')" style="background:linear-gradient(135deg,rgba(217,119,6,.08),rgba(180,83,9,.04));border-color:rgba(217,119,6,.2)">
-      <div class="ccard-ico">🕋</div><div class="ccard-t">Hajj & Umrah</div><div class="ccard-s">Step-by-step guide</div><span class="ccard-badge badge-new">NEW</span></div>
-  </div>
-</div>
-
-<div style="height:10px"></div>
-
 
   <div class="home-sec" style="padding-bottom:18px">
     <div class="home-sec-lbl">🌙 Daily Wisdom</div>
@@ -2423,13 +2487,109 @@ body { font-family:'Poppins',sans-serif;
 <!-- ════════════════ BOTTOM NAV ════════════════ -->
 <nav class="bnav">
   <div class="ni on" data-v="home"     onclick="goToView('home')">    <div class="ico">🏠</div><div>Home</div></div>
-  <div class="ni"    data-v="list"     onclick="goToView('list')">    <div class="ico">📖</div><div>Surahs</div></div>
-  <div class="ni"    data-v="memorize" onclick="goToView('memorize')"><div class="ico">🧠</div><div>Memorize</div></div>
+  <div class="ni"    data-v="list"     onclick="goToView('list')">    <div class="ico">📖</div><div>Quran</div></div>
+  <div class="ni"    data-v="memorize" onclick="goToView('memorize')"><div class="ico">🎓</div><div>Learn</div></div>
   <div class="ni"    data-v="tasbih"   onclick="goToView('tasbih')">  <div class="ico">🏔️</div><div>Dhikr</div></div>
-  <div class="ni"    data-v="progress" onclick="goToView('progress')"><div class="ico">📊</div><div>Progress</div></div>
-  <div class="ni"    data-v="prophets" onclick="goToView('prophets')"><div class="ico">🌟</div><div>Prophets</div></div>
-  <div class="ni"    data-v="ai"       onclick="goToView('ai')">      <div class="ico">✨</div><div>AI</div></div>
+  <div class="ni"    data-v="more"     onclick="goToView('more')">    <div class="ico">▦</div><div>More</div></div>
 </nav>
+
+<!-- ════════════════ MORE HUB ════════════════ -->
+<div id="more-view" class="view">
+  <div class="proph-hdr">
+    <div class="hrow" style="justify-content:center">
+      <div class="htitle" style="color:#fff">▦ More</div>
+    </div>
+    <div class="proph-badge">All Features</div>
+    <h2 style="font-size:1.1rem">Everything in Naba Quran</h2>
+    <p>Tools · Learning · Tracking · Community</p>
+  </div>
+  <div class="cgrid-wrap" style="margin-top:14px">
+    <div class="cgrid cgrid3">
+    <div class="ccard" onclick="goToView('progress')">
+      <div class="ccard-ico ico-sq" style="background:#1f4a35">📊</div>
+      <div class="ccard-t">Progress Tracker</div>
+      <div class="ccard-s">Surah completion charts</div>
+    </div>
+    <div class="ccard" onclick="goToView('prophets')">
+      <div class="ccard-ico ico-sq" style="background:#4a2f6b">🌟</div>
+      <div class="ccard-t">Prophets Stories</div>
+      <div class="ccard-s">25 Prophets · Videos</div>
+    </div>
+    <div class="ccard" onclick="goToView('ai')">
+      <div class="ccard-ico ico-sq" style="background:#1c3a6b">✨</div>
+      <div class="ccard-t">Islamic AI Guide</div>
+      <div class="ccard-s">Ask anything about Islam</div>
+    </div>
+    <div class="ccard" onclick="goToView('night')">
+      <div class="ccard-ico ico-sq" style="background:#182238">🌙</div>
+      <div class="ccard-t">Night Radio</div>
+      <div class="ccard-s">Sleep to Quran</div>
+    </div>
+    <div class="ccard" onclick="goToView('wudu')">
+      <div class="ccard-ico ico-sq" style="background:#6b5220">💧</div>
+      <div class="ccard-t">Wudu Guide</div>
+      <div class="ccard-s">How to perform ablution</div>
+    </div>
+    <div class="ccard" onclick="goToView('names')">
+      <div class="ccard-ico ico-sq" style="background:#6b5220">⭐</div>
+      <div class="ccard-t">99 Names of Allah</div>
+      <div class="ccard-s">Asma ul Husna</div>
+    </div>
+    <div class="ccard" onclick="goToView('tajweed')">
+      <div class="ccard-ico ico-sq" style="background:#6b5220">🎙️</div>
+      <div class="ccard-t">Tajweed Checker</div>
+      <div class="ccard-s">Record & AI feedback</div>
+    </div>
+    <div class="ccard" onclick="goToView('groupstudy')">
+      <div class="ccard-ico ico-sq" style="background:#6b5220">👥</div>
+      <div class="ccard-t">Group Study</div>
+      <div class="ccard-s">Read with friends live</div>
+    </div>
+    <div class="ccard" onclick="setLangAndGo('ha')">
+      <div class="ccard-ico ico-sq" style="background:#182238">🌍</div>
+      <div class="ccard-t">Multi-Language</div>
+      <div class="ccard-s">Hausa · English</div>
+    </div>
+    <div class="ccard" onclick="goToView('dua')">
+      <div class="ccard-ico ico-sq" style="background:#1f4a35">🤲</div>
+      <div class="ccard-t">Daily Duas</div>
+      <div class="ccard-s">Hisn al-Muslim 130+</div>
+    </div>
+    <div class="ccard" onclick="goToView('qibla')">
+      <div class="ccard-ico ico-sq" style="background:#6b5220">🧭</div>
+      <div class="ccard-t">Qibla Finder</div>
+      <div class="ccard-s">Find prayer direction</div>
+    </div>
+    <div class="ccard" onclick="goToView('zakat')">
+      <div class="ccard-ico ico-sq" style="background:#6b5220">💰</div>
+      <div class="ccard-t">Zakat Calculator</div>
+      <div class="ccard-s">Calculate 2.5%</div>
+    </div>
+    <div class="ccard" onclick="goToView('hijri')">
+      <div class="ccard-ico ico-sq" style="background:#1f4a35">📅</div>
+      <div class="ccard-t">Islamic Calendar</div>
+      <div class="ccard-s">Hijri dates & events</div>
+    </div>
+    <div class="ccard" onclick="goToView('hadith40')">
+      <div class="ccard-ico ico-sq" style="background:#182238">📜</div>
+      <div class="ccard-t">40 Hadith</div>
+      <div class="ccard-s">Imam Nawawi collection</div>
+    </div>
+    <div class="ccard" onclick="goToView('ptracker')">
+      <div class="ccard-ico ico-sq" style="background:#1f4a35">✅</div>
+      <div class="ccard-t">Prayer Tracker</div>
+      <div class="ccard-s">Track 5 daily prayers</div>
+    </div>
+    <div class="ccard" onclick="goToView('hajj')">
+      <div class="ccard-ico ico-sq" style="background:#6b5220">🕋</div>
+      <div class="ccard-t">Hajj & Umrah</div>
+      <div class="ccard-s">Step-by-step guide</div>
+    </div>
+    </div>
+  </div>
+  <div style="height:20px"></div>
+</div>
+
 
 <!-- ════════════════ PROPHETS ════════════════ -->
 <div id="prophets-view">
@@ -2607,7 +2767,7 @@ function goToView(v) {
 
   // 4. Player bar visibility
   const pb = document.getElementById('pbar');
-  if (v === 'tasbih' || v === 'ai' || v === 'memorize' || v === 'admin' || v === 'prophets' || v === 'night' || v === 'progress' || v === 'groupstudy' || v === 'tajweed' || v === 'wudu' || v === 'names' || v === 'dua' || v === 'qibla' || v === 'zakat' || v === 'hijri' || v === 'hadith40' || v === 'ptracker' || v === 'hajj') {
+  if (v === 'tasbih' || v === 'ai' || v === 'memorize' || v === 'admin' || v === 'prophets' || v === 'night' || v === 'progress' || v === 'groupstudy' || v === 'tajweed' || v === 'wudu' || v === 'names' || v === 'dua' || v === 'qibla' || v === 'zakat' || v === 'hijri' || v === 'hadith40' || v === 'ptracker' || v === 'hajj' || v === 'more') {
     pb.style.display = 'none';
   } else {
     pb.style.display = 'flex';
@@ -4017,16 +4177,18 @@ async function loadPrayerTimes(){
     const r=await fetch('https://api.aladhan.com/v1/timings?latitude='+pos.coords.latitude+'&longitude='+pos.coords.longitude+'&method=3');
     const d=await r.json();
     const t=d.data.timings;
-    document.getElementById('pw-city').textContent=(d.data.meta.timezone||'').split('/')[1]||'';
     document.getElementById('pt-fajr').textContent=t.Fajr;
     document.getElementById('pt-dhuhr').textContent=t.Dhuhr;
     document.getElementById('pt-asr').textContent=t.Asr;
     document.getElementById('pt-maghrib').textContent=t.Maghrib;
     document.getElementById('pt-isha').textContent=t.Isha;
+    // Highlight the upcoming prayer in the mini row
     const now=new Date();
+    const miniCells = { Fajr:'pt-fajr', Dhuhr:'pt-dhuhr', Asr:'pt-asr', Maghrib:'pt-maghrib', Isha:'pt-isha' };
+    document.querySelectorAll('.np-mini-cell').forEach(c => c.classList.remove('is-next'));
     for(const [nm,tm] of [['Fajr',t.Fajr],['Dhuhr',t.Dhuhr],['Asr',t.Asr],['Maghrib',t.Maghrib],['Isha',t.Isha]]){
       const[h,m]=tm.split(':').map(Number);const pt=new Date();pt.setHours(h,m,0,0);
-      if(pt>now){document.getElementById('pt-nxt-nm').textContent='⏰ '+nm;document.getElementById('pt-nxt-tm').textContent=tm;break;}
+      if(pt>now){ const cellEl=document.getElementById(miniCells[nm]); if(cellEl) cellEl.closest('.np-mini-cell').classList.add('is-next'); break; }
     }
     // Save prayer times to localStorage for alarm persistence
     localStorage.setItem('prayerTimes', JSON.stringify({Fajr:t.Fajr,Dhuhr:t.Dhuhr,Asr:t.Asr,Maghrib:t.Maghrib,Isha:t.Isha}));
@@ -4041,16 +4203,14 @@ async function loadPrayerTimes(){
     // Sync to native Android AlarmManager
     if(azanEnabled) syncAlarmsToNative();
   }catch(e){
-    const el=document.getElementById('pw-city');
-    if(el)el.textContent='tap to enable';
-    // Add a clickable prompt on the prayer widget
-    const pw=document.querySelector('.pw');
+    // Add a clickable prompt on the next-prayer card
+    const pw=document.querySelector('.np-card');
     if(pw && !document.getElementById('pt-enable-btn')){
       const btn=document.createElement('button');
       btn.id='pt-enable-btn';
       btn.textContent='📍 Tap to Enable Prayer Times';
-      btn.style.cssText='display:block;width:100%;margin-top:10px;padding:10px;background:var(--p);color:#fff;border:none;border-radius:10px;font-family:Poppins,sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;';
-      btn.onclick=()=>{btn.remove();loadPrayerTimes();};
+      btn.style.cssText='display:block;width:100%;margin-top:8px;padding:8px;background:var(--p);color:#fff;border:none;border-radius:10px;font-family:Poppins,sans-serif;font-size:.7rem;font-weight:600;cursor:pointer;position:relative;z-index:1;';
+      btn.onclick=(ev)=>{ev.stopPropagation();btn.remove();loadPrayerTimes();};
       pw.appendChild(btn);
     }
   }
@@ -4068,6 +4228,8 @@ function toggleAzan(){
   localStorage.setItem('azanEnabled', azanEnabled ? '1' : '0');
   document.getElementById('azan-toggle-btn').classList.toggle('on', azanEnabled);
   document.getElementById('azan-toggle-btn').textContent = azanEnabled ? '🔔 ON' : '🔕 OFF';
+  const azanStatusEl = document.getElementById('azan-b-status');
+  if(azanStatusEl) azanStatusEl.textContent = azanEnabled ? '🟢 Enabled · all 5 prayers' : 'All prayers · tap to set up';
   if(azanEnabled){
     startAzanWatch();
     // Request notification permission for background alarms
@@ -4255,6 +4417,93 @@ function installPWA() { if(deferredPrompt){deferredPrompt.prompt();deferredPromp
 // ================================================================
 // INIT — same style as working version
 // ================================================================
+// ══════════════ NABA QURAN — REDESIGN HELPERS ══════════════
+function homeSearchGo(v) {
+  clearTimeout(window._homeSearchT);
+  window._homeSearchT = setTimeout(() => {
+    if (!v || !v.trim()) return;
+    goToView('list');
+    setTimeout(() => {
+      const el = document.getElementById('srch');
+      if (el) { el.value = v; el.focus(); if (typeof renderList === 'function') renderList(v); }
+    }, 80);
+  }, 350);
+}
+
+function syncCarouselDots() {
+  const c = document.getElementById('featured-carousel');
+  if (!c) return;
+  const idx = Math.round(c.scrollLeft / (c.firstElementChild ? c.firstElementChild.offsetWidth + 10 : 1));
+  document.querySelectorAll('#featured-dots .carousel-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+}
+function initFeaturedDots() {
+  const c = document.getElementById('featured-carousel');
+  const dotsWrap = document.getElementById('featured-dots');
+  if (!c || !dotsWrap) return;
+  const n = c.children.length;
+  dotsWrap.innerHTML = Array.from({length:n}, (_,i) => '<div class="carousel-dot' + (i===0?' active':'') + '"></div>').join('');
+}
+
+function toggleAzanDetails() {
+  const d = document.getElementById('azan-details');
+  const chev = document.getElementById('azan-b-chev');
+  if (!d) return;
+  const open = d.classList.toggle('open');
+  if (chev) chev.classList.toggle('open', open);
+}
+
+function renderHijriHeaderChip() {
+  const el = document.getElementById('hijri-header-chip');
+  if (!el || typeof gregToHijri !== 'function') return;
+  try {
+    const h = gregToHijri(new Date());
+    const months = (typeof HIJRI_MONTHS !== 'undefined') ? HIJRI_MONTHS : ['Muharram','Safar',"Rabi' al-Awwal","Rabi' al-Thani",'Jumada al-Awwal','Jumada al-Thani','Rajab',"Sha'ban",'Ramadan','Shawwal',"Dhu al-Qi'dah",'Dhu al-Hijjah'];
+    el.textContent = '📅 ' + h.day + ' ' + months[h.month - 1] + ' ' + h.year + ' AH';
+  } catch(e) { el.textContent = '📅 —'; }
+}
+
+let _npInterval = null;
+function updateNextPrayerCard() {
+  const nameEl = document.getElementById('np-name');
+  const countEl = document.getElementById('np-count');
+  const timeEl = document.getElementById('np-time');
+  if (!nameEl || !countEl || !timeEl) return;
+  let times = null;
+  try { times = JSON.parse(localStorage.getItem('prayerTimes') || 'null'); } catch(e) {}
+  if (!times) { nameEl.textContent = 'Allow location'; countEl.textContent = '--:--:--'; timeEl.textContent = ''; return; }
+  const now = new Date();
+  const order = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
+  let next = null, nextDate = null;
+  for (const nm of order) {
+    if (!times[nm]) continue;
+    const [h,m] = times[nm].split(':').map(Number);
+    const d = new Date(); d.setHours(h,m,0,0);
+    if (d > now) { next = nm; nextDate = d; break; }
+  }
+  if (!next) {
+    // all passed today — next is Fajr tomorrow
+    next = 'Fajr';
+    if (times.Fajr) {
+      const [h,m] = times.Fajr.split(':').map(Number);
+      nextDate = new Date(); nextDate.setDate(nextDate.getDate()+1); nextDate.setHours(h,m,0,0);
+    }
+  }
+  nameEl.textContent = next || '—';
+  if (nextDate) {
+    const diff = Math.max(0, nextDate - now);
+    const hh = Math.floor(diff/3600000);
+    const mm = Math.floor((diff%3600000)/60000);
+    const ss = Math.floor((diff%60000)/1000);
+    countEl.textContent = String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
+    timeEl.textContent = 'at ' + (times[next] || '--:--');
+  }
+}
+function startNextPrayerCountdown() {
+  updateNextPrayerCard();
+  if (_npInterval) clearInterval(_npInterval);
+  _npInterval = setInterval(updateNextPrayerCard, 1000);
+}
+
 function initApp() {
   const t=localStorage.getItem('theme')||'default';
   applyTheme(t);
@@ -4282,12 +4531,16 @@ function initApp() {
     azanBtn.textContent = '🔔 ON';
     startAzanWatch();
     updateAzanNextInfo();
+    const _abs = document.getElementById('azan-b-status'); if(_abs) _abs.textContent = '🟢 Enabled · all 5 prayers';
   } else if(azanBtn) {
     azanBtn.classList.remove('on');
     azanBtn.textContent = '🔕 OFF';
   }
   loadQ();
   updateResumeUI();
+  renderHijriHeaderChip();
+  startNextPrayerCountdown();
+  initFeaturedDots();
   const sb=localStorage.getItem('adminBanner'); if(sb) showBanner(sb);
   if (window.location.hash==='#admin') goToView('admin');
   else goToView('home');
@@ -8126,20 +8379,31 @@ const HIJRI_EVENTS = [
 ];
 let hijriCurrentDate = new Date();
 
+function gregToHijriKuwaiti(date) {
+  // Kuwaiti algorithm (tabular Islamic calendar) — reliable fallback
+  let jd = Math.floor((date.getTime() / 86400000) + 2440587.5 + 0.5);
+  jd = jd - 1948440 + 10632;
+  const n = Math.floor((jd - 1) / 10631);
+  jd = jd - 10631 * n + 354;
+  const j = Math.floor((10985 - jd) / 5316) * Math.floor((50 * jd) / 17719) + Math.floor(jd / 5670) * Math.floor((43 * jd) / 15238);
+  jd = jd - Math.floor((30 - j) / 15) * Math.floor((17719 * j) / 50) - Math.floor(j / 16) * Math.floor((15238 * j) / 43) + 29;
+  const month = Math.floor((24 * jd) / 709);
+  const day = jd - Math.floor((709 * month) / 24);
+  const year = 30 * n + j - 30;
+  return { year: year, month: month, day: day > 0 ? day : 1 };
+}
+
 function gregToHijri(date) {
-  const jd = Math.floor((date.getTime() / 86400000) + 2440587.5);
-  const l = jd - 1948440 + 10632;
-  const n = Math.floor((l - 1) / 10631);
-  const l2 = l - 10631 * n + 354;
-  const j = Math.floor((10985 - l2) / 5316) * Math.floor((50 * l2) / 17719);
-  const l3 = l2 - Math.floor((30 * j) / 15) * Math.floor((17719 * j) / 50);
-  const k = Math.floor((l3 - 1) / 10631) * Math.floor((15 * l3) / 5316);
-  const l4 = l3 - Math.floor((10631 * k) / 15) * Math.floor((5316 * k) / 15);
-  const m = Math.floor((l4 - 1) / 29);
-  const d = l4 - Math.floor((29 * m) / 15) * Math.floor((15 * m) / 29);
-  const month = Math.floor((m * 15 - d + 1) / 29);
-  const day = Math.floor((d - Math.floor((15 * month) / 15) + 1) % 30);
-  return { year: 30 * n + j - 1, month: month, day: day > 0 ? day : 1 };
+  // Prefer the accurate Umm al-Qura calendar via Intl (matches real-world Saudi/Islamic dates)
+  try {
+    const fmt = new Intl.DateTimeFormat('en-US', { calendar: 'islamic-umalqura', day: 'numeric', month: 'numeric', year: 'numeric' });
+    const parts = fmt.formatToParts(date);
+    const day = parseInt(parts.find(p => p.type === 'day').value, 10);
+    const month = parseInt(parts.find(p => p.type === 'month').value, 10);
+    const year = parseInt(parts.find(p => p.type === 'year').value, 10);
+    if (day && month && year) return { year: year, month: month, day: day };
+  } catch (e) { /* Intl calendar unsupported — fall through */ }
+  return gregToHijriKuwaiti(date);
 }
 
 function initHijri() { hijriCurrentDate = new Date(); renderHijri(); }
