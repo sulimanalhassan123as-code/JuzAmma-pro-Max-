@@ -4106,7 +4106,7 @@ if('serviceWorker' in navigator){
     }
     // Check for SW updates every 30 seconds and force update immediately
     reg.update();
-    setInterval(() => reg.update(), 30000);
+    setInterval(() => reg.update(), 15000);
   }).catch(err => console.log('[SW] Registration failed:', err));
 
   // When a new SW takes control, reload the page once to get fresh content

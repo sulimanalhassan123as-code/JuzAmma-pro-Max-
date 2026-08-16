@@ -4,7 +4,7 @@
 // Strategy: Cache-first for assets, Network-first for Quran API
 // ============================================================
 
-const CACHE_NAME = 'juzamma-pro-v36';
+const CACHE_NAME = 'juzamma-pro-v37-20260816034959';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -204,6 +204,10 @@ self.addEventListener('fetch', event => {
       fetch(event.request).then(response => {
         const clone = response.clone();
         caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        // Notify all clients that fresh content was served
+        self.clients.matchAll({ type: 'window' }).then(clients => {
+          clients.forEach(c => c.postMessage({ type: 'CONTENT_UPDATED' }));
+        });
         return response;
       }).catch(() => caches.match(event.request).then(c => c || caches.match('./index.html')))
     );
