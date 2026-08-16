@@ -76,7 +76,7 @@ body { font-family:'Poppins',sans-serif;
 .view.active { display:block; }
 
 /* Home: full height flex column, dark bg */
-#home-view { display:none; flex-direction:column; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:var(--dark); z-index:20; }
+#home-view { display:none; flex-direction:column; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:var(--dark); z-index:20; padding-bottom:20px; }
 #home-view.active { display:flex; }
 
 /* Tasbih: full height flex column, very dark */
@@ -612,9 +612,9 @@ body { font-family:'Poppins',sans-serif;
 .ni { min-width:52px; }
 
 /* ── THEME FAB (draggable) ────────────── */
-.tfab { position:fixed; right:14px; top:78px; z-index:9; width:43px; height:43px; border-radius:50%; background:var(--p); box-shadow:0 4px 14px rgba(0,0,0,.3); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.1rem; touch-action:none; opacity:1; transition:left .2s ease, top .2s ease, opacity .3s ease; }
+.tfab { position:fixed; right:14px; bottom:calc(var(--nav) + 12px); z-index:9; width:43px; height:43px; border-radius:50%; background:var(--p); box-shadow:0 4px 14px rgba(0,0,0,.3); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.1rem; touch-action:none; opacity:1; transition:left .2s ease, top .2s ease, opacity .3s ease; }
 .tfab.dragging { transition:none; }
-.tpanel { position:fixed; right:13px; top:130px; z-index:10; background:var(--dark2); border-radius:17px; padding:11px; display:flex; flex-direction:column; gap:7px; box-shadow:0 8px 28px rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.09); transform:scale(.7) translateY(-20px); opacity:0; transition:transform .25s cubic-bezier(.34,1.56,.64,1),opacity .2s; pointer-events:none; min-width:138px; }
+.tpanel { position:fixed; right:13px; bottom:calc(var(--nav) + 62px); z-index:10; background:var(--dark2); border-radius:17px; padding:11px; display:flex; flex-direction:column; gap:7px; box-shadow:0 8px 28px rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.09); transform:scale(.7) translateY(20px); opacity:0; transition:transform .25s cubic-bezier(.34,1.56,.64,1),opacity .2s; pointer-events:none; min-width:138px; }
 .tpanel.open { transform:scale(1) translateY(0); opacity:1; pointer-events:all; }
 .topt { display:flex; align-items:center; gap:9px; cursor:pointer; padding:5px 6px; border-radius:10px; transition:background .15s; }
 .topt:active { background:rgba(255,255,255,.07); }
@@ -1723,11 +1723,12 @@ body { font-family:'Poppins',sans-serif;
 .home-search input::placeholder { color:rgba(255,255,255,.35); }
 .home-search-ico { font-size:.9rem; opacity:.6; }
 
-.row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:13px 16px 0; position:relative; z-index:2; }
+.row2 { display:flex; gap:10px; margin:13px 16px 0; position:relative; z-index:2; }
+#resume-wrap { flex:1; min-width:0; }
 .resume-card.compact { flex-direction:column; align-items:flex-start; text-align:left; padding:14px; gap:8px; margin:0; }
 .resume-card.compact .resume-body { width:100%; }
 .resume-card.compact .resume-btn { align-self:flex-start; margin-top:2px; }
-.np-card { background:linear-gradient(135deg,#0e2620,#0a1a16); border:1px solid rgba(201,168,76,.4); border-radius:17px; padding:14px; display:flex; flex-direction:column; gap:4px; cursor:pointer; position:relative; overflow:hidden; }
+.np-card { flex:1; min-width:0; background:linear-gradient(135deg,#0e2620,#0a1a16); border:1px solid rgba(201,168,76,.4); border-radius:17px; padding:14px; display:flex; flex-direction:column; gap:6px; cursor:pointer; position:relative; overflow:hidden; }
 .np-card::after { content:'🕌'; position:absolute; right:-6px; bottom:-14px; font-size:3.4rem; opacity:.14; filter:grayscale(1) brightness(2); pointer-events:none; }
 .np-lbl { font-size:.63rem; color:#c9a84c; font-weight:700; text-transform:uppercase; letter-spacing:.6px; position:relative; z-index:1; }
 .np-name { font-size:.97rem; font-weight:700; color:#fff; margin-top:2px; position:relative; z-index:1; }
