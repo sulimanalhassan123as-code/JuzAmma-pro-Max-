@@ -740,17 +740,6 @@ body { font-family:'Poppins',sans-serif;
 .sday { width:20px; height:5px; border-radius:3px; background:rgba(255,255,255,.12); }
 .sday.done { background:var(--p); }
 
-/* ══ COLOR SWITCHER PANEL ══ */
-.csw { display:flex; gap:7px; justify-content:center; flex-wrap:wrap;
-  padding:10px 16px 6px; }
-.csw-btn {
-  width:26px; height:26px; border-radius:50%; border:2.5px solid transparent;
-  cursor:pointer; outline:none; transition:transform .2s, border-color .2s;
-  -webkit-tap-highlight-color:transparent;
-}
-.csw-btn.active { border-color:#fff; transform:scale(1.3); }
-.csw-btn:active { transform:scale(1.1); }
-
 
 /* ── LIGHT MODE CARD DEPTH ── */
 .mcard, .sc, .hadith-card, .pw, .resume-card, .azan-panel, .ccard {
@@ -1741,14 +1730,14 @@ body { font-family:'Poppins',sans-serif;
 .np-mini-tm { font-size:.62rem; color:#fff; font-weight:700; font-variant-numeric:tabular-nums; }
 .np-mini-cell.is-next .np-mini-nm, .np-mini-cell.is-next .np-mini-tm { color:#e3c478; }
 
-.qa-row { display:flex; gap:16px; overflow-x:auto; padding:16px 16px 4px; position:relative; z-index:2; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+.qa-row { display:flex; gap:22px; justify-content:center; overflow-x:auto; padding:18px 16px 18px; position:relative; z-index:2; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
 .qa-row::-webkit-scrollbar { display:none; }
 .qa-item { display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer; flex-shrink:0; -webkit-tap-highlight-color:transparent; }
 .qa-circle { width:54px; height:54px; border-radius:50%; background:rgba(201,168,76,.1); border:1.5px solid rgba(201,168,76,.35); display:flex; align-items:center; justify-content:center; font-size:1.4rem; transition:transform .15s; }
 .qa-item:active .qa-circle { transform:scale(.9); background:rgba(201,168,76,.22); }
 .qa-label { font-size:.62rem; color:rgba(255,255,255,.6); font-weight:600; }
 
-.azan-banner { background:linear-gradient(135deg,#0d2137,#1a3a5c); border:1px solid rgba(201,168,76,.4); border-radius:16px; margin:0 14px 12px; padding:14px 16px; box-sizing:border-box; position:relative; z-index:2; }
+.azan-banner { background:linear-gradient(135deg,#0d2137,#1a3a5c); border:1px solid rgba(201,168,76,.4); border-radius:16px; margin:6px 14px 16px; padding:14px 16px; box-sizing:border-box; position:relative; z-index:2; }
 .azan-b-row { display:flex; align-items:center; gap:12px; cursor:pointer; }
 .azan-b-ico { font-size:1.5rem; flex-shrink:0; }
 .azan-b-body { flex:1; }
@@ -1786,17 +1775,6 @@ body { font-family:'Poppins',sans-serif;
 
 <!-- ════════════════ HOME ════════════════ -->
 <div id="home-view" class="active">
-  
-<!-- COLOR SWITCHER -->
-<div class="csw">
-  <button class="csw-btn active" style="background:#c9a84c;border:2px solid rgba(255,255,255,.3)" onclick="switchColor('','#c9a84c',this)" title="Royal Gold (Default)"></button>
-  <button class="csw-btn" style="background:#10b981" onclick="switchColor('classic','#10b981',this)" title="Classic White + Green"></button>
-  <button class="csw-btn" style="background:#0ea5e9" onclick="switchColor('ocean','#0ea5e9',this)" title="White + Sea Blue"></button>
-  <button class="csw-btn" style="background:#a78bfa" onclick="switchColor('purple','#a78bfa',this)" title="White + Purple"></button>
-  <button class="csw-btn" style="background:#fb7185" onclick="switchColor('rose','#fb7185',this)" title="White + Rose"></button>
-  <button class="csw-btn" style="background:#D97706" onclick="switchColor('light','#D97706',this)" title="Cream + Gold"></button>
-  <button class="csw-btn" style="background:#060f1e;border:2px solid rgba(255,255,255,.3)" onclick="switchColor('dark','#10b981',this)" title="Dark Mode"></button>
-</div>
 
 <div class="hero">
     <div class="orb orb1"></div><div class="orb orb2"></div>
@@ -1859,12 +1837,10 @@ body { font-family:'Poppins',sans-serif;
   </div>
 
   <div class="qa-row">
-    <div class="qa-item" onclick="goToView('list')"><div class="qa-circle">📖</div><div class="qa-label">Quran</div></div>
     <div class="qa-item" onclick="goToView('dua')"><div class="qa-circle">🤲</div><div class="qa-label">Dua</div></div>
-    <div class="qa-item" onclick="goToView('tasbih')"><div class="qa-circle">📿</div><div class="qa-label">Dhikr</div></div>
-    <div class="qa-item" onclick="goToView('memorize')"><div class="qa-circle">🎓</div><div class="qa-label">Learn</div></div>
     <div class="qa-item" onclick="goToView('qibla')"><div class="qa-circle">🕋</div><div class="qa-label">Qibla</div></div>
     <div class="qa-item" onclick="goToView('hijri')"><div class="qa-circle">📅</div><div class="qa-label">Calendar</div></div>
+    <div class="qa-item" onclick="goToView('zakat')"><div class="qa-circle">💰</div><div class="qa-label">Zakat</div></div>
   </div>
 
   <!-- AZAN SETTINGS PANEL (slim collapsible banner) -->
@@ -4933,42 +4909,7 @@ async function requestWakeLock() { try { if('wakeLock' in navigator && !nightWak
 // ================================================================
 if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',initApp);}else{initApp();}
 
-function switchColor(theme, accent, el) {
-  // Apply data-theme
-  document.documentElement.setAttribute('data-theme', theme || '');
-  // For custom themes not in the original set, manually override CSS vars
-  const overrides = {
-    'sky':    { '--p':'#38bdf8','--pd':'#0ea5e9','--pg':'rgba(56,189,248,.22)','--bg':'#020d1a','--dark':'#020d1a','--dark2':'#061830','--card':'#0a1e35','--hdr':'#071525','--txt':'#e0f2fe','--txt2':'#7dd3fc','--bdr':'#1a3a5f' },
-    'indigo': { '--p':'#6366f1','--pd':'#4f46e5','--pg':'rgba(99,102,241,.22)','--bg':'#0d0f2a','--dark':'#0d0f2a','--dark2':'#161840','--card':'#1e2050','--hdr':'#10123a','--txt':'#e0e7ff','--txt2':'#a5b4fc','--bdr':'#2d3070' },
-    'gold':   { '--p':'#f59e0b','--pd':'#d97706','--pg':'rgba(245,158,11,.22)','--bg':'#1a1000','--dark':'#1a1000','--dark2':'#2a1a00','--card':'#3a2500','--hdr':'#221300','--txt':'#fef3c7','--txt2':'#fcd34d','--bdr':'#5a3a00' },
-    'dark':   { '--p':'#10b981','--pd':'#059669','--pg':'rgba(16,185,129,.22)','--bg':'#060f1e','--dark':'#060f1e','--dark2':'#0f1f3d','--card':'#112240','--hdr':'#0a1628','--txt':'#e2e8f0','--txt2':'#94a3b8','--bdr':'#1e3a5f' },
-  };
-  const root = document.documentElement.style;
-  // Clear manual overrides first
-  ['--p','--pd','--pg','--bg','--dark','--dark2','--card','--hdr','--txt','--txt2','--bdr'].forEach(v => root.removeProperty(v));
-  if (overrides[theme]) {
-    Object.entries(overrides[theme]).forEach(([k,v]) => root.setProperty(k,v));
-  }
-  // Update active button
-  document.querySelectorAll('.csw-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  // Save preference
-  localStorage.setItem('colorTheme', theme || '');
-  localStorage.setItem('colorAccent', accent || '');
-  toast('🎨 Theme changed!');
-}
 
-// Restore saved color on load
-(function restoreColor(){
-  const t = localStorage.getItem('colorTheme');
-  const btn = document.querySelector('.csw-btn[onclick*="' + (t||'') + '"]');
-  if (t !== null) {
-    const fakeEl = { classList:{ remove:()=>{}, add:()=>{} } };
-    // Silently apply
-    document.documentElement.setAttribute('data-theme', t);
-    if (btn) { document.querySelectorAll('.csw-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
-  }
-})();
 
 
 // ================================================================
