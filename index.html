@@ -4097,6 +4097,16 @@ let azanAudio = null;
 let azanCheckInterval = null;
 let _swReady = false;
 
+// Force a real reload if the page was restored from bfcache (back-forward cache) —
+// bfcache resurrects a frozen DOM snapshot without re-running any fetch/SW update logic,
+// which is why switching back to the app instead of fully closing it could show stale UI.
+window.addEventListener('pageshow', (e) => {
+  if (e.persisted) {
+    console.log('[BFCache] Page restored from cache — forcing reload for fresh content');
+    window.location.reload();
+  }
+});
+
 // Register service worker for background alarm support + auto-update
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('./sw.js').then(reg => {
