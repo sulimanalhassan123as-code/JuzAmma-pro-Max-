@@ -4073,31 +4073,57 @@ let azanAudio = null;
 let azanCheckInterval = null;
 let _swReady = false;
 
-// Force a real reload if the page was restored from bfcache (back-forward cache) —
-// bfcache resurrects a frozen DOM snapshot without re-running any fetch/SW update logic,
-// which is why switching back to the app instead of fully closing it could show stale UI.
+// ── Aggressive stale-content prevention ──
+// 1. bfcache: page restored from frozen snapshot
 window.addEventListener('pageshow', (e) => {
   if (e.persisted) {
-    console.log('[BFCache] Page restored from cache — forcing reload for fresh content');
+    console.log('[BFCache] Page restored from bfcache — forcing reload');
     window.location.reload();
   }
 });
+
+// 2. visibilitychange: Android Chrome PWA resume (doesn't always set e.persisted)
+let _resumeCheckTime = 0;
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    const now = Date.now();
+    // Only check if app was backgrounded for more than 3 seconds
+    if (now - _resumeCheckTime > 3000) {
+      console.log('[Resume] App resumed — checking for SW updates');
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistration().then(reg => {
+          if (reg) {
+            reg.update().then(() => {
+              // If a new SW is waiting, force it to take over immediately
+              if (reg.waiting) {
+                reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+              }
+            });
+          }
+        });
+      }
+    }
+    _resumeCheckTime = now;
+  } else {
+    _resumeCheckTime = Date.now();
+  }
+});
+
+// 3. Store the current SW cache version on page load; on resume, compare
+let _loadedCacheVersion = 'unknown';
 
 // Register service worker for background alarm support + auto-update
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('./sw.js').then(reg => {
     _swReady = true;
     console.log('[SW] Registered for Azan alarm support');
-    // If azan is already enabled, push state to SW
     if(azanEnabled){
       syncAzanToSW();
     }
-    // Check for SW updates every 30 seconds and force update immediately
     reg.update();
     setInterval(() => reg.update(), 15000);
   }).catch(err => console.log('[SW] Registration failed:', err));
 
-  // When a new SW takes control, reload the page once to get fresh content
   let _swReloaded = false;
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (!_swReloaded) {
@@ -4112,6 +4138,25 @@ if('serviceWorker' in navigator){
     if(event.data && event.data.type === 'AZAN_TIME'){
       playAzanFor(event.data.prayer);
     }
+    if(event.data && event.data.type === 'SW_VERSION'){
+      // SW reports its cache version — if different from what page loaded with, reload
+      if(_loadedCacheVersion !== 'unknown' && event.data.version !== _loadedCacheVersion){
+        console.log('[SW] Version mismatch — reloading');
+        window.location.reload();
+      }
+      _loadedCacheVersion = event.data.version;
+    }
+  });
+  
+  // Ask SW for its version on load and on resume
+  function checkSWVersion(){
+    if(navigator.serviceWorker.controller){
+      navigator.serviceWorker.controller.postMessage({ type: 'GET_VERSION' });
+    }
+  }
+  checkSWVersion();
+  document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'visible') checkSWVersion();
   });
 }
 

@@ -4,7 +4,7 @@
 // Strategy: Cache-first for assets, Network-first for Quran API
 // ============================================================
 
-const CACHE_NAME = 'juzamma-pro-v41-20260817010544';
+const CACHE_NAME = 'juzamma-pro-v42-20260818031554';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -107,6 +107,9 @@ self.addEventListener('notificationclick', event => {
 self.addEventListener('message', event => {
   if (!event.data) return;
   if (event.data.type === 'SKIP_WAITING') self.skipWaiting();
+  if (event.data.type === 'GET_VERSION') {
+    event.source.postMessage({ type: 'SW_VERSION', version: CACHE_NAME });
+  }
   if (event.data.type === 'AZAN_ENABLE') {
     swAzanEnabled = true;
     swPrayerTimes = event.data.prayerTimes || swPrayerTimes;
