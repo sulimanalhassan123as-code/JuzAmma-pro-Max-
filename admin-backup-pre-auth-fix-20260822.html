@@ -327,7 +327,7 @@ body{overflow-x:hidden;}
 <script>
 // ── CONFIG ──
 const APP_ORIGIN = 'https://juz-amma-pro-max.vercel.app';
-const AUTH_URL = 'https://elara-c85c9ecb.base44.app/functions/adminAuth';
+let admPass = localStorage.getItem('admPass') || atob('anV6YW1tYTIwMjQ=');
 let attempts = 0;
 const MAX_ATTEMPTS = 5;
 
@@ -338,48 +338,31 @@ function toast(msg, dur=2800) {
   setTimeout(() => t.classList.remove('show'), dur);
 }
 
-// ── LOGIN (server-side auth) ──
-async function chkAdm() {
+// ── LOGIN ──
+function chkAdm() {
   const p = document.getElementById('adm-pass').value;
   if (!p) return;
-  const btn = document.querySelector('.login-btn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Verifying...';
-  try {
-    const res = await fetch(AUTH_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: p })
-    });
-    const data = await res.json();
-    if (data.authorized) {
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('dashboard').style.display = 'flex';
-      localStorage.setItem('admSession', Date.now());
-      localStorage.setItem('admToken', data.token);
-      loadDash();
-      attempts = 0;
-    } else {
-      attempts++;
-      document.getElementById('login-err').style.display = 'block';
-      document.getElementById('login-attempts').textContent =
-        attempts >= MAX_ATTEMPTS ? '🔒 Too many attempts. Wait 30s.' : `Attempt ${attempts}/${MAX_ATTEMPTS}`;
-      document.getElementById('adm-pass').value = '';
-      if (attempts >= MAX_ATTEMPTS) {
-        btn.disabled = true;
-        setTimeout(() => {
-          btn.disabled = false;
-          attempts = 0;
-          document.getElementById('login-attempts').textContent = '';
-        }, 30000);
-      }
-    }
-  } catch(e) {
-    document.getElementById('login-err').textContent = '⚠️ Server unreachable. Check connection.';
+  if (p === admPass) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'flex';
+    localStorage.setItem('admSession', Date.now());
+    loadDash();
+    attempts = 0;
+  } else {
+    attempts++;
     document.getElementById('login-err').style.display = 'block';
+    document.getElementById('login-attempts').textContent =
+      attempts >= MAX_ATTEMPTS ? '🔒 Too many attempts. Wait 30s.' : `Attempt ${attempts}/${MAX_ATTEMPTS}`;
+    document.getElementById('adm-pass').value = '';
+    if (attempts >= MAX_ATTEMPTS) {
+      document.querySelector('.login-btn').disabled = true;
+      setTimeout(() => {
+        document.querySelector('.login-btn').disabled = false;
+        attempts = 0;
+        document.getElementById('login-attempts').textContent = '';
+      }, 30000);
+    }
   }
-  btn.disabled = false;
-  btn.textContent = '🔓 Login';
 }
 
 // Auto-login if recent session (within 2 hours)
@@ -439,9 +422,18 @@ function saveWelcome() { localStorage.setItem('aiWelcome', document.getElementBy
 function saveReciter() { localStorage.setItem('reciter', document.getElementById('adm-reciter').value); toast('✅ Default reciter saved!'); }
 function saveTheme()   { localStorage.setItem('colorTheme', document.getElementById('adm-theme').value); toast('✅ Theme saved!'); }
 
-// ── CHANGE PASSWORD (server-side managed) ──
+// ── CHANGE PASSWORD ──
 function changePass() {
-  toast('ℹ️ Password is managed securely on the server. Contact the administrator to change it.');
+  const a = document.getElementById('new-p').value;
+  const b = document.getElementById('new-p2').value;
+  if (!a) { toast('❌ Enter a password'); return; }
+  if (a !== b) { toast('❌ Passwords do not match'); return; }
+  if (a.length < 6) { toast('❌ Password too short (min 6 chars)'); return; }
+  admPass = a;
+  localStorage.setItem('admPass', a);
+  document.getElementById('new-p').value = '';
+  document.getElementById('new-p2').value = '';
+  toast('✅ Password changed successfully!');
 }
 
 // ── DATA ACTIONS ──
