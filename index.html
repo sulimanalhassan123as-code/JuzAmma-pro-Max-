@@ -4081,7 +4081,7 @@ async function sendChat() {
   
   // No local match — try remote AI for general questions
   try {
-    const r=await fetch('https://solas-e2b9da08.base44.app/functions/islamicAiProxy',{
+    const r=await fetch('https://elara-c85c9ecb.base44.app/functions/islamicAiProxy',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({message:txt})
@@ -5907,7 +5907,7 @@ function setLangAndGo(lang) {
 // GROUP STUDY — Real-time Quran reading with friends
 // ================================================================
 // ═══ CLASSROOM STATE ═══
-const GS_VOICE_HUB = 'https://superagent-7ce6afb1.base44.app/functions/groupVoiceHub';
+const GS_VOICE_HUB = 'https://elara-c85c9ecb.base44.app/functions/groupVoiceHub';
 let gsIsTeacher = false, gsRoomState = null, gsRoomPollTimer = null;
 let gsCurrentSurah = 78, gsCurrentVerse = 1;
 let gsPinnedVerses = [], gsCompletedSurahs = [], gsRaisedHands = [];
@@ -7765,7 +7765,7 @@ async function tjAnalyze() {
     'Keep every line short (max 18 words). Warm, encouraging tone. Use the pipe character | to separate multiple items on the RULES and WORDS lines.';
 
   try {
-    const r = await fetch('https://solas-e2b9da08.base44.app/functions/islamicAiProxy', {
+    const r = await fetch('https://elara-c85c9ecb.base44.app/functions/islamicAiProxy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: prompt })
