@@ -1187,15 +1187,31 @@ body { font-family:'Poppins',sans-serif;
 
 /* Tappable step cards — tap any Fard/Sunnah step to watch a real video
    demonstration (with a real human narrator) instead of just reading text. */
-.wudu-step.wudu-tappable { cursor:pointer; border-radius:12px; margin:0 -8px; padding:12px 8px;
   transition:background .15s, transform .1s; position:relative; }
-.wudu-step.wudu-tappable:active { transform:scale(.98); background:rgba(255,255,255,.04); }
-.wudu-step-watch-badge { display:inline-flex; align-items:center; gap:4px; margin-top:6px;
   font-size:.68rem; font-weight:700; color:#34d399; background:rgba(16,185,129,.12);
   border:1px solid rgba(16,185,129,.25); border-radius:20px; padding:3px 10px; width:fit-content; }
-.wudu-step-sunnah .wudu-step-watch-badge { color:#fcd34d; background:rgba(251,191,36,.12); border-color:rgba(251,191,36,.25); }
 
 /* Video demo modal */
+
+.wudu-section-video-btn {
+  margin: 16px 0 0;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #1e7a3e, #155e30);
+  color: #fff;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+  box-shadow: 0 2px 12px rgba(30,122,62,0.3);
+}
+.wudu-section-video-btn:active { transform: scale(0.98); }
+.wudu-sunnah .wudu-section-video-btn {
+  background: linear-gradient(135deg, #b8860b, #8b6508);
+  box-shadow: 0 2px 12px rgba(184,134,11,0.3);
+}
+
 .wvid-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.92); z-index:999;
   align-items:center; justify-content:center; flex-direction:column; padding:16px; }
 .wvid-modal.show { display:flex; animation:fadeIn .2s ease; }
@@ -2158,53 +2174,51 @@ body { font-family:'Poppins',sans-serif;
     <div class="wudu-section wudu-fard">
       <div class="wudu-section-title">✅ The 6 Obligatory Acts (Fard)</div>
       <div class="wudu-note">These are the pillars — wudu is invalid without any of them. (Shaykh Ibn 'Uthaymeen, Ar-Rawd al-Murbi')</div>
-      <div class="wudu-step wudu-tappable" onclick="openWuduVideo(200,'Wash the Face')">
+      <div class="wudu-step">
         <div class="wudu-step-icon wsi-fard">🧼<span class="wsi-num">1</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Wash the Face</div>
           <div class="wudu-step-desc">From hairline to chin, ear to ear. Includes rinsing mouth and nose.</div>
-          <div class="wudu-step-watch-badge">▶️ Tap to watch</div>
         </div>
       </div>
-      <div class="wudu-step wudu-tappable" onclick="openWuduVideo(288,'Wash the Arms to the Elbows')">
+      <div class="wudu-step">
         <div class="wudu-step-icon wsi-fard">💪<span class="wsi-num">2</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Wash the Arms to the Elbows</div>
           <div class="wudu-step-desc">Both arms including the elbows — right arm first, then left.</div>
-          <div class="wudu-step-watch-badge">▶️ Tap to watch</div>
         </div>
       </div>
-      <div class="wudu-step wudu-tappable" onclick="openWuduVideo(389,'Wipe the Head')">
+      <div class="wudu-step">
         <div class="wudu-step-icon wsi-fard">🧠<span class="wsi-num">3</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Wipe the Head</div>
           <div class="wudu-step-desc">With wet hands — the amount differs by school (see below).</div>
-          <div class="wudu-step-watch-badge">▶️ Tap to watch</div>
         </div>
       </div>
-      <div class="wudu-step wudu-tappable" onclick="openWuduVideo(523,'Wash the Feet to the Ankles')">
+      <div class="wudu-step">
         <div class="wudu-step-icon wsi-fard">🦶<span class="wsi-num">4</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Wash the Feet to the Ankles</div>
           <div class="wudu-step-desc">Both feet including the ankles — right foot first, then left.</div>
-          <div class="wudu-step-watch-badge">▶️ Tap to watch</div>
         </div>
       </div>
-      <div class="wudu-step wudu-tappable" onclick="openWuduVideo(0,'Sequence (Tartib) — Full Order')">
+      <div class="wudu-step">
         <div class="wudu-step-icon wsi-fard">🔢<span class="wsi-num">5</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Sequence (Tartib)</div>
           <div class="wudu-step-desc">Follow the order: face → arms → head → feet. Required by Shafi'i, Maliki, Hanbali. Recommended by Hanafi.</div>
-          <div class="wudu-step-watch-badge">▶️ Tap to watch full order</div>
         </div>
       </div>
-      <div class="wudu-step wudu-tappable" onclick="openWuduVideo(0,'Continuity (Muwalah) — Watch the Flow')">
+      <div class="wudu-step">
         <div class="wudu-step-icon wsi-fard">⏱️<span class="wsi-num">6</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Continuity (Muwalah)</div>
           <div class="wudu-step-desc">Wash each part before the previous one dries — no long gaps between steps.</div>
-          <div class="wudu-step-watch-badge">▶️ Tap to watch</div>
         </div>
+      </div>
+
+      <div class="wudu-section-video-btn" onclick="openWuduVideo('fard')">
+        🎥 Watch: The 6 Fard (Obligatory) Acts Demonstrated
       </div>
     </div>
 
@@ -2213,94 +2227,86 @@ body { font-family:'Poppins',sans-serif;
       <div class="wudu-section-title">🌟 The Prophetic Method ﷺ (Most Authentic)</div>
       <div class="wudu-note">Based on the Hadith of Uthman ibn Affan (RA) — Sahih al-Bukhari 1934 & Sahih Muslim 226. Ibn Shihab said: "This is the most complete way of performing wudu."</div>
 
-      <div class="wudu-step wudu-step-sunnah wudu-tappable" onclick="openWuduVideo(0,'Make Intention (Niyyah)')">
+      <div class="wudu-step wudu-step-sunnah">
         <div class="wudu-step-icon wsi-sunnah">💭<span class="wsi-num">1</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Make Intention (Niyyah)</div>
           <div class="wudu-step-desc">Intend in your heart to perform wudu for Allah's sake. Shafi'i school also recommends verbal intention.</div>
-          <div class="wudu-step-watch-badge">▶️ Tap to watch</div>
         </div>
       </div>
-      <div class="wudu-step wudu-step-sunnah wudu-tappable" onclick="openWuduVideo(0,'Say Bismillah')">
+      <div class="wudu-step wudu-step-sunnah">
         <div class="wudu-step-icon wsi-sunnah">🗣️<span class="wsi-num">2</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Say Bismillah</div>
           <div class="wudu-step-desc">Say "Bismillah" before starting. (Imam Ahmad considered it obligatory; majority consider it Sunnah)</div>
-          <div class="wudu-step-watch-badge">▶️ Tap to watch</div>
         </div>
       </div>
-      <div class="wudu-step wudu-step-sunnah wudu-tappable" onclick="openWuduVideo(24,'Wash Hands 3×')">
+      <div class="wudu-step wudu-step-sunnah">
         <div class="wudu-step-icon wsi-sunnah">🖐️<span class="wsi-num">3</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Wash Hands 3× </div>
           <div class="wudu-step-desc">Wash both hands up to the wrists, three times. Use siwak/miswak if available.</div>
-          <div class="wudu-step-watch-badge">▶️ Tap to watch</div>
         </div>
       </div>
-      <div class="wudu-step wudu-step-sunnah wudu-tappable" onclick="openWuduVideo(70,'Rinse Mouth 3×')">
+      <div class="wudu-step wudu-step-sunnah">
         <div class="wudu-step-icon wsi-sunnah">👄<span class="wsi-num">4</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Rinse Mouth 3×</div>
           <div class="wudu-step-desc">Circulate water thoroughly throughout the mouth, three times. (When fasting, do so lightly)</div>
-          <div class="wudu-step-watch-badge">▶️ Tap to watch</div>
         </div>
       </div>
-      <div class="wudu-step wudu-step-sunnah wudu-tappable" onclick="openWuduVideo(70,'Rinse Nose 3×')">
+      <div class="wudu-step wudu-step-sunnah">
         <div class="wudu-step-icon wsi-sunnah">👃<span class="wsi-num">5</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Rinse Nose 3×</div>
           <div class="wudu-step-desc">Inhale water into the nose and blow it out, three times. (When fasting, do not inhale deeply)</div>
-          <div class="wudu-step-watch-badge">▶️ Tap to watch</div>
         </div>
       </div>
-      <div class="wudu-step wudu-step-sunnah wudu-tappable" onclick="openWuduVideo(200,'Wash Face 3×')">
+      <div class="wudu-step wudu-step-sunnah">
         <div class="wudu-step-icon wsi-sunnah">🧼<span class="wsi-num">6</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Wash Face 3×</div>
           <div class="wudu-step-desc">From hairline to chin, ear to ear — three times. Run wet fingers through a thick beard.</div>
-          <div class="wudu-step-watch-badge">▶️ Tap to watch</div>
         </div>
       </div>
-      <div class="wudu-step wudu-step-sunnah wudu-tappable" onclick="openWuduVideo(288,'Wash Right Arm 3×, Then Left Arm 3×')">
+      <div class="wudu-step wudu-step-sunnah">
         <div class="wudu-step-icon wsi-sunnah">💪<span class="wsi-num">7</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Wash Right Arm 3×, Then Left Arm 3×</div>
           <div class="wudu-step-desc">From fingertips to elbow (including the elbow). Right arm three times first, then left arm three times.</div>
-          <div class="wudu-step-watch-badge">▶️ Tap to watch</div>
         </div>
       </div>
-      <div class="wudu-step wudu-step-sunnah wudu-tappable" onclick="openWuduVideo(389,'Wipe the Head Once')">
+      <div class="wudu-step wudu-step-sunnah">
         <div class="wudu-step-icon wsi-sunnah">🧠<span class="wsi-num">8</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Wipe the Head Once</div>
           <div class="wudu-step-desc">Wet both hands, wipe from front to back of head, then back to front (Hadith of Abdullah bin Zayd, Bukhari 185). </div>
-          <div class="wudu-step-watch-badge">▶️ Tap to watch</div>
         </div>
       </div>
-      <div class="wudu-step wudu-step-sunnah wudu-tappable" onclick="openWuduVideo(389,'Wipe the Ears Once')">
+      <div class="wudu-step wudu-step-sunnah">
         <div class="wudu-step-icon wsi-sunnah">👂<span class="wsi-num">9</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Wipe the Ears Once</div>
           <div class="wudu-step-desc">Index fingers inside the ears, thumbs wipe the outer ears — once. (Imam Ahmad considered it obligatory; majority Sunnah)</div>
-          <div class="wudu-step-watch-badge">▶️ Tap to watch</div>
         </div>
       </div>
-      <div class="wudu-step wudu-step-sunnah wudu-tappable" onclick="openWuduVideo(523,'Wash Right Foot 3×, Then Left Foot 3×')">
+      <div class="wudu-step wudu-step-sunnah">
         <div class="wudu-step-icon wsi-sunnah">🦶<span class="wsi-num">10</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Wash Right Foot 3×, Then Left Foot 3×</div>
           <div class="wudu-step-desc">From toes to ankle (including the ankle). Run fingers between toes. Right foot three times, then left three times.</div>
-          <div class="wudu-step-watch-badge">▶️ Tap to watch</div>
         </div>
       </div>
-      <div class="wudu-step wudu-step-sunnah wudu-tappable" onclick="openWuduVideo(730,'Recite the Du\'a')">
+      <div class="wudu-step wudu-step-sunnah">
         <div class="wudu-step-icon wsi-sunnah">🤲<span class="wsi-num">11</span></div>
         <div class="wudu-step-body">
           <div class="wudu-step-title">Recite the Du'a</div>
           <div class="wudu-step-desc">"Ashhadu an la ilaha ill-Allah wahdahu la sharika lah, wa ashhadu anna Muhammadan 'abduhu wa rasuluhu. Allahummaj'alni min al-tawwabina waj'alni min al-mutatahhirina."</div>
           <div class="wudu-step-desc" style="margin-top:4px;font-style:italic;color:#94a3b8">"I bear witness that there is no god except Allah alone, with no partner, and I bear witness that Muhammad is His slave and Messenger. O Allah, make me one of those who repent and make me one of those who purify themselves."</div>
-          <div class="wudu-step-watch-badge">▶️ Tap to watch</div>
         </div>
+      </div>
+      <div class="wudu-section-video-btn" onclick="openWuduVideo('sunnah')">
+        🎥 Watch: The Full Prophetic Method (Sunnah) Demonstrated
       </div>
     </div>
 
@@ -3925,15 +3931,27 @@ function wuduStopReading() {
 // ===== WUDU VIDEO DEMONSTRATION (real human narrator, not TTS) =====
 // Video: "Wudu Tutorial Step-by-Step" by Sheikh Majed Mahmoud (YouTube: P29LMOHhpjE)
 // Timestamps taken directly from the video's own chapter markers.
-const WUDU_VIDEO_ID = 'P29LMOHhpjE';
-function openWuduVideo(seconds, stepTitle) {
+// Fard video: Mohammad AlNaqwi "How to Make Wudu | Correct Way"
+const WUDU_FARD_VIDEO_ID = 'CO5O3JBjgGI';
+// Sunnah video: Sheikh Majed Mahmoud "How to Make Wudu | Step by Step"
+const WUDU_SUNNAH_VIDEO_ID = 'P29LMOHhpjE';
+
+function openWuduVideo(section) {
   // Pause any TTS reading in progress so it doesn't talk over the video
   wuduStopReading();
   const modal = document.getElementById('wvid-modal');
   const iframe = document.getElementById('wvid-iframe');
   const title = document.getElementById('wvid-title');
-  if (title) title.textContent = stepTitle || 'Wudu Step';
-  if (iframe) iframe.src = `https://www.youtube.com/embed/${WUDU_VIDEO_ID}?start=${seconds}&autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+  const credit = document.getElementById('wvid-credit');
+  if (section === 'fard') {
+    if (title) title.textContent = 'The 6 Fard (Obligatory) Acts of Wudu';
+    if (iframe) iframe.src = `https://www.youtube.com/embed/${WUDU_FARD_VIDEO_ID}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+    if (credit) credit.innerHTML = '🎥 Demonstration by <b>Mohammad AlNaqwi</b> — covers the obligatory acts of ablution.';
+  } else {
+    if (title) title.textContent = 'The Prophetic Method (Sunnah) of Wudu';
+    if (iframe) iframe.src = `https://www.youtube.com/embed/${WUDU_SUNNAH_VIDEO_ID}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+    if (credit) credit.innerHTML = '🎥 Demonstration by <b>Sheikh Majed Mahmoud</b> — the complete prophetic method of ablution.';
+  }
   if (modal) modal.classList.add('show');
 }
 function closeWuduVideo() {
@@ -8755,7 +8773,7 @@ function updateFsapBtn() {
     <div class="wvid-frame-wrap">
       <iframe id="wvid-iframe" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     </div>
-    <div class="wvid-credit">🎥 Real demonstration by <b>Sheikh Majed Mahmoud</b> — jumps straight to this step in the video.</div>
+    <div class="wvid-credit" id="wvid-credit">🎥 Demonstration by <b>Sheikh Majed Mahmoud</b> — the complete prophetic method of ablution.</div>
   </div>
 </div>
 
