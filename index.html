@@ -2155,13 +2155,6 @@ body { font-family:'Poppins',sans-serif;
       <div class="inapp-banner-desc">Audio features need a full browser. Tap below to open this page in your phone's browser.</div>
       <a class="inapp-banner-btn" href="https://juz-amma-pro-max.vercel.app" target="_blank" rel="noopener">Open in Browser →</a>
     </div>
-    <!-- Audio Guide -->
-    <div class="wudu-audio-bar">
-      <button class="wudu-audio-btn play" id="wudu-read-all" onclick="wuduReadAll()">🔊 Listen to Guide</button>
-      <button class="wudu-audio-btn stop" id="wudu-stop-btn" onclick="wuduStopReading()" style="display:none">⏹ Stop</button>
-      <span class="wudu-audio-status" id="wudu-audio-status"></span>
-    </div>
-
     <!-- Quranic Basis -->
     <div class="wudu-section wudu-quran">
       <div class="wudu-section-title">📖 Quranic Foundation</div>
@@ -3895,38 +3888,7 @@ function universalStopSpeaking() {
 }
 
 // ===== WUDU AUDIO (Text-to-Speech) =====
-let wuduSpeech = null;
-let wuduReadingAll = false;
-let wuduStepCounter = 0;
-
-// Wudu audio guide — uses native Android TTS in the APK, Web Speech API on web/PWA
-let wuduAudio = document.getElementById('wudu-aud');
-function wuduSpeak(text, onDone) {
-  wuduStopReading();
-  const ok = universalSpeak(text, 'en', 0.85, onDone);
-  if (ok) return;
-  // Fallback: no TTS available anywhere
-  const status = document.getElementById('wudu-audio-status');
-  if (status) status.textContent = '📱 Open in your phone browser (Chrome/Safari) to hear audio. Not supported inside WhatsApp.';
-  wuduReadingAll = false;
-  const playBtn = document.getElementById('wudu-read-all');
-  if (playBtn) { playBtn.innerHTML = '🔊 Listen to Guide'; playBtn.classList.remove('active'); }
-  if (onDone) onDone();
-}
-
-function wuduStopReading() {
-  universalStopSpeaking();
-  wuduReadingAll = false;
-  wuduSpeech = null;
-  const playBtn = document.getElementById('wudu-read-all');
-  const stopBtn = document.getElementById('wudu-stop-btn');
-  const status = document.getElementById('wudu-audio-status');
-  if (playBtn) { playBtn.innerHTML = '🔊 Listen to Guide'; playBtn.classList.remove('active'); }
-  if (stopBtn) stopBtn.style.display = 'none';
-  if (status) status.textContent = '';
-  // Reset step highlights
-  document.querySelectorAll('.wudu-step-audio.active').forEach(el => el.classList.remove('active'));
-}
+// (Wudu AI-voice reading removed — replaced by real human video demonstrations)
 
 // ===== WUDU VIDEO DEMONSTRATION (real human narrator, not TTS) =====
 // Video: "Wudu Tutorial Step-by-Step" by Sheikh Majed Mahmoud (YouTube: P29LMOHhpjE)
@@ -3937,8 +3899,6 @@ const WUDU_FARD_VIDEO_ID = 'CO5O3JBjgGI';
 const WUDU_SUNNAH_VIDEO_ID = 'P29LMOHhpjE';
 
 function openWuduVideo(section) {
-  // Pause any TTS reading in progress so it doesn't talk over the video
-  wuduStopReading();
   const modal = document.getElementById('wvid-modal');
   const iframe = document.getElementById('wvid-iframe');
   const title = document.getElementById('wvid-title');
@@ -3959,44 +3919,6 @@ function closeWuduVideo() {
   const iframe = document.getElementById('wvid-iframe');
   if (iframe) iframe.src = ''; // stop playback
   if (modal) modal.classList.remove('show');
-}
-
-function wuduReadAll() {
-  if (wuduReadingAll) { wuduStopReading(); return; }
-  wuduReadingAll = true;
-  const playBtn = document.getElementById('wudu-read-all');
-  const stopBtn = document.getElementById('wudu-stop-btn');
-  const status = document.getElementById('wudu-audio-status');
-  if (playBtn) { playBtn.innerHTML = '⏸ Stop Reading'; playBtn.classList.add('active'); }
-  if (stopBtn) stopBtn.style.display = 'inline-flex';
-  if (status) status.textContent = 'Starting...';
-
-  const steps = [
-    { text: "How to Perform Wudu. The Prophetic Method, based on Sahih al-Bukhari and Muslim.", status: 'Intro' },
-    { text: "Quranic Foundation. Surah Al-Ma'idah verse 6: O you who believe! When you intend to offer the prayer, wash your faces and your hands up to the elbows, rub your heads, and wash your feet up to ankles.", status: 'Quranic Foundation' },
-    { text: "The 6 Obligatory Acts, known as Fard. These are the pillars — wudu is invalid without any of them.", status: 'Obligatory Acts' },
-    { text: "Step 1: Wash the Face. From hairline to chin, ear to ear. Includes rinsing mouth and nose.", status: 'Step 1 of 6: Face' },
-    { text: "Step 2: Wash the Arms to the Elbows. Both arms including the elbows — right arm first, then left.", status: 'Step 2 of 6: Arms' },
-    { text: "Step 3: Wipe the Head. With wet hands — the amount differs by school of thought.", status: 'Step 3 of 6: Head' },
-    { text: "Step 4: Wash the Feet to the Ankles. Both feet including the ankles — right foot first, then left.", status: 'Step 4 of 6: Feet' },
-    { text: "Step 5: Sequence. Follow the order: face, then arms, then head, then feet. Required by Shafi'i, Maliki, and Hanbali schools. Recommended by Hanafi.", status: 'Step 5 of 6: Sequence' },
-    { text: "Step 6: Continuity. Wash each part before the previous one dries — no long gaps between steps.", status: 'Step 6 of 6: Continuity' },
-    { text: "The Prophetic Method. Step 1: Make intention and say Bismillah. Step 2: Wash hands three times. Step 3: Rinse mouth three times. Step 4: Rinse nose three times. Step 5: Wash face three times. Step 6: Wash right arm to elbow three times, then left three times. Step 7: Wipe head once, front to back and back to front. Step 8: Wipe ears once. Step 9: Wash right foot to ankle three times, then left three times. Step 10: Recite the Shahada dua.", status: 'Prophetic Method' },
-    { text: "What Nullifies Wudu: 1. Natural discharges. 2. Deep sleep causing loss of awareness. 3. Loss of consciousness. 4. Touching private parts directly, according to Shafi'i and Hanbali. 5. Vomiting a mouthful, according to Hanafi and Hanbali. 6. Bleeding that flows from the skin, according to the majority.", status: 'Nullifiers' },
-    { text: "Virtues of Wudu. The Prophet peace be upon him said: Whoever performs wudu like this, then stands and prays two rak'ahs without letting his thoughts wander, his previous sins will be forgiven. — Bukhari and Muslim. He also said to Bilal: You will hear the footsteps of your shoes in Paradise ahead of you — because of the extra steps you take in wudu.", status: 'Virtues' },
-  ];
-
-  let i = 0;
-  function speakNext() {
-    if (!wuduReadingAll || i >= steps.length) {
-      wuduStopReading();
-      if (status) status.textContent = 'Complete ✓';
-      return;
-    }
-    if (status) status.textContent = 'Reading: ' + steps[i].status;
-    wuduSpeak(steps[i].text, () => { i++; setTimeout(speakNext, 300); });
-  }
-  speakNext();
 }
 
 function getAnswer(q) {
