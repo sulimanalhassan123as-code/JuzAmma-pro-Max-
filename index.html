@@ -1139,16 +1139,17 @@ body { font-family:'Poppins',sans-serif;
 
 
 /* ═════════════ WUDU / ABLUTION GUIDE ═════════════ */
-#wudu-view { display:none; overflow-y:auto; overflow-x:hidden; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:linear-gradient(180deg,#0a1628 0%,#0d2137 100%); z-index:20; }
-#wudu-view.active { display:block; }
+#wudu-view { display:none; flex-direction:column; overflow:hidden; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:linear-gradient(180deg,#0a1628 0%,#0d2137 100%); z-index:20; }
+#wudu-view.active { display:flex; }
 
-.wudu-header { text-align:center; padding:50px 22px 22px; position:relative; overflow:hidden; }
+.wudu-header { text-align:center; padding:50px 22px 22px; position:relative; overflow:hidden; flex-shrink:0; }
 .wudu-header::before { content:''; position:absolute; top:-60px; left:50%; transform:translateX(-50%); width:300px; height:300px; border-radius:50%; background:radial-gradient(circle,rgba(34,211,238,.08) 0%,transparent 70%); pointer-events:none; }
 .wudu-badge { display:inline-block; background:rgba(34,211,238,.12); color:#22d3ee; padding:5px 14px; border-radius:20px; font-size:.7rem; font-weight:700; letter-spacing:.5px; margin-bottom:10px; }
 .wudu-header h2 { font-size:1.7rem; font-weight:800; color:#fff; margin:0; position:relative; z-index:1; }
 .wudu-sub { font-size:.75rem; color:rgba(255,255,255,.45); margin-top:5px; position:relative; z-index:1; }
 
-.wudu-body { padding:0 16px 40px; will-change:transform; }
+.wudu-scroll { flex:1; overflow-y:auto; overflow-x:hidden; }
+.wudu-body { padding:0 16px 40px; }
 
 .wudu-section { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:16px; padding:18px 16px; margin-bottom:14px; }
 .wudu-section-title { font-size:1rem; font-weight:700; color:#e2e8f0; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,.08); }
@@ -2290,6 +2291,7 @@ body { font-family:'Poppins',sans-serif;
     <p class="wudu-sub">The Prophetic Method ﷺ · Based on Sahih al-Bukhari & Muslim</p>
   </div>
 
+  <div class="wudu-scroll">
   <div class="wudu-body">
 
     <!-- In-App Browser Notice -->
@@ -2549,6 +2551,7 @@ body { font-family:'Poppins',sans-serif;
       </div>
     </div>
 
+  </div>
   </div>
 </div>
 
