@@ -1249,11 +1249,9 @@ body { font-family:'Poppins',sans-serif;
 }
 
 /* Pulsing ring animation around play button */
+/* wudu-video-play-orb::before pulse removed for debugging */
 .wudu-video-play-orb::before {
-  content: '';
-  position: absolute; inset: -4px;
-  border-radius: 50%;
-  border: 2px solid currentColor;
+  content: none;
   opacity: 0;
   animation: wudu-pulse-ring 2s ease-out infinite;
 }
@@ -1305,16 +1303,7 @@ body { font-family:'Poppins',sans-serif;
 }
 
 /* Bottom shine sweep animation */
-.wudu-video-card::after {
-  content: '';
-  position: absolute;
-  top: 0; left: -100%;
-  width: 60%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent);
-  animation: wudu-shine 4s ease-in-out infinite;
-  z-index: 2;
-  pointer-events: none;
-}
+/* wudu-video-card::after removed for debugging */
 @keyframes wudu-shine {
   0% { left: -60%; }
   30%, 100% { left: 120%; }
@@ -2354,7 +2343,6 @@ body { font-family:'Poppins',sans-serif;
       </div>
 
       <div class="wudu-video-card" onclick="openWuduVideo('fard')">
-        <div class="wudu-video-card-bg"></div>
         <div class="wudu-video-card-content">
           <div class="wudu-video-play-orb">
             <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
@@ -2452,7 +2440,6 @@ body { font-family:'Poppins',sans-serif;
         </div>
       </div>
       <div class="wudu-video-card" onclick="openWuduVideo('sunnah')">
-        <div class="wudu-video-card-bg"></div>
         <div class="wudu-video-card-content">
           <div class="wudu-video-play-orb">
             <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
