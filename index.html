@@ -1139,7 +1139,7 @@ body { font-family:'Poppins',sans-serif;
 
 
 /* ═════════════ WUDU / ABLUTION GUIDE ═════════════ */
-#wudu-view { display:none; flex-direction:column; overflow-y:scroll; overflow-x:hidden; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:linear-gradient(180deg,#0a1628 0%,#0d2137 100%); z-index:20; transform:translateZ(0); contain:layout style; will-change:scroll-position; }
+#wudu-view { display:none; flex-direction:column; overflow-y:auto; overflow-x:hidden; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:linear-gradient(180deg,#0a1628 0%,#0d2137 100%); z-index:20; }
 #wudu-view.active { display:flex; }
 
 .wudu-header { text-align:center; padding:50px 22px 22px; position:relative; overflow:hidden; flex-shrink:0; }
@@ -1148,7 +1148,7 @@ body { font-family:'Poppins',sans-serif;
 .wudu-header h2 { font-size:1.7rem; font-weight:800; color:#fff; margin:0; position:relative; z-index:1; }
 .wudu-sub { font-size:.75rem; color:rgba(255,255,255,.45); margin-top:5px; position:relative; z-index:1; }
 
-.wudu-body { padding:0 16px 40px; transform:translateZ(0); }
+.wudu-body { padding:0 16px 40px; }
 
 .wudu-section { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:16px; padding:18px 16px; margin-bottom:14px; }
 .wudu-section-title { font-size:1rem; font-weight:700; color:#e2e8f0; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,.08); }
@@ -1202,30 +1202,25 @@ body { font-family:'Poppins',sans-serif;
   transition: transform .2s ease, box-shadow .2s ease;
   box-shadow: 0 4px 24px rgba(0,0,0,0.35);
 }
-.wudu-video-card:active { transform: scale(0.97); }
-.wudu-video-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.45); }
-
-.wudu-video-card-bg {
-  position: absolute; inset: 0; z-index: 0;
-  transition: transform .4s ease;
-}
-.wudu-video-card:active .wudu-video-card-bg { transform: scale(1.05); }
-
-.wudu-fard .wudu-video-card-bg {
+.wudu-fard.wudu-video-card {
   background:
     radial-gradient(circle at 25% 30%, rgba(46,204,113,.35), transparent 50%),
     radial-gradient(circle at 75% 70%, rgba(34,167,132,.25), transparent 50%),
     linear-gradient(135deg, #0a3d20, #071a0e);
 }
-.wudu-sunnah .wudu-video-card-bg {
+.wudu-sunnah.wudu-video-card {
   background:
     radial-gradient(circle at 25% 30%, rgba(241,196,15,.3), transparent 50%),
     radial-gradient(circle at 75% 70%, rgba(184,134,11,.2), transparent 50%),
     linear-gradient(135deg, #2a1f08, #14100a);
 }
+.wudu-video-card:active { transform: scale(0.97); }
+.wudu-video-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.45); }
+
+/* Video card backgrounds now applied directly to card element — no absolute child div */
 
 .wudu-video-card-content {
-  position: relative; z-index: 1;
+  position: relative;
   padding: 22px 20px 20px;
   display: flex; align-items: center; gap: 16px;
 }
@@ -1249,9 +1244,11 @@ body { font-family:'Poppins',sans-serif;
 }
 
 /* Pulsing ring animation around play button */
-/* wudu-video-play-orb::before pulse removed for debugging */
 .wudu-video-play-orb::before {
-  content: none;
+  content: '';
+  position: absolute; inset: -4px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
   opacity: 0;
   animation: wudu-pulse-ring 2s ease-out infinite;
 }
