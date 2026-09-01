@@ -72,11 +72,11 @@ body { font-family:'Poppins',sans-serif;
 
 /* ── VIEW SYSTEM (same as working version) ─ */
 /* Default: all views hidden */
-.view { display:none; position:fixed; top:0; left:0; right:0; bottom:var(--nav); overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; background:var(--bg); z-index:20; }
+.view { display:none; position:fixed; top:0; left:0; right:0; bottom:var(--nav); overflow-y:auto; overflow-x:hidden; /* removed: -webkit-overflow-scrolling:touch — caused blank-until-scroll paint bug */; background:var(--bg); z-index:20; }
 .view.active { display:block; }
 
 /* Home: full height flex column, dark bg */
-#home-view { display:none; flex-direction:column; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:var(--dark); z-index:20; padding-bottom:20px; }
+#home-view { display:none; flex-direction:column; overflow-y:auto; overflow-x:hidden; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:var(--dark); z-index:20; padding-bottom:20px; }
 #home-view.active { display:flex; }
 
 /* Tasbih: full height flex column, very dark */
@@ -267,7 +267,7 @@ body { font-family:'Poppins',sans-serif;
 .mem-prog-txt { font-size:.71rem; color:var(--txt2); white-space:nowrap; }
 .mem-prog-pct { font-size:.78rem; font-weight:700; color:var(--p); }
 /* verse scroll area */
-.mem-scroll { flex:1; overflow-y:auto; padding:8px 11px 12px; -webkit-overflow-scrolling:touch; }
+.mem-scroll { flex:1; overflow-y:auto; padding:8px 11px 12px; /* removed: -webkit-overflow-scrolling:touch — caused blank-until-scroll paint bug */; }
 /* verse card */
 .mcard { background:var(--card); border-radius:15px; padding:14px; margin-bottom:8px; border:2px solid var(--bdr); transition:all .25s; scroll-margin-top:20px; }
 .mcard.active-v { border-color:var(--p); box-shadow:0 4px 18px var(--pg); }
@@ -316,7 +316,7 @@ body { font-family:'Poppins',sans-serif;
 .ai-sugs::-webkit-scrollbar { display:none; }
 .aichip { padding:6px 11px; border-radius:12px; font-size:.72rem; border:1.5px solid var(--p); color:var(--p); background:transparent; cursor:pointer; white-space:nowrap; transition:all .15s; flex-shrink:0; font-family:'Poppins',sans-serif; }
 .aichip:active { background:var(--p); color:#fff; }
-.chat-area { flex:1; overflow-y:auto; padding:11px; display:flex; flex-direction:column; gap:9px; -webkit-overflow-scrolling:touch; }
+.chat-area { flex:1; overflow-y:auto; padding:11px; display:flex; flex-direction:column; gap:9px; /* removed: -webkit-overflow-scrolling:touch — caused blank-until-scroll paint bug */; }
 /* AI illustrated guide card — used when the AI answers a "how to" question
    (Wudu, Prayer, Pillars, etc.) so it can visually walk the user through each
    step with a friendly 3D-style icon instead of a wall of plain text. */
@@ -375,7 +375,7 @@ body { font-family:'Poppins',sans-serif;
 .adm-panel.on { display:block; }
 
 /* ── PROPHETS (REDESIGNED WITH 3D + MOTION) ────────────────────────── */
-#prophets-view { display:none; flex-direction:column; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:var(--bg); overflow-y:auto; -webkit-overflow-scrolling:touch; }
+#prophets-view { display:none; flex-direction:column; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:var(--bg); overflow-y:auto; }
 #prophets-view.active { display:flex; flex-direction:column; }
 
 /* Hero header with 3D parallax orbs */
@@ -667,7 +667,7 @@ body { font-family:'Poppins',sans-serif;
 
 
 /* 99 Names of Allah */
-#names-view { display:none; flex-direction:column; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:linear-gradient(180deg,#0a0a20 0%,#0d1b2a 100%); z-index:20; }
+#names-view { display:none; flex-direction:column; overflow-y:auto; overflow-x:hidden; /* removed: -webkit-overflow-scrolling:touch — caused blank-until-scroll paint bug */; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:linear-gradient(180deg,#0a0a20 0%,#0d1b2a 100%); z-index:20; }
 #names-view.active { display:flex; }
 .names-audio-bar { display:flex; flex-direction:column; align-items:center; gap:4px; margin:0 0 14px; padding:12px; background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.25); border-radius:14px; }
 .names-audio-btn { background:linear-gradient(135deg,#d4af37,#a07830); color:#0d1b2a; border:none; border-radius:20px; padding:11px 24px; font-size:.85rem; font-weight:700; cursor:pointer; width:100%; max-width:280px; }
@@ -775,7 +775,7 @@ body { font-family:'Poppins',sans-serif;
 
 
 /* ══ PROGRESS TRACKER VIEW ══ */
-#progress-view { display:none; flex-direction:column; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:var(--bg); overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; z-index:20; }
+#progress-view { display:none; flex-direction:column; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:var(--bg); overflow-y:auto; overflow-x:hidden; /* removed: -webkit-overflow-scrolling:touch — caused blank-until-scroll paint bug */; z-index:20; }
 #progress-view.active { display:flex; }
 
 .prog-hdr { background:var(--hdr); border-bottom:1.5px solid var(--bdr); padding:16px 16px 14px; position:sticky; top:0; z-index:10; }
@@ -814,7 +814,7 @@ body { font-family:'Poppins',sans-serif;
 
 /* ── Surah grid ── */
 .prog-surahs { background:var(--card); border:1.5px solid var(--bdr); border-radius:18px; padding:16px; margin-bottom:16px; box-shadow:0 2px 12px rgba(0,0,0,.06); }
-.prog-filter { display:flex; gap:7px; margin-bottom:12px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:2px; }
+.prog-filter { display:flex; gap:7px; margin-bottom:12px; overflow-x:auto; /* removed: -webkit-overflow-scrolling:touch — caused blank-until-scroll paint bug */; scrollbar-width:none; padding-bottom:2px; }
 .prog-filter::-webkit-scrollbar { display:none; }
 .pf-btn { flex-shrink:0; padding:5px 13px; border-radius:20px; border:1.5px solid var(--bdr); background:transparent; font-size:.72rem; font-weight:600; color:var(--txt2); cursor:pointer; font-family:'Poppins',sans-serif; transition:all .2s; white-space:nowrap; }
 .pf-btn.on { background:var(--p); border-color:var(--p); color:#fff; }
@@ -857,7 +857,7 @@ body { font-family:'Poppins',sans-serif;
 
 
 /* ═══ GROUP STUDY VIEW ══════════════════════════════════════════════ */
-#groupstudy-view { display:none; flex-direction:column; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:var(--bg); overflow-y:auto; -webkit-overflow-scrolling:touch; }
+#groupstudy-view { display:none; flex-direction:column; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:var(--bg); overflow-y:auto; /* removed: -webkit-overflow-scrolling:touch — caused blank-until-scroll paint bug */; }
 #groupstudy-view.active { display:flex; }
 .gs-lobby { padding:20px 16px; display:flex; flex-direction:column; gap:14px; }
 .gs-logo { font-size:2.8rem; text-align:center; margin:10px 0 4px; }
@@ -939,7 +939,7 @@ body { font-family:'Poppins',sans-serif;
 .hub-search-input { flex:1; padding:10px 14px; border:1px solid var(--bdr); border-radius:24px; font-size:.85rem; background:var(--card); color:var(--txt); font-family:Poppins,sans-serif; }
 .hub-search-btn { padding:10px 16px; border:none; border-radius:24px; background:var(--p); color:#fff; font-weight:600; font-size:.8rem; cursor:pointer; font-family:Poppins,sans-serif; }
 .hub-search-btn:active { transform:scale(.95); }
-.hub-cat-scroll { display:flex; gap:6px; overflow-x:auto; padding:4px 0 10px; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+.hub-cat-scroll { display:flex; gap:6px; overflow-x:auto; padding:4px 0 10px; /* removed: -webkit-overflow-scrolling:touch — caused blank-until-scroll paint bug */; scrollbar-width:none; }
 .hub-cat-scroll::-webkit-scrollbar { display:none; }
 .hub-cat-chip { white-space:nowrap; padding:6px 14px; border:1px solid var(--bdr); border-radius:20px; font-size:.74rem; font-weight:600; background:var(--card); color:var(--txt); cursor:pointer; font-family:Poppins,sans-serif; }
 .hub-cat-chip.active { background:var(--p); color:#fff; border-color:var(--p); }
@@ -1016,7 +1016,7 @@ body { font-family:'Poppins',sans-serif;
 .gs-tool-btn:hover { background:var(--p); color:#fff; border-color:var(--p); }
 .gs-tool-btn:active { transform:scale(.92); }
 .gs-tool-btn.lg { width:auto; padding:8px 12px; font-size:.75rem; font-weight:600; gap:4px; border-radius:20px; }
-.gs-teacher-toolbar { display:flex; gap:6px; padding:8px 10px; background:var(--hdr); border-bottom:1px solid var(--bdr); overflow-x:auto; -webkit-overflow-scrolling:touch; flex-shrink:0; }
+.gs-teacher-toolbar { display:flex; gap:6px; padding:8px 10px; background:var(--hdr); border-bottom:1px solid var(--bdr); overflow-x:auto; /* removed: -webkit-overflow-scrolling:touch — caused blank-until-scroll paint bug */; flex-shrink:0; }
 .gs-teacher-toolbar::-webkit-scrollbar { display:none; }
 .gs-progress-wrap { padding:6px 14px; background:var(--hdr); border-bottom:1px solid var(--bdr); flex-shrink:0; }
 .gs-progress-label { font-size:.66rem; color:var(--txt2); margin-bottom:4px; }
@@ -1029,7 +1029,7 @@ body { font-family:'Poppins',sans-serif;
 .gs-tool-btn.raise-hand.active { background:#ff9800; color:#fff; animation:gsHandPulse 1s infinite; }
 @keyframes gsHandPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,152,0,.4);} 50%{box-shadow:0 0 0 8px rgba(255,152,0,0);} }
 /* Verse area in class tab */
-#gs-panel-class .gs-verse-area { flex:1; overflow-y:auto; padding:14px 16px; display:flex; flex-direction:column; gap:8px; -webkit-overflow-scrolling:touch; scroll-behavior:smooth; }
+#gs-panel-class .gs-verse-area { flex:1; overflow-y:auto; padding:14px 16px; display:flex; flex-direction:column; gap:8px; /* removed: -webkit-overflow-scrolling:touch — caused blank-until-scroll paint bug */; scroll-behavior:smooth; }
 .gs-verse-card { background:var(--card); border:1px solid var(--bdr); border-radius:12px; padding:14px 16px; transition:all .2s; }
 .gs-verse-card.pinned { border-color:var(--p); box-shadow:0 0 0 2px rgba(0,150,136,.15); }
 .gs-verse-card.completed { opacity:.55; border-style:dashed; }
@@ -1038,7 +1038,7 @@ body { font-family:'Poppins',sans-serif;
 .gs-verse-card .vs-en { font-size:.78rem; color:var(--txt2); line-height:1.4; }
 .gs-verse-card .vs-pin { display:inline-block; font-size:.65rem; background:var(--p); color:#fff; padding:2px 8px; border-radius:8px; margin-top:4px; }
 /* Homework tab */
-.gs-hw-list { flex:1; overflow-y:auto; padding:12px 14px; -webkit-overflow-scrolling:touch; }
+.gs-hw-list { flex:1; overflow-y:auto; padding:12px 14px; /* removed: -webkit-overflow-scrolling:touch — caused blank-until-scroll paint bug */; }
 .gs-hw-item { background:var(--card); border:1px solid var(--bdr); border-radius:12px; padding:14px; margin-bottom:10px; }
 .gs-hw-item h4 { font-size:.88rem; margin-bottom:4px; }
 .gs-hw-item .gs-hw-desc { font-size:.78rem; color:var(--txt2); margin-bottom:6px; }
@@ -1054,7 +1054,7 @@ body { font-family:'Poppins',sans-serif;
 .gs-notes-save { margin-top:8px; }
 
 /* WhatsApp-style chat (text + voice) */
-.gs-chat-area { flex:1; overflow-y:auto; padding:12px 10px 4px; display:flex; flex-direction:column; gap:3px; background:var(--bg); scroll-behavior:smooth; -webkit-overflow-scrolling:touch; }
+.gs-chat-area { flex:1; overflow-y:auto; padding:12px 10px 4px; display:flex; flex-direction:column; gap:3px; background:var(--bg); scroll-behavior:smooth; /* removed: -webkit-overflow-scrolling:touch — caused blank-until-scroll paint bug */; }
 .gs-chat-date-sep { text-align:center; font-size:.68rem; color:var(--txt2); padding:6px 0; }
 .gs-bubble { max-width:82%; display:flex; flex-direction:column; margin:2px 0; animation:gsBubbleIn .25s ease-out; }
 .gs-bubble.other { align-self:flex-start; }
@@ -1139,7 +1139,7 @@ body { font-family:'Poppins',sans-serif;
 
 
 /* ═════════════ WUDU / ABLUTION GUIDE ═════════════ */
-#wudu-view { display:none; flex-direction:column; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:linear-gradient(180deg,#0a1628 0%,#0d2137 100%); z-index:20; }
+#wudu-view { display:none; flex-direction:column; overflow-y:auto; overflow-x:hidden; /* removed: -webkit-overflow-scrolling:touch — caused blank-until-scroll paint bug */; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:linear-gradient(180deg,#0a1628 0%,#0d2137 100%); z-index:20; }
 #wudu-view.active { display:flex; }
 
 .wudu-header { text-align:center; padding:50px 22px 22px; position:relative; overflow:hidden; flex-shrink:0; }
@@ -1371,6 +1371,35 @@ body { font-family:'Poppins',sans-serif;
 .wudu-virtues { background:rgba(251,191,36,.04); border-color:rgba(251,191,36,.15); }
 .wudu-virtues .wudu-section-title { color:#fcd34d; }
 .wudu-virtue { font-size:.78rem; color:#cbd5e1; line-height:1.7; padding:10px 12px; background:rgba(251,191,36,.05); border-radius:10px; margin-bottom:8px; border-left:3px solid rgba(251,191,36,.25); }
+/* Premium animated video card for Wudu Guide */
+.wvcard { display:flex; align-items:center; gap:13px; padding:14px; border-radius:16px; cursor:pointer; position:relative; overflow:hidden; transition:transform .15s ease; }
+.wvcard:active { transform:scale(.97); }
+.wvcard.fard { background:linear-gradient(135deg, rgba(16,185,129,.12), rgba(5,150,105,.06)); border:1.5px solid rgba(16,185,129,.2); }
+.wvcard.sunnah { background:linear-gradient(135deg, rgba(251,191,36,.12), rgba(217,119,6,.06)); border:1.5px solid rgba(251,191,36,.2); }
+.wvcard-orb { width:50px; height:50px; min-width:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; position:relative; flex-shrink:0; transition:transform .15s ease; }
+.wvcard:active .wvcard-orb { transform:scale(1.12); }
+.wvcard.fard .wvcard-orb { background:radial-gradient(circle at 32% 26%, rgba(255,255,255,.5), transparent 50%), linear-gradient(150deg, #34d399, #059669); box-shadow:0 4px 12px rgba(5,150,105,.4), inset 0 -2px 4px rgba(0,0,0,.2), inset 0 2px 3px rgba(255,255,255,.3); }
+.wvcard.sunnah .wvcard-orb { background:radial-gradient(circle at 32% 26%, rgba(255,255,255,.5), transparent 50%), linear-gradient(150deg, #fcd34d, #d97706); box-shadow:0 4px 12px rgba(217,119,6,.4), inset 0 -2px 4px rgba(0,0,0,.2), inset 0 2px 3px rgba(255,255,255,.3); }
+.wvcard-play { width:0; height:0; border-left:13px solid #fff; border-top:8px solid transparent; border-bottom:8px solid transparent; margin-left:3px; }
+.wvcard-ring { position:absolute; inset:0; border-radius:50%; border:2px solid; opacity:0; }
+.wvcard.fard .wvcard-ring { border-color:#34d399; }
+.wvcard.sunnah .wvcard-ring { border-color:#fcd34d; }
+.wvcard-info { flex:1; min-width:0; }
+.wvcard-label { font-size:.62rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; display:flex; align-items:center; gap:5px; }
+.wvcard.fard .wvcard-label { color:#6ee7b7; }
+.wvcard.sunnah .wvcard-label { color:#fcd34d; }
+.wvcard-dot { width:6px; height:6px; border-radius:50%; background:currentColor; }
+.wvcard-title { font-size:.84rem; font-weight:700; color:#e2e8f0; margin-top:3px; }
+.wvcard-sub { font-size:.7rem; color:#94a3b8; margin-top:2px; }
+.wvcard-shine { position:absolute; top:0; left:-60%; width:60%; height:100%; background:linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent); transform:skewX(-20deg); pointer-events:none; }
+/* Animations */
+@keyframes wvcard-pulse { 0%{transform:scale(1);opacity:.6} 100%{transform:scale(1.8);opacity:0} }
+@keyframes wvcard-shine { 0%{left:-60%} 100%{left:160%} }
+@keyframes wvcard-blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+.wvcard-ring { animation:wvcard-pulse 2s ease-out infinite; }
+.wvcard-shine { animation:wvcard-shine 4s ease-in-out infinite; }
+.wvcard-dot { animation:wvcard-blink 1.5s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .wvcard-ring, .wvcard-shine, .wvcard-dot { animation:none; } }
 
 /* Mobile responsive for wudu */
 @media (max-width: 767px) {
@@ -1888,7 +1917,7 @@ body { font-family:'Poppins',sans-serif;
 .np-mini-tm { font-size:.62rem; color:#fff; font-weight:700; font-variant-numeric:tabular-nums; }
 .np-mini-cell.is-next .np-mini-nm, .np-mini-cell.is-next .np-mini-tm { color:#e3c478; }
 
-.qa-row { display:flex; gap:22px; justify-content:center; overflow-x:auto; padding:18px 16px 18px; position:relative; z-index:2; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+.qa-row { display:flex; gap:22px; justify-content:center; overflow-x:auto; padding:18px 16px 18px; position:relative; z-index:2; scrollbar-width:none; }
 .qa-row::-webkit-scrollbar { display:none; }
 .qa-item { display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer; flex-shrink:0; -webkit-tap-highlight-color:transparent; }
 .qa-circle { width:54px; height:54px; border-radius:50%; background:rgba(201,168,76,.1); border:1.5px solid rgba(201,168,76,.35); display:flex; align-items:center; justify-content:center; font-size:1.4rem; transition:transform .15s; }
@@ -1906,7 +1935,7 @@ body { font-family:'Poppins',sans-serif;
 .azan-details { display:none; margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,.08); }
 .azan-details.open { display:block; }
 
-.featured-carousel { display:flex; gap:10px; overflow-x:auto; scroll-snap-type:x mandatory; padding:0 14px; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+.featured-carousel { display:flex; gap:10px; overflow-x:auto; scroll-snap-type:x mandatory; padding:0 14px; scrollbar-width:none; }
 .more-teaser { display:flex; align-items:center; justify-content:space-between; gap:10px; margin:14px 16px 0; padding:13px 16px; background:var(--card); border:1px solid var(--bdr); border-radius:15px; cursor:pointer; transition:transform .15s; }
 .more-teaser:active { transform:scale(.98); }
 .more-teaser-txt { font-size:.82rem; font-weight:700; color:var(--txt); }
@@ -2496,6 +2525,30 @@ body { font-family:'Poppins',sans-serif;
       <div class="wudu-virtue">The Prophet ﷺ said to Bilal (RA): "You will hear the footsteps of your shoes in Paradise ahead of you — because of the extra steps you take in wudu." <span class="wudu-ref-inline">— Bukhari & Muslim</span></div>
     </div>
 
+    <!-- Premium video demonstration cards -->
+    <div class="wudu-section">
+      <div class="wudu-section-title">🎬 Watch & Learn — Video Guides</div>
+      <div class="wvcard fard" onclick="openWuduVideo('fard')">
+        <div class="wvcard-orb"><div class="wvcard-play"></div><div class="wvcard-ring"></div></div>
+        <div class="wvcard-info">
+          <div class="wvcard-label"><span class="wvcard-dot"></span> WATCH VIDEO</div>
+          <div class="wvcard-title">The 6 Obligatory Acts (Fard)</div>
+          <div class="wvcard-sub">Short demonstration · ~2 min</div>
+        </div>
+        <div class="wvcard-shine"></div>
+      </div>
+      <div style="height:10px"></div>
+      <div class="wvcard sunnah" onclick="openWuduVideo('sunnah')">
+        <div class="wvcard-orb"><div class="wvcard-play"></div><div class="wvcard-ring"></div></div>
+        <div class="wvcard-info">
+          <div class="wvcard-label"><span class="wvcard-dot"></span> WATCH VIDEO</div>
+          <div class="wvcard-title">The Prophetic Method ﷺ (Sunnah)</div>
+          <div class="wvcard-sub">Complete step-by-step · ~5 min</div>
+        </div>
+        <div class="wvcard-shine"></div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -2893,6 +2946,30 @@ visits++; localStorage.setItem('visits', visits);
 // ================================================================
 // NAVIGATION — exact same approach as working version
 // ================================================================
+// Wudu video modal — opens a YouTube embed in a full-screen overlay
+function openWuduVideo(type) {
+  const videos = {
+    fard: 'DYJUWkz3kPk',
+    sunnah: 'UqC0eQZ4YXM'
+  };
+  const vid = videos[type] || videos.fard;
+  let modal = document.getElementById('wudu-video-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'wudu-video-modal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:9999;display:none;align-items:center;justify-content:center;flex-direction:column;';
+    modal.innerHTML = '<div style="width:100%;max-width:500px;aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.5);"><iframe id="wudu-video-frame" style="width:100%;height:100%;border:none;" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe></div><button onclick="closeWuduVideo()" style="margin-top:16px;padding:10px 28px;background:var(--p);color:#fff;border:none;border-radius:30px;font-size:.85rem;font-weight:600;cursor:pointer;">Close ✕</button>';
+    document.body.appendChild(modal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeWuduVideo(); });
+  }
+  document.getElementById('wudu-video-frame').src = 'https://www.youtube.com/embed/' + vid + '?autoplay=1&rel=0&modestbranding=1';
+  modal.style.display = 'flex';
+}
+function closeWuduVideo() {
+  const modal = document.getElementById('wudu-video-modal');
+  if (modal) { modal.style.display = 'none'; document.getElementById('wudu-video-frame').src = ''; }
+}
+
 function goToView(v) {
   // Stop the wudu demo video if it's playing when navigating away (prevents
   // audio continuing to play in the background off-screen)
@@ -2920,7 +2997,13 @@ function goToView(v) {
   if(document.getElementById('hajj-view')) document.getElementById('hajj-view').classList.remove('active');
 
   // 2. Show target view
-  document.getElementById(v + '-view').classList.add('active');
+  const targetEl = document.getElementById(v + '-view');
+  targetEl.classList.add('active');
+  // Force a reflow so the browser paints the newly-shown view immediately
+  // — without this, mobile browsers leave the view blank until a scroll
+  // event triggers a repaint (especially with composited overflow layers).
+  void targetEl.offsetHeight;
+  targetEl.scrollTop = 0;
 
   // 3. Update nav dots
   document.querySelectorAll('.ni').forEach(n => n.classList.toggle('on', n.dataset.v === v));
@@ -4114,14 +4197,19 @@ function addGuideMsg(guide) {
       <div class="ai-guide-steps">${stepsHtml}</div>
       ${guide.footer ? `<div class="ai-guide-footer">${guide.footer}</div>` : ''}
     </div>`;
-  a.appendChild(d); a.scrollTop=a.scrollHeight;
+  a.appendChild(d);
+  // Force reflow so mobile browsers recalculate scrollHeight before we scroll —
+  // without this, the chat area doesn't know the new content exists yet and
+  // the second guide card stays scrolled out of view.
+  void a.offsetHeight;
+  requestAnimationFrame(() => { a.scrollTop = a.scrollHeight; });
 }
 function initAI() {
   const w=localStorage.getItem('aiWelcome')||"As-salamu alaykum wa rahmatullahi wa barakatuh! 🌙\n\nI'm your Islamic AI Guide. Ask me about the Quran, prayer, fasting, Islamic history, or any aspect of daily Islamic life.";
   addMsg(w,'bot');
 }
-function addMsg(txt,type) { const a=document.getElementById('chat-area'); const d=document.createElement('div'); d.className='cmsg '+type; d.innerText=txt; a.appendChild(d); a.scrollTop=a.scrollHeight; }
-function addTyping() { const a=document.getElementById('chat-area'); const d=document.createElement('div'); d.className='cmsg bot'; d.id='typing'; d.innerHTML='<div class="tdots"><span></span><span></span><span></span></div>'; a.appendChild(d); a.scrollTop=a.scrollHeight; }
+function addMsg(txt,type) { const a=document.getElementById('chat-area'); const d=document.createElement('div'); d.className='cmsg '+type; d.innerText=txt; a.appendChild(d); void a.offsetHeight; a.scrollTop=a.scrollHeight; }
+function addTyping() { const a=document.getElementById('chat-area'); const d=document.createElement('div'); d.className='cmsg bot'; d.id='typing'; d.innerHTML='<div class="tdots"><span></span><span></span><span></span></div>'; a.appendChild(d); void a.offsetHeight; a.scrollTop=a.scrollHeight; }
 function removeTyping() { const e=document.getElementById('typing'); if(e) e.remove(); }
 async function sendChat() {
   const inp=document.getElementById('cinp');
