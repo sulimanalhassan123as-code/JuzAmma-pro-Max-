@@ -1193,23 +1193,137 @@ body { font-family:'Poppins',sans-serif;
 
 /* Video demo modal */
 
-.wudu-section-video-btn {
-  margin: 16px 0 0;
-  padding: 14px 16px;
-  background: linear-gradient(135deg, #1e7a3e, #155e30);
-  color: #fff;
-  border-radius: 12px;
-  text-align: center;
-  font-size: 0.85rem;
-  font-weight: 600;
+.wudu-video-card {
+  margin: 20px 0 4px;
+  border-radius: 16px;
+  overflow: hidden;
   cursor: pointer;
-  transition: transform .15s ease, box-shadow .15s ease;
-  box-shadow: 0 2px 12px rgba(30,122,62,0.3);
+  position: relative;
+  transition: transform .2s ease, box-shadow .2s ease;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.35);
 }
-.wudu-section-video-btn:active { transform: scale(0.98); }
-.wudu-sunnah .wudu-section-video-btn {
-  background: linear-gradient(135deg, #b8860b, #8b6508);
-  box-shadow: 0 2px 12px rgba(184,134,11,0.3);
+.wudu-video-card:active { transform: scale(0.97); }
+.wudu-video-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.45); }
+
+.wudu-video-card-bg {
+  position: absolute; inset: 0; z-index: 0;
+  transition: transform .4s ease;
+}
+.wudu-video-card:active .wudu-video-card-bg { transform: scale(1.05); }
+
+.wudu-fard .wudu-video-card-bg {
+  background:
+    radial-gradient(circle at 25% 30%, rgba(46,204,113,.35), transparent 50%),
+    radial-gradient(circle at 75% 70%, rgba(34,167,132,.25), transparent 50%),
+    linear-gradient(135deg, #0a3d20, #071a0e);
+}
+.wudu-sunnah .wudu-video-card-bg {
+  background:
+    radial-gradient(circle at 25% 30%, rgba(241,196,15,.3), transparent 50%),
+    radial-gradient(circle at 75% 70%, rgba(184,134,11,.2), transparent 50%),
+    linear-gradient(135deg, #2a1f08, #14100a);
+}
+
+.wudu-video-card-content {
+  position: relative; z-index: 1;
+  padding: 22px 20px 20px;
+  display: flex; align-items: center; gap: 16px;
+}
+
+.wudu-video-play-orb {
+  flex-shrink: 0;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  transition: transform .2s ease;
+}
+.wudu-video-card:active .wudu-video-play-orb { transform: scale(1.1); }
+.wudu-fard .wudu-video-play-orb {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  box-shadow: 0 0 20px rgba(46,204,113,.5);
+}
+.wudu-sunnah .wudu-video-play-orb {
+  background: linear-gradient(135deg, #f1c40f, #d4a017);
+  box-shadow: 0 0 20px rgba(241,196,15,.5);
+}
+
+/* Pulsing ring animation around play button */
+.wudu-video-play-orb::before {
+  content: '';
+  position: absolute; inset: -4px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  opacity: 0;
+  animation: wudu-pulse-ring 2s ease-out infinite;
+}
+.wudu-fard .wudu-video-play-orb::before { color: #2ecc71; }
+.wudu-sunnah .wudu-video-play-orb::before { color: #f1c40f; }
+@keyframes wudu-pulse-ring {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* Play triangle icon */
+.wudu-video-play-orb svg {
+  width: 22px; height: 22px;
+  fill: #fff;
+  margin-left: 3px;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.3));
+}
+
+.wudu-video-card-text { flex: 1; min-width: 0; }
+.wudu-video-card-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.6;
+  margin-bottom: 4px;
+  display: flex; align-items: center; gap: 5px;
+}
+.wudu-video-card-label::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  animation: wudu-blink 1.5s ease-in-out infinite;
+}
+.wudu-fard .wudu-video-card-label::before { background: #2ecc71; }
+.wudu-sunnah .wudu-video-card-label::before { background: #f1c40f; }
+@keyframes wudu-blink {
+  0%,100% { opacity: 1; } 50% { opacity: 0.3; }
+}
+.wudu-video-card-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.35;
+  margin-bottom: 4px;
+}
+.wudu-video-card-sub {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,.5);
+  line-height: 1.3;
+}
+
+/* Bottom shine sweep animation */
+.wudu-video-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent);
+  animation: wudu-shine 4s ease-in-out infinite;
+  z-index: 2;
+  pointer-events: none;
+}
+@keyframes wudu-shine {
+  0% { left: -60%; }
+  30%, 100% { left: 120%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wudu-video-card::after,
+  .wudu-video-play-orb::before,
+  .wudu-video-card-label::before { animation: none; }
 }
 
 .wvid-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.92); z-index:999;
@@ -2210,8 +2324,18 @@ body { font-family:'Poppins',sans-serif;
         </div>
       </div>
 
-      <div class="wudu-section-video-btn" onclick="openWuduVideo('fard')">
-        🎥 Watch: The 6 Fard (Obligatory) Acts Demonstrated
+      <div class="wudu-video-card" onclick="openWuduVideo('fard')">
+        <div class="wudu-video-card-bg"></div>
+        <div class="wudu-video-card-content">
+          <div class="wudu-video-play-orb">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+          <div class="wudu-video-card-text">
+            <div class="wudu-video-card-label">Watch Video</div>
+            <div class="wudu-video-card-title">The 6 Fard Acts — Demonstrated</div>
+            <div class="wudu-video-card-sub">Real human demonstration · Tap to play</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -2298,8 +2422,18 @@ body { font-family:'Poppins',sans-serif;
           <div class="wudu-step-desc" style="margin-top:4px;font-style:italic;color:#94a3b8">"I bear witness that there is no god except Allah alone, with no partner, and I bear witness that Muhammad is His slave and Messenger. O Allah, make me one of those who repent and make me one of those who purify themselves."</div>
         </div>
       </div>
-      <div class="wudu-section-video-btn" onclick="openWuduVideo('sunnah')">
-        🎥 Watch: The Full Prophetic Method (Sunnah) Demonstrated
+      <div class="wudu-video-card" onclick="openWuduVideo('sunnah')">
+        <div class="wudu-video-card-bg"></div>
+        <div class="wudu-video-card-content">
+          <div class="wudu-video-play-orb">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+          <div class="wudu-video-card-text">
+            <div class="wudu-video-card-label">Watch Video</div>
+            <div class="wudu-video-card-title">The Full Prophetic Method — Demonstrated</div>
+            <div class="wudu-video-card-sub">Real human demonstration · Tap to play</div>
+          </div>
+        </div>
       </div>
     </div>
 
