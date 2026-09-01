@@ -1139,7 +1139,7 @@ body { font-family:'Poppins',sans-serif;
 
 
 /* ═════════════ WUDU / ABLUTION GUIDE ═════════════ */
-#wudu-view { display:none; flex-direction:column; overflow:hidden; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:linear-gradient(180deg,#0a1628 0%,#0d2137 100%); z-index:20; }
+#wudu-view { display:none; flex-direction:column; overflow-y:auto; overflow-x:hidden; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:linear-gradient(180deg,#0a1628 0%,#0d2137 100%); z-index:20; }
 #wudu-view.active { display:flex; }
 
 .wudu-header { text-align:center; padding:50px 22px 22px; position:relative; overflow:hidden; flex-shrink:0; }
@@ -1148,7 +1148,6 @@ body { font-family:'Poppins',sans-serif;
 .wudu-header h2 { font-size:1.7rem; font-weight:800; color:#fff; margin:0; position:relative; z-index:1; }
 .wudu-sub { font-size:.75rem; color:rgba(255,255,255,.45); margin-top:5px; position:relative; z-index:1; }
 
-.wudu-scroll { flex:1; overflow-y:auto; overflow-x:hidden; }
 .wudu-body { padding:0 16px 40px; }
 
 .wudu-section { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:16px; padding:18px 16px; margin-bottom:14px; }
@@ -2291,7 +2290,6 @@ body { font-family:'Poppins',sans-serif;
     <p class="wudu-sub">The Prophetic Method ﷺ · Based on Sahih al-Bukhari & Muslim</p>
   </div>
 
-  <div class="wudu-scroll">
   <div class="wudu-body">
 
     <!-- In-App Browser Notice -->
@@ -2551,7 +2549,6 @@ body { font-family:'Poppins',sans-serif;
       </div>
     </div>
 
-  </div>
   </div>
 </div>
 
@@ -3007,16 +3004,14 @@ function goToView(v) {
   // event triggers a repaint (especially with composited overflow layers).
   void targetEl.offsetHeight;
   targetEl.scrollTop = 0;
-  // Extra nudge: browsers (mobile AND desktop) sometimes only paint the
-  // content that's within the very first viewport of a fixed+scrollable
-  // container, leaving everything below the fold blank until a REAL scroll
-  // event fires (offsetHeight reflow alone isn't enough — it's a layout
-  // recalc, not a scroll-triggered composite repaint). Nudging scrollTop by
-  // 1px and back forces the browser to run its real scroll repaint path,
-  // which paints the entire scrollable content immediately.
+  // AGGRESSIVE repaint: toggle opacity to force compositor invalidation,
+  // then scroll-nudge to trigger the paint path.
+  targetEl.style.opacity = '0.999';
+  void targetEl.offsetHeight;
   requestAnimationFrame(() => {
+    targetEl.style.opacity = '';
     targetEl.scrollTop = 1;
-    requestAnimationFrame(() => { targetEl.scrollTop = 0; });
+    setTimeout(() => { targetEl.scrollTop = 0; }, 50);
   });
 
   // 3. Update nav dots
