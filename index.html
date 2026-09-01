@@ -3004,6 +3004,17 @@ function goToView(v) {
   // event triggers a repaint (especially with composited overflow layers).
   void targetEl.offsetHeight;
   targetEl.scrollTop = 0;
+  // Extra nudge: browsers (mobile AND desktop) sometimes only paint the
+  // content that's within the very first viewport of a fixed+scrollable
+  // container, leaving everything below the fold blank until a REAL scroll
+  // event fires (offsetHeight reflow alone isn't enough — it's a layout
+  // recalc, not a scroll-triggered composite repaint). Nudging scrollTop by
+  // 1px and back forces the browser to run its real scroll repaint path,
+  // which paints the entire scrollable content immediately.
+  requestAnimationFrame(() => {
+    targetEl.scrollTop = 1;
+    requestAnimationFrame(() => { targetEl.scrollTop = 0; });
+  });
 
   // 3. Update nav dots
   document.querySelectorAll('.ni').forEach(n => n.classList.toggle('on', n.dataset.v === v));
