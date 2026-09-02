@@ -3281,9 +3281,10 @@ function closeMushafView() {
   clearInterval(mushafSyncTimer);
 }
 function renderMushafPage(s) {
-  document.getElementById('mushaf-banner-ar').innerText = 'سُورَةُ ' + (s.ar || s.name);
+  const arName = s.ar || s.name;
+  document.getElementById('mushaf-banner-ar').innerText = arName.includes('سورة') ? arName : 'سُورَةُ ' + arName;
   let html = '';
-  if (s.id !== 9) {
+  if (s.id !== 9 && s.id !== 1) {
     html += `<span style="display:block;margin-bottom:18px;font-size:.9em;">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</span>`;
   }
   s.verses.forEach((v,i) => {
