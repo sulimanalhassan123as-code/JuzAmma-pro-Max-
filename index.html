@@ -1300,14 +1300,8 @@ body { font-family:'Poppins',sans-serif;
 }
 
 /* Bottom shine sweep animation */
-/* wudu-video-card::after removed for debugging */
-@keyframes wudu-shine {
-  0% { left: -60%; }
-  30%, 100% { left: 120%; }
-}
-
+/* wudu-shine keyframes removed — was causing mobile paint bug */
 @media (prefers-reduced-motion: reduce) {
-  .wudu-video-card::after,
   .wudu-video-play-orb::before,
   .wudu-video-card-label::before { animation: none; }
 }
@@ -1358,44 +1352,6 @@ body { font-family:'Poppins',sans-serif;
 .wudu-virtues .wudu-section-title { color:#fcd34d; }
 .wudu-virtue { font-size:.78rem; color:#cbd5e1; line-height:1.7; padding:10px 12px; background:rgba(251,191,36,.05); border-radius:10px; margin-bottom:8px; border-left:3px solid rgba(251,191,36,.25); }
 /* Premium animated video card for Wudu Guide */
-.wvcard { display:flex; align-items:center; gap:13px; padding:14px; border-radius:16px; cursor:pointer; position:relative; overflow:hidden; transition:transform .15s ease; }
-.wvcard:active { transform:scale(.97); }
-.wvcard.fard { background:linear-gradient(135deg, rgba(16,185,129,.12), rgba(5,150,105,.06)); border:1.5px solid rgba(16,185,129,.2); }
-.wvcard.sunnah { background:linear-gradient(135deg, rgba(251,191,36,.12), rgba(217,119,6,.06)); border:1.5px solid rgba(251,191,36,.2); }
-.wvcard-orb { width:50px; height:50px; min-width:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; position:relative; flex-shrink:0; transition:transform .15s ease; }
-.wvcard:active .wvcard-orb { transform:scale(1.12); }
-.wvcard.fard .wvcard-orb { background:radial-gradient(circle at 32% 26%, rgba(255,255,255,.5), transparent 50%), linear-gradient(150deg, #34d399, #059669); box-shadow:0 4px 12px rgba(5,150,105,.4), inset 0 -2px 4px rgba(0,0,0,.2), inset 0 2px 3px rgba(255,255,255,.3); }
-.wvcard.sunnah .wvcard-orb { background:radial-gradient(circle at 32% 26%, rgba(255,255,255,.5), transparent 50%), linear-gradient(150deg, #fcd34d, #d97706); box-shadow:0 4px 12px rgba(217,119,6,.4), inset 0 -2px 4px rgba(0,0,0,.2), inset 0 2px 3px rgba(255,255,255,.3); }
-.wvcard-play { width:0; height:0; border-left:13px solid #fff; border-top:8px solid transparent; border-bottom:8px solid transparent; margin-left:3px; }
-.wvcard-ring { position:absolute; inset:0; border-radius:50%; border:2px solid; opacity:0; }
-.wvcard.fard .wvcard-ring { border-color:#34d399; }
-.wvcard.sunnah .wvcard-ring { border-color:#fcd34d; }
-.wvcard-info { flex:1; min-width:0; }
-.wvcard-label { font-size:.62rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; display:flex; align-items:center; gap:5px; }
-.wvcard.fard .wvcard-label { color:#6ee7b7; }
-.wvcard.sunnah .wvcard-label { color:#fcd34d; }
-.wvcard-dot { width:6px; height:6px; border-radius:50%; background:currentColor; }
-.wvcard-title { font-size:.84rem; font-weight:700; color:#e2e8f0; margin-top:3px; }
-.wvcard-sub { font-size:.7rem; color:#94a3b8; margin-top:2px; }
-.wvcard-shine { position:absolute; top:0; left:-60%; width:60%; height:100%; background:linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent); transform:skewX(-20deg); pointer-events:none; }
-/* Animations */
-@keyframes wvcard-pulse { 0%{transform:scale(1);opacity:.6} 100%{transform:scale(1.8);opacity:0} }
-@keyframes wvcard-shine { 0%{left:-60%} 100%{left:160%} }
-@keyframes wvcard-blink { 0%,100%{opacity:1} 50%{opacity:.3} }
-.wvcard-ring { animation:wvcard-pulse 2s ease-out infinite; }
-.wvcard-shine { animation:wvcard-shine 4s ease-in-out infinite; }
-.wvcard-dot { animation:wvcard-blink 1.5s ease-in-out infinite; }
-@media (prefers-reduced-motion: reduce) { .wvcard-ring, .wvcard-shine, .wvcard-dot { animation:none; } }
-
-/* Mobile responsive for wudu */
-@media (max-width: 767px) {
-  .wudu-header { padding:35px 18px 18px; }
-  .wudu-header h2 { font-size:1.4rem; }
-  .wudu-ayah { font-size:1.2rem; line-height:2.4; padding:0 6px; }
-  .wudu-step-title { font-size:.84rem; }
-  .wudu-step-desc { font-size:.73rem; }
-  .wudu-madhab-point { font-size:.73rem; }
-}
 
 
 /* ═══════════ DEVICE-AWARE ARABIC TEXT SCALING ═══════════ */
@@ -2509,29 +2465,7 @@ body { font-family:'Poppins',sans-serif;
       <div class="wudu-virtue">The Prophet ﷺ said to Bilal (RA): "You will hear the footsteps of your shoes in Paradise ahead of you — because of the extra steps you take in wudu." <span class="wudu-ref-inline">— Bukhari & Muslim</span></div>
     </div>
 
-    <!-- Premium video demonstration cards -->
-    <div class="wudu-section">
-      <div class="wudu-section-title">🎬 Watch & Learn — Video Guides</div>
-      <div class="wvcard fard" onclick="openWuduVideo('fard')">
-        <div class="wvcard-orb"><div class="wvcard-play"></div><div class="wvcard-ring"></div></div>
-        <div class="wvcard-info">
-          <div class="wvcard-label"><span class="wvcard-dot"></span> WATCH VIDEO</div>
-          <div class="wvcard-title">The 6 Obligatory Acts (Fard)</div>
-          <div class="wvcard-sub">Short demonstration · ~2 min</div>
-        </div>
-        <div class="wvcard-shine"></div>
-      </div>
-      <div style="height:10px"></div>
-      <div class="wvcard sunnah" onclick="openWuduVideo('sunnah')">
-        <div class="wvcard-orb"><div class="wvcard-play"></div><div class="wvcard-ring"></div></div>
-        <div class="wvcard-info">
-          <div class="wvcard-label"><span class="wvcard-dot"></span> WATCH VIDEO</div>
-          <div class="wvcard-title">The Prophetic Method ﷺ (Sunnah)</div>
-          <div class="wvcard-sub">Complete step-by-step · ~5 min</div>
-        </div>
-        <div class="wvcard-shine"></div>
-      </div>
-    </div>
+    <!-- Watch & Learn section removed — video cards are now inline in each section -->
 
   </div>
 </div>
