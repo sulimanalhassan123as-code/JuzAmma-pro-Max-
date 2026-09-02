@@ -186,6 +186,40 @@ body { font-family:'Poppins',sans-serif;
 .arabic { font-family:'Amiri','Noto Naskh Arabic','Scheherazade New',serif; font-size:1.65rem; line-height:2.2; color:var(--txt); text-align:right; direction:rtl; font-feature-settings:'liga' 1,'calt' 1; }
 .trans { margin-top:8px; font-size:.81rem; color:var(--txt2); line-height:1.65; border-top:1px solid var(--bdr); padding-top:8px; }
 
+/* ═══════════ VERSE DETAIL MODAL — Mushaf (physical Quran page) style ═══════════ */
+.vd-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.88); z-index:998; align-items:center; justify-content:center; padding:16px; }
+.vd-modal.show { display:flex; animation:fadeIn .2s ease; }
+.vd-page { width:100%; max-width:440px; max-height:90vh; overflow-y:auto; background:linear-gradient(160deg,var(--card),var(--bg)); border:2px solid var(--gold); border-radius:20px; position:relative; box-shadow:0 20px 60px rgba(0,0,0,.5); }
+.vd-page::before, .vd-page::after { content:''; position:absolute; width:28px; height:28px; border:2px solid var(--gold); opacity:.55; pointer-events:none; }
+.vd-page::before { top:8px; left:8px; border-right:none; border-bottom:none; border-radius:6px 0 0 0; }
+.vd-page::after { bottom:8px; right:8px; border-left:none; border-top:none; border-radius:0 0 6px 0; }
+.vd-corner-tr { position:absolute; top:8px; right:8px; width:28px; height:28px; border:2px solid var(--gold); opacity:.55; border-left:none; border-bottom:none; border-radius:0 6px 0 0; pointer-events:none; }
+.vd-corner-bl { position:absolute; bottom:8px; left:8px; width:28px; height:28px; border:2px solid var(--gold); opacity:.55; border-right:none; border-top:none; border-radius:0 0 0 6px; pointer-events:none; }
+.vd-head { text-align:center; padding:22px 26px 14px; border-bottom:1px solid var(--bdr); }
+.vd-surah-ar { font-family:'Amiri','Noto Naskh Arabic','Scheherazade New',serif; font-size:1.3rem; color:var(--gold); margin-bottom:2px; }
+.vd-surah-en { font-size:.72rem; color:var(--txt2); letter-spacing:.5px; text-transform:uppercase; }
+.vd-close { position:absolute; top:14px; right:14px; width:30px; height:30px; border-radius:50%; background:var(--bdr); border:none; color:var(--txt); font-size:.9rem; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:2; }
+.vd-body { padding:26px 24px 20px; text-align:center; }
+.vd-medallion { display:inline-flex; align-items:center; justify-content:center; width:38px; height:38px; border-radius:50%; border:2px solid var(--gold); color:var(--gold); font-size:.8rem; font-weight:700; margin-bottom:16px; background:var(--gold2); }
+.vd-arabic { font-family:'Amiri','Noto Naskh Arabic','Scheherazade New',serif; font-size:2rem; line-height:2.35; color:var(--txt); direction:rtl; text-align:center; font-feature-settings:'liga' 1,'calt' 1; }
+.vd-divider { width:60px; height:1px; background:var(--gold); opacity:.4; margin:20px auto; }
+.vd-trans-label { font-size:.65rem; color:var(--gold); letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; font-weight:700; }
+.vd-trans { font-size:.95rem; color:var(--txt2); line-height:1.75; text-align:center; font-style:italic; }
+.vd-ref { margin-top:18px; font-size:.72rem; color:var(--txt2); opacity:.7; }
+.vd-actions { display:flex; align-items:center; justify-content:space-between; gap:6px; padding:16px 20px 22px; border-top:1px solid var(--bdr); }
+.vd-nav { width:38px; height:38px; border-radius:50%; background:var(--bdr); border:none; color:var(--txt); font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.vd-nav:disabled { opacity:.3; cursor:default; }
+.vd-mid { display:flex; gap:8px; flex:1; justify-content:center; }
+.vd-act-btn { width:42px; height:42px; border-radius:50%; background:var(--bdr); border:none; color:var(--txt2); font-size:1.05rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+.vd-act-btn.active { color:var(--gold); background:var(--gold2); border:1px solid var(--gold); }
+.vd-play-btn { width:52px; height:52px; border-radius:50%; background:var(--p); border:none; color:#fff; font-size:1.3rem; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 16px var(--pg); }
+.vd-play-btn.playing { background:var(--pd); }
+@media (max-width:400px) {
+  .vd-arabic { font-size:1.65rem; line-height:2.2; }
+  .vd-surah-ar { font-size:1.1rem; }
+}
+
+
 /* ── PLAYER BAR ───────────────────────── */
 .pbar { position:fixed; bottom:var(--nav); left:0; right:0; height:68px; background:var(--dark); border-top:2px solid var(--p); display:flex; align-items:center; padding:0 14px; gap:10px; transform:translateY(110%); transition:transform .35s cubic-bezier(.34,1.56,.64,1); z-index:150; box-shadow:0 -5px 20px rgba(0,0,0,.4); }
 .pbar.on { transform:translateY(0); }
@@ -3190,7 +3224,7 @@ function renderVerses(s) {
   let html=`<div class="bism-card"><div class="bism-ar">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div><div class="bism-en">In the name of Allah, the Most Gracious, the Most Merciful</div></div>`;
   s.verses.forEach((v,i) => {
     const isBm = bm.includes(i);
-    html += `<div class="vcard ${isBm?'bookmarked':''}" id="vc-${s.id}-${i}" onclick="playV(${s.id},${i})">
+    html += `<div class="vcard ${isBm?'bookmarked':''}" id="vc-${s.id}-${i}" onclick="openVerseDetail(${s.id},${i})">
       <div class="vcard-top">
         <div class="vnum">${v.n||i+1}</div>
         <div class="vacts">
@@ -3219,6 +3253,73 @@ function toggleBm(e,sid,vidx) {
   }
   toast(bookmarks[sid].includes(vidx)?'🔖 Bookmarked':'Bookmark removed');
 }
+// ═══════════ VERSE DETAIL MODAL — physical Quran page style ═══════════
+let vdSid = null, vdVidx = null;
+
+function openVerseDetail(sid, vidx) {
+  vdSid = sid; vdVidx = vidx;
+  renderVerseDetail();
+  document.getElementById('vd-modal').classList.add('show');
+}
+function closeVerseDetail() {
+  document.getElementById('vd-modal').classList.remove('show');
+}
+function renderVerseDetail() {
+  const s = qData.find(x=>x.id===vdSid);
+  if (!s) return;
+  const v = s.verses[vdVidx];
+  const bm = bookmarks[vdSid]||[];
+  const isBm = bm.includes(vdVidx);
+  document.getElementById('vd-surah-ar').innerText = s.ar || '';
+  document.getElementById('vd-surah-en').innerText = `${s.name} · ${s.id}`;
+  document.getElementById('vd-medallion').innerText = v.n || vdVidx+1;
+  document.getElementById('vd-arabic').innerText = v.a;
+  document.getElementById('vd-trans').innerText = getLangTrans(vdSid, vdVidx, v.e);
+  document.getElementById('vd-ref').innerText = `Surah ${s.name} — Verse ${v.n || vdVidx+1} of ${s.verses.length}`;
+  document.getElementById('vd-bm-btn').classList.toggle('active', isBm);
+  document.getElementById('vd-prev').disabled = vdVidx<=0;
+  document.getElementById('vd-next').disabled = vdVidx>=s.verses.length-1;
+  const playBtn = document.getElementById('vd-play-btn');
+  const isPlayingThis = isPlaying && curS===vdSid && curV===vdVidx;
+  playBtn.innerText = isPlayingThis ? '⏸' : '▶';
+  playBtn.classList.toggle('playing', isPlayingThis);
+}
+function vdPrev() {
+  if (vdVidx>0) { vdVidx--; renderVerseDetail(); }
+}
+function vdNext() {
+  const s = qData.find(x=>x.id===vdSid);
+  if (s && vdVidx<s.verses.length-1) { vdVidx++; renderVerseDetail(); }
+}
+function vdPlay() {
+  playV(vdSid, vdVidx);
+  setTimeout(renderVerseDetail, 150);
+}
+function vdBookmark() {
+  if (!bookmarks[vdSid]) bookmarks[vdSid]=[];
+  const arr=bookmarks[vdSid], idx=arr.indexOf(vdVidx);
+  if (idx>-1) arr.splice(idx,1); else arr.push(vdVidx);
+  localStorage.setItem('bookmarks',JSON.stringify(bookmarks));
+  renderVerseDetail();
+  const s = qData.find(x=>x.id===vdSid);
+  if (s) renderVerses(s);
+  toast(bookmarks[vdSid].includes(vdVidx)?'🔖 Bookmarked':'Bookmark removed');
+}
+function vdCopy() {
+  const s = qData.find(x=>x.id===vdSid);
+  if (!s) return;
+  const v = s.verses[vdVidx];
+  const txt = `${v.a}\n\n${getLangTrans(vdSid, vdVidx, v.e)}\n\n— Surah ${s.name}, Verse ${v.n||vdVidx+1}`;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(txt).then(()=>toast('📋 Copied to clipboard')).catch(()=>toast('Could not copy'));
+  } else {
+    toast('Could not copy');
+  }
+}
+function vdShare() {
+  shareV({stopPropagation:()=>{}}, vdSid, vdVidx);
+}
+
 function wrapTxt(ctx,text,maxW){const words=(text||'').split(' ');let line='',lines=[];for(const w of words){const t=line+w+' ';if(ctx.measureText(t).width>maxW&&line!==''){lines.push(line.trim());line=w+' ';}else{line=t;}}if(line.trim())lines.push(line.trim());return lines;}
 function shareV(e,sid,vidx){e.stopPropagation();const s=qData.find(x=>x.id===sid);if(!s)return;const v=s.verses[vidx];try{const c=document.createElement('canvas');c.width=800;c.height=420;const x=c.getContext('2d');const g=x.createLinearGradient(0,0,800,420);g.addColorStop(0,'#0f1923');g.addColorStop(1,'#1a3a5c');x.fillStyle=g;x.fillRect(0,0,800,420);x.strokeStyle='#c9a84c';x.lineWidth=2;x.strokeRect(10,10,780,400);x.fillStyle='#fff';x.font='bold 32px serif';x.textAlign='center';const arl=wrapTxt(x,v.a,680);let ay=120;arl.forEach(l=>{x.fillText(l,400,ay);ay+=48;});x.font='15px sans-serif';x.fillStyle='#90aec8';const enl=wrapTxt(x,v.e||'',720);let ey=ay+28;enl.forEach(l=>{x.fillText(l,400,ey);ey+=24;});x.font='bold 13px sans-serif';x.fillStyle='#c9a84c';x.fillText('📖 '+s.name+' · Verse '+(vidx+1)+' · Quran Pro Max',400,405);c.toBlob(blob=>{const url=URL.createObjectURL(blob);if(navigator.share&&navigator.canShare({files:[new File([blob],'ayah.png',{type:'image/png'})]})){navigator.share({files:[new File([blob],'ayah.png',{type:'image/png'})],title:s.name});}else{const a=document.createElement('a');a.href=url;a.download='ayah.png';a.click();}toast('📤 Ayah image ready!');},'image/png');return;}catch(ex){}
 }
@@ -8828,6 +8929,37 @@ function updateFsapBtn() {
     <div class="azan-modal-arabic" id="azan-modal-arabic">الله أكبر</div>
     <div style="font-size:.72rem;color:rgba(255,255,255,.5);margin-bottom:18px">Allahu Akbar — God is Greatest</div>
     <button class="azan-stop-btn" onclick="stopAzan()">⏹ Stop Azan</button>
+  </div>
+</div>
+
+<!-- VERSE DETAIL MODAL — tap a verse to open a physical-Quran-page style view -->
+<div id="vd-modal" class="vd-modal" onclick="if(event.target===this) closeVerseDetail()">
+  <div class="vd-page">
+    <div class="vd-corner-tr"></div>
+    <div class="vd-corner-bl"></div>
+    <button class="vd-close" onclick="closeVerseDetail()">✕</button>
+    <div class="vd-head">
+      <div class="vd-surah-ar" id="vd-surah-ar"></div>
+      <div class="vd-surah-en" id="vd-surah-en"></div>
+    </div>
+    <div class="vd-body">
+      <div class="vd-medallion" id="vd-medallion"></div>
+      <div class="vd-arabic" id="vd-arabic"></div>
+      <div class="vd-divider"></div>
+      <div class="vd-trans-label">Translation</div>
+      <div class="vd-trans" id="vd-trans"></div>
+      <div class="vd-ref" id="vd-ref"></div>
+    </div>
+    <div class="vd-actions">
+      <button class="vd-nav" id="vd-prev" onclick="vdPrev()">←</button>
+      <div class="vd-mid">
+        <button class="vd-act-btn" id="vd-bm-btn" onclick="vdBookmark()">🔖</button>
+        <button class="vd-play-btn" id="vd-play-btn" onclick="vdPlay()">▶</button>
+        <button class="vd-act-btn" onclick="vdCopy()">📋</button>
+        <button class="vd-act-btn" onclick="vdShare()">📤</button>
+      </div>
+      <button class="vd-nav" id="vd-next" onclick="vdNext()">→</button>
+    </div>
   </div>
 </div>
 
