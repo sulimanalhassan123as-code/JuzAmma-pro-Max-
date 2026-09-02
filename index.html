@@ -209,6 +209,15 @@ body { font-family:'Poppins',sans-serif;
 .mushaf-ctrl-btn { width:34px; height:34px; border-radius:50%; background:#fff; border:1.3px solid #2b1d0e; color:#2b1d0e; font-size:.85rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 .mushaf-ctrl-play { width:46px; height:46px; border-radius:50%; background:#7a1f1f; border:none; color:#fff; font-size:1.15rem; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(122,31,31,.4); }
 .mushaf-ctrl-close { width:30px; height:30px; border-radius:50%; background:#fff; border:1.3px solid rgba(0,0,0,.2); color:#666; font-size:.75rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.mushaf-trans-btn { display:flex; align-items:center; gap:5px; background:#fff; color:#2b1d0e; border:1px solid rgba(0,0,0,.12); border-radius:22px; padding:8px 14px; font-size:.78rem; font-weight:600; cursor:pointer; transition:all .2s; }
+.mushaf-trans-btn.active { background:#2b1d0e; color:#fff; border-color:#2b1d0e; }
+.mushaf-topbar { gap:8px; flex-wrap:nowrap; }
+/* Study mode: each verse becomes a block with translation below */
+.mushaf-text.study .mushaf-verse-block { display:block; margin-bottom:14px; padding:6px 4px; border-radius:8px; transition:background .3s; cursor:pointer; }
+.mushaf-text.study .mushaf-verse-block.playing { background:rgba(201,168,76,.30); }
+.mushaf-text.study .mushaf-verse-ar { display:block; font-family:'Amiri','Noto Naskh Arabic','Scheherazade New',serif; font-size:1.5rem; line-height:2.4; color:#2b1d0e; direction:rtl; text-align:center; }
+.mushaf-text.study .mushaf-ayah-num { display:inline-flex; align-items:center; justify-content:center; width:1.5em; height:1.5em; border:1.3px solid #9c7a3d; border-radius:50%; font-size:.5em; color:#8a6a2f; margin:0 .2em; vertical-align:middle; position:relative; top:-2px; font-family:'Amiri',serif; }
+.mushaf-text.study .mushaf-verse-trans { display:block; font-family:-apple-system,sans-serif; font-size:.82rem; line-height:1.6; color:#6b5d4a; text-align:left; margin-top:6px; padding:6px 10px; background:rgba(156,122,61,.06); border-left:3px solid rgba(156,122,61,.25); border-radius:0 6px 6px 0; }
 .mushaf-progress-wrap { height:3px; background:rgba(0,0,0,.08); border-radius:2px; margin-top:10px; overflow:hidden; }
 .mushaf-progress-fill { height:100%; width:0%; background:#c0392b; transition:width .3s linear; }
 @media (max-width:400px) {
@@ -3280,18 +3289,42 @@ function closeMushafView() {
   mushafOpen = false;
   clearInterval(mushafSyncTimer);
 }
+let mushafShowTrans = false;
 function renderMushafPage(s) {
   const arName = s.ar || s.name;
   document.getElementById('mushaf-banner-ar').innerText = arName.includes('سورة') ? arName : 'سُورَةُ ' + arName;
-  let html = '';
-  if (s.id !== 9 && s.id !== 1) {
-    html += `<span style="display:block;margin-bottom:18px;font-size:.9em;">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</span>`;
+  const showBismillah = (s.id !== 9 && s.id !== 1);
+  const bismillahHtml = showBismillah ? `<span style="display:block;margin-bottom:18px;font-size:.9em;">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</span>` : '';
+  let html = bismillahHtml;
+  const textEl = document.getElementById('mushaf-text');
+  
+  if (mushafShowTrans) {
+    // Study mode: each verse as a block with Arabic + English translation
+    textEl.classList.add('study');
+    s.verses.forEach((v,i) => {
+      html += `<span class="mushaf-verse-block" id="mushaf-v-${i}" onclick="mushafJumpTo(${i})">` +
+              `<span class="mushaf-verse-ar">${v.a} <span class="mushaf-ayah-num">${toArabicDigits(v.n||i+1)}</span></span>` +
+              `<span class="mushaf-verse-trans">${v.e || ''}</span>` +
+              `</span>`;
+    });
+  } else {
+    // Pure Mushaf mode: continuous flowing Arabic
+    textEl.classList.remove('study');
+    s.verses.forEach((v,i) => {
+      html += `<span class="mushaf-verse" id="mushaf-v-${i}" onclick="mushafJumpTo(${i})">${v.a}</span>` +
+              `<span class="mushaf-ayah-num">${toArabicDigits(v.n||i+1)}</span> `;
+    });
   }
-  s.verses.forEach((v,i) => {
-    html += `<span class="mushaf-verse" id="mushaf-v-${i}" onclick="mushafJumpTo(${i})">${v.a}</span>` +
-            `<span class="mushaf-ayah-num">${toArabicDigits(v.n||i+1)}</span> `;
-  });
-  document.getElementById('mushaf-text').innerHTML = html;
+  textEl.innerHTML = html;
+}
+function toggleMushafTrans() {
+  mushafShowTrans = !mushafShowTrans;
+  const btn = document.getElementById('mushaf-trans-btn');
+  btn.classList.toggle('active', mushafShowTrans);
+  btn.innerText = mushafShowTrans ? '🌐 ON' : '🌐 EN';
+  const s = qData.find(x=>x.id===mushafSid);
+  if (s) renderMushafPage(s);
+  syncMushafPlayer();
 }
 function mushafJumpTo(idx) {
   playV(mushafSid, idx);
@@ -3309,7 +3342,7 @@ function syncMushafPlayer() {
   const reciteBtn = document.getElementById('mushaf-recite-btn');
   reciteBtn.innerHTML = playingHere ? '⏸ Reciting' : '▶ Recite';
   reciteBtn.classList.toggle('playing', playingHere);
-  document.querySelectorAll('.mushaf-verse').forEach(el=>el.classList.remove('playing'));
+  document.querySelectorAll('.mushaf-verse, .mushaf-verse-block').forEach(el=>el.classList.remove('playing'));
   if (playingHere) {
     const el = document.getElementById(`mushaf-v-${curV}`);
     if (el) el.classList.add('playing');
@@ -8958,6 +8991,7 @@ function updateFsapBtn() {
 <div id="mushaf-view" class="mushaf-view">
   <div class="mushaf-topbar">
     <button class="mushaf-close-btn" onclick="closeMushafView()">✕</button>
+    <button class="mushaf-trans-btn" id="mushaf-trans-btn" onclick="toggleMushafTrans()">🌐 EN</button>
     <button class="mushaf-recite-btn" id="mushaf-recite-btn" onclick="mushafRecite()">▶ Recite</button>
   </div>
   <div class="mushaf-scroll" id="mushaf-scroll">
