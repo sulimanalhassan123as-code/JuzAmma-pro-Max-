@@ -1921,14 +1921,11 @@ body { font-family:'Poppins',sans-serif;
 .azan-details { display:none; margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,.08); }
 .azan-details.open { display:block; }
 
-.featured-carousel { display:flex; gap:10px; overflow-x:auto; scroll-snap-type:x mandatory; padding:0 14px; scrollbar-width:none; }
 .more-teaser { display:flex; align-items:center; justify-content:space-between; gap:10px; margin:14px 16px 0; padding:13px 16px; background:var(--card); border:1px solid var(--bdr); border-radius:15px; cursor:pointer; transition:transform .15s; }
 .more-teaser:active { transform:scale(.98); }
 .more-teaser-txt { font-size:.82rem; font-weight:700; color:var(--txt); }
 .more-teaser-sub { font-size:.68rem; color:var(--txt2); margin-top:1px; }
 .more-teaser-arrow { font-size:1.1rem; color:var(--gold); flex-shrink:0; }
-.featured-carousel::-webkit-scrollbar { display:none; }
-.featured-carousel .ccard { scroll-snap-align:start; min-width:44%; flex-shrink:0; }
 .carousel-dots { display:flex; gap:5px; justify-content:center; margin:8px 0 2px; }
 .carousel-dot { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.2); transition:background .2s, width .2s; }
 .carousel-dot.active { background:var(--p); width:16px; border-radius:4px; }
@@ -2038,37 +2035,6 @@ body { font-family:'Poppins',sans-serif;
     </div>
   </div>
 
-
-<!-- ══ FEATURED CAROUSEL ══ -->
-<div class="cgrid-wrap">
-  <div class="section-hd"><div class="cgrid-label">⭐ Featured</div></div>
-  <div class="featured-carousel" id="featured-carousel" onscroll="syncCarouselDots()">
-    <div class="ccard" onclick="goToView('list')" style="background:linear-gradient(135deg,#173d2e,#0d2419);border-color:rgba(201,168,76,.2)">
-      <div class="ccard-ico">📖</div>
-      <div class="ccard-t">Read &amp; Listen</div>
-      <div class="ccard-s">All 114 Surahs · Arabic + English</div>
-    </div>
-    <div class="ccard" onclick="goToView('memorize')" style="background:linear-gradient(135deg,#182238,#0d1420);border-color:rgba(201,168,76,.2)">
-      <div class="ccard-ico">🧠</div>
-      <div class="ccard-t">Memorize</div>
-      <div class="ccard-s">Reveal · Hide · Quiz</div>
-      <span class="ccard-badge badge-new">NEW</span>
-    </div>
-    <div class="ccard" onclick="goToView('ai')" style="background:linear-gradient(135deg,#1a4030,#0e2820);border-color:rgba(201,168,76,.2)">
-      <div class="ccard-ico">✨</div>
-      <div class="ccard-t">Islamic AI Guide</div>
-      <div class="ccard-s">Ask anything about Islam</div>
-      <span class="ccard-badge badge-ai">AI</span>
-    </div>
-    <div class="ccard" onclick="goToView('prophets')" style="background:linear-gradient(135deg,#17253f,#0e1728);border-color:rgba(201,168,76,.2)">
-      <div class="ccard-ico">🌟</div>
-      <div class="ccard-t">Prophets Stories</div>
-      <div class="ccard-s">25 Prophets · Videos</div>
-      <span class="ccard-badge badge-new">NEW</span>
-    </div>
-  </div>
-  <div class="carousel-dots" id="featured-dots"></div>
-</div>
 
 <div class="more-teaser" onclick="goToView('more')">
   <div>
@@ -4778,20 +4744,6 @@ function homeSearchGo(v) {
   }, 350);
 }
 
-function syncCarouselDots() {
-  const c = document.getElementById('featured-carousel');
-  if (!c) return;
-  const idx = Math.round(c.scrollLeft / (c.firstElementChild ? c.firstElementChild.offsetWidth + 10 : 1));
-  document.querySelectorAll('#featured-dots .carousel-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
-}
-function initFeaturedDots() {
-  const c = document.getElementById('featured-carousel');
-  const dotsWrap = document.getElementById('featured-dots');
-  if (!c || !dotsWrap) return;
-  const n = c.children.length;
-  dotsWrap.innerHTML = Array.from({length:n}, (_,i) => '<div class="carousel-dot' + (i===0?' active':'') + '"></div>').join('');
-}
-
 function toggleAzanDetails() {
   const d = document.getElementById('azan-details');
   const chev = document.getElementById('azan-b-chev');
@@ -4888,7 +4840,6 @@ function initApp() {
   updateResumeUI();
   renderHijriHeaderChip();
   startNextPrayerCountdown();
-  initFeaturedDots();
   const sb=localStorage.getItem('adminBanner'); if(sb) showBanner(sb);
   if (window.location.hash==='#admin') goToView('admin');
   else goToView('home');
