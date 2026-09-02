@@ -186,36 +186,37 @@ body { font-family:'Poppins',sans-serif;
 .arabic { font-family:'Amiri','Noto Naskh Arabic','Scheherazade New',serif; font-size:1.65rem; line-height:2.2; color:var(--txt); text-align:right; direction:rtl; font-feature-settings:'liga' 1,'calt' 1; }
 .trans { margin-top:8px; font-size:.81rem; color:var(--txt2); line-height:1.65; border-top:1px solid var(--bdr); padding-top:8px; }
 
-/* ═══════════ VERSE DETAIL MODAL — Mushaf (physical Quran page) style ═══════════ */
-.vd-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.88); z-index:998; align-items:center; justify-content:center; padding:16px; }
-.vd-modal.show { display:flex; animation:fadeIn .2s ease; }
-.vd-page { width:100%; max-width:440px; max-height:90vh; overflow-y:auto; background:linear-gradient(160deg,var(--card),var(--bg)); border:2px solid var(--gold); border-radius:20px; position:relative; box-shadow:0 20px 60px rgba(0,0,0,.5); }
-.vd-page::before, .vd-page::after { content:''; position:absolute; width:28px; height:28px; border:2px solid var(--gold); opacity:.55; pointer-events:none; }
-.vd-page::before { top:8px; left:8px; border-right:none; border-bottom:none; border-radius:6px 0 0 0; }
-.vd-page::after { bottom:8px; right:8px; border-left:none; border-top:none; border-radius:0 0 6px 0; }
-.vd-corner-tr { position:absolute; top:8px; right:8px; width:28px; height:28px; border:2px solid var(--gold); opacity:.55; border-left:none; border-bottom:none; border-radius:0 6px 0 0; pointer-events:none; }
-.vd-corner-bl { position:absolute; bottom:8px; left:8px; width:28px; height:28px; border:2px solid var(--gold); opacity:.55; border-right:none; border-top:none; border-radius:0 0 0 6px; pointer-events:none; }
-.vd-head { text-align:center; padding:22px 26px 14px; border-bottom:1px solid var(--bdr); }
-.vd-surah-ar { font-family:'Amiri','Noto Naskh Arabic','Scheherazade New',serif; font-size:1.3rem; color:var(--gold); margin-bottom:2px; }
-.vd-surah-en { font-size:.72rem; color:var(--txt2); letter-spacing:.5px; text-transform:uppercase; }
-.vd-close { position:absolute; top:14px; right:14px; width:30px; height:30px; border-radius:50%; background:var(--bdr); border:none; color:var(--txt); font-size:.9rem; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:2; }
-.vd-body { padding:26px 24px 20px; text-align:center; }
-.vd-medallion { display:inline-flex; align-items:center; justify-content:center; width:38px; height:38px; border-radius:50%; border:2px solid var(--gold); color:var(--gold); font-size:.8rem; font-weight:700; margin-bottom:16px; background:var(--gold2); }
-.vd-arabic { font-family:'Amiri','Noto Naskh Arabic','Scheherazade New',serif; font-size:2rem; line-height:2.35; color:var(--txt); direction:rtl; text-align:center; font-feature-settings:'liga' 1,'calt' 1; }
-.vd-divider { width:60px; height:1px; background:var(--gold); opacity:.4; margin:20px auto; }
-.vd-trans-label { font-size:.65rem; color:var(--gold); letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; font-weight:700; }
-.vd-trans { font-size:.95rem; color:var(--txt2); line-height:1.75; text-align:center; font-style:italic; }
-.vd-ref { margin-top:18px; font-size:.72rem; color:var(--txt2); opacity:.7; }
-.vd-actions { display:flex; align-items:center; justify-content:space-between; gap:6px; padding:16px 20px 22px; border-top:1px solid var(--bdr); }
-.vd-nav { width:38px; height:38px; border-radius:50%; background:var(--bdr); border:none; color:var(--txt); font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-.vd-nav:disabled { opacity:.3; cursor:default; }
-.vd-mid { display:flex; gap:8px; flex:1; justify-content:center; }
-.vd-act-btn { width:42px; height:42px; border-radius:50%; background:var(--bdr); border:none; color:var(--txt2); font-size:1.05rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
-.vd-act-btn.active { color:var(--gold); background:var(--gold2); border:1px solid var(--gold); }
-.vd-play-btn { width:52px; height:52px; border-radius:50%; background:var(--p); border:none; color:#fff; font-size:1.3rem; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 16px var(--pg); }
-.vd-play-btn.playing { background:var(--pd); }
+/* ═══════════ MUSHAF VIEW — full classic Quran-page reader ═══════════ */
+.mushaf-view { display:none; position:fixed; inset:0; z-index:997; background:#FBF1E2; flex-direction:column; }
+.mushaf-view.show { display:flex; animation:fadeIn .2s ease; }
+.mushaf-topbar { display:flex; align-items:center; justify-content:space-between; padding:14px 16px 8px; flex-shrink:0; }
+.mushaf-close-btn { width:38px; height:38px; border-radius:50%; background:#fff; border:1px solid rgba(0,0,0,.08); color:#2b1d0e; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+.mushaf-recite-btn { display:flex; align-items:center; gap:6px; background:#7a1f1f; color:#fff; border:none; border-radius:22px; padding:9px 18px; font-size:.85rem; font-weight:600; cursor:pointer; box-shadow:0 3px 10px rgba(122,31,31,.35); }
+.mushaf-recite-btn.playing { background:#5c1616; }
+.mushaf-scroll { flex:1; overflow-y:auto; padding:6px 22px 130px; -webkit-overflow-scrolling:touch; }
+.mushaf-banner { display:block; width:fit-content; margin:18px auto 28px; border:3px double #9c7a3d; border-radius:8px; padding:10px 30px; text-align:center; position:relative; }
+.mushaf-banner-ar { font-family:'Amiri','Noto Naskh Arabic','Scheherazade New',serif; font-size:1.4rem; color:#5c4319; }
+.mushaf-text { font-family:'Amiri','Noto Naskh Arabic','Scheherazade New',serif; font-size:1.55rem; line-height:2.75; color:#2b1d0e; direction:rtl; text-align:center; font-feature-settings:'liga' 1,'calt' 1; }
+.mushaf-verse { cursor:pointer; border-radius:6px; padding:1px 2px; transition:background .3s; }
+.mushaf-verse.playing { background:rgba(201,168,76,.35); }
+.mushaf-ayah-num { display:inline-flex; align-items:center; justify-content:center; width:1.5em; height:1.5em; border:1.3px solid #9c7a3d; border-radius:50%; font-size:.55em; color:#8a6a2f; margin:0 .2em; vertical-align:middle; position:relative; top:-2px; font-family:'Amiri',serif; }
+.mushaf-player { position:absolute; left:16px; right:16px; bottom:16px; background:#fff; border-radius:20px; box-shadow:0 8px 30px rgba(0,0,0,.18); padding:14px 16px 10px; }
+.mushaf-player-row { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.mushaf-player-info { text-align:left; }
+.mushaf-player-name { font-family:'Amiri','Noto Naskh Arabic',serif; font-size:.85rem; color:#8a7a63; direction:rtl; }
+.mushaf-player-ayah { font-size:.95rem; color:#2b1d0e; font-weight:700; margin-top:2px; }
+.mushaf-player-controls { display:flex; align-items:center; gap:10px; }
+.mushaf-ctrl-btn { width:34px; height:34px; border-radius:50%; background:#fff; border:1.3px solid #2b1d0e; color:#2b1d0e; font-size:.85rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.mushaf-ctrl-play { width:46px; height:46px; border-radius:50%; background:#7a1f1f; border:none; color:#fff; font-size:1.15rem; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(122,31,31,.4); }
+.mushaf-ctrl-close { width:30px; height:30px; border-radius:50%; background:#fff; border:1.3px solid rgba(0,0,0,.2); color:#666; font-size:.75rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.mushaf-progress-wrap { height:3px; background:rgba(0,0,0,.08); border-radius:2px; margin-top:10px; overflow:hidden; }
+.mushaf-progress-fill { height:100%; width:0%; background:#c0392b; transition:width .3s linear; }
 @media (max-width:400px) {
-  .vd-arabic { font-size:1.65rem; line-height:2.2; }
+  .mushaf-text { font-size:1.3rem; line-height:2.5; }
+  .mushaf-banner-ar { font-size:1.15rem; }
+}
+
+
   .vd-surah-ar { font-size:1.1rem; }
 }
 
@@ -3224,7 +3225,7 @@ function renderVerses(s) {
   let html=`<div class="bism-card"><div class="bism-ar">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div><div class="bism-en">In the name of Allah, the Most Gracious, the Most Merciful</div></div>`;
   s.verses.forEach((v,i) => {
     const isBm = bm.includes(i);
-    html += `<div class="vcard ${isBm?'bookmarked':''}" id="vc-${s.id}-${i}" onclick="openVerseDetail(${s.id},${i})">
+    html += `<div class="vcard ${isBm?'bookmarked':''}" id="vc-${s.id}-${i}" onclick="openMushaf(${s.id},${i})">
       <div class="vcard-top">
         <div class="vnum">${v.n||i+1}</div>
         <div class="vacts">
@@ -3253,71 +3254,91 @@ function toggleBm(e,sid,vidx) {
   }
   toast(bookmarks[sid].includes(vidx)?'🔖 Bookmarked':'Bookmark removed');
 }
-// ═══════════ VERSE DETAIL MODAL — physical Quran page style ═══════════
-let vdSid = null, vdVidx = null;
 
-function openVerseDetail(sid, vidx) {
-  vdSid = sid; vdVidx = vidx;
-  renderVerseDetail();
-  document.getElementById('vd-modal').classList.add('show');
-}
-function closeVerseDetail() {
-  document.getElementById('vd-modal').classList.remove('show');
-}
-function renderVerseDetail() {
-  const s = qData.find(x=>x.id===vdSid);
+// ═══════════ MUSHAF VIEW — classic full Quran-page reader ═══════════
+let mushafSid = null, mushafOpen = false, mushafSyncTimer = null;
+const ARABIC_DIGITS = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+function toArabicDigits(n) { return String(n).split('').map(c=> /[0-9]/.test(c) ? ARABIC_DIGITS[+c] : c).join(''); }
+
+function openMushaf(sid, vidx) {
+  const s = qData.find(x=>x.id===sid);
   if (!s) return;
-  const v = s.verses[vdVidx];
-  const bm = bookmarks[vdSid]||[];
-  const isBm = bm.includes(vdVidx);
-  document.getElementById('vd-surah-ar').innerText = s.ar || '';
-  document.getElementById('vd-surah-en').innerText = `${s.name} · ${s.id}`;
-  document.getElementById('vd-medallion').innerText = v.n || vdVidx+1;
-  document.getElementById('vd-arabic').innerText = v.a;
-  document.getElementById('vd-trans').innerText = getLangTrans(vdSid, vdVidx, v.e);
-  document.getElementById('vd-ref').innerText = `Surah ${s.name} — Verse ${v.n || vdVidx+1} of ${s.verses.length}`;
-  document.getElementById('vd-bm-btn').classList.toggle('active', isBm);
-  document.getElementById('vd-prev').disabled = vdVidx<=0;
-  document.getElementById('vd-next').disabled = vdVidx>=s.verses.length-1;
-  const playBtn = document.getElementById('vd-play-btn');
-  const isPlayingThis = isPlaying && curS===vdSid && curV===vdVidx;
-  playBtn.innerText = isPlayingThis ? '⏸' : '▶';
-  playBtn.classList.toggle('playing', isPlayingThis);
+  mushafSid = sid;
+  mushafOpen = true;
+  renderMushafPage(s);
+  document.getElementById('mushaf-view').classList.add('show');
+  syncMushafPlayer();
+  setTimeout(() => {
+    const el = document.getElementById(`mushaf-v-${vidx}`);
+    if (el) el.scrollIntoView({behavior:'smooth', block:'center'});
+  }, 80);
+  clearInterval(mushafSyncTimer);
+  mushafSyncTimer = setInterval(syncMushafPlayer, 350);
 }
-function vdPrev() {
-  if (vdVidx>0) { vdVidx--; renderVerseDetail(); }
+function closeMushafView() {
+  document.getElementById('mushaf-view').classList.remove('show');
+  mushafOpen = false;
+  clearInterval(mushafSyncTimer);
 }
-function vdNext() {
-  const s = qData.find(x=>x.id===vdSid);
-  if (s && vdVidx<s.verses.length-1) { vdVidx++; renderVerseDetail(); }
+function renderMushafPage(s) {
+  document.getElementById('mushaf-banner-ar').innerText = 'سُورَةُ ' + (s.ar || s.name);
+  let html = '';
+  if (s.id !== 9) {
+    html += `<span style="display:block;margin-bottom:18px;font-size:.9em;">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</span>`;
+  }
+  s.verses.forEach((v,i) => {
+    html += `<span class="mushaf-verse" id="mushaf-v-${i}" onclick="mushafJumpTo(${i})">${v.a}</span>` +
+            `<span class="mushaf-ayah-num">${toArabicDigits(v.n||i+1)}</span> `;
+  });
+  document.getElementById('mushaf-text').innerHTML = html;
 }
-function vdPlay() {
-  playV(vdSid, vdVidx);
-  setTimeout(renderVerseDetail, 150);
+function mushafJumpTo(idx) {
+  playV(mushafSid, idx);
+  syncMushafPlayer();
 }
-function vdBookmark() {
-  if (!bookmarks[vdSid]) bookmarks[vdSid]=[];
-  const arr=bookmarks[vdSid], idx=arr.indexOf(vdVidx);
-  if (idx>-1) arr.splice(idx,1); else arr.push(vdVidx);
-  localStorage.setItem('bookmarks',JSON.stringify(bookmarks));
-  renderVerseDetail();
-  const s = qData.find(x=>x.id===vdSid);
-  if (s) renderVerses(s);
-  toast(bookmarks[vdSid].includes(vdVidx)?'🔖 Bookmarked':'Bookmark removed');
-}
-function vdCopy() {
-  const s = qData.find(x=>x.id===vdSid);
+function syncMushafPlayer() {
+  if (!mushafOpen) return;
+  const s = qData.find(x=>x.id===mushafSid);
   if (!s) return;
-  const v = s.verses[vdVidx];
-  const txt = `${v.a}\n\n${getLangTrans(vdSid, vdVidx, v.e)}\n\n— Surah ${s.name}, Verse ${v.n||vdVidx+1}`;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(txt).then(()=>toast('📋 Copied to clipboard')).catch(()=>toast('Could not copy'));
-  } else {
-    toast('Could not copy');
+  const playingHere = isPlaying && curS===mushafSid;
+  document.getElementById('mushaf-player-name').innerText = s.ar || s.name;
+  document.getElementById('mushaf-player-ayah').innerText = playingHere ? `Ayah ${curV+1}` : 'Tap to recite';
+  const playBtn = document.getElementById('mushaf-play-btn');
+  playBtn.innerHTML = playingHere ? '⏸' : '▶';
+  const reciteBtn = document.getElementById('mushaf-recite-btn');
+  reciteBtn.innerHTML = playingHere ? '⏸ Reciting' : '▶ Recite';
+  reciteBtn.classList.toggle('playing', playingHere);
+  document.querySelectorAll('.mushaf-verse').forEach(el=>el.classList.remove('playing'));
+  if (playingHere) {
+    const el = document.getElementById(`mushaf-v-${curV}`);
+    if (el) el.classList.add('playing');
+  }
+  const fill = document.getElementById('mushaf-progress-fill');
+  if (playingHere && aud.duration) {
+    fill.style.width = (aud.currentTime/aud.duration*100) + '%';
+  } else if (!playingHere) {
+    fill.style.width = '0%';
   }
 }
-function vdShare() {
-  shareV({stopPropagation:()=>{}}, vdSid, vdVidx);
+function mushafPlayPause() {
+  if (isPlaying && curS===mushafSid) { togglePlay(); }
+  else { playV(mushafSid, curS===mushafSid ? curV : 0); }
+  setTimeout(syncMushafPlayer, 100);
+}
+function mushafNext() {
+  if (curS===mushafSid) { nextV(); }
+  else { playV(mushafSid, 0); }
+  setTimeout(()=>{ syncMushafPlayer(); const el=document.getElementById(`mushaf-v-${curV}`); if(el) el.scrollIntoView({behavior:'smooth',block:'center'}); }, 150);
+}
+function mushafPrev() {
+  if (curS===mushafSid) { prevV(); }
+  setTimeout(()=>{ syncMushafPlayer(); const el=document.getElementById(`mushaf-v-${curV}`); if(el) el.scrollIntoView({behavior:'smooth',block:'center'}); }, 150);
+}
+function mushafRecite() {
+  if (isPlaying && curS===mushafSid) { togglePlay(); setTimeout(syncMushafPlayer,100); return; }
+  const startV = (curS===mushafSid) ? curV : 0;
+  playV(mushafSid, startV);
+  setTimeout(syncMushafPlayer, 100);
 }
 
 function wrapTxt(ctx,text,maxW){const words=(text||'').split(' ');let line='',lines=[];for(const w of words){const t=line+w+' ';if(ctx.measureText(t).width>maxW&&line!==''){lines.push(line.trim());line=w+' ';}else{line=t;}}if(line.trim())lines.push(line.trim());return lines;}
@@ -8932,34 +8953,30 @@ function updateFsapBtn() {
   </div>
 </div>
 
-<!-- VERSE DETAIL MODAL — tap a verse to open a physical-Quran-page style view -->
-<div id="vd-modal" class="vd-modal" onclick="if(event.target===this) closeVerseDetail()">
-  <div class="vd-page">
-    <div class="vd-corner-tr"></div>
-    <div class="vd-corner-bl"></div>
-    <button class="vd-close" onclick="closeVerseDetail()">✕</button>
-    <div class="vd-head">
-      <div class="vd-surah-ar" id="vd-surah-ar"></div>
-      <div class="vd-surah-en" id="vd-surah-en"></div>
-    </div>
-    <div class="vd-body">
-      <div class="vd-medallion" id="vd-medallion"></div>
-      <div class="vd-arabic" id="vd-arabic"></div>
-      <div class="vd-divider"></div>
-      <div class="vd-trans-label">Translation</div>
-      <div class="vd-trans" id="vd-trans"></div>
-      <div class="vd-ref" id="vd-ref"></div>
-    </div>
-    <div class="vd-actions">
-      <button class="vd-nav" id="vd-prev" onclick="vdPrev()">←</button>
-      <div class="vd-mid">
-        <button class="vd-act-btn" id="vd-bm-btn" onclick="vdBookmark()">🔖</button>
-        <button class="vd-play-btn" id="vd-play-btn" onclick="vdPlay()">▶</button>
-        <button class="vd-act-btn" onclick="vdCopy()">📋</button>
-        <button class="vd-act-btn" onclick="vdShare()">📤</button>
+<!-- MUSHAF VIEW — tap a verse to open the classic full Quran-page reader -->
+<div id="mushaf-view" class="mushaf-view">
+  <div class="mushaf-topbar">
+    <button class="mushaf-close-btn" onclick="closeMushafView()">✕</button>
+    <button class="mushaf-recite-btn" id="mushaf-recite-btn" onclick="mushafRecite()">▶ Recite</button>
+  </div>
+  <div class="mushaf-scroll" id="mushaf-scroll">
+    <div class="mushaf-banner"><div class="mushaf-banner-ar" id="mushaf-banner-ar"></div></div>
+    <div class="mushaf-text" id="mushaf-text"></div>
+  </div>
+  <div class="mushaf-player" id="mushaf-player">
+    <div class="mushaf-player-row">
+      <div class="mushaf-player-info">
+        <div class="mushaf-player-name" id="mushaf-player-name"></div>
+        <div class="mushaf-player-ayah" id="mushaf-player-ayah"></div>
       </div>
-      <button class="vd-nav" id="vd-next" onclick="vdNext()">→</button>
+      <div class="mushaf-player-controls">
+        <button class="mushaf-ctrl-btn" onclick="mushafPrev()">⏮</button>
+        <button class="mushaf-ctrl-play" id="mushaf-play-btn" onclick="mushafPlayPause()">▶</button>
+        <button class="mushaf-ctrl-btn" onclick="mushafNext()">⏭</button>
+        <button class="mushaf-ctrl-close" onclick="closeMushafView()">✕</button>
+      </div>
     </div>
+    <div class="mushaf-progress-wrap"><div class="mushaf-progress-fill" id="mushaf-progress-fill"></div></div>
   </div>
 </div>
 
