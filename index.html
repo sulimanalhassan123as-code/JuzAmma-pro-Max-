@@ -1957,6 +1957,52 @@ body { font-family:'Poppins',sans-serif;
 .cgrid3 .ccard { padding:14px 8px; }
 .cgrid3 .ccard-t { font-size:.72rem; }
 .cgrid3 .ccard-s { font-size:.6rem; }
+/* ═══ HOME CARD SYSTEM (v65 design) ═══ */
+@keyframes homeCardIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+.home-card { margin:10px 14px 0; background:var(--card); border:1px solid var(--bdr); border-radius:16px; overflow:hidden; animation:homeCardIn .4s ease-out both; transition:transform .15s; }
+.home-card:active { transform:scale(.985); }
+.home-card.hc-stagger-1 { animation-delay:0s; }
+.home-card.hc-stagger-2 { animation-delay:.06s; }
+.home-card.hc-stagger-3 { animation-delay:.12s; }
+.home-card.hc-stagger-4 { animation-delay:.18s; }
+.home-card.hc-stagger-5 { animation-delay:.24s; }
+.home-card.hc-stagger-6 { animation-delay:.30s; }
+.home-card.hc-stagger-7 { animation-delay:.36s; }
+.home-card.hc-stagger-8 { animation-delay:.42s; }
+.home-card.hc-stagger-7a { animation-delay:.39s; }
+.home-card-pad { padding:14px 16px; }
+.home-card-title { font-size:.72rem; font-weight:700; color:var(--gold); text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px; }
+
+/* Install + Daily Ayah card */
+.install-card { margin:10px 14px 0; background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.04)); border:1px solid rgba(201,168,76,.25); border-radius:16px; padding:14px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap; animation:homeCardIn .4s ease-out both; animation-delay:.06s; }
+.install-pill { display:flex; align-items:center; gap:6px; padding:11px 20px; border-radius:24px; font-size:.78rem; font-weight:600; cursor:pointer; transition:transform .15s,box-shadow .2s; border:none; }
+.install-pill:active { transform:scale(.95); }
+.install-pill.install-btn { background:linear-gradient(135deg,#1f8f5f,#156b45); color:#fff; }
+.install-pill.daily-btn { background:linear-gradient(135deg,#c9a84c,#a07830); color:#fff; }
+.install-pill:hover { box-shadow:0 4px 14px rgba(0,0,0,.3); }
+
+/* Search card */
+.home-search-card { margin:10px 14px 0; background:var(--card); border:1px solid var(--bdr); border-radius:16px; padding:12px 14px; animation:homeCardIn .4s ease-out both; animation-delay:.12s; }
+.home-search-card .home-search-inner { background:rgba(0,0,0,.2); border:1px solid var(--bdr); border-radius:12px; padding:10px 12px; display:flex; align-items:center; gap:8px; }
+.home-search-card input { background:none; border:none; outline:none; color:var(--txt); font-size:.82rem; flex:1; }
+.home-search-card input::placeholder { color:var(--txt2); }
+
+/* Quick tools grid card */
+.quick-tools-card { margin:10px 14px 0; background:var(--card); border:1px solid var(--bdr); border-radius:16px; padding:14px; animation:homeCardIn .4s ease-out both; animation-delay:.30s; }
+.quick-tools-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.qt-tile { display:flex; flex-direction:column; align-items:center; gap:4px; padding:14px 6px; border-radius:13px; background:rgba(255,255,255,.04); border:1px solid var(--bdr); cursor:pointer; transition:transform .15s,background .2s; }
+.qt-tile:active { transform:scale(.92); background:rgba(255,255,255,.08); }
+.qt-ico { width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.25rem; box-shadow:0 3px 8px rgba(0,0,0,.25); }
+.qt-label { font-size:.68rem; font-weight:600; color:var(--txt); text-align:center; }
+
+/* Help/Privacy card */
+.help-priv-card { margin:10px 14px 18px; background:var(--card); border:1px solid var(--bdr); border-radius:16px; padding:12px; animation:homeCardIn .4s ease-out both; animation-delay:.42s; display:flex; gap:10px; }
+.hp-item { flex:1; display:flex; align-items:center; gap:8px; padding:12px; border-radius:12px; background:rgba(255,255,255,.04); cursor:pointer; transition:transform .15s,background .2s; }
+.hp-item:active { transform:scale(.95); }
+.hp-ico { font-size:1.3rem; }
+.hp-text { font-size:.74rem; font-weight:600; color:var(--txt); }
+.hp-sub { font-size:.6rem; color:var(--txt2); margin-top:1px; }
+
 </style>
 </head>
 <body>
@@ -1969,7 +2015,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="app-topbar">
       <div class="brand-mark"><span class="brand-ico">🕌</span><span class="brand-name">Naba Quran</span></div>
       <div class="topbar-actions">
-        <div class="topbar-btn" onclick="document.querySelector('.home-search input').focus()">🔍</div>
+        <div class="topbar-btn" onclick="document.querySelector('.home-search-card input').focus()">🔍</div>
         <div class="topbar-btn" onclick="goToView('hijri')">📅</div>
       </div>
     </div>
@@ -1987,84 +2033,166 @@ body { font-family:'Poppins',sans-serif;
       <div class="hstat"><div class="hstat-n" id="h-tasbih">0</div><div class="hstat-l">Tasbih</div></div>
       <div class="hstat"><div class="hstat-n" id="h-streak">0</div><div class="hstat-l">Streak</div></div>
     </div>
-    <div id="install-btn" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button onclick="installPWA()">📲 Install App</button><button onclick="requestDailyNotif()" style="background:linear-gradient(135deg,#c9a84c,#a07830);border:none;color:#fff;padding:10px 18px;border-radius:20px;font-size:.8rem;cursor:pointer;font-weight:600">🔔 Daily Ayah</button></div>
   </div>
 
-  <div class="home-search">
+  <!-- INSTALL + DAILY AYAH CARD -->
+  <div class="install-card hc-stagger-1">
+    <button class="install-pill install-btn" onclick="installPWA()">📲 Install App</button>
+    <button class="install-pill daily-btn" onclick="requestDailyNotif()">🔔 Daily Ayah</button>
+  </div>
+
+  <!-- SEARCH CARD -->
+  <div class="home-search-card hc-stagger-2">
     <div class="home-search-inner">
       <span class="home-search-ico">🔍</span>
       <input type="text" placeholder="Search Quran, Dua, Prophets, Stories…" oninput="homeSearchGo(this.value)" onfocus="if(!this.value)this.placeholder='Search Quran, Dua, Prophets, Stories…'">
     </div>
   </div>
 
-  <div class="row2">
-    <div id="resume-wrap" style="display:none">
-      <div class="resume-card compact" onclick="resumeRead()" style="background:linear-gradient(135deg,#173d2e,#0d2419)">
-        <div style="font-size:1.7rem">📖</div>
-        <div class="resume-body">
-          <div class="resume-lbl">Continue Reading</div>
-          <div class="resume-title" id="resume-title">—</div>
-          <div class="resume-sub" id="resume-sub">—</div>
+  <!-- CONTINUE READING CARD -->
+  <div id="resume-wrap" class="home-card hc-stagger-3" style="display:none;cursor:pointer" onclick="resumeRead()">
+    <div style="padding:14px 16px;display:flex;align-items:center;gap:13px;background:linear-gradient(135deg,#173d2e,#0d2419);border-radius:16px">
+      <div style="font-size:1.7rem">📖</div>
+      <div style="flex:1">
+        <div style="font-size:.66rem;color:var(--gold);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Continue Reading</div>
+        <div class="resume-title" id="resume-title" style="font-size:.9rem;font-weight:700;color:var(--txt);margin-top:2px">—</div>
+        <div class="resume-sub" id="resume-sub" style="font-size:.72rem;color:var(--txt2)">—</div>
+      </div>
+      <button style="background:var(--gold);color:#1a1a1a;border:none;padding:8px 14px;border-radius:12px;font-size:.74rem;font-weight:700;cursor:pointer">Resume →</button>
+    </div>
+  </div>
+
+  <!-- NEXT PRAYER CARD -->
+  <div class="home-card hc-stagger-4" onclick="loadPrayerTimes()" style="cursor:pointer">
+    <div class="home-card-pad">
+      <div class="home-card-title">🕐 Next Prayer</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div>
+          <div id="np-name" style="font-size:1.3rem;font-weight:800;color:var(--txt)">—</div>
+          <div id="np-time" style="font-size:.72rem;color:var(--txt2);margin-top:2px">at --:--</div>
         </div>
-        <button class="resume-btn">Resume →</button>
+        <div id="np-count" style="font-size:1.6rem;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums">--:--:--</div>
       </div>
-    </div>
-    <div class="np-card" onclick="loadPrayerTimes()">
-      <div class="np-lbl">🕐 Next Prayer</div>
-      <div class="np-name" id="np-name">—</div>
-      <div class="np-count" id="np-count">--:--:--</div>
-      <div class="np-time" id="np-time">at --:--</div>
-      <div class="np-mini-row">
-        <div class="np-mini-cell"><span class="np-mini-nm">Fajr</span><span class="np-mini-tm" id="pt-fajr">--:--</span></div>
-        <div class="np-mini-cell"><span class="np-mini-nm">Dhuhr</span><span class="np-mini-tm" id="pt-dhuhr">--:--</span></div>
-        <div class="np-mini-cell"><span class="np-mini-nm">Asr</span><span class="np-mini-tm" id="pt-asr">--:--</span></div>
-        <div class="np-mini-cell"><span class="np-mini-nm">Maghrib</span><span class="np-mini-tm" id="pt-maghrib">--:--</span></div>
-        <div class="np-mini-cell"><span class="np-mini-nm">Isha</span><span class="np-mini-tm" id="pt-isha">--:--</span></div>
+      <div style="display:flex;gap:6px;margin-top:12px;flex-wrap:wrap">
+        <div style="flex:1;min-width:0;text-align:center;padding:8px 4px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--bdr)">
+          <div style="font-size:.6rem;color:var(--txt2)">Fajr</div>
+          <div id="pt-fajr" style="font-size:.74rem;font-weight:700;color:var(--txt);margin-top:2px">--:--</div>
+        </div>
+        <div style="flex:1;min-width:0;text-align:center;padding:8px 4px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--bdr)">
+          <div style="font-size:.6rem;color:var(--txt2)">Dhuhr</div>
+          <div id="pt-dhuhr" style="font-size:.74rem;font-weight:700;color:var(--txt);margin-top:2px">--:--</div>
+        </div>
+        <div style="flex:1;min-width:0;text-align:center;padding:8px 4px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--bdr)">
+          <div style="font-size:.6rem;color:var(--txt2)">Asr</div>
+          <div id="pt-asr" style="font-size:.74rem;font-weight:700;color:var(--txt);margin-top:2px">--:--</div>
+        </div>
+        <div style="flex:1;min-width:0;text-align:center;padding:8px 4px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--bdr)">
+          <div style="font-size:.6rem;color:var(--txt2)">Maghrib</div>
+          <div id="pt-maghrib" style="font-size:.74rem;font-weight:700;color:var(--txt);margin-top:2px">--:--</div>
+        </div>
+        <div style="flex:1;min-width:0;text-align:center;padding:8px 4px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--bdr)">
+          <div style="font-size:.6rem;color:var(--txt2)">Isha</div>
+          <div id="pt-isha" style="font-size:.74rem;font-weight:700;color:var(--txt);margin-top:2px">--:--</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- AZAN SETTINGS PANEL (slim collapsible banner) -->
-  <div class="azan-banner">
-    <div class="azan-b-row" onclick="toggleAzanDetails()">
-      <div class="azan-b-ico">🔔</div>
-      <div class="azan-b-body">
-        <div class="azan-b-title">Azan Alarm</div>
-        <div class="azan-b-status" id="azan-b-status">All prayers · tap to set up</div>
+  <!-- AZAN ALARM CARD -->
+  <div class="home-card hc-stagger-5" style="padding:0">
+    <div class="azan-banner" style="margin:0;border-radius:16px">
+      <div class="azan-b-row" onclick="toggleAzanDetails()">
+        <div class="azan-b-ico">🔔</div>
+        <div class="azan-b-body">
+          <div class="azan-b-title">Azan Alarm</div>
+          <div class="azan-b-status" id="azan-b-status">All prayers · tap to set up</div>
+        </div>
+        <button class="azan-toggle" id="azan-toggle-btn" onclick="event.stopPropagation();toggleAzan()">🔕 OFF</button>
+        <div class="azan-b-chev" id="azan-b-chev">▼</div>
       </div>
-      <button class="azan-toggle" id="azan-toggle-btn" onclick="event.stopPropagation();toggleAzan()">🔕 OFF</button>
-      <div class="azan-b-chev" id="azan-b-chev">▼</div>
-    </div>
-    <div class="azan-details" id="azan-details">
-      <div class="azan-voices" id="azan-voices-grid"><!-- filled by JS --></div>
-      <div class="azan-preview" onclick="previewAzan()">
-        <span>▶️ Preview selected Azan</span>
-        <span style="font-size:.65rem;opacity:.5">tap to hear</span>
+      <div class="azan-details" id="azan-details">
+        <div class="azan-voices" id="azan-voices-grid"><!-- filled by JS --></div>
+        <div class="azan-preview" onclick="previewAzan()">
+          <span>▶️ Preview selected Azan</span>
+          <span style="font-size:.65rem;opacity:.5">tap to hear</span>
+        </div>
+        <button class="azan-test-btn" onclick="testAzanNow()">🔔 Test Ring Now</button>
+        <div class="azan-next-info" id="azan-next-info">Enable to get Azan at each prayer time</div>
       </div>
-      <button class="azan-test-btn" onclick="testAzanNow()">🔔 Test Ring Now</button>
-      <div class="azan-next-info" id="azan-next-info">Enable to get Azan at each prayer time</div>
     </div>
   </div>
 
-
-<div class="more-teaser" onclick="goToView('more')">
-  <div>
-    <div class="more-teaser-txt">⚡ 20+ More Tools & Guides</div>
-    <div class="more-teaser-sub">Duas, Qibla, Zakat, Hadith, Tracker & more</div>
+  <!-- QUICK TOOLS GRID CARD -->
+  <div class="quick-tools-card hc-stagger-6">
+    <div class="home-card-title">⚡ Quick Access</div>
+    <div class="quick-tools-grid">
+      <div class="qt-tile" onclick="goToView('tasbih')">
+        <div class="qt-ico" style="background:linear-gradient(135deg,#1a5e3a,#0d3d20)">📿</div>
+        <div class="qt-label">Tasbih</div>
+      </div>
+      <div class="qt-tile" onclick="goToView('dua')">
+        <div class="qt-ico" style="background:linear-gradient(135deg,#2a6b4a,#1a4d2e)">🤲</div>
+        <div class="qt-label">Duas</div>
+      </div>
+      <div class="qt-tile" onclick="goToView('qibla')">
+        <div class="qt-ico" style="background:linear-gradient(135deg,#6b5220,#4a3815)">🧭</div>
+        <div class="qt-label">Qibla</div>
+      </div>
+      <div class="qt-tile" onclick="goToView('prophets')">
+        <div class="qt-ico" style="background:linear-gradient(135deg,#4a2f6b,#2e1a45)">🌟</div>
+        <div class="qt-label">Prophets</div>
+      </div>
+      <div class="qt-tile" onclick="goToView('ai')">
+        <div class="qt-ico" style="background:linear-gradient(135deg,#1c3a6b,#0d2245)">✨</div>
+        <div class="qt-label">AI Guide</div>
+      </div>
+      <div class="qt-tile" onclick="goToView('night')">
+        <div class="qt-ico" style="background:linear-gradient(135deg,#182238,#0d1525)">🌙</div>
+        <div class="qt-label">Night Radio</div>
+      </div>
+    </div>
   </div>
-  <div class="more-teaser-arrow">→</div>
-</div>
 
-  <div class="home-sec" style="padding-bottom:18px">
-    <div class="home-sec-lbl">🌙 Daily Wisdom</div>
-    <div class="hadith-card">
+  <!-- MORE TOOLS TEASER -->
+  <div class="home-card hc-stagger-7" style="cursor:pointer" onclick="goToView('more')">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px">
+      <div>
+        <div style="font-size:.82rem;font-weight:700;color:var(--txt)">⚡ 20+ More Tools & Guides</div>
+        <div style="font-size:.68rem;color:var(--txt2);margin-top:1px">Zakat, Hadith, Calendar, Tracker & more</div>
+      </div>
+      <div style="font-size:1.1rem;color:var(--gold);flex-shrink:0">→</div>
+    </div>
+  </div>
+
+  <!-- DAILY WISDOM / HADITH CARD -->
+  <div class="home-card hc-stagger-7a" style="padding-bottom:2px">
+    <div style="padding:14px 16px">
+      <div class="home-card-title">🌙 Daily Wisdom</div>
       <div class="hadith-lbl">✦ Hadith of the Day</div>
       <div class="hadith-txt" id="daily-hadith">Loading…</div>
       <div class="hadith-src" id="daily-hadith-src"></div>
     </div>
   </div>
-</div>
 
+  <!-- HELP & PRIVACY CARD -->
+  <div class="help-priv-card hc-stagger-8">
+    <div class="hp-item" onclick="goToView('help')">
+      <div class="hp-ico">📞</div>
+      <div>
+        <div class="hp-text">Help & Contact</div>
+        <div class="hp-sub">Support · FAQ</div>
+      </div>
+    </div>
+    <div class="hp-item" onclick="goToView('privacy')">
+      <div class="hp-ico">🔒</div>
+      <div>
+        <div class="hp-text">Privacy Policy</div>
+        <div class="hp-sub">How we handle data</div>
+      </div>
+    </div>
+  </div>
+
+</div>
 <!-- ════════════════ SURAH LIST ════════════════ -->
 <div id="list-view" class="view">
   <div class="stickyh">
@@ -2811,7 +2939,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v64 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v66 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -2871,7 +2999,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v64 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v66 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -4903,7 +5031,7 @@ window.addEventListener('beforeinstallprompt', e=>{
   document.getElementById('install-btn').style.display='block';
 });
 window.addEventListener('appinstalled', ()=>{ document.getElementById('install-btn').style.display='none'; toast('📲 App installed!'); });
-function installPWA() { if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(r=>{if(r.outcome==='accepted')toast('📲 Installing…');deferredPrompt=null;});} }
+function installPWA() { if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(r=>{if(r.outcome==='accepted')toast('📲 Installing…');deferredPrompt=null;});} else { toast('📲 To install: tap your browser menu → Add to Home Screen'); } }
 
 // ================================================================
 // INIT — same style as working version
