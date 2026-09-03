@@ -234,6 +234,16 @@ body { font-family:'Poppins',sans-serif;
 .mushaf-ctrl-close { width:30px; height:30px; border-radius:50%; background:#fff; border:1.3px solid rgba(0,0,0,.2); color:#666; font-size:.75rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 .mushaf-trans-btn { display:flex; align-items:center; gap:5px; background:#fff; color:#2b1d0e; border:1px solid rgba(0,0,0,.12); border-radius:22px; padding:8px 14px; font-size:.78rem; font-weight:600; cursor:pointer; transition:all .2s; }
 .mushaf-trans-btn.active { background:#2b1d0e; color:#fff; border-color:#2b1d0e; }
+/* ── Continuous multi-surah page flow ── */
+.mushaf-surah-block { margin-bottom:6px; }
+.mushaf-surah-hdr { direction:ltr; text-align:center; padding:26px 10px 4px; }
+.mushaf-surah-block:first-child .mushaf-surah-hdr { padding-top:4px; }
+.mushaf-surah-chip { display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:50%; background:#7a1f1f; color:#fff; font-size:.72rem; font-weight:700; font-family:'Poppins',sans-serif; margin-bottom:8px; }
+.mushaf-surah-name-lat { font-family:'Poppins',sans-serif; font-size:1.3rem; font-weight:700; color:#2b1d0e; }
+.mushaf-surah-name-en { font-family:'Poppins',sans-serif; font-size:.82rem; color:#8a7a63; margin-top:2px; font-style:italic; }
+.mushaf-bism-box { display:block; width:fit-content; margin:16px auto 22px; border:3px double #9c7a3d; border-radius:8px; padding:10px 30px; text-align:center; font-family:'Amiri','Noto Naskh Arabic','Scheherazade New',serif; font-size:1.4rem; color:#5c4319; direction:rtl; }
+.mushaf-loading-more { text-align:center; padding:16px; color:#8a7a63; font-size:.78rem; }
+
 .mushaf-topbar { gap:8px; flex-wrap:nowrap; }
 /* Study mode: each verse becomes a block with translation below */
 .mushaf-text.study .mushaf-verse-block { display:block; margin-bottom:14px; padding:6px 4px; border-radius:8px; transition:background .3s; cursor:pointer; }
@@ -3447,7 +3457,7 @@ async function loadQ() {
   // Juz 30 (surahs 78-114), never the full Quran, no matter how long they
   // used the app. Fixed by switching to the single full-Quran endpoint
   // (/v1/quran/...) which returns all 114 surahs in one reliable call.
-  const cached = localStorage.getItem('quranProMax_v17');
+  const cached = localStorage.getItem('quranProMax_v18');
   if (cached) {
     try {
       const parsed = JSON.parse(cached);
@@ -3475,9 +3485,9 @@ async function loadQ() {
         }
         return { a: txt, e: enSurah.ayahs[ai] ? enSurah.ayahs[ai].text : '', n: a.numberInSurah };
       });
-      return { id: surah.number, name: surah.englishName, ar: surah.name, verses };
+      return { id: surah.number, name: surah.englishName, ar: surah.name, meaning: surah.englishNameTranslation||'', verses };
     });
-    localStorage.setItem('quranProMax_v17', JSON.stringify(qData));
+    localStorage.setItem('quranProMax_v18', JSON.stringify(qData));
     renderList(); populateMemSel();
   } catch(e) {
     document.getElementById('surah-container').innerHTML = '<div style="padding:40px;text-align:center;color:#ef4444">⚠️ No internet.<br><small>Please connect and reload.</small></div>';
@@ -3680,8 +3690,11 @@ function toggleBm(e,sid,vidx) {
   toast(bookmarks[sid].includes(vidx)?'🔖 Bookmarked':'Bookmark removed');
 }
 
-// ═══════════ MUSHAF VIEW — classic full Quran-page reader ═══════════
+// ═══════════ MUSHAF VIEW — continuous multi-surah page flow ═══════════
 let mushafSid = null, mushafOpen = false, mushafSyncTimer = null;
+let mushafLoadedSids = [];   // ascending list of surahs currently rendered
+let mushafLoading = false;   // guard against duplicate append/prepend
+let mushafScrollBound = false;
 const ARABIC_DIGITS = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
 function toArabicDigits(n) { return String(n).split('').map(c=> /[0-9]/.test(c) ? ARABIC_DIGITS[+c] : c).join(''); }
 
@@ -3690,13 +3703,15 @@ function openMushaf(sid, vidx) {
   if (!s) return;
   mushafSid = sid;
   mushafOpen = true;
-  renderMushafPage(s);
+  mushafLoadedSids = [sid];
+  document.getElementById('mushaf-text').innerHTML = renderMushafSurahBlock(s);
   document.getElementById('mushaf-view').classList.add('show');
+  bindMushafScroll();
   syncMushafPlayer();
   setTimeout(() => {
-    const el = document.getElementById(`mushaf-v-${vidx}`);
-    if (el) el.scrollIntoView({behavior:'smooth', block:'center'});
-  }, 80);
+    const el = document.getElementById(`mushaf-v-${sid}-${vidx}`);
+    if (el) el.scrollIntoView({behavior:'auto', block:'center'});
+  }, 60);
   clearInterval(mushafSyncTimer);
   mushafSyncTimer = setInterval(syncMushafPlayer, 350);
 }
@@ -3706,51 +3721,123 @@ function closeMushafView() {
   clearInterval(mushafSyncTimer);
 }
 let mushafShowTrans = false;
-function renderMushafPage(s) {
-  const arName = s.ar || s.name;
-  document.getElementById('mushaf-banner-ar').innerText = arName.includes('سورة') ? arName : 'سُورَةُ ' + arName;
+
+function renderMushafSurahBlock(s) {
+  const meaning = s.meaning ? `<div class="mushaf-surah-name-en">${s.meaning}</div>` : '';
+  const arName = (s.ar||s.name).includes('سورة') ? (s.ar||s.name) : 'سُورَةُ ' + (s.ar||s.name);
   const showBismillah = (s.id !== 9 && s.id !== 1);
-  const bismillahHtml = showBismillah ? `<span style="display:block;margin-bottom:18px;font-size:.9em;">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</span>` : '';
-  let html = bismillahHtml;
-  const textEl = document.getElementById('mushaf-text');
-  
+  const bismillahHtml = showBismillah ? `<div class="mushaf-bism-box">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>` : '';
+  let versesHtml;
   if (mushafShowTrans) {
-    // Study mode: each verse as a block with Arabic + English translation
-    textEl.classList.add('study');
-    s.verses.forEach((v,i) => {
-      html += `<span class="mushaf-verse-block" id="mushaf-v-${i}" onclick="mushafJumpTo(${i})">` +
-              `<span class="mushaf-verse-ar">${v.a} <span class="mushaf-ayah-num">${toArabicDigits(v.n||i+1)}</span></span>` +
-              `<span class="mushaf-verse-trans">${v.e || ''}</span>` +
-              `</span>`;
-    });
+    versesHtml = s.verses.map((v,i) =>
+      `<span class="mushaf-verse-block" id="mushaf-v-${s.id}-${i}" onclick="mushafJumpTo(${s.id},${i})">` +
+      `<span class="mushaf-verse-ar">${v.a} <span class="mushaf-ayah-num">${toArabicDigits(v.n||i+1)}</span></span>` +
+      `<span class="mushaf-verse-trans">${v.e || ''}</span>` +
+      `</span>`
+    ).join('');
   } else {
-    // Pure Mushaf mode: continuous flowing Arabic
-    textEl.classList.remove('study');
-    s.verses.forEach((v,i) => {
-      html += `<span class="mushaf-verse" id="mushaf-v-${i}" onclick="mushafJumpTo(${i})">${v.a}</span>` +
-              `<span class="mushaf-ayah-num">${toArabicDigits(v.n||i+1)}</span> `;
-    });
+    versesHtml = s.verses.map((v,i) =>
+      `<span class="mushaf-verse" id="mushaf-v-${s.id}-${i}" onclick="mushafJumpTo(${s.id},${i})">${v.a}</span>` +
+      `<span class="mushaf-ayah-num">${toArabicDigits(v.n||i+1)}</span> `
+    ).join('');
   }
-  textEl.innerHTML = html;
+  return `<div class="mushaf-surah-block" id="mushaf-surah-${s.id}" data-sid="${s.id}">` +
+         `<div class="mushaf-surah-hdr"><div class="mushaf-surah-chip">${s.id}</div><div class="mushaf-surah-name-lat">${s.name}</div>${meaning}</div>` +
+         `<div class="mushaf-banner-ar" style="text-align:center;font-family:'Amiri','Noto Naskh Arabic',serif;color:#8a6a2f;font-size:.95rem;margin-bottom:4px;direction:rtl">${arName}</div>` +
+         bismillahHtml +
+         `<div class="mushaf-text ${mushafShowTrans?'study':''}">${versesHtml}</div>` +
+         `</div>`;
 }
+
+function bindMushafScroll() {
+  if (mushafScrollBound) return;
+  mushafScrollBound = true;
+  const scr = document.getElementById('mushaf-scroll');
+  scr.addEventListener('scroll', onMushafScroll, {passive:true});
+}
+
+function onMushafScroll() {
+  if (!mushafOpen || mushafLoading) return;
+  const scr = document.getElementById('mushaf-scroll');
+  // Check "near top" first (tighter threshold) — prevents both firing at once on short surahs
+  if (scr.scrollTop < 100 && mushafLoadedSids[0] > 1) {
+    prependPrevSurah();
+  } else if (scr.scrollHeight - scr.scrollTop - scr.clientHeight < 700) {
+    appendNextSurah();
+  }
+  updateActiveMushafSurah();
+}
+
+function appendNextSurah() {
+  const lastSid = mushafLoadedSids[mushafLoadedSids.length-1];
+  if (lastSid >= 114) return;
+  const next = qData.find(x=>x.id===lastSid+1);
+  if (!next) return;
+  mushafLoading = true;
+  mushafLoadedSids.push(next.id);
+  document.getElementById('mushaf-text').insertAdjacentHTML('beforeend', renderMushafSurahBlock(next));
+  mushafLoading = false;
+}
+
+function prependPrevSurah() {
+  const firstSid = mushafLoadedSids[0];
+  if (firstSid <= 1) return;
+  const prev = qData.find(x=>x.id===firstSid-1);
+  if (!prev) return;
+  mushafLoading = true;
+  mushafLoadedSids.unshift(prev.id);
+  const scr = document.getElementById('mushaf-scroll');
+  const container = document.getElementById('mushaf-text');
+  const heightBefore = container.scrollHeight;
+  container.insertAdjacentHTML('afterbegin', renderMushafSurahBlock(prev));
+  const heightAfter = container.scrollHeight;
+  scr.scrollTop += (heightAfter - heightBefore);
+  mushafLoading = false;
+}
+
+function ensureSurahLoaded(sid) {
+  if (mushafLoadedSids.includes(sid)) return;
+  // Load forward or backward until sid is included (small gaps only — normal for next/prev)
+  let guard = 0;
+  while (sid > mushafLoadedSids[mushafLoadedSids.length-1] && guard < 5) { appendNextSurah(); guard++; }
+  guard = 0;
+  while (sid < mushafLoadedSids[0] && guard < 5) { prependPrevSurah(); guard++; }
+}
+
+function updateActiveMushafSurah() {
+  let active = mushafLoadedSids[0];
+  for (const sid of mushafLoadedSids) {
+    const el = document.getElementById(`mushaf-surah-${sid}`);
+    if (el && el.getBoundingClientRect().top <= 130) active = sid;
+  }
+  mushafSid = active;
+}
+
 function toggleMushafTrans() {
   mushafShowTrans = !mushafShowTrans;
   const btn = document.getElementById('mushaf-trans-btn');
   btn.classList.toggle('active', mushafShowTrans);
   btn.innerText = mushafShowTrans ? '🌐 ON' : '🌐 EN';
-  const s = qData.find(x=>x.id===mushafSid);
-  if (s) renderMushafPage(s);
+  // Preserve reading position: remember the currently active surah, re-render all loaded blocks
+  const anchorSid = mushafSid;
+  const html = mushafLoadedSids.map(sid => renderMushafSurahBlock(qData.find(x=>x.id===sid))).join('');
+  document.getElementById('mushaf-text').innerHTML = html;
+  const el = document.getElementById(`mushaf-surah-${anchorSid}`);
+  if (el) el.scrollIntoView({behavior:'auto', block:'start'});
   syncMushafPlayer();
 }
-function mushafJumpTo(idx) {
-  playV(mushafSid, idx);
+
+function mushafJumpTo(sid, idx) {
+  playV(sid, idx);
   syncMushafPlayer();
 }
+
 function syncMushafPlayer() {
   if (!mushafOpen) return;
-  const s = qData.find(x=>x.id===mushafSid);
+  const displaySid = isPlaying ? curS : mushafSid;
+  const s = qData.find(x=>x.id===displaySid);
   if (!s) return;
-  const playingHere = isPlaying && curS===mushafSid;
+  const playingHere = isPlaying;
   document.getElementById('mushaf-player-name').innerText = s.ar || s.name;
   document.getElementById('mushaf-player-ayah').innerText = playingHere ? `Ayah ${curV+1}` : 'Tap to recite';
   const playBtn = document.getElementById('mushaf-play-btn');
@@ -3760,7 +3847,7 @@ function syncMushafPlayer() {
   reciteBtn.classList.toggle('playing', playingHere);
   document.querySelectorAll('.mushaf-verse, .mushaf-verse-block').forEach(el=>el.classList.remove('playing'));
   if (playingHere) {
-    const el = document.getElementById(`mushaf-v-${curV}`);
+    const el = document.getElementById(`mushaf-v-${curS}-${curV}`);
     if (el) el.classList.add('playing');
   }
   const fill = document.getElementById('mushaf-progress-fill');
@@ -3771,21 +3858,30 @@ function syncMushafPlayer() {
   }
 }
 function mushafPlayPause() {
-  if (isPlaying && curS===mushafSid) { togglePlay(); }
-  else { playV(mushafSid, curS===mushafSid ? curV : 0); }
+  if (isPlaying) { togglePlay(); }
+  else { playV(mushafSid, (curS===mushafSid) ? curV : 0); }
   setTimeout(syncMushafPlayer, 100);
 }
 function mushafNext() {
-  if (curS===mushafSid) { nextV(); }
-  else { playV(mushafSid, 0); }
-  setTimeout(()=>{ syncMushafPlayer(); const el=document.getElementById(`mushaf-v-${curV}`); if(el) el.scrollIntoView({behavior:'smooth',block:'center'}); }, 150);
+  if (isPlaying) { nextV(); } else { playV(mushafSid, 0); }
+  setTimeout(()=>{
+    ensureSurahLoaded(curS);
+    syncMushafPlayer();
+    const el=document.getElementById(`mushaf-v-${curS}-${curV}`);
+    if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
+  }, 150);
 }
 function mushafPrev() {
-  if (curS===mushafSid) { prevV(); }
-  setTimeout(()=>{ syncMushafPlayer(); const el=document.getElementById(`mushaf-v-${curV}`); if(el) el.scrollIntoView({behavior:'smooth',block:'center'}); }, 150);
+  if (isPlaying) { prevV(); }
+  setTimeout(()=>{
+    ensureSurahLoaded(curS);
+    syncMushafPlayer();
+    const el=document.getElementById(`mushaf-v-${curS}-${curV}`);
+    if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
+  }, 150);
 }
 function mushafRecite() {
-  if (isPlaying && curS===mushafSid) { togglePlay(); setTimeout(syncMushafPlayer,100); return; }
+  if (isPlaying) { togglePlay(); setTimeout(syncMushafPlayer,100); return; }
   const startV = (curS===mushafSid) ? curV : 0;
   playV(mushafSid, startV);
   setTimeout(syncMushafPlayer, 100);
@@ -9520,8 +9616,8 @@ function updateFsapBtn() {
     <button class="mushaf-recite-btn" id="mushaf-recite-btn" onclick="mushafRecite()">▶ Recite</button>
   </div>
   <div class="mushaf-scroll" id="mushaf-scroll">
-    <div class="mushaf-banner"><div class="mushaf-banner-ar" id="mushaf-banner-ar"></div></div>
     <div class="mushaf-text" id="mushaf-text"></div>
+    <div class="mushaf-loading-more" id="mushaf-bottom-space">&nbsp;</div>
   </div>
   <div class="mushaf-player" id="mushaf-player">
     <div class="mushaf-player-row">
