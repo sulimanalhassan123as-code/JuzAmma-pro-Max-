@@ -3448,6 +3448,16 @@ function showInAppBanner() {
 // ================================================================
 // QURAN
 // ================================================================
+function fetchWithRetry(url, tries=3, delayMs=800) {
+  return fetch(url).then(r => {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  }).catch(err => {
+    if (tries <= 1) throw err;
+    return new Promise(res => setTimeout(res, delayMs)).then(() => fetchWithRetry(url, tries - 1, delayMs * 2));
+  });
+}
+
 async function loadQ() {
   // v8: earlier versions tried to batch-fetch surahs 1-77 via a comma-
   // separated surah list (e.g. /v1/surah/1,2,3.../quran-uthmani), but the
@@ -3470,8 +3480,8 @@ async function loadQ() {
   document.getElementById('surah-container').innerHTML = '<div style="padding:40px;text-align:center;color:var(--txt2)">⏳ Loading the complete Quran…<br><small>All 114 surahs — first load only</small></div>';
   try {
     const [arRes, enRes] = await Promise.all([
-      fetch('https://api.alquran.cloud/v1/quran/quran-uthmani').then(r=>r.json()),
-      fetch('https://api.alquran.cloud/v1/quran/en.sahih').then(r=>r.json())
+      fetchWithRetry('https://api.alquran.cloud/v1/quran/quran-uthmani'),
+      fetchWithRetry('https://api.alquran.cloud/v1/quran/en.sahih')
     ]);
     const arSurahs = arRes.data.surahs;
     const enSurahs = enRes.data.surahs;
@@ -3489,7 +3499,7 @@ async function loadQ() {
     localStorage.setItem('quranProMax_v18', JSON.stringify(qData));
     renderList(); populateMemSel();
   } catch(e) {
-    document.getElementById('surah-container').innerHTML = '<div style="padding:40px;text-align:center;color:#ef4444">⚠️ No internet.<br><small>Please connect and reload.</small></div>';
+    document.getElementById('surah-container').innerHTML = '<div style="padding:40px;text-align:center;color:#ef4444">⚠️ Couldn\'t load the Quran.<br><small>Check your connection and try again.</small><br><button onclick="loadQ()" style="margin-top:14px;padding:10px 22px;border-radius:20px;border:none;background:#d4a342;color:#1a1a1a;font-weight:600;cursor:pointer">🔄 Retry</button></div>';
   }
 }
 
