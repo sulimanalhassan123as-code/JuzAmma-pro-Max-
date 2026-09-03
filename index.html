@@ -1970,6 +1970,8 @@ body { font-family:'Poppins',sans-serif;
 .home-card.hc-stagger-7 { animation-delay:.36s; }
 .home-card.hc-stagger-8 { animation-delay:.42s; }
 .home-card.hc-stagger-7a { animation-delay:.39s; }
+.pt-pill.is-next { background:rgba(201,168,76,.16) !important; border-color:rgba(201,168,76,.5) !important; }
+.pt-pill.is-next div { color:var(--gold) !important; }
 .home-card-pad { padding:14px 16px; }
 .home-card-title { font-size:.72rem; font-weight:700; color:var(--gold); text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px; }
 
@@ -2037,7 +2039,7 @@ body { font-family:'Poppins',sans-serif;
 
   <!-- INSTALL + DAILY AYAH CARD -->
   <div class="install-card hc-stagger-1">
-    <button class="install-pill install-btn" onclick="installPWA()">📲 Install App</button>
+    <button class="install-pill install-btn" id="install-btn" onclick="installPWA()">📲 Install App</button>
     <button class="install-pill daily-btn" onclick="requestDailyNotif()">🔔 Daily Ayah</button>
   </div>
 
@@ -2063,7 +2065,7 @@ body { font-family:'Poppins',sans-serif;
   </div>
 
   <!-- NEXT PRAYER CARD -->
-  <div class="home-card hc-stagger-4" onclick="loadPrayerTimes()" style="cursor:pointer">
+  <div class="home-card hc-stagger-4" id="next-prayer-card" onclick="loadPrayerTimes()" style="cursor:pointer">
     <div class="home-card-pad">
       <div class="home-card-title">🕐 Next Prayer</div>
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
@@ -2074,23 +2076,23 @@ body { font-family:'Poppins',sans-serif;
         <div id="np-count" style="font-size:1.6rem;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums">--:--:--</div>
       </div>
       <div style="display:flex;gap:6px;margin-top:12px;flex-wrap:wrap">
-        <div style="flex:1;min-width:0;text-align:center;padding:8px 4px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--bdr)">
+        <div class="pt-pill" data-prayer="Fajr" style="flex:1;min-width:0;text-align:center;padding:8px 4px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--bdr);transition:background .2s,border-color .2s">
           <div style="font-size:.6rem;color:var(--txt2)">Fajr</div>
           <div id="pt-fajr" style="font-size:.74rem;font-weight:700;color:var(--txt);margin-top:2px">--:--</div>
         </div>
-        <div style="flex:1;min-width:0;text-align:center;padding:8px 4px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--bdr)">
+        <div class="pt-pill" data-prayer="Dhuhr" style="flex:1;min-width:0;text-align:center;padding:8px 4px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--bdr);transition:background .2s,border-color .2s">
           <div style="font-size:.6rem;color:var(--txt2)">Dhuhr</div>
           <div id="pt-dhuhr" style="font-size:.74rem;font-weight:700;color:var(--txt);margin-top:2px">--:--</div>
         </div>
-        <div style="flex:1;min-width:0;text-align:center;padding:8px 4px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--bdr)">
+        <div class="pt-pill" data-prayer="Asr" style="flex:1;min-width:0;text-align:center;padding:8px 4px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--bdr);transition:background .2s,border-color .2s">
           <div style="font-size:.6rem;color:var(--txt2)">Asr</div>
           <div id="pt-asr" style="font-size:.74rem;font-weight:700;color:var(--txt);margin-top:2px">--:--</div>
         </div>
-        <div style="flex:1;min-width:0;text-align:center;padding:8px 4px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--bdr)">
+        <div class="pt-pill" data-prayer="Maghrib" style="flex:1;min-width:0;text-align:center;padding:8px 4px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--bdr);transition:background .2s,border-color .2s">
           <div style="font-size:.6rem;color:var(--txt2)">Maghrib</div>
           <div id="pt-maghrib" style="font-size:.74rem;font-weight:700;color:var(--txt);margin-top:2px">--:--</div>
         </div>
-        <div style="flex:1;min-width:0;text-align:center;padding:8px 4px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--bdr)">
+        <div class="pt-pill" data-prayer="Isha" style="flex:1;min-width:0;text-align:center;padding:8px 4px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--bdr);transition:background .2s,border-color .2s">
           <div style="font-size:.6rem;color:var(--txt2)">Isha</div>
           <div id="pt-isha" style="font-size:.74rem;font-weight:700;color:var(--txt);margin-top:2px">--:--</div>
         </div>
@@ -2939,7 +2941,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v66 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v67 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -2999,7 +3001,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v66 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v67 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -4801,13 +4803,12 @@ async function loadPrayerTimes(){
     document.getElementById('pt-asr').textContent=t.Asr;
     document.getElementById('pt-maghrib').textContent=t.Maghrib;
     document.getElementById('pt-isha').textContent=t.Isha;
-    // Highlight the upcoming prayer in the mini row
+    // Highlight the upcoming prayer pill
     const now=new Date();
-    const miniCells = { Fajr:'pt-fajr', Dhuhr:'pt-dhuhr', Asr:'pt-asr', Maghrib:'pt-maghrib', Isha:'pt-isha' };
-    document.querySelectorAll('.np-mini-cell').forEach(c => c.classList.remove('is-next'));
+    document.querySelectorAll('.pt-pill').forEach(c => c.classList.remove('is-next'));
     for(const [nm,tm] of [['Fajr',t.Fajr],['Dhuhr',t.Dhuhr],['Asr',t.Asr],['Maghrib',t.Maghrib],['Isha',t.Isha]]){
       const[h,m]=tm.split(':').map(Number);const pt=new Date();pt.setHours(h,m,0,0);
-      if(pt>now){ const cellEl=document.getElementById(miniCells[nm]); if(cellEl) cellEl.closest('.np-mini-cell').classList.add('is-next'); break; }
+      if(pt>now){ const pillEl=document.querySelector('.pt-pill[data-prayer="'+nm+'"]'); if(pillEl) pillEl.classList.add('is-next'); break; }
     }
     // Save prayer times to localStorage for alarm persistence
     localStorage.setItem('prayerTimes', JSON.stringify({Fajr:t.Fajr,Dhuhr:t.Dhuhr,Asr:t.Asr,Maghrib:t.Maghrib,Isha:t.Isha}));
@@ -4823,14 +4824,17 @@ async function loadPrayerTimes(){
     if(azanEnabled) syncAlarmsToNative();
   }catch(e){
     // Add a clickable prompt on the next-prayer card
-    const pw=document.querySelector('.np-card');
-    if(pw && !document.getElementById('pt-enable-btn')){
-      const btn=document.createElement('button');
-      btn.id='pt-enable-btn';
-      btn.textContent='📍 Tap to Enable Prayer Times';
-      btn.style.cssText='display:block;width:100%;margin-top:8px;padding:8px;background:var(--p);color:#fff;border:none;border-radius:10px;font-family:Poppins,sans-serif;font-size:.7rem;font-weight:600;cursor:pointer;position:relative;z-index:1;';
-      btn.onclick=(ev)=>{ev.stopPropagation();btn.remove();loadPrayerTimes();};
-      pw.appendChild(btn);
+    const pw=document.getElementById('next-prayer-card');
+    if(pw){
+      const pad=pw.querySelector('.home-card-pad');
+      if(pad && !document.getElementById('pt-enable-btn')){
+        const btn=document.createElement('button');
+        btn.id='pt-enable-btn';
+        btn.textContent='📍 Tap to Enable Prayer Times';
+        btn.style.cssText='display:block;width:100%;margin-top:10px;padding:10px;background:var(--gold);color:#1a1a1a;border:none;border-radius:12px;font-family:Poppins,sans-serif;font-size:.72rem;font-weight:700;cursor:pointer;position:relative;z-index:1;';
+        btn.onclick=(ev)=>{ev.stopPropagation();btn.remove();loadPrayerTimes();};
+        pad.appendChild(btn);
+      }
     }
   }
 }
@@ -5028,9 +5032,9 @@ function toast(msg) { const t=document.getElementById('toast-el'); t.innerText=m
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', e=>{
   e.preventDefault(); deferredPrompt=e;
-  document.getElementById('install-btn').style.display='block';
+  const ib=document.getElementById('install-btn'); if(ib) ib.style.display='flex';
 });
-window.addEventListener('appinstalled', ()=>{ document.getElementById('install-btn').style.display='none'; toast('📲 App installed!'); });
+window.addEventListener('appinstalled', ()=>{ const ib=document.getElementById('install-btn'); if(ib) ib.style.display='none'; toast('📲 App installed!'); });
 function installPWA() { if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(r=>{if(r.outcome==='accepted')toast('📲 Installing…');deferredPrompt=null;});} else { toast('📲 To install: tap your browser menu → Add to Home Screen'); } }
 
 // ================================================================
