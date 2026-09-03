@@ -1903,6 +1903,31 @@ body { font-family:'Poppins',sans-serif;
 .np-mini-tm { font-size:.62rem; color:#fff; font-weight:700; font-variant-numeric:tabular-nums; }
 .np-mini-cell.is-next .np-mini-nm, .np-mini-cell.is-next .np-mini-tm { color:#e3c478; }
 
+/* ═══ HELP & CONTACT / PRIVACY ═══ */
+.help-view { max-width:480px; margin:0 auto; padding:16px; }
+.help-card { background:var(--card); border:1px solid var(--bdr); border-radius:16px; padding:20px; margin-bottom:14px; }
+.help-card h3 { font-size:.95rem; font-weight:700; color:var(--txt); margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+.help-card p { font-size:.8rem; color:var(--txt2); line-height:1.6; margin-bottom:8px; }
+.help-contact-row { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--bdr); }
+.help-contact-row:last-child { border-bottom:none; }
+.help-contact-ico { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
+.help-contact-info { flex:1; }
+.help-contact-name { font-size:.82rem; font-weight:700; color:var(--txt); }
+.help-contact-detail { font-size:.72rem; color:var(--txt2); margin-top:2px; }
+.help-contact-action { font-size:.72rem; font-weight:600; color:var(--p); padding:6px 14px; border:1.5px solid var(--p); border-radius:20px; cursor:pointer; flex-shrink:0; }
+.help-contact-action:active { background:var(--p); color:#fff; }
+.help-faq-item { padding:12px 0; border-bottom:1px solid var(--bdr); cursor:pointer; }
+.help-faq-item:last-child { border-bottom:none; }
+.help-faq-q { font-size:.8rem; font-weight:600; color:var(--txt); display:flex; justify-content:space-between; align-items:center; }
+.help-faq-a { font-size:.74rem; color:var(--txt2); line-height:1.5; margin-top:6px; display:none; }
+.help-faq-item.open .help-faq-a { display:block; }
+.help-faq-item.open .help-faq-chev { transform:rotate(180deg); }
+.help-faq-chev { font-size:.7rem; transition:transform .2s; color:var(--txt2); }
+.privacy-view { max-width:480px; margin:0 auto; padding:16px; }
+.privacy-sec { background:var(--card); border:1px solid var(--bdr); border-radius:16px; padding:18px; margin-bottom:14px; }
+.privacy-sec h3 { font-size:.88rem; font-weight:700; color:var(--txt); margin-bottom:8px; }
+.privacy-sec p { font-size:.76rem; color:var(--txt2); line-height:1.6; margin-bottom:6px; }
+
 .azan-banner { background:linear-gradient(135deg,#0d2137,#1a3a5c); border:1px solid rgba(201,168,76,.4); border-radius:16px; margin:6px 14px 16px; padding:14px 16px; box-sizing:border-box; position:relative; z-index:2; }
 .azan-b-row { display:flex; align-items:center; gap:12px; cursor:pointer; }
 .azan-b-ico { font-size:1.5rem; flex-shrink:0; }
@@ -2708,11 +2733,148 @@ body { font-family:'Poppins',sans-serif;
       <div class="ccard-t">Hajj & Umrah</div>
       <div class="ccard-s">Step-by-step guide</div>
     </div>
+    <div class="ccard" onclick="goToView('help')">
+      <div class="ccard-ico ico-sq" style="background:#1c3a6b">📞</div>
+      <div class="ccard-t">Help & Contact</div>
+      <div class="ccard-s">Support · FAQ</div>
+    </div>
+    <div class="ccard" onclick="goToView('privacy')">
+      <div class="ccard-ico ico-sq" style="background:#1f4a35">🔒</div>
+      <div class="ccard-t">Privacy Policy</div>
+      <div class="ccard-s">How we handle data</div>
+    </div>
     </div>
   </div>
   <div style="height:20px"></div>
 </div>
 
+
+<!-- ════════════════ HELP & CONTACT ════════════════ -->
+<div id="help-view" class="view">
+  <div class="stickyh">
+    <div class="hrow">
+      <button class="btn-back" onclick="goToView('more')">← More</button>
+      <div class="htitle">📞 Help & Contact</div>
+      <div style="width:50px"></div>
+    </div>
+  </div>
+  <div class="help-view">
+    <div class="help-card">
+      <h3>🤲 Need Help?</h3>
+      <p>If you have any questions, feedback, or need support with the app, we're here for you. Reach out through any of the channels below.</p>
+    </div>
+
+    <div class="help-card">
+      <h3>📱 Contact Us</h3>
+      <div class="help-contact-row">
+        <div class="help-contact-ico" style="background:rgba(37,211,102,.15)">💬</div>
+        <div class="help-contact-info">
+          <div class="help-contact-name">WhatsApp</div>
+          <div class="help-contact-detail">0599931348</div>
+        </div>
+        <div class="help-contact-action" onclick="window.open('https://wa.me/233599931348','_blank')">Chat</div>
+      </div>
+      <div class="help-contact-row">
+        <div class="help-contact-ico" style="background:rgba(201,168,76,.15)">📞</div>
+        <div class="help-contact-info">
+          <div class="help-contact-name">Call</div>
+          <div class="help-contact-detail">0599931348 / 0248503631</div>
+        </div>
+        <div class="help-contact-action" onclick="window.open('tel:+233599931348','_blank')">Call</div>
+      </div>
+    </div>
+
+    <div class="help-card">
+      <h3>❓ FAQ</h3>
+      <div class="help-faq-item" onclick="this.classList.toggle('open')">
+        <div class="help-faq-q">Is this app free? <span class="help-faq-chev">▼</span></div>
+        <div class="help-faq-a">Yes, Naba Quran is completely free. All features including Quran reading, duas, Qibla, and more are available at no cost.</div>
+      </div>
+      <div class="help-faq-item" onclick="this.classList.toggle('open')">
+        <div class="help-faq-q">Can I use it offline? <span class="help-faq-chev">▼</span></div>
+        <div class="help-faq-a">Most features work offline once loaded. Quran text, duas, and dhikr do not need internet. Audio streaming and AI features require a connection.</div>
+      </div>
+      <div class="help-faq-item" onclick="this.classList.toggle('open')">
+        <div class="help-faq-q">How do I install it as an app? <span class="help-faq-chev">▼</span></div>
+        <div class="help-faq-a">Tap "Install App" on the home screen. On Chrome, use the menu → "Add to Home Screen". On Safari, use the Share button → "Add to Home Screen".</div>
+      </div>
+      <div class="help-faq-item" onclick="this.classList.toggle('open')">
+        <div class="help-faq-q">Who made this app? <span class="help-faq-chev">▼</span></div>
+        <div class="help-faq-a">Naba Quran was developed by Safa Glass as a free Islamic app to help Muslims read, learn, and practice their faith daily.</div>
+      </div>
+    </div>
+
+    <div class="help-card">
+      <h3>🔒 Privacy</h3>
+      <p>Your privacy matters to us. This app does not collect personal data without your consent.</p>
+      <div class="help-contact-action" style="margin-top:10px;display:inline-block" onclick="goToView('privacy')">Read Privacy Policy →</div>
+    </div>
+
+    <div style="text-align:center;padding:10px 0 30px">
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v62 · © 2026</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ PRIVACY POLICY ════════════════ -->
+<div id="privacy-view" class="view">
+  <div class="stickyh">
+    <div class="hrow">
+      <button class="btn-back" onclick="goToView('help')">← Help</button>
+      <div class="htitle">🔒 Privacy Policy</div>
+      <div style="width:50px"></div>
+    </div>
+  </div>
+  <div class="privacy-view">
+    <div class="privacy-sec">
+      <h3>📋 Overview</h3>
+      <p>Naba Quran is a free Islamic app designed to help Muslims read, learn, and practice their faith. We respect your privacy and are committed to protecting your personal data.</p>
+      <p>Last updated: September 2026</p>
+    </div>
+
+    <div class="privacy-sec">
+      <h3>📊 Data We Store</h3>
+      <p><b>Local Storage:</b> Your reading progress, tasbih count, prayer streaks, and theme preferences are stored locally on your device. This data never leaves your phone.</p>
+      <p><b>Location (Optional):</b> Prayer times require your location. This is used only to calculate accurate prayer and Qibla directions. Your location is not stored on any server.</p>
+      <p><b>Group Study:</b> If you join a study room, your display name and messages are stored securely to enable real-time collaboration.</p>
+    </div>
+
+    <div class="privacy-sec">
+      <h3>🚫 What We Don't Do</h3>
+      <p>• We do not sell your data to third parties</p>
+      <p>• We do not track your browsing habits</p>
+      <p>• We do not require you to create an account for core features</p>
+      <p>• We do not show advertisements</p>
+    </div>
+
+    <div class="privacy-sec">
+      <h3>🎙️ Audio & Microphone</h3>
+      <p>The Tajweed Checker feature uses your microphone only when you actively press the record button. Audio is sent to an AI service for analysis and is not stored permanently.</p>
+      <p>Quran recitation audio is streamed from public Islamic sources (e.g. EveryAyah, Hisn al-Muslim) and cached for offline use.</p>
+    </div>
+
+    <div class="privacy-sec">
+      <h3>✨ AI Features</h3>
+      <p>The Islamic AI Guide processes your questions through a secure AI service. Questions are sent anonymously and are not linked to your identity.</p>
+    </div>
+
+    <div class="privacy-sec">
+      <h3>📞 Contact</h3>
+      <p>If you have questions about this privacy policy or want your data deleted, contact us:</p>
+      <p>WhatsApp: 0599931348</p>
+      <p>Phone: 0248503631</p>
+    </div>
+
+    <div class="privacy-sec">
+      <h3>📝 Changes</h3>
+      <p>We may update this policy as we improve the app. Any changes will be reflected here with an updated date.</p>
+    </div>
+
+    <div style="text-align:center;padding:10px 0 30px">
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v62 · © 2026</div>
+    </div>
+  </div>
+</div>
 
 <!-- ════════════════ PROPHETS ════════════════ -->
 <div id="prophets-view">
@@ -2909,6 +3071,8 @@ function goToView(v) {
   if(document.getElementById('hadith40-view')) document.getElementById('hadith40-view').classList.remove('active');
   if(document.getElementById('ptracker-view')) document.getElementById('ptracker-view').classList.remove('active');
   if(document.getElementById('hajj-view')) document.getElementById('hajj-view').classList.remove('active');
+  if(document.getElementById('help-view')) document.getElementById('help-view').classList.remove('active');
+  if(document.getElementById('privacy-view')) document.getElementById('privacy-view').classList.remove('active');
 
   // 2. Show target view
   const targetEl = document.getElementById(v + '-view');
@@ -2933,7 +3097,7 @@ function goToView(v) {
 
   // 4. Player bar visibility
   const pb = document.getElementById('pbar');
-  if (v === 'tasbih' || v === 'ai' || v === 'memorize' || v === 'admin' || v === 'prophets' || v === 'night' || v === 'progress' || v === 'groupstudy' || v === 'tajweed' || v === 'wudu' || v === 'names' || v === 'dua' || v === 'qibla' || v === 'zakat' || v === 'hijri' || v === 'hadith40' || v === 'ptracker' || v === 'hajj' || v === 'more') {
+  if (v === 'tasbih' || v === 'ai' || v === 'memorize' || v === 'admin' || v === 'prophets' || v === 'night' || v === 'progress' || v === 'groupstudy' || v === 'tajweed' || v === 'wudu' || v === 'names' || v === 'dua' || v === 'qibla' || v === 'zakat' || v === 'hijri' || v === 'hadith40' || v === 'ptracker' || v === 'hajj' || v === 'more' || v === 'help' || v === 'privacy') {
     pb.style.display = 'none';
   } else {
     pb.style.display = 'flex';
