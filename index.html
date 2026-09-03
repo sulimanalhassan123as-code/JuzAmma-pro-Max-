@@ -7264,7 +7264,7 @@ function gsFmtClock(isoStr) {
 }
 
 function gsEsc(s) {
-  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
 // ═══ MEMBER MANAGEMENT ═══
@@ -7650,7 +7650,7 @@ function gsBuildMessageHTML(m) {
       reactionsHTML = '<div class="gs-msg-reactions">';
       reactions.forEach(r => {
         const mine = r.users.includes(gsUserName);
-        reactionsHTML += '<span class="gs-msg-reaction'+(mine?' mine':'')+'" onclick="gsToggleReaction(\''+m.id+'\',\''+r.emoji+'\')">'+r.emoji+' '+r.users.length+'</span>';
+        reactionsHTML += '<span class="gs-msg-reaction'+(mine?' mine':'')+'" onclick="gsToggleReaction(\''+m.id+'\',\''+gsEsc(r.emoji)+'\')">'+gsEsc(r.emoji)+' '+r.users.length+'</span>';
       });
       reactionsHTML += '</div>';
     }

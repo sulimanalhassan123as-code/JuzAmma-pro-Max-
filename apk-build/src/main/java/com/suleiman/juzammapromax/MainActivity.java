@@ -78,27 +78,10 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     // All permissions to request at startup
     private final String[] ALL_PERMISSIONS = {
-        Manifest.permission.CAMERA,
         Manifest.permission.RECORD_AUDIO,
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.READ_CONTACTS,
-        Manifest.permission.WRITE_CONTACTS,
-        Manifest.permission.READ_CALENDAR,
-        Manifest.permission.WRITE_CALENDAR,
-        Manifest.permission.SEND_SMS,
-        Manifest.permission.READ_SMS,
-        Manifest.permission.CALL_PHONE,
-        Manifest.permission.READ_PHONE_STATE,
-        Manifest.permission.READ_EXTERNAL_STORAGE,
-        Manifest.permission.POST_NOTIFICATIONS,
-        Manifest.permission.READ_MEDIA_IMAGES,
-        Manifest.permission.READ_MEDIA_VIDEO,
-        Manifest.permission.READ_MEDIA_AUDIO,
-        Manifest.permission.BODY_SENSORS,
-        Manifest.permission.ACTIVITY_RECOGNITION,
-        Manifest.permission.BLUETOOTH_SCAN,
-        Manifest.permission.BLUETOOTH_CONNECT
+        Manifest.permission.POST_NOTIFICATIONS
     };
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -127,14 +110,14 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         settings.setDatabaseEnabled(true);
         settings.setGeolocationEnabled(true);
         settings.setMediaPlaybackRequiresUserGesture(false);
-        settings.setAllowFileAccess(true);
-        settings.setAllowContentAccess(true);
+        settings.setAllowFileAccess(false);
+        settings.setAllowContentAccess(false);
         settings.setLoadWithOverviewMode(true);
         settings.setUseWideViewPort(true);
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         settings.setBuiltInZoomControls(false);
         settings.setDisplayZoomControls(false);
-        settings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+        settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
         settings.setSupportMultipleWindows(false);
 
@@ -170,7 +153,12 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
             @Override
             public void onPermissionRequest(final PermissionRequest request) {
-                runOnUiThread(() -> request.grant(request.getResources()));
+                String host = request.getOrigin().getHost();
+                if (host != null && (host.equals("juz-amma-pro-max.vercel.app") || host.endsWith(".vercel.app"))) {
+                    runOnUiThread(() -> request.grant(request.getResources()));
+                } else {
+                    runOnUiThread(request::deny);
+                }
             }
         });
 
@@ -180,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 Uri uri = request.getUrl();
                 // Keep internal links inside WebView
-                if (uri.getHost() != null && (uri.getHost().contains("vercel.app") || uri.getHost().contains("juz-amma"))) {
+                if (uri.getHost() != null && (uri.getHost().equals("juz-amma-pro-max.vercel.app") || uri.getHost().endsWith(".vercel.app"))) {
                     return false;
                 }
                 // Open external links in browser

@@ -6,19 +6,30 @@
     {
       "source": "/(.*\\.html)",
       "headers": [
-        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate" }
+        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate" },
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://juz-amma-pro-max.vercel.app; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; media-src 'self' https://everyayah.com https://praytimes.org https://archive.org https://api.alquran.cloud blob:; connect-src 'self' https://elara-c85c9ecb.base44.app https://api.aladhan.com https://api.alquran.cloud https://everyayah.com https://juz-amma-pro-max.vercel.app; frame-src https://www.youtube.com https://maps.google.com https://qiblafinder.withgoogle.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; base-uri 'self'; form-action 'self'" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "geolocation=(self), microphone=(self), camera=(), payment=(), usb=()" }
       ]
     },
     {
       "source": "/",
       "headers": [
-        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate" }
+        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate" },
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://juz-amma-pro-max.vercel.app; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; media-src 'self' https://everyayah.com https://praytimes.org https://archive.org https://api.alquran.cloud blob:; connect-src 'self' https://elara-c85c9ecb.base44.app https://api.aladhan.com https://api.alquran.cloud https://everyayah.com https://juz-amma-pro-max.vercel.app; frame-src https://www.youtube.com https://maps.google.com https://qiblafinder.withgoogle.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; base-uri 'self'; form-action 'self'" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "geolocation=(self), microphone=(self), camera=(), payment=(), usb=()" }
       ]
     },
     {
       "source": "/sw.js",
       "headers": [
-        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate" }
+        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate" },
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self'; worker-src 'self'" }
       ]
     }
   ]
