@@ -2811,7 +2811,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v62 · © 2026</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v64 · © 2026</div>
     </div>
   </div>
 </div>
@@ -2871,7 +2871,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v62 · © 2026</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v64 · © 2026</div>
     </div>
   </div>
 </div>
@@ -4403,8 +4403,35 @@ function addGuideMsg(guide) {
   void a.offsetHeight;
   requestAnimationFrame(() => { a.scrollTop = a.scrollHeight; });
 }
+// ── Server-side config (global settings from admin panel) ──
+const SERVER_CONFIG_URL = 'https://elara-c85c9ecb.base44.app/functions/getAppConfig';
+let _serverConfig = null;
+async function loadServerConfig() {
+  try {
+    const res = await fetch(SERVER_CONFIG_URL);
+    const data = await res.json();
+    if (data.ok && data.config) {
+      _serverConfig = data.config;
+      // Apply banner from server
+      if (_serverConfig.banner_text) showBanner(_serverConfig.banner_text);
+      // Apply reciter override
+      if (_serverConfig.default_reciter && !localStorage.getItem('reciter')) {
+        localStorage.setItem('reciter', _serverConfig.default_reciter);
+      }
+      // Apply theme override
+      if (_serverConfig.default_theme) {
+        applyTheme(_serverConfig.default_theme);
+      }
+      // Apply custom hadith
+      if (_serverConfig.custom_hadith) {
+        localStorage.setItem('customHadith', _serverConfig.custom_hadith);
+        localStorage.setItem('customHadithSrc', _serverConfig.custom_hadith_src || '');
+      }
+    }
+  } catch(e) { console.error('Config fetch error:', e); }
+}
 function initAI() {
-  const w=localStorage.getItem('aiWelcome')||"As-salamu alaykum wa rahmatullahi wa barakatuh! 🌙\n\nI'm your Islamic AI Guide. Ask me about the Quran, prayer, fasting, Islamic history, or any aspect of daily Islamic life.";
+  let w = _serverConfig?.ai_welcome || localStorage.getItem('aiWelcome') || "As-salamu alaykum wa rahmatullahi wa barakatuh! 🌙\n\nI'm your Islamic AI Guide. Ask me about the Quran, prayer, fasting, Islamic history, or any aspect of daily Islamic life.";
   addMsg(w,'bot');
 }
 function addMsg(txt,type) { const a=document.getElementById('chat-area'); const d=document.createElement('div'); d.className='cmsg '+type; d.innerText=txt; a.appendChild(d); void a.offsetHeight; a.scrollTop=a.scrollHeight; }
@@ -4990,7 +5017,7 @@ function initApp() {
   updateResumeUI();
   renderHijriHeaderChip();
   startNextPrayerCountdown();
-  const sb=localStorage.getItem('adminBanner'); if(sb) showBanner(sb);
+  loadServerConfig(); // fetch global settings from server (banner, welcome, etc.)
   if (window.location.hash==='#admin') goToView('admin');
   else goToView('home');
 }

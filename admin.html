@@ -328,6 +328,8 @@ body{overflow-x:hidden;}
 // ── CONFIG ──
 const APP_ORIGIN = 'https://juz-amma-pro-max.vercel.app';
 const AUTH_URL = 'https://elara-c85c9ecb.base44.app/functions/adminAuth';
+const GET_CONFIG_URL = 'https://elara-c85c9ecb.base44.app/functions/getAppConfig';
+const SAVE_CONFIG_URL = 'https://elara-c85c9ecb.base44.app/functions/saveAppConfig';
 let attempts = 0;
 const MAX_ATTEMPTS = 5;
 
@@ -401,7 +403,7 @@ function logout() {
 }
 
 // ── LOAD DASHBOARD DATA ──
-function loadDash() {
+async function loadDash() {
   // Stats — reads from shared localStorage with main app
   try {
     document.getElementById('s-v').textContent = localStorage.getItem('visits') || '0';
@@ -415,13 +417,19 @@ function loadDash() {
     const favs = JSON.parse(localStorage.getItem('favSurahs') || '[]');
     document.getElementById('s-fv').textContent = favs.length;
   } catch(e) {}
-  // Content fields
-  document.getElementById('banner-txt').value = localStorage.getItem('adminBanner') || '';
-  document.getElementById('custom-hadith').value = localStorage.getItem('customHadith') || '';
-  document.getElementById('custom-hadith-src').value = localStorage.getItem('customHadithSrc') || '';
-  document.getElementById('ai-welcome').value = localStorage.getItem('aiWelcome') || '';
-  document.getElementById('adm-reciter').value = localStorage.getItem('reciter') || 'Alafasy_128kbps';
-  document.getElementById('adm-theme').value = localStorage.getItem('colorTheme') || '';
+  // Content fields — load from server
+  try {
+    const res = await fetch(GET_CONFIG_URL);
+    const data = await res.json();
+    if (data.ok && data.config) {
+      document.getElementById('banner-txt').value = data.config.banner_text || '';
+      document.getElementById('custom-hadith').value = data.config.custom_hadith || '';
+      document.getElementById('custom-hadith-src').value = data.config.custom_hadith_src || '';
+      document.getElementById('ai-welcome').value = data.config.ai_welcome || '';
+      document.getElementById('adm-reciter').value = data.config.default_reciter || 'Alafasy_128kbps';
+      document.getElementById('adm-theme').value = data.config.default_theme || '';
+    }
+  } catch(e) { console.error('Config load error:', e); }
 }
 
 // ── TABS ──
@@ -432,12 +440,25 @@ function switchTab(id, el) {
   el.classList.add('on');
 }
 
-// ── CONTENT SAVES ──
-function saveBanner()  { localStorage.setItem('adminBanner', document.getElementById('banner-txt').value); toast('✅ Banner saved!'); }
-function saveHadith()  { localStorage.setItem('customHadith', document.getElementById('custom-hadith').value); localStorage.setItem('customHadithSrc', document.getElementById('custom-hadith-src').value); toast('✅ Hadith saved!'); }
-function saveWelcome() { localStorage.setItem('aiWelcome', document.getElementById('ai-welcome').value); toast('✅ Welcome message saved!'); }
-function saveReciter() { localStorage.setItem('reciter', document.getElementById('adm-reciter').value); toast('✅ Default reciter saved!'); }
-function saveTheme()   { localStorage.setItem('colorTheme', document.getElementById('adm-theme').value); toast('✅ Theme saved!'); }
+// ── CONTENT SAVES (server-side via saveAppConfig) ──
+const ADMIN_KEY = 'juzamma2024';
+async function saveToServer(payload, successMsg) {
+  try {
+    const res = await fetch(SAVE_CONFIG_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-key': ADMIN_KEY },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (data.ok) { toast(successMsg); }
+    else { toast('❌ Save failed: ' + (data.error || 'Unknown error')); }
+  } catch(e) { toast('❌ Network error'); }
+}
+async function saveBanner()  { await saveToServer({ banner_text: document.getElementById('banner-txt').value }, '✅ Banner saved globally!'); }
+async function saveHadith()  { await saveToServer({ custom_hadith: document.getElementById('custom-hadith').value, custom_hadith_src: document.getElementById('custom-hadith-src').value }, '✅ Hadith saved globally!'); }
+async function saveWelcome() { await saveToServer({ ai_welcome: document.getElementById('ai-welcome').value }, '✅ Welcome message saved globally!'); }
+async function saveReciter() { await saveToServer({ default_reciter: document.getElementById('adm-reciter').value }, '✅ Default reciter saved globally!'); }
+async function saveTheme()   { await saveToServer({ default_theme: document.getElementById('adm-theme').value }, '✅ Theme saved globally!'); }
 
 // ── CHANGE PASSWORD (server-side managed) ──
 function changePass() {
