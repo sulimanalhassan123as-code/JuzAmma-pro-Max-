@@ -234,7 +234,6 @@ body { font-family:'Poppins',sans-serif;
 .mushaf-ctrl-close { width:30px; height:30px; border-radius:50%; background:#fff; border:1.3px solid rgba(0,0,0,.2); color:#666; font-size:.75rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 .mushaf-trans-btn { display:flex; align-items:center; gap:5px; background:#fff; color:#2b1d0e; border:1px solid rgba(0,0,0,.12); border-radius:22px; padding:8px 14px; font-size:.78rem; font-weight:600; cursor:pointer; transition:all .2s; }
 .mushaf-trans-btn.active { background:#2b1d0e; color:#fff; border-color:#2b1d0e; }
-/* ── Continuous multi-surah page flow ── */
 .mushaf-surah-block { margin-bottom:6px; }
 .mushaf-surah-hdr { direction:ltr; text-align:center; padding:26px 10px 4px; }
 .mushaf-surah-block:first-child .mushaf-surah-hdr { padding-top:4px; }
@@ -3690,10 +3689,10 @@ function toggleBm(e,sid,vidx) {
   toast(bookmarks[sid].includes(vidx)?'🔖 Bookmarked':'Bookmark removed');
 }
 
-// ═══════════ MUSHAF VIEW — continuous multi-surah page flow ═══════════
+// ═══════════ MUSHAF VIEW — classic full Quran-page reader ═══════════
 let mushafSid = null, mushafOpen = false, mushafSyncTimer = null;
-let mushafLoadedSids = [];   // ascending list of surahs currently rendered
-let mushafLoading = false;   // guard against duplicate append/prepend
+let mushafLoadedSids = [];
+let mushafLoading = false;
 let mushafScrollBound = false;
 const ARABIC_DIGITS = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
 function toArabicDigits(n) { return String(n).split('').map(c=> /[0-9]/.test(c) ? ARABIC_DIGITS[+c] : c).join(''); }
@@ -3759,7 +3758,6 @@ function bindMushafScroll() {
 function onMushafScroll() {
   if (!mushafOpen || mushafLoading) return;
   const scr = document.getElementById('mushaf-scroll');
-  // Check "near top" first (tighter threshold) — prevents both firing at once on short surahs
   if (scr.scrollTop < 100 && mushafLoadedSids[0] > 1) {
     prependPrevSurah();
   } else if (scr.scrollHeight - scr.scrollTop - scr.clientHeight < 700) {
@@ -3797,7 +3795,6 @@ function prependPrevSurah() {
 
 function ensureSurahLoaded(sid) {
   if (mushafLoadedSids.includes(sid)) return;
-  // Load forward or backward until sid is included (small gaps only — normal for next/prev)
   let guard = 0;
   while (sid > mushafLoadedSids[mushafLoadedSids.length-1] && guard < 5) { appendNextSurah(); guard++; }
   guard = 0;
@@ -3818,7 +3815,6 @@ function toggleMushafTrans() {
   const btn = document.getElementById('mushaf-trans-btn');
   btn.classList.toggle('active', mushafShowTrans);
   btn.innerText = mushafShowTrans ? '🌐 ON' : '🌐 EN';
-  // Preserve reading position: remember the currently active surah, re-render all loaded blocks
   const anchorSid = mushafSid;
   const html = mushafLoadedSids.map(sid => renderMushafSurahBlock(qData.find(x=>x.id===sid))).join('');
   document.getElementById('mushaf-text').innerHTML = html;
