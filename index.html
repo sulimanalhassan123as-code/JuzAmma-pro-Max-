@@ -1903,13 +1903,6 @@ body { font-family:'Poppins',sans-serif;
 .np-mini-tm { font-size:.62rem; color:#fff; font-weight:700; font-variant-numeric:tabular-nums; }
 .np-mini-cell.is-next .np-mini-nm, .np-mini-cell.is-next .np-mini-tm { color:#e3c478; }
 
-.qa-row { display:flex; gap:22px; justify-content:center; overflow-x:auto; padding:18px 16px 18px; position:relative; z-index:2; scrollbar-width:none; }
-.qa-row::-webkit-scrollbar { display:none; }
-.qa-item { display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer; flex-shrink:0; -webkit-tap-highlight-color:transparent; }
-.qa-circle { width:54px; height:54px; border-radius:50%; background:rgba(201,168,76,.1); border:1.5px solid rgba(201,168,76,.35); display:flex; align-items:center; justify-content:center; font-size:1.4rem; transition:transform .15s; }
-.qa-item:active .qa-circle { transform:scale(.9); background:rgba(201,168,76,.22); }
-.qa-label { font-size:.62rem; color:rgba(255,255,255,.6); font-weight:600; }
-
 .azan-banner { background:linear-gradient(135deg,#0d2137,#1a3a5c); border:1px solid rgba(201,168,76,.4); border-radius:16px; margin:6px 14px 16px; padding:14px 16px; box-sizing:border-box; position:relative; z-index:2; }
 .azan-b-row { display:flex; align-items:center; gap:12px; cursor:pointer; }
 .azan-b-ico { font-size:1.5rem; flex-shrink:0; }
@@ -2004,13 +1997,6 @@ body { font-family:'Poppins',sans-serif;
         <div class="np-mini-cell"><span class="np-mini-nm">Isha</span><span class="np-mini-tm" id="pt-isha">--:--</span></div>
       </div>
     </div>
-  </div>
-
-  <div class="qa-row">
-    <div class="qa-item" onclick="goToView('dua')"><div class="qa-circle">🤲</div><div class="qa-label">Dua</div></div>
-    <div class="qa-item" onclick="goToView('qibla')"><div class="qa-circle">🕋</div><div class="qa-label">Qibla</div></div>
-    <div class="qa-item" onclick="goToView('hijri')"><div class="qa-circle">📅</div><div class="qa-label">Calendar</div></div>
-    <div class="qa-item" onclick="goToView('zakat')"><div class="qa-circle">💰</div><div class="qa-label">Zakat</div></div>
   </div>
 
   <!-- AZAN SETTINGS PANEL (slim collapsible banner) -->
