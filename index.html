@@ -3010,7 +3010,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v74 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v75 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3070,7 +3070,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v74 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v75 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -4939,7 +4939,7 @@ let azanCheckInterval = null;
 let _swReady = false;
 
 // ── Version guard: force stale phones off old cached builds ──
-const APP_VERSION = 'v74';
+const APP_VERSION = 'v75';
 (function versionGuard(){
   try{
     const lastV = localStorage.getItem('appVersion');
@@ -5138,6 +5138,11 @@ function testAzanNow(){
   toast('🕌 Testing Azan — listen!');
 }
 function testNotification(){
+  // Native Android app (installed APK) — use the OS notification system directly,
+  // since Android WebView does not implement the web Notification API at all.
+  if(window.AndroidBridge && window.AndroidBridge.showTestNotification){
+    try { window.AndroidBridge.showTestNotification(); toast('✅ Test notification sent!'); return; } catch(e){}
+  }
   if(!('Notification' in window)){ toast('Notifications not supported on this device'); return; }
   if(Notification.permission === 'denied'){
     toast('⚠️ Notifications blocked — enable them in your browser/app settings');
@@ -5145,7 +5150,7 @@ function testNotification(){
   }
   Notification.requestPermission().then(p => {
     if(p === 'granted'){
-      if(navigator.serviceWorker.controller){
+      if(navigator.serviceWorker && navigator.serviceWorker.controller){
         navigator.serviceWorker.controller.postMessage({ type:'TEST_NOTIF' });
       }
       new Notification('🕌 Naba Quran', {
@@ -5168,8 +5173,11 @@ function toggleAzan(){
   if(azanStatusEl) azanStatusEl.textContent = azanEnabled ? '🟢 Enabled · all 5 prayers' : 'All prayers · tap to set up';
   if(azanEnabled){
     startAzanWatch();
-    // Request notification permission for background alarms
-    if('Notification' in window && Notification.permission === 'default'){
+    // Request notification permission for background alarms (web only —
+    // the native Android app posts real alarms via AlarmManager regardless)
+    if(window.AndroidBridge){
+      toast('🕌 Azan alarm enabled!');
+    } else if('Notification' in window && Notification.permission === 'default'){
       Notification.requestPermission().then(p => {
         if(p === 'granted') toast('🕌 Azan alarm enabled with background notifications!');
         else toast('🕌 Azan enabled — allow notifications for background alarms');
@@ -5226,8 +5234,10 @@ function playAzanFor(prayerName){
   modal.classList.add('show');
   // Vibrate if supported
   if(navigator.vibrate) navigator.vibrate([500,200,500,200,500]);
-  // Also send notification
-  if(Notification.permission === 'granted'){
+  // Also send notification (native bridge on APK, web Notification API in browser)
+  if(window.AndroidBridge && window.AndroidBridge.showTestNotification){
+    // Native alarm service already posts its own notification; nothing extra needed here.
+  } else if('Notification' in window && Notification.permission === 'granted'){
     new Notification('🕌 Azan — ' + prayerName + ' Time', {
       body: 'Hayya ala al-Salah — Come to Prayer',
       icon: '/icon-192.png',
@@ -5308,17 +5318,23 @@ function renderAzanVoices(){
 
 /* ── DAILY NOTIFICATIONS ── */
 function requestDailyNotif(){
+  // Native Android app — no web permission prompt needed, POST_NOTIFICATIONS
+  // is requested at app launch already.
+  if(window.AndroidBridge){
+    localStorage.setItem('dailyNotif','1');
+    if(_swReady && navigator.serviceWorker && navigator.serviceWorker.controller){
+      navigator.serviceWorker.controller.postMessage({ type:'DAILY_AYAH_ENABLE', time:'08:00' });
+    }
+    toast('✅ Daily Ayah notifications ON — you will get a reminder each morning!');
+    return;
+  }
   if(!('Notification' in window)){toast('Notifications not supported');return;}
   Notification.requestPermission().then(p=>{
     if(p==='granted'){
       localStorage.setItem('dailyNotif','1');
       // Sync to service worker for background delivery (even when app is closed)
-      if(_swReady && navigator.serviceWorker.controller){
+      if(_swReady && navigator.serviceWorker && navigator.serviceWorker.controller){
         navigator.serviceWorker.controller.postMessage({ type:'DAILY_AYAH_ENABLE', time:'08:00' });
-      }
-      // Also arm the native Android path for APK users
-      if(window.AndroidBridge && window.AndroidBridge.scheduleDailyAyahAlarm){
-        try { window.AndroidBridge.scheduleDailyAyahAlarm(8, 0); } catch(e){}
       }
       toast('✅ Daily Ayah notifications ON — you will get a reminder each morning!');
     }
@@ -5326,12 +5342,21 @@ function requestDailyNotif(){
   });
 }
 function checkDailyNotif(){
-  if(localStorage.getItem('dailyNotif')!=='1'||Notification.permission!=='granted')return;
-  const today=new Date().toDateString();
-  if(localStorage.getItem('lastNotif')===today)return;
-  const msgs=['SubhanAllah — Glory be to Allah ✨','Alhamdulillah — All praise is for Allah 🌙','Allahu Akbar — Allah is the Greatest 🕌','La ilaha illallah — There is no god but Allah ☪️'];
-  new Notification('🌙 Juz Amma Pro Max',{body:msgs[Math.floor(Math.random()*msgs.length)],icon:'/icon-192.png'});
-  localStorage.setItem('lastNotif',today);
+  try{
+    if(localStorage.getItem('dailyNotif')!=='1')return;
+    const today=new Date().toDateString();
+    if(localStorage.getItem('lastNotif')===today)return;
+    const msgs=['SubhanAllah — Glory be to Allah ✨','Alhamdulillah — All praise is for Allah 🌙','Allahu Akbar — Allah is the Greatest 🕌','La ilaha illallah — There is no god but Allah ☪️'];
+    const body = msgs[Math.floor(Math.random()*msgs.length)];
+    if(window.AndroidBridge && window.AndroidBridge.showDailyAyahNotification){
+      window.AndroidBridge.showDailyAyahNotification(body);
+    } else if('Notification' in window && Notification.permission==='granted'){
+      new Notification('🌙 Naba Quran',{body:body,icon:'/icon-192.png'});
+    } else {
+      return; // no way to notify — don't mark as sent
+    }
+    localStorage.setItem('lastNotif',today);
+  }catch(e){ console.error('[checkDailyNotif] non-fatal error:', e); }
 }
 function updateStreak() {
   const today=new Date().toDateString(), last=localStorage.getItem('lastVisit');
@@ -5437,45 +5462,54 @@ function startNextPrayerCountdown() {
   _npInterval = setInterval(updateNextPrayerCard, 1000);
 }
 
+// Runs each init step in isolation — one crashing step (e.g. an API
+// missing on Android WebView) can never again take the rest of app
+// startup down with it, like checkDailyNotif() once did.
+function _safeInit(name, fn){
+  try { fn(); } catch(e){ console.error('[initApp] step failed but app continues: ' + name, e); }
+}
 function initApp() {
-  const t=localStorage.getItem('theme')||'default';
-  applyTheme(t);
-  initHadith();
-  updateStreak();
-  loadPrayerTimes();
-  checkDailyNotif();
-  renderAzanVoices();
-  // Restore prayer times from localStorage for instant alarm setup
-  const savedTimes = localStorage.getItem('prayerTimes');
-  const savedDate = localStorage.getItem('prayerTimesDate');
-  if(savedTimes && savedDate === new Date().toDateString()){
-    try {
+  _safeInit('theme', () => applyTheme(localStorage.getItem('theme')||'default'));
+  _safeInit('initHadith', initHadith);
+  _safeInit('updateStreak', updateStreak);
+  _safeInit('loadPrayerTimes', loadPrayerTimes);
+  _safeInit('checkDailyNotif', checkDailyNotif);
+  _safeInit('renderAzanVoices', renderAzanVoices);
+  _safeInit('restorePrayerTimes', () => {
+    // Restore prayer times from localStorage for instant alarm setup
+    const savedTimes = localStorage.getItem('prayerTimes');
+    const savedDate = localStorage.getItem('prayerTimesDate');
+    if(savedTimes && savedDate === new Date().toDateString()){
       const t = JSON.parse(savedTimes);
       ['Fajr','Dhuhr','Asr','Maghrib','Isha'].forEach(p => {
         const el = document.getElementById('pt-' + p.toLowerCase());
         if(el) el.textContent = t[p];
       });
-    } catch(e){}
-  }
-  // Sync azan toggle button state with saved value
-  const azanBtn = document.getElementById('azan-toggle-btn');
-  if(azanEnabled && azanBtn){
-    azanBtn.classList.add('on');
-    azanBtn.textContent = '🔔 ON';
-    startAzanWatch();
-    updateAzanNextInfo();
-    const _abs = document.getElementById('azan-b-status'); if(_abs) _abs.textContent = '🟢 Enabled · all 5 prayers';
-  } else if(azanBtn) {
-    azanBtn.classList.remove('on');
-    azanBtn.textContent = '🔕 OFF';
-  }
-  loadQ();
-  updateResumeUI();
-  renderHijriHeaderChip();
-  startNextPrayerCountdown();
-  loadServerConfig(); // fetch global settings from server (banner, welcome, etc.)
-  if (window.location.hash==='#admin') goToView('admin');
-  else goToView('home');
+    }
+  });
+  _safeInit('syncAzanToggle', () => {
+    // Sync azan toggle button state with saved value
+    const azanBtn = document.getElementById('azan-toggle-btn');
+    if(azanEnabled && azanBtn){
+      azanBtn.classList.add('on');
+      azanBtn.textContent = '🔔 ON';
+      startAzanWatch();
+      updateAzanNextInfo();
+      const _abs = document.getElementById('azan-b-status'); if(_abs) _abs.textContent = '🟢 Enabled · all 5 prayers';
+    } else if(azanBtn) {
+      azanBtn.classList.remove('on');
+      azanBtn.textContent = '🔕 OFF';
+    }
+  });
+  _safeInit('loadQ', loadQ);
+  _safeInit('updateResumeUI', updateResumeUI);
+  _safeInit('renderHijriHeaderChip', renderHijriHeaderChip);
+  _safeInit('startNextPrayerCountdown', startNextPrayerCountdown);
+  _safeInit('loadServerConfig', loadServerConfig); // fetch global settings from server (banner, welcome, etc.)
+  _safeInit('goToView', () => {
+    if (window.location.hash==='#admin') goToView('admin');
+    else goToView('home');
+  });
 }
 
 // Re-check alarm state when app returns to foreground

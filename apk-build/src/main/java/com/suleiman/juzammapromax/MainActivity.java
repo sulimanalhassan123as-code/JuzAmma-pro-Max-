@@ -6,6 +6,7 @@ import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import androidx.core.app.NotificationCompat;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         settings.setAllowContentAccess(false);
         settings.setLoadWithOverviewMode(true);
         settings.setUseWideViewPort(true);
-        settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        settings.setCacheMode(WebSettings.LOAD_NO_CACHE); // always hit network — avoids the app getting stuck on old cached builds
         settings.setBuiltInZoomControls(false);
         settings.setDisplayZoomControls(false);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
@@ -295,6 +296,40 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         @JavascriptInterface
         public void showToast(String message) {
             runOnUiThread(() -> Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show());
+        }
+
+        @JavascriptInterface
+        public void showTestNotification() {
+            runOnUiThread(() -> {
+                try {
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, "azan_channel")
+                        .setSmallIcon(android.R.drawable.ic_popup_reminder)
+                        .setContentTitle("🕌 Naba Quran — Test")
+                        .setContentText("✅ Notifications are working! Azan alarms and Daily Ayah reminders will reach you.")
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setAutoCancel(true);
+                    NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    nm.notify(9911, builder.build());
+                } catch (Exception e) {
+                    Toast.makeText(MainActivity.this, "Notification test failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public void showDailyAyahNotification(String body) {
+            runOnUiThread(() -> {
+                try {
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, "azan_channel")
+                        .setSmallIcon(android.R.drawable.ic_popup_reminder)
+                        .setContentTitle("📖 Daily Ayah & Dhikr")
+                        .setContentText(body)
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .setAutoCancel(true);
+                    NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    nm.notify(9912, builder.build());
+                } catch (Exception e) { /* ignore */ }
+            });
         }
 
         @JavascriptInterface
