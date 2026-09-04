@@ -3010,7 +3010,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v76 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v77 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3070,7 +3070,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v76 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v77 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3464,13 +3464,13 @@ function fetchWithRetry(url, tries=3, delayMs=800, timeoutMs=15000) {
 }
 
 async function loadQ() {
-  // v8: earlier versions tried to batch-fetch surahs 1-77 via a comma-
-  // separated surah list (e.g. /v1/surah/1,2,3.../quran-uthmani), but the
-  // alquran.cloud API does NOT support that — it silently returns only the
-  // FIRST surah in the list. That meant users only ever got Al-Fatihah plus
-  // Juz 30 (surahs 78-114), never the full Quran, no matter how long they
-  // used the app. Fixed by switching to the single full-Quran endpoint
-  // (/v1/quran/...) which returns all 114 surahs in one reliable call.
+  // v76: previously depended entirely on the third-party alquran.cloud API
+  // with no fallback — a single hiccup on that API (or the device's network
+  // at that exact moment) left users stuck on "Couldn't load the Quran"
+  // with no way to actually finish. Now we self-host a static quran-full.json
+  // on our own domain (same server as the app — no CORS, no third-party
+  // outage risk, loads in one request instead of two). The old API is kept
+  // only as a last-resort fallback if our own file somehow fails to load.
   const cached = localStorage.getItem('quranProMax_v18');
   if (cached) {
     try {
@@ -3483,28 +3483,42 @@ async function loadQ() {
   // Clean up stale cache keys from earlier broken versions
   try { localStorage.removeItem('quranProMax_v6'); localStorage.removeItem('quranProMax_v7'); } catch(e) {}
   document.getElementById('surah-container').innerHTML = '<div style="padding:40px;text-align:center;color:var(--txt2)">⏳ Loading the complete Quran…<br><small>All 114 surahs — first load only</small></div>';
+
+  // PRIMARY: our own self-hosted static file (same domain, most reliable)
   try {
-    const [arRes, enRes] = await Promise.all([
-      fetchWithRetry('https://api.alquran.cloud/v1/quran/quran-uthmani'),
-      fetchWithRetry('https://api.alquran.cloud/v1/quran/en.sahih')
-    ]);
-    const arSurahs = arRes.data.surahs;
-    const enSurahs = enRes.data.surahs;
-    qData = arSurahs.map((surah, si) => {
-      const enSurah = enSurahs[si];
-      const verses = surah.ayahs.map((a, ai) => {
-        let txt = a.text;
-        if (a.numberInSurah === 1 && surah.number !== 1 && txt.startsWith('بِسْمِ')) {
-          const w = txt.split(' '); txt = w.length > 4 ? w.slice(4).join(' ') : txt;
-        }
-        return { a: txt, e: enSurah.ayahs[ai] ? enSurah.ayahs[ai].text : '', n: a.numberInSurah };
+    const data = await fetchWithRetry('quran-full.json', 4, 700, 20000);
+    if (Array.isArray(data) && data.length >= 114) {
+      qData = data;
+      localStorage.setItem('quranProMax_v18', JSON.stringify(qData));
+      renderList(); populateMemSel();
+      return;
+    }
+    throw new Error('Self-hosted Quran data malformed');
+  } catch(e0) {
+    // FALLBACK: third-party API, only if our own file somehow fails
+    try {
+      const [arRes, enRes] = await Promise.all([
+        fetchWithRetry('https://api.alquran.cloud/v1/quran/quran-uthmani'),
+        fetchWithRetry('https://api.alquran.cloud/v1/quran/en.sahih')
+      ]);
+      const arSurahs = arRes.data.surahs;
+      const enSurahs = enRes.data.surahs;
+      qData = arSurahs.map((surah, si) => {
+        const enSurah = enSurahs[si];
+        const verses = surah.ayahs.map((a, ai) => {
+          let txt = a.text;
+          if (a.numberInSurah === 1 && surah.number !== 1 && txt.startsWith('بِسْمِ')) {
+            const w = txt.split(' '); txt = w.length > 4 ? w.slice(4).join(' ') : txt;
+          }
+          return { a: txt, e: enSurah.ayahs[ai] ? enSurah.ayahs[ai].text : '', n: a.numberInSurah };
+        });
+        return { id: surah.number, name: surah.englishName, ar: surah.name, meaning: surah.englishNameTranslation||'', verses };
       });
-      return { id: surah.number, name: surah.englishName, ar: surah.name, meaning: surah.englishNameTranslation||'', verses };
-    });
-    localStorage.setItem('quranProMax_v18', JSON.stringify(qData));
-    renderList(); populateMemSel();
-  } catch(e) {
-    document.getElementById('surah-container').innerHTML = '<div style="padding:40px;text-align:center;color:#ef4444">⚠️ Couldn\'t load the Quran.<br><small>Check your connection and try again.</small><br><button onclick="loadQ()" style="margin-top:14px;padding:10px 22px;border-radius:20px;border:none;background:#d4a342;color:#1a1a1a;font-weight:600;cursor:pointer">🔄 Retry</button></div>';
+      localStorage.setItem('quranProMax_v18', JSON.stringify(qData));
+      renderList(); populateMemSel();
+    } catch(e) {
+      document.getElementById('surah-container').innerHTML = '<div style="padding:40px;text-align:center;color:#ef4444">⚠️ Couldn\'t load the Quran.<br><small>Check your connection and try again.</small><br><button onclick="loadQ()" style="margin-top:14px;padding:10px 22px;border-radius:20px;border:none;background:#d4a342;color:#1a1a1a;font-weight:600;cursor:pointer">🔄 Retry</button></div>';
+    }
   }
 }
 
@@ -4939,7 +4953,7 @@ let azanCheckInterval = null;
 let _swReady = false;
 
 // ── Version guard: force stale phones off old cached builds ──
-const APP_VERSION = 'v76';
+const APP_VERSION = 'v77';
 (function versionGuard(){
   try{
     const lastV = localStorage.getItem('appVersion');
