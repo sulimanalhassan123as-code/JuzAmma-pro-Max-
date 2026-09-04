@@ -47,6 +47,16 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener, SensorEventListener {
 
     private WebView webView;
+    // Native voice-note recorder (bypasses WebView's unreliable MediaRecorder)
+    private android.media.MediaRecorder nativeVoiceRecorder = null;
+    private String nativeVoiceFilePath = null;
+    private long nativeVoiceStartTime = 0;
+
+    private void evalJs(final String js) {
+        runOnUiThread(() -> {
+            try { if (webView != null) webView.evaluateJavascript(js, null); } catch (Exception ignored) {}
+        });
+    }
     private static final String APP_URL = "https://juz-amma-pro-max.vercel.app";
     private SharedPreferences prefs;
     private TextToSpeech nativeTts;
@@ -330,6 +340,78 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     nm.notify(9912, builder.build());
                 } catch (Exception e) { /* ignore */ }
             });
+        }
+
+        // ── Native voice-note recording (Group Study) ──
+        // Android WebView does not reliably implement the web MediaRecorder
+        // API, so voice notes are recorded natively with AAC and handed back
+        // to the page as base64 — identical data shape to the web path.
+        @JavascriptInterface
+        public boolean startVoiceRecording() {
+            try {
+                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    evalJs("if(window.gsNativeMicDenied) window.gsNativeMicDenied();");
+                    return false;
+                }
+                nativeVoiceFilePath = getCacheDir() + "/voice_note.m4a";
+                java.io.File f = new java.io.File(nativeVoiceFilePath);
+                if (f.exists()) f.delete();
+                nativeVoiceRecorder = new android.media.MediaRecorder();
+                nativeVoiceRecorder.setAudioSource(android.media.MediaRecorder.AudioSource.MIC);
+                nativeVoiceRecorder.setOutputFormat(android.media.MediaRecorder.OutputFormat.MPEG_4);
+                nativeVoiceRecorder.setAudioEncoder(android.media.MediaRecorder.AudioEncoder.AAC);
+                nativeVoiceRecorder.setAudioEncodingBitRate(48000);
+                nativeVoiceRecorder.setAudioSamplingRate(44100);
+                nativeVoiceRecorder.setAudioChannels(1);
+                nativeVoiceRecorder.setOutputFile(nativeVoiceFilePath);
+                nativeVoiceRecorder.prepare();
+                nativeVoiceRecorder.start();
+                nativeVoiceStartTime = System.currentTimeMillis();
+                return true;
+            } catch (Exception e) {
+                nativeVoiceRecorder = null;
+                evalJs("if(window.gsNativeMicDenied) window.gsNativeMicDenied();");
+                return false;
+            }
+        }
+
+        @JavascriptInterface
+        public void stopVoiceRecording(String jsCallback) {
+            android.media.MediaRecorder rec = nativeVoiceRecorder;
+            nativeVoiceRecorder = null;
+            final long durMs = System.currentTimeMillis() - nativeVoiceStartTime;
+            final String path = nativeVoiceFilePath;
+            final String cb = jsCallback;
+            if (rec == null) { evalJs(cb + "(null, 0)"); return; }
+            try { rec.stop(); } catch (Exception ignored) {}
+            try { rec.release(); } catch (Exception ignored) {}
+            new Thread(() -> {
+                String b64 = null;
+                try {
+                    java.io.File f = new java.io.File(path);
+                    if (f.exists() && f.length() > 0) {
+                        byte[] bytes = java.nio.file.Files.readAllBytes(f.toPath());
+                        b64 = android.util.Base64.encodeToString(bytes, android.util.Base64.NO_WRAP);
+                    }
+                } catch (Exception ignored) {}
+                try { new java.io.File(path).delete(); } catch (Exception ignored) {}
+                final String result = b64;
+                evalJs(cb + "(" + (result == null ? "null" : "'" + result + "'") + ", " + Math.round(durMs / 1000.0) + ")");
+            }).start();
+        }
+
+        @JavascriptInterface
+        public void cancelVoiceRecording() {
+            android.media.MediaRecorder rec = nativeVoiceRecorder;
+            nativeVoiceRecorder = null;
+            if (rec != null) {
+                try { rec.stop(); } catch (Exception ignored) {}
+                try { rec.release(); } catch (Exception ignored) {}
+            }
+            if (nativeVoiceFilePath != null) {
+                try { new java.io.File(nativeVoiceFilePath).delete(); } catch (Exception ignored) {}
+            }
         }
 
         @JavascriptInterface

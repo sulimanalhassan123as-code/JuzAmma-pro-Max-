@@ -3010,7 +3010,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v75 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v76 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3070,7 +3070,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v75 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v76 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -4939,7 +4939,7 @@ let azanCheckInterval = null;
 let _swReady = false;
 
 // ── Version guard: force stale phones off old cached builds ──
-const APP_VERSION = 'v75';
+const APP_VERSION = 'v76';
 (function versionGuard(){
   try{
     const lastV = localStorage.getItem('appVersion');
@@ -8364,8 +8364,38 @@ async function gsSendText() {
 }
 
 // ── Mic button (voice recording) ──
+let gsRecordingNative = false;
+window.gsNativeMicDenied = function(){
+  toast('⚠️ Microphone blocked — allow mic access in app settings');
+  const btn = document.getElementById('gs-mic-btn');
+  if (btn) { btn.classList.remove('recording'); btn.textContent = '🎤'; }
+};
 async function gsToggleRecord() {
   if (gsRecording) { gsStopRecording(false); return; }
+  // NATIVE PATH (installed APK): Android WebView's web MediaRecorder is
+  // unreliable — use the native AAC recorder and get base64 back instead.
+  if (window.AndroidBridge && window.AndroidBridge.startVoiceRecording) {
+    const btn = document.getElementById('gs-mic-btn');
+    const timer = document.getElementById('gs-rec-timer');
+    const input = document.getElementById('gs-text-input');
+    const wrap = document.getElementById('gs-chat-input');
+    const ok = window.AndroidBridge.startVoiceRecording();
+    if (!ok) { toast('⚠️ Microphone blocked — allow mic access in app settings'); return; }
+    gsRecording = true; gsRecordingNative = true; gsRecStartTime = Date.now();
+    if (btn) { btn.classList.add('recording'); btn.textContent = '⏹'; }
+    if (timer) { timer.style.display = ''; timer.textContent = '0:00'; }
+    if (input) input.style.display = 'none';
+    if (wrap) wrap.style.background = 'rgba(224,83,61,.08)';
+    clearInterval(gsRecTimerInt);
+    gsRecTimerInt = setInterval(() => {
+      const elapsed = (Date.now() - gsRecStartTime) / 1000;
+      if (timer) timer.textContent = gsFmtTime(elapsed);
+    }, 200);
+    clearTimeout(window.__gsRecTimeout);
+    window.__gsRecTimeout = setTimeout(() => { if (gsRecording) gsStopRecording(false); }, 45000);
+    return;
+  }
+  // WEB PATH (browser/PWA)
   // Clean up any leftover recorder from previous session
   if (gsMediaRecorder) {
     try { gsMediaRecorder.stop(); } catch(e) {}
@@ -8383,7 +8413,7 @@ async function gsToggleRecord() {
     gsMediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) gsRecChunks.push(e.data); };
     gsMediaRecorder.onstop = () => { stream.getTracks().forEach(t => t.stop()); };
     gsMediaRecorder.start();
-    gsRecording = true;
+    gsRecording = true; gsRecordingNative = false;
     gsRecStartTime = Date.now();
 
     const btn = document.getElementById('gs-mic-btn');
@@ -8406,9 +8436,60 @@ async function gsToggleRecord() {
   }
 }
 
+function gsNativeVoiceReady(base64, durationSec) {
+  gsRecording = false; gsRecordingNative = false;
+  if (!base64 || durationSec < 0.6) {
+    const sb = document.querySelector('.gs-sending-voice');
+    if (sb) sb.remove();
+    if (durationSec >= 0 && durationSec < 0.6) toast('🎙️ Recording too short');
+    return;
+  }
+  window.gsSendVoiceBase64(base64, durationSec);
+}
+window.gsSendVoiceBase64 = async function(base64, durationSec) {
+  // Show "sending" indicator
+  const chatArea = document.getElementById('gs-chat-area');
+  if (chatArea) {
+    const sendingBubble = document.createElement('div');
+    sendingBubble.className = 'gs-bubble me pending gs-sending-voice';
+    sendingBubble.innerHTML = '<div class="gs-bubble-inner voice"><div style="display:flex;align-items:center;gap:8px;padding:6px 12px"><div class="gs-wave-bar" style="width:100px"><div class="gs-wave-fill" style="animation:gs-pulse 1s infinite"></div></div><span style="font-size:.7rem;color:var(--txt2)">Sending... ⏳</span></div></div>';
+    chatArea.appendChild(sendingBubble);
+    chatArea.scrollTop = chatArea.scrollHeight;
+  }
+  try {
+    const res = await fetch(GS_VOICE_HUB, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'send', roomCode: gsRoomCode, userName: gsUserName, audioBase64: base64, durationSec })
+    });
+    const d = await res.json();
+    const sb = document.querySelector('.gs-sending-voice');
+    if (sb) sb.remove();
+    if (!d.ok) { toast('⚠️ ' + (d.error || 'Failed to send voice')); return; }
+    gsPollVoice();
+  } catch(e) {
+    const sb = document.querySelector('.gs-sending-voice');
+    if (sb) sb.remove();
+    toast('⚠️ Failed to send voice note');
+  }
+};
 function gsStopRecording(discard) {
   clearTimeout(window.__gsRecTimeout);
   clearInterval(gsRecTimerInt);
+  // NATIVE PATH
+  if (gsRecordingNative) {
+    gsRecording = false;
+    const btn = document.getElementById('gs-mic-btn');
+    const timer = document.getElementById('gs-rec-timer');
+    const input = document.getElementById('gs-text-input');
+    const wrap = document.getElementById('gs-chat-input');
+    if (btn) { btn.classList.remove('recording'); btn.textContent = '🎤'; }
+    if (timer) timer.style.display = 'none';
+    if (input) input.style.display = '';
+    if (wrap) wrap.style.background = '';
+    if (discard) { window.AndroidBridge.cancelVoiceRecording(); return; }
+    window.AndroidBridge.stopVoiceRecording('gsNativeVoiceReady');
+    return;
+  }
   if (!gsRecording || !gsMediaRecorder) { gsRecording = false; return; }
   gsRecording = false;
   const durationSec = (Date.now() - gsRecStartTime) / 1000;
@@ -8563,7 +8644,23 @@ async function tjToggleRecord() {
   }
 }
 
+window.tjNativeDone = function(){ tjAnalyze(); };
 async function tjStartRecord() {
+  // NATIVE PATH (installed APK) — WebView MediaRecorder is unreliable
+  if (window.AndroidBridge && window.AndroidBridge.startVoiceRecording) {
+    const ok = window.AndroidBridge.startVoiceRecording();
+    if (!ok) { toast('⚠️ Microphone blocked — allow mic access in app settings'); return; }
+    tjSeconds = 0; tjRecording = true;
+    document.getElementById('tj-mic').classList.add('recording');
+    document.getElementById('tj-mic').textContent = '⏹';
+    document.getElementById('tj-mic-lbl').textContent = 'Recording... tap to stop';
+    tjTimerInt = setInterval(() => {
+      tjSeconds++;
+      document.getElementById('tj-timer').textContent = Math.floor(tjSeconds/60)+':'+(tjSeconds%60<10?'0':'')+tjSeconds%60;
+      if (tjSeconds >= 60) tjStopRecord();
+    }, 1000);
+    return;
+  }
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio:true });
     tjChunks = []; tjSeconds = 0;
@@ -8587,8 +8684,18 @@ async function tjStartRecord() {
 }
 
 function tjStopRecord() {
-  if (!tjMediaRec) return;
   clearInterval(tjTimerInt);
+  // NATIVE PATH
+  if (window.AndroidBridge && window.AndroidBridge.stopVoiceRecording && !tjMediaRec) {
+    tjRecording = false;
+    document.getElementById('tj-mic').classList.remove('recording');
+    document.getElementById('tj-mic').textContent = '🎙️';
+    document.getElementById('tj-mic-lbl').textContent = 'Tap to Record';
+    document.getElementById('tj-timer').textContent = '';
+    window.AndroidBridge.stopVoiceRecording('tjNativeDone');
+    return;
+  }
+  if (!tjMediaRec) return;
   tjMediaRec.stop();
   tjMediaRec.stream.getTracks().forEach(t => t.stop());
   tjRecording = false;
@@ -8910,8 +9017,17 @@ function showDuas(catId) {
 function shareDua(catId, idx) {
   const d = HSN_DUAS[catId][idx];
   const text = d.ar + '\n\n' + (d.tr||'') + '\n\n' + (d.en||'') + '\n\n— Hisn al-Muslim\n\nFrom Juz Amma Pro Max';
-  if (navigator.share) { navigator.share({text: text}); }
-  else { navigator.clipboard.writeText(text); alert('Dua copied! Paste to share.'); }
+  if (navigator.share) { navigator.share({text: text}).catch(()=>{}); }
+  else if (navigator.clipboard) { navigator.clipboard.writeText(text); toast('📋 Dua copied! Paste to share.'); }
+  else {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); ta.remove();
+      toast('📋 Dua copied! Paste to share.');
+    } catch(e) { toast('📤 Could not share on this device'); }
+  }
 }
 
 // ===== DUA AUDIO (real recorded recitation from Hisn al-Muslim) =====
