@@ -4,7 +4,7 @@
 // Strategy: Cache-first for assets, Network-first for Quran API
 // ============================================================
 
-const CACHE_NAME = 'juzamma-pro-v73-20260903105800';
+const CACHE_NAME = 'juzamma-pro-v74-20260904004313';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -20,6 +20,9 @@ let swPrayerTimes = {};
 let swAzanCheckInterval = null;
 let swLastAzanFired = {};
 let swSelectedAzan = 'makkah';
+let swDailyAyahEnabled = false;
+let swDailyAyahTime = '08:00';
+let swLastAyahDate = null;
 
 // ── Install: pre-cache static assets ──────────────────────
 self.addEventListener('install', event => {
@@ -62,7 +65,31 @@ function startSwAzanWatch() {
         }
       }
     });
+    // Daily Ayah reminder (background push)
+    if (swDailyAyahEnabled && hhmm >= swDailyAyahTime) {
+      const today = now.toDateString();
+      if (swLastAyahDate !== today) {
+        swLastAyahDate = today;
+        fireDailyAyahNotification();
+      }
+    }
   }, 30000);
+}
+
+function fireDailyAyahNotification() {
+  const msgs = [
+    'SubhanAllah — Glory be to Allah ✨',
+    'Alhamdulillah — All praise is for Allah 🌙',
+    'Allahu Akbar — Allah is the Greatest 🕌',
+    'La ilaha illallah — There is no god but Allah ☪️'
+  ];
+  self.registration.showNotification('📖 Daily Ayah & Dhikr', {
+    body: msgs[Math.floor(Math.random() * msgs.length)] + '\nOpen the app to read today\'s ayah',
+    icon: './icons/icon-192-192.svg',
+    badge: './icons/icon-192-192.svg',
+    tag: 'daily-ayah',
+    vibrate: [300, 100, 300]
+  });
 }
 
 function fireAzanNotification(prayerName) {
@@ -125,6 +152,22 @@ self.addEventListener('message', event => {
   }
   if (event.data.type === 'AZAN_UPDATE_VOICE') {
     swSelectedAzan = event.data.selectedAzan || swSelectedAzan;
+  }
+  if (event.data.type === 'DAILY_AYAH_ENABLE') {
+    swDailyAyahEnabled = true;
+    swDailyAyahTime = event.data.time || '08:00';
+  }
+  if (event.data.type === 'DAILY_AYAH_DISABLE') {
+    swDailyAyahEnabled = false;
+  }
+  if (event.data.type === 'TEST_NOTIF') {
+    self.registration.showNotification('🕌 Naba Quran — Test', {
+      body: '✅ Background notifications are working!\nAzan alarms will reach you even when the app is closed.',
+      icon: './icons/icon-192-192.svg',
+      badge: './icons/icon-192-192.svg',
+      tag: 'test-notif',
+      vibrate: [300, 100, 300]
+    });
   }
 });
 

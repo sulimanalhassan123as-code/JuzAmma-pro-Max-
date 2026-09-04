@@ -2151,6 +2151,7 @@ body { font-family:'Poppins',sans-serif;
           <span style="font-size:.65rem;opacity:.5">tap to hear</span>
         </div>
         <button class="azan-test-btn" onclick="testAzanNow()">🔔 Test Ring Now</button>
+        <button class="azan-test-btn" style="background:rgba(255,255,255,.08)" onclick="testNotification()">📣 Test Notification</button>
         <div class="azan-next-info" id="azan-next-info">Enable to get Azan at each prayer time</div>
       </div>
     </div>
@@ -3009,7 +3010,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v68 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v74 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3069,7 +3070,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v68 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v74 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -4937,6 +4938,21 @@ let azanAudio = null;
 let azanCheckInterval = null;
 let _swReady = false;
 
+// ── Version guard: force stale phones off old cached builds ──
+const APP_VERSION = 'v74';
+(function versionGuard(){
+  try{
+    const lastV = localStorage.getItem('appVersion');
+    if(lastV !== APP_VERSION){
+      localStorage.setItem('appVersion', APP_VERSION);
+      if('caches' in window){
+        caches.keys().then(keys => keys.forEach(k => caches.delete(k))).catch(()=>{});
+      }
+      if(lastV) window.location.reload(); // one-time hard refresh onto the new build
+    }
+  }catch(e){}
+})();
+
 // ── Aggressive stale-content prevention ──
 // 1. bfcache: page restored from frozen snapshot
 window.addEventListener('pageshow', (e) => {
@@ -5121,6 +5137,27 @@ function testAzanNow(){
   playAzanFor('Fajr');
   toast('🕌 Testing Azan — listen!');
 }
+function testNotification(){
+  if(!('Notification' in window)){ toast('Notifications not supported on this device'); return; }
+  if(Notification.permission === 'denied'){
+    toast('⚠️ Notifications blocked — enable them in your browser/app settings');
+    return;
+  }
+  Notification.requestPermission().then(p => {
+    if(p === 'granted'){
+      if(navigator.serviceWorker.controller){
+        navigator.serviceWorker.controller.postMessage({ type:'TEST_NOTIF' });
+      }
+      new Notification('🕌 Naba Quran', {
+        body: '✅ Notifications are working!\nYou will be notified at Azan times and for your Daily Ayah.',
+        icon:'./icons/icon-192-192.svg'
+      });
+      toast('✅ Test notification sent!');
+    } else {
+      toast('Notifications not allowed — try again and tap Allow');
+    }
+  });
+}
 
 function toggleAzan(){
   azanEnabled = !azanEnabled;
@@ -5273,7 +5310,18 @@ function renderAzanVoices(){
 function requestDailyNotif(){
   if(!('Notification' in window)){toast('Notifications not supported');return;}
   Notification.requestPermission().then(p=>{
-    if(p==='granted'){localStorage.setItem('dailyNotif','1');toast('✅ Daily Ayah notifications ON!');}
+    if(p==='granted'){
+      localStorage.setItem('dailyNotif','1');
+      // Sync to service worker for background delivery (even when app is closed)
+      if(_swReady && navigator.serviceWorker.controller){
+        navigator.serviceWorker.controller.postMessage({ type:'DAILY_AYAH_ENABLE', time:'08:00' });
+      }
+      // Also arm the native Android path for APK users
+      if(window.AndroidBridge && window.AndroidBridge.scheduleDailyAyahAlarm){
+        try { window.AndroidBridge.scheduleDailyAyahAlarm(8, 0); } catch(e){}
+      }
+      toast('✅ Daily Ayah notifications ON — you will get a reminder each morning!');
+    }
     else toast('Please enable notifications in browser settings');
   });
 }
