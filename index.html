@@ -3010,7 +3010,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v77 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v78 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3070,7 +3070,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v77 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v78 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -4953,7 +4953,7 @@ let azanCheckInterval = null;
 let _swReady = false;
 
 // ── Version guard: force stale phones off old cached builds ──
-const APP_VERSION = 'v77';
+const APP_VERSION = 'v78';
 (function versionGuard(){
   try{
     const lastV = localStorage.getItem('appVersion');
@@ -6785,6 +6785,41 @@ function setLangAndGo(lang) {
 // ================================================================
 // ═══ CLASSROOM STATE ═══
 const GS_VOICE_HUB = 'https://elara-c85c9ecb.base44.app/functions/groupVoiceHub';
+
+// v77: Group Study network calls previously used plain one-shot fetch() with
+// no retry/timeout — a single blip on the network (same class of issue that
+// broke Quran loading) permanently dead-ended actions like Join Room, Room
+// Hub browsing, and My Rooms with a raw "Failed to fetch" and no recovery
+// path. This wraps every GS_VOICE_HUB call with the same retry+backoff
+// pattern already used for the Quran data fetch.
+function gsFetchWithRetry(payload, tries=3, delayMs=700, timeoutMs=12000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  return fetch(GS_VOICE_HUB, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload), signal: controller.signal
+  }).then(r => { clearTimeout(timer); return r.json(); })
+    .catch(err => {
+      clearTimeout(timer);
+      if (tries <= 1) throw err;
+      return new Promise(res => setTimeout(res, delayMs)).then(() =>
+        gsFetchWithRetry(payload, tries - 1, delayMs * 2, timeoutMs));
+    });
+}
+
+// v77: initGroupStudy() was being called on every visit to the Group Study
+// tab (goToView) but was never actually defined anywhere in the file — a
+// leftover reference from an earlier cleanup pass. That threw a
+// ReferenceError on every single visit to this screen. Defined here to
+// restore the last-used display name and ensure a clean lobby state.
+function initGroupStudy() {
+  try {
+    const nameEl = document.getElementById('gs-myname');
+    const savedName = localStorage.getItem('gs_username');
+    if (nameEl && savedName && !nameEl.value) nameEl.value = savedName;
+    gsShowLobby();
+  } catch(e) {}
+}
 let gsIsTeacher = false, gsRoomState = null, gsRoomPollTimer = null;
 let gsCurrentSurah = 78, gsCurrentVerse = 1;
 let gsPinnedVerses = [], gsCompletedSurahs = [], gsRaisedHands = [];
@@ -6832,22 +6867,14 @@ async function gsCreateRoomWithCategory(catId) {
   const desc = (document.getElementById('gs-room-desc-input')?.value || '').trim();
   gsSetLobbyStatus('Creating room...');
   try {
-    const res = await fetch(GS_VOICE_HUB, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'createRoom', userName: name, roomType:'student', category: catId, roomName: roomName, description: desc, isPublic: true })
-    });
-    const d = await res.json();
+    const d = await gsFetchWithRetry({ action:'createRoom', userName: name, roomType:'student', category: catId, roomName: roomName, description: desc, isPublic: true });
     if (!d.ok) throw new Error(d.error);
     gsRoomCode = d.roomCode;
     toast('✅ Room ' + d.roomCode + ' created!');
     // Get room data
-    const roomRes = await fetch(GS_VOICE_HUB, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'getRoom', roomCode: d.roomCode, userName: name })
-    });
-    const roomData = await roomRes.json();
+    const roomData = await gsFetchWithRetry({ action:'getRoom', roomCode: d.roomCode, userName: name });
     if (roomData.ok) {
-      gsUserName = name;
+      gsUserName = name; try{localStorage.setItem('gs_username', name);}catch(e){}
       gsEnterRoom(roomData);
     }
     document.getElementById('gs-student-categories').style.display = 'none';
@@ -6859,7 +6886,7 @@ async function gsCreateRoomWithCategory(catId) {
 async function gsShowTeacherFlow() {
   const name = document.getElementById('gs-myname').value.trim();
   if (!name) { toast('✋ Enter your name first'); return; }
-  gsUserName = name;
+  gsUserName = name; try{localStorage.setItem('gs_username', name);}catch(e){}
   // Check if already qualified
   try {
     const res = await fetch(GS_VOICE_HUB, {
@@ -6999,20 +7026,12 @@ async function gsCreateTeacherRoom() {
   const roomName = (document.getElementById('gs-room-name-input')?.value || '').trim() || (gsUserName + "'s Classroom");
   const desc = (document.getElementById('gs-room-desc-input')?.value || '').trim();
   try {
-    const res = await fetch(GS_VOICE_HUB, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'createRoom', userName: gsUserName, roomType:'teacher', category:'teacher', roomName: roomName, description: desc, isPublic: true })
-    });
-    const d = await res.json();
+    const d = await gsFetchWithRetry({ action:'createRoom', userName: gsUserName, roomType:'teacher', category:'teacher', roomName: roomName, description: desc, isPublic: true });
     if (!d.ok) throw new Error(d.error);
     gsRoomCode = d.roomCode;
     toast('✅ Teacher classroom created: ' + d.roomCode);
     // Get room data and enter
-    const roomRes = await fetch(GS_VOICE_HUB, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'getRoom', roomCode: d.roomCode, userName: gsUserName })
-    });
-    const roomData = await roomRes.json();
+    const roomData = await gsFetchWithRetry({ action:'getRoom', roomCode: d.roomCode, userName: gsUserName });
     if (roomData.ok) {
       document.getElementById('gs-qual-wrap').style.display = 'none';
       gsEnterRoom(roomData);
@@ -7027,25 +7046,17 @@ async function gsJoin() {
   const code = document.getElementById('gs-joincode').value.trim().toUpperCase();
   if (!name) { toast('✋ Enter your name first'); return; }
   if (code.length < 4) { toast('✋ Enter the room code'); return; }
-  gsUserName = name;
+  gsUserName = name; try{localStorage.setItem('gs_username', name);}catch(e){}
   gsSetLobbyStatus('Joining room ' + code + '...');
   try {
     // First join the room (creates membership record)
-    const joinRes = await fetch(GS_VOICE_HUB, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'joinRoom', roomCode: code, userName: name })
-    });
-    const joinData = await joinRes.json();
+    const joinData = await gsFetchWithRetry({ action:'joinRoom', roomCode: code, userName: name });
     if (!joinData.ok) {
       if (joinData.alreadyMember) { /* fine, already a member */ }
       else throw new Error(joinData.error || 'Failed to join room');
     }
     // Then get room data
-    const res = await fetch(GS_VOICE_HUB, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'getRoom', roomCode: code, userName: name })
-    });
-    const d = await res.json();
+    const d = await gsFetchWithRetry({ action:'getRoom', roomCode: code, userName: name });
     if (!d.ok) throw new Error(d.error || 'Room not found');
     gsRoomCode = code;
     toast('✅ Joined room!');
@@ -7719,7 +7730,7 @@ function gsShowLobby() {
 function gsShowHub() {
   const name = document.getElementById('gs-myname').value.trim();
   if (!name) { toast('✋ Enter your name first'); return; }
-  gsUserName = name;
+  gsUserName = name; try{localStorage.setItem('gs_username', name);}catch(e){}
   document.getElementById('gs-lobby-wrap').style.display = 'none';
   document.getElementById('gs-hub-wrap').style.display = '';
   hubLoad();
@@ -7728,7 +7739,7 @@ function gsShowHub() {
 function gsShowMyRooms() {
   const name = document.getElementById('gs-myname').value.trim();
   if (!name) { toast('✋ Enter your name first'); return; }
-  gsUserName = name;
+  gsUserName = name; try{localStorage.setItem('gs_username', name);}catch(e){}
   document.getElementById('gs-lobby-wrap').style.display = 'none';
   document.getElementById('gs-myrooms-wrap').style.display = '';
   myRoomsLoad();
@@ -7743,11 +7754,7 @@ let hubNewRooms = [];
 
 async function hubLoad() {
   try {
-    const res = await fetch(GS_VOICE_HUB, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'getHub', userName: gsUserName })
-    });
-    const d = await res.json();
+    const d = await gsFetchWithRetry({ action:'getHub', userName: gsUserName });
     if (!d.ok) return;
     hubAllRooms = d.rooms || [];
     hubActiveRooms = d.active || [];
@@ -7871,11 +7878,7 @@ function hubSearch() {
 // ═══ MY ROOMS ═══
 async function myRoomsLoad() {
   try {
-    const res = await fetch(GS_VOICE_HUB, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'myRooms', userName: gsUserName })
-    });
-    const d = await res.json();
+    const d = await gsFetchWithRetry({ action:'myRooms', userName: gsUserName });
     if (!d.ok) return;
     const ownedEl = document.getElementById('myrooms-owned');
     const joinedEl = document.getElementById('myrooms-joined');
