@@ -3010,7 +3010,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v81 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v82 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3070,7 +3070,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v81 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v82 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3946,6 +3946,25 @@ const MAX_RETRIES = 3;
 // via /api/ey (same fix pattern as self-hosting the Quran text), with
 // automatic fallback to the direct URL if the proxy ever fails.
 const EY_PROXY = /(^|\.)vercel\.app$/.test(location.hostname);
+// Same-origin proxy for this app's own backend functions (getAppConfig,
+// islamicAiProxy, groupVoiceHub) — carrier-proof against blocked domains,
+// same pattern as eyUrl() above. Falls back to the direct URL on request.
+function fnUrl(name) {
+  return EY_PROXY ? ('/api/fn?name=' + name) : ('https://elara-c85c9ecb.base44.app/functions/' + name);
+}
+function fnDirectUrl(name) {
+  return 'https://elara-c85c9ecb.base44.app/functions/' + name;
+}
+// fetch a backend function with automatic fallback to the direct URL if
+// the same-origin proxy fails (network error, not just non-2xx).
+async function fetchFn(name, opts) {
+  try {
+    return await fetch(fnUrl(name), opts);
+  } catch (e) {
+    if (!EY_PROXY) throw e;
+    return await fetch(fnDirectUrl(name), opts);
+  }
+}
 function eyUrl(ritz, ss, vv) {
   const p = ritz + '/' + ss + vv + '.mp3';
   return EY_PROXY ? '/api/ey?p=' + encodeURIComponent(p) : 'https://everyayah.com/data/' + p;
@@ -4859,11 +4878,11 @@ function addGuideMsg(guide) {
   requestAnimationFrame(() => { a.scrollTop = a.scrollHeight; });
 }
 // ── Server-side config (global settings from admin panel) ──
-const SERVER_CONFIG_URL = 'https://elara-c85c9ecb.base44.app/functions/getAppConfig';
+// SERVER_CONFIG_URL replaced by fetchFn('getAppConfig') — same-origin proxy with fallback
 let _serverConfig = null;
 async function loadServerConfig() {
   try {
-    const res = await fetch(SERVER_CONFIG_URL);
+    const res = await fetchFn('getAppConfig');
     const data = await res.json();
     if (data.ok && data.config) {
       _serverConfig = data.config;
@@ -4924,7 +4943,7 @@ async function sendChat() {
   
   // No local match — try remote AI for general questions
   try {
-    const r=await fetch('https://elara-c85c9ecb.base44.app/functions/islamicAiProxy',{
+    const r=await fetchFn('islamicAiProxy',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({message:txt})
@@ -6773,7 +6792,7 @@ function setLangAndGo(lang) {
 // GROUP STUDY — Real-time Quran reading with friends
 // ================================================================
 // ═══ CLASSROOM STATE ═══
-const GS_VOICE_HUB = 'https://elara-c85c9ecb.base44.app/functions/groupVoiceHub';
+// GS_VOICE_HUB replaced by fetchFn('groupVoiceHub', ...) — same-origin proxy with fallback
 let gsIsTeacher = false, gsRoomState = null, gsRoomPollTimer = null;
 let gsCurrentSurah = 78, gsCurrentVerse = 1;
 let gsPinnedVerses = [], gsCompletedSurahs = [], gsRaisedHands = [];
@@ -6821,7 +6840,7 @@ async function gsCreateRoomWithCategory(catId) {
   const desc = (document.getElementById('gs-room-desc-input')?.value || '').trim();
   gsSetLobbyStatus('Creating room...');
   try {
-    const res = await fetch(GS_VOICE_HUB, {
+    const res = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'createRoom', userName: name, roomType:'student', category: catId, roomName: roomName, description: desc, isPublic: true })
     });
@@ -6830,7 +6849,7 @@ async function gsCreateRoomWithCategory(catId) {
     gsRoomCode = d.roomCode;
     toast('✅ Room ' + d.roomCode + ' created!');
     // Get room data
-    const roomRes = await fetch(GS_VOICE_HUB, {
+    const roomRes = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'getRoom', roomCode: d.roomCode, userName: name })
     });
@@ -6851,7 +6870,7 @@ async function gsShowTeacherFlow() {
   gsUserName = name;
   // Check if already qualified
   try {
-    const res = await fetch(GS_VOICE_HUB, {
+    const res = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'checkQualification', userName: name })
     });
@@ -6889,7 +6908,7 @@ let gsQualId = null;
 async function gsStartQualification() {
   gsSetLobbyStatus('');
   try {
-    const res = await fetch(GS_VOICE_HUB, {
+    const res = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'startQualification', userName: gsUserName })
     });
@@ -6955,7 +6974,7 @@ async function gsSubmitQualification() {
     return;
   }
   try {
-    const res = await fetch(GS_VOICE_HUB, {
+    const res = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'submitQualification', qualificationId: gsQualId, userName: gsUserName, answers: gsQualAnswers })
     });
@@ -6988,7 +7007,7 @@ async function gsCreateTeacherRoom() {
   const roomName = (document.getElementById('gs-room-name-input')?.value || '').trim() || (gsUserName + "'s Classroom");
   const desc = (document.getElementById('gs-room-desc-input')?.value || '').trim();
   try {
-    const res = await fetch(GS_VOICE_HUB, {
+    const res = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'createRoom', userName: gsUserName, roomType:'teacher', category:'teacher', roomName: roomName, description: desc, isPublic: true })
     });
@@ -6997,7 +7016,7 @@ async function gsCreateTeacherRoom() {
     gsRoomCode = d.roomCode;
     toast('✅ Teacher classroom created: ' + d.roomCode);
     // Get room data and enter
-    const roomRes = await fetch(GS_VOICE_HUB, {
+    const roomRes = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'getRoom', roomCode: d.roomCode, userName: gsUserName })
     });
@@ -7020,7 +7039,7 @@ async function gsJoin() {
   gsSetLobbyStatus('Joining room ' + code + '...');
   try {
     // First join the room (creates membership record)
-    const joinRes = await fetch(GS_VOICE_HUB, {
+    const joinRes = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'joinRoom', roomCode: code, userName: name })
     });
@@ -7030,7 +7049,7 @@ async function gsJoin() {
       else throw new Error(joinData.error || 'Failed to join room');
     }
     // Then get room data
-    const res = await fetch(GS_VOICE_HUB, {
+    const res = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'getRoom', roomCode: code, userName: name })
     });
@@ -7139,7 +7158,7 @@ function gsStopRoomPoll() {
 async function gsPollRoom() {
   if (!gsRoomCode) return;
   try {
-    const res = await fetch(GS_VOICE_HUB, {
+    const res = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'getRoom', roomCode: gsRoomCode, userName: gsUserName })
     });
@@ -7250,7 +7269,7 @@ async function gsToggleRaiseHand() {
   if (!gsRoomCode) return;
   gsHandRaised = !gsHandRaised;
   try {
-    await fetch(GS_VOICE_HUB, {
+    await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'raiseHand', roomCode: gsRoomCode, userName: gsUserName, lower: !gsHandRaised })
     });
@@ -7261,7 +7280,7 @@ async function gsToggleRaiseHand() {
 async function gsClearHands() {
   if (!gsIsTeacher) return;
   try {
-    await fetch(GS_VOICE_HUB, {
+    await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'updateRoom', roomCode: gsRoomCode, userName: gsUserName, raisedHands: '[]' })
     });
@@ -7278,7 +7297,7 @@ async function gsChangeSurah() {
   gsLoadVerses();
   document.getElementById('gs-verse-lbl').textContent = 'Verse 1';
   try {
-    await fetch(GS_VOICE_HUB, {
+    await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'updateRoom', roomCode: gsRoomCode, userName: gsUserName, currentSurah: gsCurrentSurah, currentVerse: 1 })
     });
@@ -7298,7 +7317,7 @@ async function gsNextVerse() {
   document.getElementById('gs-verse-lbl').textContent = 'Verse ' + gsCurrentVerse;
   gsScrollToVerse();
   try {
-    await fetch(GS_VOICE_HUB, {
+    await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'updateRoom', roomCode: gsRoomCode, userName: gsUserName, currentVerse: gsCurrentVerse })
     });
@@ -7319,7 +7338,7 @@ async function gsPrevVerse() {
       if (sel) sel.value = gsCurrentSurah;
       gsLoadVerses();
       try {
-        await fetch(GS_VOICE_HUB, {
+        await fetchFn('groupVoiceHub', {
           method:'POST', headers:{'Content-Type':'application/json'},
           body: JSON.stringify({ action:'updateRoom', roomCode: gsRoomCode, userName: gsUserName, currentSurah: gsCurrentSurah, currentVerse: gsCurrentVerse })
         });
@@ -7330,7 +7349,7 @@ async function gsPrevVerse() {
   document.getElementById('gs-verse-lbl').textContent = 'Verse ' + gsCurrentVerse;
   gsScrollToVerse();
   try {
-    await fetch(GS_VOICE_HUB, {
+    await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'updateRoom', roomCode: gsRoomCode, userName: gsUserName, currentVerse: gsCurrentVerse })
     });
@@ -7348,7 +7367,7 @@ async function gsNextSurah() {
   gsLoadVerses();
   document.getElementById('gs-verse-lbl').textContent = 'Verse 1';
   try {
-    await fetch(GS_VOICE_HUB, {
+    await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'updateRoom', roomCode: gsRoomCode, userName: gsUserName, currentSurah: next, currentVerse: 1 })
     });
@@ -7381,7 +7400,7 @@ async function gsPinVerse() {
     toast('📌 Pinned verse ' + pin.verse);
   }
   try {
-    await fetch(GS_VOICE_HUB, {
+    await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'updateRoom', roomCode: gsRoomCode, userName: gsUserName, pinnedVerses: JSON.stringify(gsPinnedVerses) })
     });
@@ -7401,7 +7420,7 @@ async function gsMarkComplete() {
     toast('✅ ' + (surah ? surah.name : 'Surah') + ' marked complete!');
   }
   try {
-    await fetch(GS_VOICE_HUB, {
+    await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'updateRoom', roomCode: gsRoomCode, userName: gsUserName, completedSurahs: JSON.stringify(gsCompletedSurahs) })
     });
@@ -7498,7 +7517,7 @@ async function gsAssignHomework() {
   document.getElementById('gs-hw-desc').value = '';
   document.getElementById('gs-hw-due').value = '';
   try {
-    await fetch(GS_VOICE_HUB, {
+    await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'assignHomework', roomCode: gsRoomCode, userName: gsUserName, title, description: desc, dueDate: due })
     });
@@ -7509,7 +7528,7 @@ async function gsAssignHomework() {
 
 async function gsToggleHomework(hwId) {
   try {
-    await fetch(GS_VOICE_HUB, {
+    await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'toggleHomework', roomCode: gsRoomCode, userName: gsUserName, homeworkId: hwId })
     });
@@ -7519,7 +7538,7 @@ async function gsToggleHomework(hwId) {
 
 async function gsDeleteHomework(hwId) {
   try {
-    await fetch(GS_VOICE_HUB, {
+    await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'deleteHomework', roomCode: gsRoomCode, userName: gsUserName, homeworkId: hwId })
     });
@@ -7538,7 +7557,7 @@ async function gsSaveNotes() {
   const area = document.getElementById('gs-notes-area');
   if (!area) return;
   try {
-    await fetch(GS_VOICE_HUB, {
+    await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'updateRoom', roomCode: gsRoomCode, userName: gsUserName, classNotes: area.value })
     });
@@ -7552,7 +7571,7 @@ async function gsLeave() {
   gsStopRoomPoll();
   if (gsHandRaised && gsRoomCode) {
     try {
-      await fetch(GS_VOICE_HUB, {
+      await fetchFn('groupVoiceHub', {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ action:'raiseHand', roomCode: gsRoomCode, userName: gsUserName, lower: true })
       });
@@ -7614,7 +7633,7 @@ function gsEsc(s) {
 async function gsLoadMembers() {
   if (!gsRoomCode || !gsUserName) return;
   try {
-    const res = await fetch(GS_VOICE_HUB, {
+    const res = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'getMembers', roomCode: gsRoomCode, userName: gsUserName })
     });
@@ -7650,7 +7669,7 @@ async function gsLoadMembers() {
     }).join('') + '</div>';
     const settings = document.getElementById('gs-room-settings');
     if (settings) settings.style.display = gsIsTeacher ? 'block' : 'none';
-    const roomRes = await fetch(GS_VOICE_HUB, {
+    const roomRes = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'getRoom', roomCode: gsRoomCode, userName: gsUserName })
     });
@@ -7664,7 +7683,7 @@ async function gsLoadMembers() {
 
 async function gsManageMember(targetUser, op) {
   try {
-    const res = await fetch(GS_VOICE_HUB, {
+    const res = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'manageMember', roomCode: gsRoomCode, userName: gsUserName, targetUser, op })
     });
@@ -7677,7 +7696,7 @@ async function gsManageMember(targetUser, op) {
 async function gsSaveRules() {
   const rules = document.getElementById('gs-rules-input')?.value?.trim() || '';
   try {
-    const res = await fetch(GS_VOICE_HUB, {
+    const res = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'updateRoom', roomCode: gsRoomCode, userName: gsUserName, roomRules: rules })
     });
@@ -7689,7 +7708,7 @@ async function gsSaveRules() {
 async function gsSaveAnnouncement() {
   const ann = document.getElementById('gs-announcement-input')?.value?.trim() || '';
   try {
-    const res = await fetch(GS_VOICE_HUB, {
+    const res = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'updateRoom', roomCode: gsRoomCode, userName: gsUserName, announcement: ann })
     });
@@ -7732,7 +7751,7 @@ let hubNewRooms = [];
 
 async function hubLoad() {
   try {
-    const res = await fetch(GS_VOICE_HUB, {
+    const res = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'getHub', userName: gsUserName })
     });
@@ -7815,13 +7834,13 @@ const HUB_ICONS = {
 
 async function hubJoinRoom(code) {
   try {
-    const res = await fetch(GS_VOICE_HUB, {
+    const res = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'joinRoom', roomCode: code, userName: gsUserName })
     });
     const d = await res.json();
     if (!d.ok && !d.alreadyMember) { toast('❌ ' + d.error); return; }
-    const roomRes = await fetch(GS_VOICE_HUB, {
+    const roomRes = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'getRoom', roomCode: code, userName: gsUserName })
     });
@@ -7841,7 +7860,7 @@ function hubSearch() {
     const query = document.getElementById('hub-search').value.trim();
     if (!query) { hubRender(); return; }
     try {
-      const res = await fetch(GS_VOICE_HUB, {
+      const res = await fetchFn('groupVoiceHub', {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ action:'searchRooms', search: query })
       });
@@ -7860,7 +7879,7 @@ function hubSearch() {
 // ═══ MY ROOMS ═══
 async function myRoomsLoad() {
   try {
-    const res = await fetch(GS_VOICE_HUB, {
+    const res = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'myRooms', userName: gsUserName })
     });
@@ -7905,7 +7924,7 @@ async function gsPollVoice() {
   if (!gsRoomCode || !gsUserName) return;
   try {
     // Only fetch new messages (first load or refresh)
-    const res = await fetch(GS_VOICE_HUB, {
+    const res = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'list', roomCode: gsRoomCode, userName: gsUserName, limit: 50 })
     });
@@ -7946,7 +7965,7 @@ async function gsLoadArchived() {
   if (gsLoadingMore) return;
   gsLoadingMore = true;
   try {
-    const res = await fetch(GS_VOICE_HUB, {
+    const res = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'listArchived', roomCode: gsRoomCode, userName: gsUserName, limit: 50 })
     });
@@ -8091,7 +8110,7 @@ function gsCancelReply() {
 
 async function gsToggleReaction(msgId, emoji) {
   try {
-    const res = await fetch(GS_VOICE_HUB, {
+    const res = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'addReaction', roomCode: gsRoomCode, userName: gsUserName, messageId: msgId, emoji })
     });
@@ -8119,7 +8138,7 @@ async function gsEditMessage(msgId, oldText) {
   const newText = prompt('Edit message:', oldText);
   if (!newText || newText === oldText) return;
   try {
-    const res = await fetch(GS_VOICE_HUB, {
+    const res = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'editMessage', roomCode: gsRoomCode, userName: gsUserName, messageId: msgId, text: newText })
     });
@@ -8131,7 +8150,7 @@ async function gsEditMessage(msgId, oldText) {
 
 async function gsTogglePin(msgId) {
   try {
-    const res = await fetch(GS_VOICE_HUB, {
+    const res = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'togglePin', roomCode: gsRoomCode, userName: gsUserName, messageId: msgId })
     });
@@ -8144,7 +8163,7 @@ async function gsTogglePin(msgId) {
 async function gsDeleteMessage(msgId) {
   if (!confirm('Delete this message?')) return;
   try {
-    const res = await fetch(GS_VOICE_HUB, {
+    const res = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'deleteMessage', roomCode: gsRoomCode, userName: gsUserName, messageId: msgId })
     });
@@ -8221,7 +8240,7 @@ async function gsSearchMessages() {
   const query = (document.getElementById('gs-search-input')?.value || '').trim();
   if (!query) return;
   try {
-    const res = await fetch(GS_VOICE_HUB, {
+    const res = await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'searchMessages', roomCode: gsRoomCode, userName: gsUserName, query })
     });
@@ -8351,7 +8370,7 @@ async function gsSendText() {
   
   gsCancelReply();
   try {
-    await fetch(GS_VOICE_HUB, {
+    await fetchFn('groupVoiceHub', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'sendText', roomCode: gsRoomCode, userName: gsUserName, text, replyTo: gsReplyTo || '' })
     });
@@ -8465,7 +8484,7 @@ function gsStopRecording(discard) {
           const dataUrl = reader.result || '';
           const commaIdx = dataUrl.indexOf(',');
           const rawBase64 = commaIdx >= 0 ? dataUrl.substring(commaIdx + 1) : dataUrl;
-          const res = await fetch(GS_VOICE_HUB, {
+          const res = await fetchFn('groupVoiceHub', {
             method:'POST', headers:{'Content-Type':'application/json'},
             body: JSON.stringify({ action:'send', roomCode: gsRoomCode, userName: gsUserName, audioBase64: rawBase64, durationSec })
           });
@@ -8631,7 +8650,7 @@ async function tjAnalyze() {
     'Keep every line short (max 18 words). Warm, encouraging tone. Use the pipe character | to separate multiple items on the RULES and WORDS lines.';
 
   try {
-    const r = await fetch('https://elara-c85c9ecb.base44.app/functions/islamicAiProxy', {
+    const r = await fetchFn('islamicAiProxy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: prompt })
