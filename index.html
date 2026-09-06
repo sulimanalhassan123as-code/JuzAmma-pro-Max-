@@ -3010,7 +3010,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v79 (rollback) · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v80 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3070,7 +3070,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v79 (rollback) · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v80 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3216,6 +3216,7 @@ let streak    = parseInt(localStorage.getItem('streak')||'0');
 let activeFilter='all';
 let progInt;
 let aud = document.getElementById('aud');
+attachEyFallback(aud);
 visits++; localStorage.setItem('visits', visits);
 
 // ================================================================
@@ -3900,12 +3901,34 @@ function toggleNight() { nightMode=!nightMode; localStorage.setItem('nightMode',
 // ===== PRELOAD AUDIO SYSTEM =====
 let preloadAud = new Audio();
 preloadAud.preload = 'auto';
+attachEyFallback(preloadAud);
 let audioRetryCount = 0;
 const MAX_RETRIES = 3;
 
+// ── Verse-audio sources ──
+// Some carriers (observed on MTN Ghana) fail to reach everyayah.com
+// directly. On the Vercel host we serve verse audio from our OWN domain
+// via /api/ey (same fix pattern as self-hosting the Quran text), with
+// automatic fallback to the direct URL if the proxy ever fails.
+const EY_PROXY = /(^|\.)vercel\.app$/.test(location.hostname);
+function eyUrl(ritz, ss, vv) {
+  const p = ritz + '/' + ss + vv + '.mp3';
+  return EY_PROXY ? '/api/ey?p=' + encodeURIComponent(p) : 'https://everyayah.com/data/' + p;
+}
+function attachEyFallback(el) {
+  if (!el || el._eyFb) return;
+  el._eyFb = true;
+  el.addEventListener('error', function () {
+    const m = (el.src || '').match(/[?&]p=([^&]+)/);
+    if (!m) return;
+    el.src = 'https://everyayah.com/data/' + decodeURIComponent(m[1]);
+    if (!el.paused) el.play().catch(function(){});
+  });
+}
+
 function getVerseUrl(sid, vidx) {
   const ss=String(sid).padStart(3,'0'), vv=String(vidx+1).padStart(3,'0');
-  return `https://everyayah.com/data/${reciter}/${ss}${vv}.mp3`;
+  return eyUrl(reciter, ss, vv);
 }
 
 function preloadNextVerse() {
@@ -4130,6 +4153,7 @@ let memMode='listen', memReciter='Alafasy_128kbps';
 let memSurahId=0, memVerseIdx=0, memPlaying=false;
 let memLoop=1, memLoopCount=0, memPause=3, memAuto=true, memTransOn=false;
 let memProgress={}, memAudio=document.getElementById('mem-aud');
+attachEyFallback(memAudio);
 let memPauseTimer=null, memProgInterval=null;
 const loopOpts=[1,2,3,5,10], pauseOpts=[0,3,5,10,15];
 let loopCycle=0, pauseCycle=1;
@@ -4273,7 +4297,7 @@ function memPlayVerse(sid, idx) {
   const bar=document.getElementById('mab-'+idx); if(bar) bar.classList.add('on');
   // play audio
   const ss=String(sid).padStart(3,'0'), vv=String(idx+1).padStart(3,'0');
-  memAudio.src=`https://everyayah.com/data/${memReciter}/${ss}${vv}.mp3`;
+  memAudio.src=eyUrl(memReciter, ss, vv);
   memAudio.playbackRate=1;
   memPlaying=true; updateMemPlayBtn();
   memAudio.play().catch(()=>{});
@@ -5059,10 +5083,26 @@ function syncAlarmsToNative(){
 
 /* ── PRAYER TIMES ── */
 async function loadPrayerTimes(){
+  // Coordinates: try exact GPS; if unavailable, default to Accra so
+  // prayer times ALWAYS display instead of staying blank.
+  let lat=5.6037, lon=-0.1870, usingDefault=false;
   try{
     const pos=await new Promise((ok,no)=>navigator.geolocation.getCurrentPosition(ok,no,{timeout:6000}));
-    const r=await fetch('https://api.aladhan.com/v1/timings?latitude='+pos.coords.latitude+'&longitude='+pos.coords.longitude+'&method=3');
-    const d=await r.json();
+    lat=pos.coords.latitude; lon=pos.coords.longitude;
+  }catch(e){ usingDefault=true; }
+  // Try the prayer-times API via our own domain first (carrier-proof),
+  // then direct, then give up with the enable-location prompt.
+  let d=null;
+  const tryUrls=EY_PROXY
+    ? ['/api/pt?lat='+lat+'&lon='+lon+'&method=3',
+       'https://api.aladhan.com/v1/timings?latitude='+lat+'&longitude='+lon+'&method=3']
+    : ['https://api.aladhan.com/v1/timings?latitude='+lat+'&longitude='+lon+'&method=3',
+       '/api/pt?lat='+lat+'&lon='+lon+'&method=3'];
+  for(const u of tryUrls){
+    try{ const r=await fetch(u); const j=await r.json(); if(j&&j.data&&j.data.timings){d=j;break;} }catch(e){}
+  }
+  try{
+    if(!d||!d.data||!d.data.timings) throw new Error('no times');
     const t=d.data.timings;
     document.getElementById('pt-fajr').textContent=t.Fajr;
     document.getElementById('pt-dhuhr').textContent=t.Dhuhr;
@@ -5088,6 +5128,21 @@ async function loadPrayerTimes(){
     }
     // Sync to native Android AlarmManager
     if(azanEnabled) syncAlarmsToNative();
+    // If we're on Accra defaults, say so on the card (tap card to retry exact location)
+    if(usingDefault){
+      const pw=document.getElementById('next-prayer-card');
+      const note=document.getElementById('pt-default-note');
+      if(pw && !note){
+        const pad=pw.querySelector('.home-card-pad');
+        if(pad){
+          const el=document.createElement('div');
+          el.id='pt-default-note';
+          el.textContent='📍 Accra times — tap card & allow location for exact times';
+          el.style.cssText='text-align:center;font-size:.62rem;color:var(--txt2);margin-top:8px;position:relative;z-index:1;';
+          pad.appendChild(el);
+        }
+      }
+    }
   }catch(e){
     // Add a clickable prompt on the next-prayer card
     const pw=document.getElementById('next-prayer-card');
@@ -5387,6 +5442,10 @@ function initApp() {
   loadPrayerTimes();
   checkDailyNotif();
   renderAzanVoices();
+  // Show the Azan voice picker expanded by default so users can see it
+  const azD=document.getElementById('azan-details');
+  const azC=document.getElementById('azan-b-chev');
+  if(azD && !azD.classList.contains('open')){ azD.classList.add('open'); if(azC) azC.classList.add('open'); }
   // Restore prayer times from localStorage for instant alarm setup
   const savedTimes = localStorage.getItem('prayerTimes');
   const savedDate = localStorage.getItem('prayerTimesDate');
@@ -5712,6 +5771,7 @@ function togglePcard(i) {
 // NIGHT / QURAN RADIO
 // ================================================================
 let nightAudio = document.getElementById('night-aud'), nightPlaying = false, nightLoop = false;
+attachEyFallback(nightAudio);
 let nightMode_type = 'full', nightReciter2 = 'Alafasy_128kbps';
 let nightSurahId = 78, nightVerseIdx = 0, nightProgInt2, nightWakeLock = null;
 
@@ -5737,7 +5797,7 @@ function nightPlayVerse(sid, vidx) {
   document.getElementById('night-en').innerText = v.e;
   document.getElementById('night-lbl').innerText = `📖 ${s.name} — Verse ${v.n || vidx+1} / ${s.verses.length}`;
   const ss = String(sid).padStart(3,'0'), vv = String(vidx+1).padStart(3,'0');
-  nightAudio.src = `https://everyayah.com/data/${nightReciter2}/${ss}${vv}.mp3`;
+  nightAudio.src = eyUrl(nightReciter2, ss, vv);
   nightAudio.play().catch(()=>{});
   nightPlaying = true; updateNightBtn();
   clearInterval(nightProgInt2);
@@ -7319,9 +7379,9 @@ async function gsMarkComplete() {
 function gsPlayClassAudio() {
   const surah = qData.find(s => s.id === gsCurrentSurah);
   if (!surah) return;
-  const url = 'https://everyayah.com/data/Alafasy_128kbps/' + 
-    String(gsCurrentSurah).padStart(3,'0') + String(gsCurrentVerse).padStart(3,'0') + '.mp3';
+  const url = eyUrl('Alafasy_128kbps', String(gsCurrentSurah).padStart(3,'0'), String(gsCurrentVerse).padStart(3,'0'));
   const audio = new Audio(url);
+  attachEyFallback(audio);
   audio.play().catch(() => toast('⚠️ Could not load audio'));
   toast('🔊 Playing verse ' + gsCurrentVerse);
 }
