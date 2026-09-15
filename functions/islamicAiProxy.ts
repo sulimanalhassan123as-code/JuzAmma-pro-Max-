@@ -61,13 +61,13 @@ You are NOT a replacement for qualified scholars. You are a learning assistant.`
         "Authorization": `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: "openai/gpt-oss-120b",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userMessage },
         ],
         temperature: 0.7,
-        max_tokens: 1024,
+        max_tokens: 2048,
       }),
     });
 
