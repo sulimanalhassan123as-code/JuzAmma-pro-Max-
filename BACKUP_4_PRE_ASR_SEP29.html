@@ -1209,16 +1209,6 @@ body { font-family:'Poppins',sans-serif;
 .tj-sec-row b { color:#0f766e; }
 .tj-sec-tip { background:#fffbeb; border-color:rgba(245,158,11,.3); }
 .tj-sec-tip .tj-sec-title { color:#b45309; }
-
-/* Tajweed v2: word-by-word chips */
-.tj-words { display:flex; flex-wrap:wrap; gap:6px; direction:rtl; }
-.tj-word { padding:5px 12px; border-radius:12px; font-size:1.05rem; line-height:1.8; }
-.tj-w-ok { background:rgba(16,185,129,.12); color:#059669; }
-.tj-w-har { background:rgba(245,158,11,.16); color:#b45309; }
-.tj-w-sub { background:rgba(239,68,68,.15); color:#dc2626; text-decoration:underline wavy rgba(239,68,68,.7); }
-.tj-w-del { background:rgba(239,68,68,.08); color:#dc2626; border:1px dashed rgba(239,68,68,.5); opacity:.8; }
-.tj-w-ins { background:rgba(148,163,184,.16); color:#64748b; text-decoration:line-through; }
-.tj-w-fix { display:block; font-size:.72rem; opacity:.9; direction:ltr; text-decoration:none; }
 .tj-sec-quick { background:#f0fdf4; border-color:rgba(16,185,129,.25); margin-top:14px; }
 .tj-sec-quick .tj-sec-title { color:#059669; }
 .tj-rec-btn { padding:13px 30px; background:var(--p); color:#fff; border:none; border-radius:14px; font-size:.95rem; font-weight:700; font-family:Poppins,sans-serif; cursor:pointer; }
@@ -3020,7 +3010,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v83 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v82 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3080,7 +3070,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v83 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v82 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -8630,113 +8620,7 @@ function tjStopRecord() {
   document.getElementById('tj-timer').textContent = '';
 }
 
-// ── Tajweed Checker v2: real voice recognition ─────────────────
-// Sends the actual recording to /api/tajweed (Groq Whisper + verse diff).
-// Falls back to the legacy duration-only flow if anything fails.
 async function tjAnalyze() {
-  try {
-    if (!tjSurahData) return;
-    const v = tjSurahData.verses[tjVerseIdx];
-    if (!v) return;
-    if (!tjChunks || !tjChunks.length) return tjLegacyAnalyze();
-
-    const dur = tjSeconds;
-    const surahName = tjSurahData.name || tjSurahData.englishName || 'Surah ' + tjSurahData.id;
-    const verseNum = tjVerseIdx + 1;
-    const blob = new Blob(tjChunks, { type: (tjMediaRec && tjMediaRec.mimeType) || 'audio/webm' });
-    if (blob.size > 4 * 1024 * 1024) return tjLegacyAnalyze();
-
-    document.getElementById('tj-feedback').style.display = 'block';
-    document.getElementById('tj-fb-content').innerHTML =
-      '<div class="tj-fb-item good" style="display:flex;align-items:center;gap:8px">' +
-      '<div class="tdots"><span></span><span></span><span></span></div>' +
-      '<span>Listening to your recitation of Surah ' + surahName + ', verse ' + verseNum + '...</span></div>';
-
-    const b64 = await new Promise(function(res, rej) {
-      const r = new FileReader();
-      r.onload = function() { res(String(r.result).split(',')[1]); };
-      r.onerror = rej;
-      r.readAsDataURL(blob);
-    });
-
-    const r = await fetch('/api/tajweed', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ audio: b64, mime: blob.type, reference: v.a, surahName: surahName, verseNum: verseNum, dur: dur })
-    });
-    if (!r.ok) throw new Error('asr http ' + r.status);
-    const d = await r.json();
-    if (!d.ok) throw new Error(d.error || 'asr failed');
-    if (d.note === 'NO_SPEECH') {
-      document.getElementById('tj-fb-content').innerHTML =
-        '<div class="tj-fb-header">\ud83c\udfa4 Recitation: ' + surahName + ' v.' + verseNum + ' (' + dur + 's)</div>' +
-        '<div class="tj-fb-item warn">\u26a0\ufe0f I could not hear your recitation clearly. Move somewhere quiet, hold the phone closer and try again.</div>';
-      return;
-    }
-
-    // Render word-by-word diff
-    const chip = { OK:'tj-w-ok', HARAKAT_ERROR:'tj-w-har', SUBSTITUTION:'tj-w-sub', DELETION:'tj-w-del', INSERTION:'tj-w-ins' };
-    let wordsHtml = d.words.map(function(w) {
-      const cls = chip[w.t] || 'tj-w-ok';
-      let inner = (w.h || '') ;
-      if (w.t === 'DELETION') inner = w.c + ' (missed)';
-      if (w.t === 'SUBSTITUTION') inner = w.h;
-      let fix = (w.t === 'SUBSTITUTION' || w.t === 'HARAKAT_ERROR') && w.c ? '<span class="tj-w-fix">\u2713 correct: ' + w.c + '</span>' : '';
-      return '<span class="tj-word ' + cls + '">' + inner + fix + '</span>';
-    }).join('');
-
-    const errHtml = d.errors.length ? d.errors.map(function(e) {
-      const label = e.t === 'SUBSTITUTION' ? '\u274c Wrong word' : e.t === 'DELETION' ? '\u274c Missed word' :
-                    e.t === 'INSERTION' ? '\u274c Extra word' : '\u26a0\ufe0f Tajweed mark slip';
-      return '<div class="tj-sec-row"><b>' + label + ':</b> ' + (e.heard || '') + (e.heard && e.correct ? ' \u2192 should be ' : '') + (e.correct || '') + '</div>';
-    }).join('') : '<div class="tj-sec-row">\u2705 Every word matched the verse \u2014 MashaAllah!</div>';
-
-    // Parse LLM feedback (same PACE/RULES/WORDS/TIP format as legacy)
-    function tjParseField(text, label) {
-      const re = new RegExp(label + ':\\s*(.+)');
-      const m = text.match(re);
-      return m ? m[1].trim() : '';
-    }
-    function tjPipeItems(str) {
-      if (!str) return [];
-      return str.split('|').map(function(s){ return s.trim(); }).filter(Boolean).map(function(item){
-        const idx = item.indexOf(':');
-        if (idx > -1) return { label: item.slice(0, idx).trim(), text: item.slice(idx + 1).trim() };
-        return { label: '', text: item };
-      });
-    }
-    let aiHtml = '';
-    if (d.feedbackText) {
-      const pace = tjParseField(d.feedbackText, 'PACE');
-      const rules = tjPipeItems(tjParseField(d.feedbackText, 'RULES'));
-      const wordsF = tjPipeItems(tjParseField(d.feedbackText, 'WORDS'));
-      const tip = tjParseField(d.feedbackText, 'TIP');
-      if (pace) aiHtml += '<div class="tj-sec"><div class="tj-sec-title">\u23f1\ufe0f Pace</div><div class="tj-sec-body">' + pace + '</div></div>';
-      if (rules.length) aiHtml += '<div class="tj-sec"><div class="tj-sec-title">\ud83d\udcd6 Key Rules In This Verse</div>' +
-        rules.map(function(r){ return '<div class="tj-sec-row"><b>' + (r.label || 'Rule') + ':</b> ' + r.text + '</div>'; }).join('') + '</div>';
-      if (wordsF.length) aiHtml += '<div class="tj-sec"><div class="tj-sec-title">\ud83c\udfaf Coach Feedback On Your Recitation</div>' +
-        wordsF.map(function(w){ return '<div class="tj-sec-row"><b>' + (w.label || 'Word') + ':</b> ' + w.text + '</div>'; }).join('') + '</div>';
-      if (tip) aiHtml += '<div class="tj-sec tj-sec-tip"><div class="tj-sec-title">\ud83d\udca1 Practice Tip</div><div class="tj-sec-body">' + tip + '</div></div>';
-    }
-
-    document.getElementById('tj-fb-content').innerHTML =
-      '<div class="tj-fb-header">\ud83c\udfa4 Recitation: ' + surahName + ' v.' + verseNum + ' (' + dur + 's)</div>' +
-      '<div class="tj-sec"><div class="tj-sec-title">\ud83c\udfa7 What You Recited</div>' +
-      '<div class="tj-sec-body" style="font-size:.9rem;opacity:.85">' + d.transcript + '</div></div>' +
-      '<div class="tj-sec"><div class="tj-sec-title">\ud83d\uddaf Word-By-Word Check \u2014 ' + d.score + '% match</div>' +
-      '<div class="tj-words">' + wordsHtml + '</div></div>' +
-      '<div class="tj-sec"><div class="tj-sec-title">\ud83d\udccc Mistakes Detected</div>' + errHtml + '</div>' +
-      aiHtml;
-
-    toast(d.errors.length ? '\u26a0\ufe0f Analysis done \u2014 see mistakes below' : '\u2705 Perfect recitation \u2014 MashaAllah!');
-    return;
-  } catch (e) {
-    console.warn('ASR analysis failed, falling back to legacy:', e);
-  }
-  return tjLegacyAnalyze();
-}
-
-async function tjLegacyAnalyze() {
   if (!tjSurahData) return;
   const v = tjSurahData.verses[tjVerseIdx];
   if (!v) return;
