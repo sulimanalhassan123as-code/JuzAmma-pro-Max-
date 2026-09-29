@@ -3068,7 +3068,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v88 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v87 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3128,7 +3128,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v88 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v87 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -8452,12 +8452,6 @@ async function gsSendText() {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'sendText', roomCode: gsRoomCode, userName: gsUserName, text, replyTo: gsReplyTo || '' })
     });
-    // BUGFIX: the pending bubble was never removed on success, so every
-    // sent message showed up TWICE — the stuck "pending" copy (clock
-    // icon forever) plus the real server-confirmed copy from the poll
-    // below. Remove our own optimistic bubble now that it's confirmed.
-    const sentPending = chatArea ? chatArea.querySelector('.gs-bubble.pending') : null;
-    if (sentPending) sentPending.remove();
     gsPollVoice(); // refresh to get the server-stored version with proper timestamp
   } catch(e) {
     toast('⚠️ Failed to send message');
