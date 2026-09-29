@@ -1219,13 +1219,6 @@ body { font-family:'Poppins',sans-serif;
 .tj-w-del { background:rgba(239,68,68,.08); color:#dc2626; border:1px dashed rgba(239,68,68,.5); opacity:.8; }
 .tj-w-ins { background:rgba(148,163,184,.16); color:#64748b; text-decoration:line-through; }
 .tj-w-fix { display:block; font-size:.72rem; opacity:.9; direction:ltr; text-decoration:none; }
-
-/* Tajweed v3: recitation class */
-.tj-class-row { display:flex; gap:8px; width:100%; max-width:340px; margin-top:10px; }
-.tj-btn { flex:1; padding:10px 12px; border-radius:14px; border:none; background:var(--dark2); color:var(--txt); font-weight:700; font-size:.78rem; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.18); }
-.tj-btn:active { transform:scale(.97); }
-.tj-mini-sel { flex:1; padding:8px 10px; border-radius:12px; background:var(--dark2); color:var(--txt); border:1px solid var(--p); font-size:.72rem; }
-.tj-best { width:100%; text-align:center; font-size:.7rem; color:var(--txt2); margin-top:8px; }
 .tj-sec-quick { background:#f0fdf4; border-color:rgba(16,185,129,.25); margin-top:14px; }
 .tj-sec-quick .tj-sec-title { color:#059669; }
 .tj-rec-btn { padding:13px 30px; background:var(--p); color:#fff; border:none; border-radius:14px; font-size:.95rem; font-weight:700; font-family:Poppins,sans-serif; cursor:pointer; }
@@ -3027,7 +3020,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v84 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v83 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3087,7 +3080,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v84 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v83 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -8578,7 +8571,6 @@ function tjLoadVerse() {
 }
 
 function tjShowVerse() {
-  if (typeof tjShowBest === 'function') tjShowBest();
   const vsel = document.getElementById('tj-verse-sel');
   if (vsel) tjVerseIdx = parseInt(vsel.value) || 0;
   if (!tjSurahData) { tjLoadVerse(); return; }
@@ -8605,7 +8597,6 @@ async function tjToggleRecord() {
 
 async function tjStartRecord() {
   try {
-    if (tjAudio) { try { tjAudio.pause(); } catch (e0) {} }
     const stream = await navigator.mediaDevices.getUserMedia({ audio:true });
     tjChunks = []; tjSeconds = 0;
     tjMediaRec = new MediaRecorder(stream);
@@ -8637,108 +8628,6 @@ function tjStopRecord() {
   document.getElementById('tj-mic').textContent = '🎙️';
   document.getElementById('tj-mic-lbl').textContent = 'Tap to Record';
   document.getElementById('tj-timer').textContent = '';
-}
-
-// ── Tajweed v3: Recitation Class (Listen & Repeat + AI Lesson + Mastery) ──
-let tjAudio = null;
-
-function tjVerseBestKey() {
-  return 'tjBest_' + (tjSurahData ? tjSurahData.id : 0) + '_' + tjVerseIdx;
-}
-function tjShowBest() {
-  const el = document.getElementById('tj-best');
-  if (!el) return;
-  const b = parseInt(localStorage.getItem(tjVerseBestKey()) || '0', 10);
-  el.textContent = b ? '🏅 Your best: ' + b + '%' + (b >= 95 ? ' · Mastered 🔥' : ' — keep going!') : '';
-}
-
-// Listen to the Qari at chosen speed, then auto-start recording so the
-// student repeats after him. Full listen → repeat → check loop.
-function tjRepeatAfter() {
-  if (!tjSurahData) return;
-  if (tjAudio) { try { tjAudio.pause(); } catch (e) {} }
-  if (tjRecording) tjStopRecord();
-  const spd = parseFloat((document.getElementById('tj-speed') || {}).value || '1');
-  const rec = (document.getElementById('tj-reciter') || {}).value || 'Alafasy_128kbps';
-  const url = eyUrl(rec, String(tjSurahData.id).padStart(3, '0'), String(tjVerseIdx + 1).padStart(3, '0'));
-  const lbl = document.getElementById('tj-mic-lbl');
-  if (lbl) lbl.textContent = '🎧 Listen to the Qari...';
-  const a = new Audio(url);
-  attachEyFallback(a);
-  a.playbackRate = spd;
-  a.onended = function () {
-    setTimeout(function () {
-      if (lbl) lbl.textContent = '🎤 Now repeat after him!';
-      tjStartRecord();
-    }, 600);
-  };
-  a.onerror = function () {
-    if (lbl) lbl.textContent = 'Tap to Record';
-    toast('⚠️ Could not load reciter audio. Check your connection.');
-  };
-  tjAudio = a;
-  a.play().catch(function () {
-    if (lbl) lbl.textContent = 'Tap to Record';
-    toast('⚠️ Tap again to play audio');
-  });
-}
-
-// AI Lesson: meaning, transliteration, how to say it, memorization plan.
-async function tjGetLesson() {
-  if (!tjSurahData) return;
-  const v = tjSurahData.verses[tjVerseIdx];
-  if (!v) return;
-  const name = tjSurahData.name || tjSurahData.englishName || 'Surah ' + tjSurahData.id;
-  const box = document.getElementById('tj-lesson');
-  const c = document.getElementById('tj-lesson-content');
-  if (!box || !c) return;
-  box.style.display = 'block';
-  c.innerHTML = '<div class="tj-fb-item good" style="display:flex;align-items:center;gap:8px">' +
-    '<div class="tdots"><span></span><span></span><span></span></div>' +
-    '<span>Preparing your lesson for ' + name + ' v.' + (tjVerseIdx + 1) + '...</span></div>';
-  try {
-    const prompt = 'You are an expert Quran teacher creating a recitation lesson for a student.\n' +
-      'Surah: ' + name + ' (No. ' + tjSurahData.id + '), Verse ' + (tjVerseIdx + 1) + '\n' +
-      'Arabic: ' + v.a + '\nTranslation: ' + (v.e || '') + '\n\n' +
-      'Respond ONLY in this exact plain-text format, no markdown symbols, no asterisks, no extra commentary:\n' +
-      'MEANING: <2 short sentences on what this verse means>\n' +
-      'TRANSLIT: <romanized transliteration of the whole verse, words separated by dashes, tajweed-friendly>\n' +
-      'SAY: <arabic word 1>: <short pronunciation tip> | <arabic word 2>: <short tip>\n' +
-      'MEMORIZE: <step 1> | <step 2> | <step 3> | <step 4>\n' +
-      'Keep every line short (max 18 words). Simple English. Pipe character | separates items.';
-    const r = await fetchFn('islamicAiProxy', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: prompt })
-    });
-    const d = await r.json();
-    const txt = d.reply || '';
-    function grab(label) {
-      const m = txt.match(new RegExp(label + ':\\s*(.+)'));
-      return m ? m[1].trim() : '';
-    }
-    function pipes(s) {
-      return s.split('|').map(function (x) { return x.trim(); }).filter(Boolean);
-    }
-    let html = '';
-    const meaning = grab('MEANING');
-    const translit = grab('TRANSLIT');
-    const say = pipes(grab('SAY'));
-    const memo = pipes(grab('MEMORIZE'));
-    if (meaning) html += '<div class="tj-sec"><div class="tj-sec-title">🌙 Meaning Of This Verse</div><div class="tj-sec-body">' + meaning + '</div></div>';
-    if (translit) html += '<div class="tj-sec"><div class="tj-sec-title">🔤 Read Like This (Transliteration)</div><div class="tj-sec-body" style="direction:ltr;font-size:.88rem">' + translit + '</div></div>';
-    if (say.length) html += '<div class="tj-sec"><div class="tj-sec-title">🗣️ How To Say It Correctly</div>' +
-      say.map(function (s) {
-        const i = s.indexOf(':');
-        return i > -1 ? '<div class="tj-sec-row"><b>' + s.slice(0, i).trim() + ':</b> ' + s.slice(i + 1).trim() + '</div>'
-                      : '<div class="tj-sec-row">' + s + '</div>';
-      }).join('') + '</div>';
-    if (memo.length) html += '<div class="tj-sec tj-sec-tip"><div class="tj-sec-title">🧠 How To Memorize It</div>' +
-      memo.map(function (s, idx) { return '<div class="tj-sec-row">' + (idx + 1) + '. ' + s + '</div>'; }).join('') + '</div>';
-    c.innerHTML = html || '<div class="tj-fb-item warn">Lesson unavailable. Check your connection and try again.</div>';
-  } catch (e) {
-    c.innerHTML = '<div class="tj-fb-item warn">Lesson unavailable. Check your connection and try again.</div>';
-  }
 }
 
 // ── Tajweed Checker v2: real voice recognition ─────────────────
@@ -8839,13 +8728,6 @@ async function tjAnalyze() {
       '<div class="tj-sec"><div class="tj-sec-title">\ud83d\udccc Mistakes Detected</div>' + errHtml + '</div>' +
       aiHtml;
 
-    if (typeof d.score === 'number' && d.score > 0) {
-      try {
-        const prev = parseInt(localStorage.getItem(tjVerseBestKey()) || '0', 10);
-        if (d.score > prev) localStorage.setItem(tjVerseBestKey(), String(d.score));
-        tjShowBest();
-      } catch (e2) {}
-    }
     toast(d.errors.length ? '\u26a0\ufe0f Analysis done \u2014 see mistakes below' : '\u2705 Perfect recitation \u2014 MashaAllah!');
     return;
   } catch (e) {
@@ -10345,29 +10227,6 @@ function updateFsapBtn() {
 
     <div class="tj-mic" id="tj-mic" onclick="tjToggleRecord()">🎙️</div>
     <div class="tj-lbl" id="tj-mic-lbl">Tap to Record</div>
-
-    <div class="tj-class-row">
-      <button class="tj-btn" id="tj-listen" onclick="tjRepeatAfter()">🎧 Listen &amp; Repeat</button>
-      <button class="tj-btn" onclick="tjGetLesson()">📖 AI Lesson</button>
-    </div>
-    <div class="tj-class-row">
-      <select id="tj-reciter" class="tj-mini-sel">
-        <option value="Alafasy_128kbps">Mishary Alafasy</option>
-        <option value="Husary_128kbps">Al-Husary (teacher)</option>
-        <option value="Minshawy_Murattal_128kbps">Minshawi (teacher)</option>
-        <option value="Abdul_Basit_Murattal_192kbps">Abdul Basit</option>
-      </select>
-      <select id="tj-speed" class="tj-mini-sel">
-        <option value="0.75">0.75× slow</option>
-        <option value="1" selected>1× normal</option>
-      </select>
-    </div>
-    <div class="tj-best" id="tj-best"></div>
-
-    <div class="tj-feedback" id="tj-lesson" style="display:none">
-      <h4>📖 AI Lesson &amp; Memorization</h4>
-      <div id="tj-lesson-content"></div>
-    </div>
 
     <div class="tj-feedback" id="tj-feedback" style="display:none">
       <h4>🎯 Tajweed Feedback</h4>
