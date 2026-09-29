@@ -1133,10 +1133,6 @@ body { font-family:'Poppins',sans-serif;
 /* WhatsApp-style chat (text + voice) */
 .gs-chat-area { flex:1; overflow-y:auto; padding:12px 10px 4px; display:flex; flex-direction:column; gap:3px; background:var(--bg); scroll-behavior:smooth; /* removed: -webkit-overflow-scrolling:touch — caused blank-until-scroll paint bug */; }
 .gs-chat-date-sep { text-align:center; font-size:.68rem; color:var(--txt2); padding:6px 0; }
-.gs-chat-empty { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:30px 20px; text-align:center; }
-.gs-chat-empty-ic { font-size:2.4rem; opacity:.5; }
-.gs-chat-empty-t { font-size:.9rem; font-weight:700; color:var(--txt); }
-.gs-chat-empty-s { font-size:.76rem; color:var(--txt2); }
 .gs-bubble { max-width:82%; display:flex; flex-direction:column; margin:2px 0; animation:gsBubbleIn .25s ease-out; }
 .gs-bubble.other { align-self:flex-start; }
 .gs-bubble.me { align-self:flex-end; }
@@ -3068,7 +3064,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v86 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v85 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3128,7 +3124,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v86 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v85 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -8009,11 +8005,6 @@ async function gsPollVoice() {
           }
           (d.messages || []).reverse().forEach(m => gsRenderMessage(m));
           gsVoiceCount = (d.messages || []).length;
-          // BUGFIX: an empty room used to leave this area completely blank
-          // forever (no messages, no hint) — show a friendly empty state.
-          if (gsVoiceCount === 0 && !d.hasMore) {
-            chatArea.innerHTML = '<div class="gs-chat-empty"><div class="gs-chat-empty-ic">\ud83d\udcac</div><div class="gs-chat-empty-t">No messages yet</div><div class="gs-chat-empty-s">Say Salam and start the conversation!</div></div>';
-          }
         } else {
           // Append only new messages (they come newest-first, so prepend)
           newMsgs.reverse().forEach(m => gsRenderMessage(m));
