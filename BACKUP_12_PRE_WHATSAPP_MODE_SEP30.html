@@ -1133,20 +1133,6 @@ body { font-family:'Poppins',sans-serif;
 /* WhatsApp-style chat (text + voice) */
 .gs-chat-area { flex:1; overflow-y:auto; padding:12px 10px 4px; display:flex; flex-direction:column; gap:3px; background:var(--bg); scroll-behavior:smooth; /* removed: -webkit-overflow-scrolling:touch — caused blank-until-scroll paint bug */; }
 .gs-chat-date-sep { text-align:center; font-size:.68rem; color:var(--txt2); padding:6px 0; }
-
-/* -- WhatsApp-mode: on-phone storage UI (comments, badges) -- */
-.gs-comment-panel { background:var(--bg); border:1px solid var(--bdr); border-radius:10px; padding:8px; margin-top:4px; width:100%; }
-.gs-comment-item { font-size:.72rem; padding:6px 8px; border-bottom:1px solid var(--bdr); line-height:1.45; }
-.gs-comment-item:last-child { border-bottom:none; }
-.gs-comment-item b { color:var(--p); font-size:.66rem; }
-.gs-comment-time { font-size:.6rem; color:var(--txt2); margin-left:6px; }
-.gs-comment-empty { font-size:.68rem; color:var(--txt2); padding:4px 2px; }
-.gs-comment-input-row { display:flex; gap:6px; margin-top:6px; }
-.gs-comment-input { flex:1; border:1px solid var(--bdr); border-radius:8px; padding:6px 8px; font-size:.74rem; background:var(--card); color:var(--txt); font-family:Poppins,sans-serif; outline:none; }
-.gs-comment-input:focus { border-color:var(--p); }
-.gs-comment-send { background:var(--p); color:#fff; border:none; border-radius:8px; padding:0 10px; cursor:pointer; font-size:.8rem; }
-.gs-cmt-count { font-size:.62rem; color:var(--txt2); margin-top:2px; cursor:pointer; }
-.gs-phone-note { font-size:.58rem; color:var(--txt2); margin-top:2px; }
 .gs-chat-empty { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:30px 20px; text-align:center; }
 .gs-chat-empty-ic { font-size:2.4rem; opacity:.5; }
 .gs-chat-empty-t { font-size:.9rem; font-weight:700; color:var(--txt); }
@@ -3082,7 +3068,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v91 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v90 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3142,7 +3128,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v91 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v90 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -7994,99 +7980,48 @@ let gsLoadingMore = false;
 
 async function gsPollVoice() {
   if (!gsRoomCode || !gsUserName) return;
-  // Retry any delete/edit queued on this phone while offline/rate-limited
-  try { await gsRetryPending(); } catch (e) {}
   try {
+    // Only fetch new messages (first load or refresh)
     const res = await fetchFn('groupVoiceHub', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'list', roomCode: gsRoomCode, userName: gsUserName, limit: 50 })
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'list', roomCode: gsRoomCode, userName: gsUserName, limit: 50 })
     });
     const d = await res.json();
     if (!d.ok) {
       if (d.error && d.error.includes('Access denied')) {
+        // Access revoked — kick out
         toast('⚠️ ' + d.error);
         gsLeave();
-      } else if (gsVoiceCount === 0) {
-        // Server unreachable / rate-limited -- WhatsApp-mode: open the
-        // chat from this phone's own storage instead of showing nothing.
-        await gsRenderOffline();
       }
       return;
     }
-    const pendD = gsPendGet('D');
-    const visible = (d.messages || []).filter(function (m) { return !pendD.includes(m.id); });
-    const newMsgs = visible.filter(function (m) { return !gsVoiceCount || !document.getElementById('msg-' + m.id); });
+    // Compare with what we already have
+    const newMsgs = (d.messages || []).filter(m => !gsVoiceCount || !document.getElementById('msg-' + m.id));
     if (newMsgs.length > 0 || gsVoiceCount === 0) {
       const chatArea = document.getElementById('gs-chat-area');
       if (chatArea) {
         if (gsVoiceCount === 0) {
-          await gsSyncLocalCache();
+          // First load — render all
           chatArea.innerHTML = '';
+          // Show archived messages banner if hasMore
           if (d.hasMore) {
             chatArea.innerHTML = '<div class="gs-chat-date-sep" id="gs-load-archive-sep"><button class="gs-load-more-btn" onclick="gsLoadArchived()">📦 Load older messages</button></div>';
           }
-          visible.reverse().forEach(function (m) { gsRenderMessage(m); gsMirrorMessage(m); });
-          gsVoiceCount = visible.length;
-          // Merge this phone's own voice notes into the timeline
-          const voices = Object.values(gsLocalMsgCache)
-            .filter(function (r) { return r.local && r.roomCode === gsRoomCode; })
-            .sort(function (a, b) { return new Date(a.created_date) - new Date(b.created_date); });
-          voices.forEach(function (v) {
-            const vm = gsShapeLocal(v);
-            const kids = chatArea.querySelectorAll('.gs-msg[data-ts]');
-            let placed = false;
-            for (const k of kids) {
-              if (new Date(k.getAttribute('data-ts')).getTime() > new Date(v.created_date).getTime()) {
-                k.insertAdjacentHTML('beforebegin', gsBuildMessageHTML(vm));
-                placed = true; break;
-              }
-            }
-            if (!placed) chatArea.insertAdjacentHTML('beforeend', gsBuildMessageHTML(vm));
-          });
-          // Re-apply edits queued on this phone (server copy may be stale)
-          const pendE = gsPendGet('E');
-          Object.keys(pendE).forEach(function (pid) { gsApplyEditToDOM(pid, pendE[pid]); });
-          if (gsVoiceCount === 0 && voices.length === 0 && !d.hasMore) {
-            chatArea.innerHTML = '<div class="gs-chat-empty"><div class="gs-chat-empty-ic">💬</div><div class="gs-chat-empty-t">No messages yet</div><div class="gs-chat-empty-s">Say Salam and start the conversation! Voice notes save on your phone 📱</div></div>';
+          (d.messages || []).reverse().forEach(m => gsRenderMessage(m));
+          gsVoiceCount = (d.messages || []).length;
+          // BUGFIX: an empty room used to leave this area completely blank
+          // forever (no messages, no hint) — show a friendly empty state.
+          if (gsVoiceCount === 0 && !d.hasMore) {
+            chatArea.innerHTML = '<div class="gs-chat-empty"><div class="gs-chat-empty-ic">\ud83d\udcac</div><div class="gs-chat-empty-t">No messages yet</div><div class="gs-chat-empty-s">Say Salam and start the conversation!</div></div>';
           }
         } else {
-          newMsgs.reverse().forEach(function (m) { gsRenderMessage(m); gsMirrorMessage(m); });
+          // Append only new messages (they come newest-first, so prepend)
+          newMsgs.reverse().forEach(m => gsRenderMessage(m));
           gsVoiceCount += newMsgs.length;
         }
       }
     }
-  } catch (e) {
-    if (gsVoiceCount === 0) { try { await gsRenderOffline(); } catch (e2) {} }
-  }
-}
-
-// Retry edits/deletes queued on this phone (offline or rate-limited)
-async function gsRetryPending() {
-  let pendD = gsPendGet('D');
-  for (const pid of pendD.slice()) {
-    try {
-      const res = await fetchFn('groupVoiceHub', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'deleteMessage', roomCode: gsRoomCode, userName: gsUserName, messageId: pid })
-      });
-      const d = await res.json();
-      if (d.ok) { pendD = pendD.filter(function (x) { return x !== pid; }); try { await gsIDBDel('msgs', pid); } catch (e) {} }
-      else break;
-    } catch (e) { break; }
-  }
-  gsPendSet('D', pendD);
-  const pendE = gsPendGet('E');
-  for (const pid of Object.keys(pendE)) {
-    try {
-      const res = await fetchFn('groupVoiceHub', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'editMessage', roomCode: gsRoomCode, userName: gsUserName, messageId: pid, text: pendE[pid] })
-      });
-      const d = await res.json();
-      if (d.ok) delete pendE[pid]; else break;
-    } catch (e) { break; }
-  }
-  gsPendSet('E', pendE);
+  } catch(e) {}
 }
 
 async function gsLoadArchived() {
@@ -8136,7 +8071,6 @@ function gsBuildMessageHTML(m) {
   let reactionsHTML = '';
   try {
     const reactions = JSON.parse(m.reactions || '[]');
-    gsLastReactions[m.id] = reactions;
     if (reactions.length > 0) {
       reactionsHTML = '<div class="gs-msg-reactions">';
       reactions.forEach(r => {
@@ -8176,249 +8110,29 @@ function gsBuildMessageHTML(m) {
   const actionsHTML = '<div class="gs-msg-actions">' +
     '<button class="gs-msg-action-btn" onclick="gsSetReply(\''+m.id+'\',\''+gsEsc(m.text||'voice msg').substring(0,40).replace(/'/g,'')+'\')">↩ Reply</button>' +
     '<button class="gs-msg-action-btn" onclick="gsShowReactions(\''+m.id+'\')">😊 React</button>' +
-    '<button class="gs-msg-action-btn" onclick="gsToggleComments(\''+m.id+'\')">💬 Comment</button>' +
     (isMine && !isVoice ? '<button class="gs-msg-action-btn" onclick="gsEditMessage(\''+m.id+'\',\''+gsEsc(m.text||'').replace(/'/g,'').replace(/"/g,'')+'\')">✏ Edit</button>' : '') +
-    (gsIsTeacher && !m.local ? '<button class="gs-msg-action-btn" onclick="gsTogglePin(\''+m.id+'\')">'+(m.pinned?'📌 Unpin':'📌 Pin')+'</button>' : '') +
+    (gsIsTeacher ? '<button class="gs-msg-action-btn" onclick="gsTogglePin(\''+m.id+'\')">'+(m.pinned?'📌 Unpin':'📌 Pin')+'</button>' : '') +
     (!isVoice ? '<button class="gs-msg-action-btn" onclick="gsCopyMessage(\''+m.id+'\')">📋 Copy</button>' : '') +
     (isVoice ? '<button class="gs-msg-action-btn" onclick="gsTogglePlaySpeed(\''+m.id+'\')">⚡ 1x</button>' : '') +
     (canManage ? '<button class="gs-msg-action-btn" onclick="gsDeleteMessage(\''+m.id+'\')">🗑 Delete</button>' : '') +
   '</div>';
 
-  const cmtCount = (gsLocalMsgCache[m.id] && gsLocalMsgCache[m.id].comments && gsLocalMsgCache[m.id].comments.length) || 0;
-  const cmtBadge = cmtCount ? '<div class="gs-cmt-count" id="gs-cmt-c-'+m.id+'" onclick="gsToggleComments(\''+m.id+'\')">💬 '+cmtCount+' comment'+(cmtCount===1?'':'s')+'</div>' : '';
-  const phoneNote = (isVoice && m.local) ? '<div class="gs-phone-note">📱 Saved on your phone</div>' : '';
-
-  return '<div class="gs-msg'+(isMe?' me':'')+'" id="msg-'+m.id+'" data-ts="'+(m.created_date||'')+'" style="position:relative">' +
+  return '<div class="gs-msg'+(isMe?' me':'')+'" id="msg-'+m.id+'" style="position:relative">' +
     (m.pinned ? '<span class="gs-msg-pin-badge">PIN</span>' : '') +
     (!isMe ? '<div class="gs-msg-name">'+gsEsc(m.userName)+'</div>' : '') +
     replyHTML +
     inner +
-    editBadge + pinBadge + phoneNote +
+    editBadge + pinBadge +
     '<div class="gs-msg-time">'+time+(m.archived?' 📦':'')+'</div>' +
     reactionsHTML +
-    cmtBadge +
     actionsHTML +
   '</div>';
-}
-
-// === WHATSAPP-MODE: ON-PHONE STORAGE ===
-// Voice notes are saved ONLY on this phone (IndexedDB) -- audio never
-// touches the server, so no field-size or rate limits apply to it.
-// Comments and local reaction state live here too, and server messages
-// (text) mirror onto this phone so chat opens even when offline or
-// rate-limited.
-let gsIDB = null;
-const gsLocalMsgCache = {};
-const gsLastReactions = {};
-
-function gsIDBOpen() {
-  return new Promise(function (resolve, reject) {
-    if (gsIDB) return resolve(gsIDB);
-    if (!window.indexedDB) return reject(new Error('no idb'));
-    const req = indexedDB.open('nabaChat', 1);
-    req.onupgradeneeded = function (e) {
-      const db = e.target.result;
-      if (!db.objectStoreNames.contains('msgs')) {
-        const s = db.createObjectStore('msgs', { keyPath: 'id' });
-        s.createIndex('room', 'roomCode', false);
-      }
-      if (!db.objectStoreNames.contains('voice')) {
-        const s = db.createObjectStore('voice', { keyPath: 'id' });
-        s.createIndex('room', 'roomCode', false);
-      }
-    };
-    req.onsuccess = function (e) { gsIDB = e.target.result; resolve(gsIDB); };
-    req.onerror = function () { reject(req.error); };
-  });
-}
-function gsIDBPut(store, val) {
-  return gsIDBOpen().then(function (db) {
-    return new Promise(function (res, rej) {
-      const tx = db.transaction(store, 'readwrite');
-      tx.objectStore(store).put(val);
-      tx.oncomplete = function () { res(); };
-      tx.onerror = function () { rej(tx.error); };
-    });
-  });
-}
-function gsIDBGet(store, key) {
-  return gsIDBOpen().then(function (db) {
-    return new Promise(function (res, rej) {
-      const tx = db.transaction(store, 'readonly');
-      const rq = tx.objectStore(store).get(key);
-      rq.onsuccess = function () { res(rq.result); };
-      rq.onerror = function () { rej(rq.error); };
-    });
-  });
-}
-function gsIDBDel(store, key) {
-  return gsIDBOpen().then(function (db) {
-    return new Promise(function (res, rej) {
-      const tx = db.transaction(store, 'readwrite');
-      tx.objectStore(store).delete(key);
-      tx.oncomplete = function () { res(); };
-      tx.onerror = function () { rej(tx.error); };
-    });
-  });
-}
-function gsIDBRoom(store, roomCode) {
-  return gsIDBOpen().then(function (db) {
-    return new Promise(function (res, rej) {
-      const tx = db.transaction(store, 'readonly');
-      const rq = tx.objectStore(store).index('room').getAll(roomCode);
-      rq.onsuccess = function () { res(rq.result || []); };
-      rq.onerror = function () { rej(rq.error); };
-    });
-  });
-}
-async function gsSyncLocalCache() {
-  for (const k of Object.keys(gsLocalMsgCache)) delete gsLocalMsgCache[k];
-  try {
-    const msgs = await gsIDBRoom('msgs', gsRoomCode);
-    const voices = await gsIDBRoom('voice', gsRoomCode);
-    msgs.concat(voices).forEach(function (r) { gsLocalMsgCache[r.id] = r; });
-  } catch (e) {}
-}
-
-function gsPendKey(kind) { return 'gsPend_' + gsRoomCode + '_' + kind; }
-function gsPendGet(kind) {
-  try { return JSON.parse(localStorage.getItem(gsPendKey(kind)) || (kind === 'D' ? '[]' : '{}')); }
-  catch (e) { return kind === 'D' ? [] : {}; }
-}
-function gsPendSet(kind, v) { try { localStorage.setItem(gsPendKey(kind), JSON.stringify(v)); } catch (e) {} }
-
-function gsShapeLocal(r) {
-  return {
-    id: r.id, userName: r.userName, messageType: r.messageType || 'text',
-    text: r.text || '', durationSec: r.durationSec || 0, reactions: r.reactions || '[]',
-    replyTo: r.replyTo || '', edited: r.edited || false, pinned: r.pinned || false,
-    created_date: r.created_date, comments: r.comments || [], local: r.local || false
-  };
-}
-
-async function gsMirrorMessage(m) {
-  try {
-    const prev = gsLocalMsgCache[m.id] || (await gsIDBGet('msgs', m.id)) || {};
-    const rec = {
-      id: m.id, roomCode: gsRoomCode, userName: m.userName, messageType: m.messageType,
-      text: m.text || '', audioBase64: prev.audioBase64 || m.audioBase64 || '',
-      durationSec: m.durationSec || 0, reactions: m.reactions || '[]',
-      replyTo: m.replyTo || '', edited: m.edited || false, pinned: m.pinned || false,
-      created_date: m.created_date, comments: prev.comments || []
-    };
-    const old = gsLocalMsgCache[m.id];
-    const same = old && old.text === rec.text && old.reactions === rec.reactions &&
-      old.edited === rec.edited && old.pinned === rec.pinned && old.durationSec === rec.durationSec &&
-      (old.audioBase64 || '') === (rec.audioBase64 || '');
-    if (!same) await gsIDBPut('msgs', rec);
-    gsLocalMsgCache[m.id] = rec;
-  } catch (e) {}
-}
-
-async function gsRenderOffline() {
-  try {
-    await gsSyncLocalCache();
-    const chatArea = document.getElementById('gs-chat-area');
-    if (!chatArea) return;
-    const all = Object.values(gsLocalMsgCache);
-    if (!all.length) {
-      chatArea.innerHTML = '<div class="gs-chat-empty"><div class="gs-chat-empty-ic">📴</div><div class="gs-chat-empty-t">Offline</div><div class="gs-chat-empty-s">No messages saved on this phone yet</div></div>';
-      return;
-    }
-    chatArea.innerHTML = '<div class="gs-chat-date-sep">📴 Offline — showing messages saved on this phone</div>';
-    all.sort(function (a, b) { return new Date(a.created_date) - new Date(b.created_date); });
-    all.forEach(function (r) { chatArea.insertAdjacentHTML('beforeend', gsBuildMessageHTML(gsShapeLocal(r))); });
-    gsVoiceCount = all.length;
-  } catch (e) {}
-}
-
-function gsPlayLocalVoice(msgId, blob) {
-  if (gsCurrentlyPlayingAudio) {
-    gsCurrentlyPlayingAudio.pause(); gsCurrentlyPlayingAudio = null;
-    document.querySelectorAll('.gs-play-btn.playing').forEach(function (b) { b.textContent = '▶'; b.classList.remove('playing'); });
-  }
-  if (!blob) { toast('⚠️ Voice note is not on this phone'); return; }
-  const url = URL.createObjectURL(blob);
-  const audio = new Audio(url);
-  audio.playbackRate = gsCurrentPlaySpeed;
-  gsCurrentlyPlayingAudio = audio;
-  const btn = document.querySelector('#msg-' + msgId + ' .gs-play-btn');
-  if (btn) { btn.textContent = '⏸'; btn.classList.add('playing'); }
-  audio.onended = function () { gsCurrentlyPlayingAudio = null; if (btn) { btn.textContent = '▶'; btn.classList.remove('playing'); } URL.revokeObjectURL(url); };
-  audio.onerror = function () { gsCurrentlyPlayingAudio = null; if (btn) { btn.textContent = '▶'; btn.classList.remove('playing'); } URL.revokeObjectURL(url); toast('⚠️ Playback error'); };
-  audio.play().catch(function () { gsCurrentlyPlayingAudio = null; if (btn) { btn.textContent = '▶'; btn.classList.remove('playing'); } toast('⚠️ Cannot play audio'); });
-}
-
-function gsRenderCommentsHTML(msgId) {
-  const rec = gsLocalMsgCache[msgId] || {};
-  const comments = rec.comments || [];
-  let html = '<div class="gs-comment-list">';
-  if (!comments.length) html += '<div class="gs-comment-empty">No comments yet — comments stay on your phone 📱</div>';
-  comments.forEach(function (c) {
-    html += '<div class="gs-comment-item"><b>' + gsEsc(c.userName) + '</b><span class="gs-comment-time">' + gsFmtClock(c.time) + '</span><div>' + gsEsc(c.text) + '</div></div>';
-  });
-  html += '</div><div class="gs-comment-input-row">' +
-    '<input id="gs-comment-in-' + msgId + '" class="gs-comment-input" placeholder="Add a comment...">' +
-    '<button class="gs-comment-send" onclick="gsAddComment(\'' + msgId + '\')">➤</button></div>';
-  return html;
-}
-function gsToggleComments(msgId) {
-  const el = document.getElementById('msg-' + msgId);
-  if (!el) return;
-  const existing = el.querySelector('.gs-comment-panel');
-  if (existing) { existing.remove(); return; }
-  const panel = document.createElement('div');
-  panel.className = 'gs-comment-panel';
-  panel.innerHTML = gsRenderCommentsHTML(msgId);
-  const actions = el.querySelector('.gs-msg-actions');
-  if (actions) el.insertBefore(panel, actions); else el.appendChild(panel);
-  const inp = document.getElementById('gs-comment-in-' + msgId);
-  if (inp) inp.focus();
-}
-async function gsAddComment(msgId) {
-  const inp = document.getElementById('gs-comment-in-' + msgId);
-  if (!inp) return;
-  const text = inp.value.trim();
-  if (!text) return;
-  const store = msgId.indexOf('vl_') === 0 ? 'voice' : 'msgs';
-  let rec = gsLocalMsgCache[msgId];
-  if (!rec) rec = (await gsIDBGet(store, msgId)) || { id: msgId, roomCode: gsRoomCode, comments: [] };
-  rec.comments = rec.comments || [];
-  rec.comments.push({ userName: gsUserName, text: text, time: new Date().toISOString() });
-  try { await gsIDBPut(store, rec); } catch (e) {}
-  gsLocalMsgCache[msgId] = rec;
-  const panel = document.querySelector('#msg-' + msgId + ' .gs-comment-panel');
-  if (panel) panel.innerHTML = gsRenderCommentsHTML(msgId);
-  const cnt = document.querySelector('#msg-' + msgId + ' .gs-cmt-count');
-  if (cnt) cnt.textContent = '💬 ' + rec.comments.length + ' comment' + (rec.comments.length === 1 ? '' : 's');
-  const inp2 = document.getElementById('gs-comment-in-' + msgId);
-  if (inp2) inp2.focus();
-}
-
-function gsApplyEditToDOM(msgId, text) {
-  const el = document.getElementById('msg-' + msgId);
-  if (!el) return;
-  const t = el.querySelector('.gs-text-bubble');
-  if (t) {
-    t.textContent = text;
-    if (!el.querySelector('.gs-msg-edit-badge')) t.insertAdjacentHTML('afterend', '<span class="gs-msg-edit-badge"> (edited)</span>');
-  }
-  const rec = gsLocalMsgCache[msgId];
-  if (rec) { rec.text = text; rec.edited = true; gsIDBPut('msgs', rec).catch(function () {}); }
 }
 
 // Audio cache — prevents inline base64 string issues
 const gsAudioCache = {};
 
 function gsPlayVoiceFromCache(msgId) {
-  // WhatsApp-mode: voice notes recorded on this phone play straight from
-  // on-phone storage (IndexedDB). Legacy server voice notes still play
-  // from the poll cache.
-  const rec = gsLocalMsgCache[msgId];
-  if (msgId.indexOf('vl_') === 0 || (rec && rec.blob)) {
-    gsPlayLocalVoice(msgId, rec ? rec.blob : null);
-    return;
-  }
   const audioBase64 = gsAudioCache[msgId] || '';
   gsPlayVoice(msgId, audioBase64);
 }
@@ -8458,47 +8172,14 @@ function gsCancelReply() {
 }
 
 async function gsToggleReaction(msgId, emoji) {
-  // WhatsApp-fast: update the reaction instantly on screen, then sync.
-  let reactions = (gsLastReactions[msgId] || []).map(function (r) { return { emoji: r.emoji, users: (r.users || []).slice() }; });
-  let existing = reactions.find(function (r) { return r.emoji === emoji; });
-  if (existing) {
-    if (existing.users.includes(gsUserName)) {
-      existing.users = existing.users.filter(function (u) { return u !== gsUserName; });
-      if (existing.users.length === 0) reactions = reactions.filter(function (r) { return r.emoji !== emoji; });
-    } else existing.users.push(gsUserName);
-  } else {
-    reactions.push({ emoji: emoji, users: [gsUserName] });
-  }
-  gsLastReactions[msgId] = reactions;
-  const el = document.getElementById('msg-' + msgId);
-  if (el) {
-    let row = el.querySelector('.gs-msg-reactions');
-    const html = reactions.map(function (r) {
-      return '<span class="gs-msg-reaction' + (r.users.includes(gsUserName) ? ' mine' : '') + '" onclick="gsToggleReaction(\'' + msgId + '\',\'' + gsEsc(r.emoji) + '\')">' + gsEsc(r.emoji) + ' ' + r.users.length + '</span>';
-    }).join('');
-    if (row) {
-      if (!reactions.length) row.remove();
-      else row.innerHTML = html;
-    } else if (reactions.length) {
-      const actions = el.querySelector('.gs-msg-actions');
-      if (actions) actions.insertAdjacentHTML('beforebegin', '<div class="gs-msg-reactions">' + html + '</div>');
-    }
-  }
-  // On-phone voice notes: the reaction only needs to live on this phone.
-  if (msgId.indexOf('vl_') === 0) {
-    try {
-      const rec = gsLocalMsgCache[msgId];
-      if (rec) { rec.reactions = JSON.stringify(reactions); await gsIDBPut('voice', rec); }
-    } catch (e) {}
-    return;
-  }
-  // Server messages: sync in the background (best-effort, won't block the UI).
   try {
-    await fetchFn('groupVoiceHub', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'addReaction', roomCode: gsRoomCode, userName: gsUserName, messageId: msgId, emoji: emoji })
+    const res = await fetchFn('groupVoiceHub', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'addReaction', roomCode: gsRoomCode, userName: gsUserName, messageId: msgId, emoji })
     });
-  } catch (e) {}
+    const d = await res.json();
+    if (d.ok) { /* will update on next poll */ }
+  } catch(e) {}
 }
 
 function gsShowReactions(msgId) {
@@ -8519,26 +8200,15 @@ function gsShowReactions(msgId) {
 async function gsEditMessage(msgId, oldText) {
   const newText = prompt('Edit message:', oldText);
   if (!newText || newText === oldText) return;
-  // WhatsApp-fast: the bubble updates instantly on screen, no waiting on the server.
-  gsApplyEditToDOM(msgId, newText);
   try {
     const res = await fetchFn('groupVoiceHub', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'editMessage', roomCode: gsRoomCode, userName: gsUserName, messageId: msgId, text: newText })
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'editMessage', roomCode: gsRoomCode, userName: gsUserName, messageId: msgId, text: newText })
     });
     const d = await res.json();
-    if (d.ok) {
-      toast('✅ Message edited');
-      const pend = gsPendGet('E');
-      if (pend[msgId]) { delete pend[msgId]; gsPendSet('E', pend); }
-    } else {
-      const pend = gsPendGet('E'); pend[msgId] = newText; gsPendSet('E', pend);
-      toast('✏️ Edited on this phone — will sync when the connection allows it');
-    }
-  } catch (e) {
-    const pend = gsPendGet('E'); pend[msgId] = newText; gsPendSet('E', pend);
-    toast('✏️ Edited on this phone — will sync when the connection allows it');
-  }
+    if (d.ok) toast('✅ Message edited');
+    else toast('❌ ' + d.error);
+  } catch(e) { toast('❌ Failed'); }
 }
 
 async function gsTogglePin(msgId) {
@@ -8555,36 +8225,15 @@ async function gsTogglePin(msgId) {
 // ═══ DELETE MESSAGE ═══
 async function gsDeleteMessage(msgId) {
   if (!confirm('Delete this message?')) return;
-  const el = document.getElementById('msg-' + msgId);
-  // On-phone voice note: belongs only to this phone -- remove it instantly, no server call needed.
-  if (msgId.indexOf('vl_') === 0) {
-    try { await gsIDBDel('voice', msgId); } catch (e) {}
-    delete gsLocalMsgCache[msgId];
-    if (el) el.remove();
-    toast('🗑 Deleted from your phone');
-    return;
-  }
-  // Server message: remove instantly from the screen, then sync (queue if the server is rate-limited/offline).
-  if (el) el.remove();
   try {
     const res = await fetchFn('groupVoiceHub', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'deleteMessage', roomCode: gsRoomCode, userName: gsUserName, messageId: msgId })
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'deleteMessage', roomCode: gsRoomCode, userName: gsUserName, messageId: msgId })
     });
     const d = await res.json();
-    if (d.ok) {
-      toast('🗑 Deleted');
-      const pend = gsPendGet('D').filter(function (x) { return x !== msgId; });
-      gsPendSet('D', pend);
-      try { await gsIDBDel('msgs', msgId); } catch (e) {}
-    } else {
-      const pend = gsPendGet('D'); if (!pend.includes(msgId)) { pend.push(msgId); gsPendSet('D', pend); }
-      toast('🗑 Deleted on this phone — will sync when the connection allows it');
-    }
-  } catch (e) {
-    const pend = gsPendGet('D'); if (!pend.includes(msgId)) { pend.push(msgId); gsPendSet('D', pend); }
-    toast('🗑 Deleted on this phone — will sync when the connection allows it');
-  }
+    if (d.ok) { toast('🗑 Deleted'); const el = document.getElementById('msg-'+msgId); if (el) el.remove(); }
+    else toast('❌ ' + d.error);
+  } catch(e) { toast('❌ Failed'); }
 }
 
 // ═══ COPY TEXT MESSAGE ═══
@@ -8884,8 +8533,7 @@ function gsStopRecording(discard) {
   if (input) input.style.display = '';
   if (wrap) wrap.style.background = '';
 
-  // Show a brief "saving" indicator (WhatsApp-mode: this is just writing
-  // to this phone's own storage, so it finishes almost instantly).
+  // Show "sending" indicator
   if (!discard && durationSec >= 0.6) {
     const chatArea = document.getElementById('gs-chat-area');
     if (chatArea) {
@@ -8893,68 +8541,68 @@ function gsStopRecording(discard) {
       if (emptyPlaceholder) emptyPlaceholder.remove();
       const sendingBubble = document.createElement('div');
       sendingBubble.className = 'gs-bubble me pending gs-sending-voice';
-      sendingBubble.innerHTML = '<div class="gs-bubble-inner voice"><div style="display:flex;align-items:center;gap:8px;padding:6px 12px"><div class="gs-wave-bar" style="width:100px"><div class="gs-wave-fill" style="animation:gs-pulse 1s infinite"></div></div><span style="font-size:.7rem;color:var(--txt2)">Saving to your phone... ⏳</span></div></div>';
+      sendingBubble.innerHTML = '<div class="gs-bubble-inner voice"><div style="display:flex;align-items:center;gap:8px;padding:6px 12px"><div class="gs-wave-bar" style="width:100px"><div class="gs-wave-fill" style="animation:gs-pulse 1s infinite"></div></div><span style="font-size:.7rem;color:var(--txt2)">Sending... ⏳</span></div></div>';
       chatArea.appendChild(sendingBubble);
       chatArea.scrollTop = chatArea.scrollHeight;
     }
   }
 
-  // Reset the recorder ref only -- NOT gsRecChunks. The final ondataavailable
+  // Reset the recorder ref only — NOT gsRecChunks. The final ondataavailable
   // event (carrying the whole recorded blob, since no timeslice was given to
   // start()) fires asynchronously during rec.stop() below and pushes into
   // gsRecChunks. If we reassign gsRecChunks to a new array here first, that
   // last chunk lands in the new array instead of the "chunks" ref captured
-  // above, so the blob built from "chunks" would always be empty. gsToggleRecord()
-  // already resets gsRecChunks = [] at the start of the next recording, so
-  // it's safe to leave it alone here.
+  // above, so the blob built from "chunks" is always empty -> every voice
+  // note failed server-side with "No audio data". gsToggleRecord() already
+  // resets gsRecChunks = [] at the start of the next recording, so it's safe
+  // to leave it alone here.
   gsMediaRecorder = null;
 
   rec.onstop = async () => {
     // Stop tracks from THIS recorder only
     if (rec.stream) rec.stream.getTracks().forEach(t => t.stop());
     if (discard || durationSec < 0.6) {
+      // Remove sending indicator if present
       const sb = document.querySelector('.gs-sending-voice');
       if (sb) sb.remove();
       return;
     }
     try {
       const blob = new Blob(chunks, { type: recMimeType });
-      if (!blob || blob.size < 50) {
+      // Compress: if blob > 500KB, warn but still send
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        try {
+          // Strip "data:audio/webm;codecs=opus;base64," prefix — store raw base64 only
+          const dataUrl = reader.result || '';
+          const commaIdx = dataUrl.indexOf(',');
+          const rawBase64 = commaIdx >= 0 ? dataUrl.substring(commaIdx + 1) : dataUrl;
+          const res = await fetchFn('groupVoiceHub', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ action:'send', roomCode: gsRoomCode, userName: gsUserName, audioBase64: rawBase64, durationSec })
+          });
+          const d = await res.json();
+          // Remove sending indicator
+          const sb = document.querySelector('.gs-sending-voice');
+          if (sb) sb.remove();
+          if (!d.ok) { toast('⚠️ ' + (d.error || 'Failed to send voice')); return; }
+          gsPollVoice();
+        } catch(e) {
+          const sb = document.querySelector('.gs-sending-voice');
+          if (sb) { sb.remove(); }
+          toast('⚠️ Failed to send voice note');
+        }
+      };
+      reader.onerror = () => {
         const sb = document.querySelector('.gs-sending-voice');
         if (sb) sb.remove();
-        toast('⚠️ Recording was empty — try again');
-        return;
-      }
-      // WHATSAPP-MODE: the voice note is saved ONLY on this phone
-      // (IndexedDB) -- it never goes through the server, so it can never
-      // hit a database field-size limit or the API rate limit. Only a
-      // lightweight pointer (id/userName/duration/timestamp) is announced
-      // as a text message so other members in the room know a voice note
-      // exists; the audio itself stays local to the phone that recorded it.
-      const msgId = 'vl_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8);
-      const nowIso = new Date().toISOString();
-      const rec2 = {
-        id: msgId, roomCode: gsRoomCode, userName: gsUserName, messageType: 'voice',
-        text: '', audioBase64: '', blob: blob, durationSec: durationSec,
-        reactions: '[]', replyTo: gsReplyTo || '', edited: false, pinned: false,
-        created_date: nowIso, comments: [], local: true
+        toast('⚠️ Audio processing error');
       };
-      try { await gsIDBPut('voice', rec2); } catch (e) {}
-      gsLocalMsgCache[msgId] = rec2;
-
+      reader.readAsDataURL(blob);
+    } catch(e) {
       const sb = document.querySelector('.gs-sending-voice');
       if (sb) sb.remove();
-      const chatArea = document.getElementById('gs-chat-area');
-      if (chatArea) {
-        chatArea.insertAdjacentHTML('beforeend', gsBuildMessageHTML(gsShapeLocal(rec2)));
-        chatArea.scrollTop = chatArea.scrollHeight;
-      }
-      gsVoiceCount++;
-      gsCancelReply();
-    } catch (e) {
-      const sb = document.querySelector('.gs-sending-voice');
-      if (sb) sb.remove();
-      toast('⚠️ Failed to save recording');
+      toast('⚠️ Failed to process recording');
     }
   };
   rec.stop();
