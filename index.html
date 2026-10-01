@@ -3086,7 +3086,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v96 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v97 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3146,7 +3146,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v96 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v97 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -5212,14 +5212,7 @@ function syncAlarmsToNative(){
 }
 
 /* ── PRAYER TIMES ── */
-async function loadPrayerTimes(){
-  // Coordinates: try exact GPS; if unavailable, default to Accra so
-  // prayer times ALWAYS display instead of staying blank.
-  let lat=5.6037, lon=-0.1870, usingDefault=false;
-  try{
-    const pos=await new Promise((ok,no)=>navigator.geolocation.getCurrentPosition(ok,no,{timeout:6000}));
-    lat=pos.coords.latitude; lon=pos.coords.longitude;
-  }catch(e){ usingDefault=true; }
+async function fetchAndShowPrayerTimes(lat, lon, usingDefault){
   // Try the prayer-times API via our own domain first (carrier-proof),
   // then direct, then give up with the enable-location prompt.
   let d=null;
@@ -5258,11 +5251,12 @@ async function loadPrayerTimes(){
     }
     // Sync to native Android AlarmManager
     if(azanEnabled) syncAlarmsToNative();
-    // If we're on Accra defaults, say so on the card (tap card to retry exact location)
+    // If we're on Accra defaults, say so on the card; if we now have
+    // exact coords, make sure any old default note is cleared.
+    const oldNote=document.getElementById('pt-default-note');
     if(usingDefault){
       const pw=document.getElementById('next-prayer-card');
-      const note=document.getElementById('pt-default-note');
-      if(pw && !note){
+      if(pw && !oldNote){
         const pad=pw.querySelector('.home-card-pad');
         if(pad){
           const el=document.createElement('div');
@@ -5272,7 +5266,7 @@ async function loadPrayerTimes(){
           pad.appendChild(el);
         }
       }
-    }
+    } else if(oldNote){ oldNote.remove(); }
   }catch(e){
     // Add a clickable prompt on the next-prayer card
     const pw=document.getElementById('next-prayer-card');
@@ -5288,6 +5282,35 @@ async function loadPrayerTimes(){
       }
     }
   }
+}
+
+async function loadPrayerTimes(){
+  // INSTANT DISPLAY: show prayer times with the last known coords or
+  // the Accra default immediately. We deliberately do NOT wait for GPS
+  // first — on some phones (especially the APK WebView) the location
+  // prompt can hang indefinitely, which used to leave this card blank.
+  let lat=5.6037, lon=-0.1870, usingDefault=true;
+  try{
+    const sc=JSON.parse(localStorage.getItem('lastCoords')||'null');
+    if(sc && typeof sc.lat==='number' && typeof sc.lon==='number'
+       && (Date.now()-(sc.ts||0)) < 30*24*3600*1000){
+      lat=sc.lat; lon=sc.lon; usingDefault=false;
+    }
+  }catch(e){}
+  await fetchAndShowPrayerTimes(lat, lon, usingDefault);
+  // Background refine: if exact GPS arrives later and differs from what
+  // we displayed, silently refresh with the precise times. Never blocks.
+  try{
+    navigator.geolocation.getCurrentPosition(p=>{
+      try{
+        const la=p.coords.latitude, lo=p.coords.longitude;
+        localStorage.setItem('lastCoords', JSON.stringify({lat:la,lon:lo,ts:Date.now()}));
+        if(Math.abs(la-lat)>0.05 || Math.abs(lo-lon)>0.05){
+          fetchAndShowPrayerTimes(la, lo, false);
+        }
+      }catch(e){}
+    }, ()=>{}, {timeout:12000, maximumAge:600000});
+  }catch(e){}
 }
 
 /* ── AZAN ENGINE ── */
