@@ -2433,9 +2433,6 @@ body { font-family:'Poppins',sans-serif;
     </div>
   </div>
 
-  <!-- Teacher Mode: AI Tajweed check feedback (word-accuracy, via Groq Whisper) -->
-  <div class="tj-feedback" id="mt-feedback" style="display:none;margin:10px 11px 0"></div>
-
   <!-- Loop + Pause settings -->
   <div class="mem-settings" id="mem-settings" style="display:none">
     <div class="msetting" id="set-loop" onclick="cycleLoop()">
@@ -2463,12 +2460,16 @@ body { font-family:'Poppins',sans-serif;
     <div class="mem-prog-txt" id="mprog-txt">0 / 0</div>
   </div>
 
-  <!-- Verse list -->
-  <div class="mem-scroll" id="mem-body">
+  <!-- Verse list (AI Tajweed feedback scrolls together with the cards, so it
+       never squeezes them — it's just another card in the same scroll area) -->
+  <div class="mem-scroll">
+    <div class="tj-feedback" id="mt-feedback" style="display:none;margin-bottom:10px"></div>
+    <div id="mem-body">
     <div style="text-align:center;padding:48px 18px 30px">
       <div style="font-size:2.5rem;margin-bottom:10px">🕌</div>
       <div style="font-size:.9rem;font-weight:700;color:var(--txt);margin-bottom:5px">Select a Surah above</div>
       <div style="font-size:.78rem;color:var(--txt2)">Listen · Repeat · Self-check · Master</div>
+    </div>
     </div>
   </div>
 </div>
@@ -3089,7 +3090,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v104 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v105 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3149,7 +3150,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v104 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v105 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
