@@ -3086,7 +3086,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v101 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v102 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3146,7 +3146,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v101 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v102 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -5512,7 +5512,8 @@ function todaysAyah(){
 // Ayah of the Day is delivered through it every time the app is opened.
 // v13+ builds (hasFcmSupport) instead get the real 7am FCM push.
 function deliverDailyAyahOldApk(force){
-  if(localStorage.getItem('dailyNotif')!=='1')return;
+  // Default-ON for old APK builds: every user gets the Ayah of the Day
+  // when they open the app, without needing to tap the button first.
   const today=new Date().toDateString();
   if(!force&&localStorage.getItem('lastNotif')===today)return;
   const a=todaysAyah();
