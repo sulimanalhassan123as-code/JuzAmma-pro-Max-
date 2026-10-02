@@ -8,7 +8,10 @@
 // backend (FcmToken entity) via fcmListTokens / fcmRegisterToken functions.
 
 const TOKENS_URL = 'https://superagent-7ce6afb1.base44.app/functions/fcmListTokens?key=nh-daily-ayah-2026';
-const ADMIN_KEY = 'nh-daily-ayah-2026';
+// Admin key comes from the Vercel env var ADMIN_KEY (set 2026-10-02).
+// NEVER hardcode it here — this repo is public and the previous key
+// was committed in plain text, letting anyone push to all users.
+const ADMIN_KEY = process.env.ADMIN_KEY || '';
 
 // Short, well-known ayahs (translation + reference). Rotated by day-of-year.
 const AYAHS = [
@@ -98,7 +101,7 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   const url = new URL(req.url, 'https://juz-amma-pro-max.vercel.app');
   const isCron = req.headers['x-vercel-cron'] || req.headers['x-vercel-ip'] === '1';
-  const adminOk = (req.headers['x-admin-key'] === ADMIN_KEY) || url.searchParams.get('key') === ADMIN_KEY;
+  const adminOk = ADMIN_KEY && ((req.headers['x-admin-key'] === ADMIN_KEY) || url.searchParams.get('key') === ADMIN_KEY);
 
   if (req.method === 'GET' && !isCron && !adminOk) {
     return res.status(401).json({ error: 'unauthorized' });
@@ -139,12 +142,25 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: true, sent: 0, message: 'no registered devices yet' });
     }
 
-    // 4. Pick today's ayah (deterministic rotation by day of year)
-    const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
-    const ayah = AYAHS[dayOfYear % AYAHS.length];
+    // 4. Pick notification content
+    //    Admin panel can either send today's rotating Ayah or a fully custom
+    //    announcement (title + message of their own — e.g. greetings,
+    //    news, reminders). Custom requires BOTH fields; caps keep FCM happy.
+    const hasCustom = typeof body.customTitle === 'string' && body.customTitle.trim()
+      && typeof body.customBody === 'string' && body.customBody.trim();
+    const customTitle = hasCustom ? body.customTitle.trim().slice(0, 60) : null;
+    const customBody  = hasCustom ? body.customBody.trim().slice(0, 240) : null;
 
-    const title = isTest ? '🌙 Daily Ayah (test)' : '🌙 Ayah of the Day';
-    const bodyText = `"${ayah.en}" — ${ayah.ref}`;
+    let title, bodyText, ayah = null;
+    if (customTitle) {
+      title = customTitle;
+      bodyText = customBody;
+    } else {
+      const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+      ayah = AYAHS[dayOfYear % AYAHS.length];
+      title = isTest ? '🌙 Daily Ayah (test)' : '🌙 Ayah of the Day';
+      bodyText = `"${ayah.en}" — ${ayah.ref}`;
+    }
 
     const results = [];
     for (const t of tokens) {
@@ -156,6 +172,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       ok: true, sent: results.filter(r => r.ok).length, total: tokens.length,
+      mode: customTitle ? 'custom' : 'ayah',
       ayah, results,
     });
   } catch (e) {
