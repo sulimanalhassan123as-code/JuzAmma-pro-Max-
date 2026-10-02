@@ -232,6 +232,15 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     // JavaScript bridge — callable from web code as AndroidBridge.methodName()
     private class AzanBridge {
 
+        // Marker method: only present in builds with Firebase/Daily Ayah push
+        // wired in (v13+). Web JS checks this instead of just AndroidBridge's
+        // existence, so older installs don't get a false "notifications active"
+        // message.
+        @JavascriptInterface
+        public boolean hasFcmSupport() {
+            return true;
+        }
+
         @JavascriptInterface
         public void scheduleAlarm(String prayerName, String timeStr, int hour, int minute) {
             // Schedule exact alarm using AlarmManager

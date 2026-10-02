@@ -3086,7 +3086,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v99 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v100 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3146,7 +3146,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v99 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v100 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -5470,8 +5470,12 @@ function renderAzanVoices(){
 /* ── DAILY NOTIFICATIONS ── */
 function requestDailyNotif(){
   // In the native APK, Daily Ayah arrives as an automatic Firebase push
-  // (no browser permission flow exists inside the WebView).
-  if(window.AndroidBridge){localStorage.setItem('dailyNotif','1');toast('✅ Daily Ayah notifications are active — you\'ll receive the Ayah of the Day at 7am 🌙');return;}
+  // (no browser permission flow exists inside the WebView). Only report
+  // "active" if this build actually has the Firebase wiring (v13+) —
+  // AndroidBridge alone also exists in older APKs for the Azan alarm.
+  const hasFcm = window.AndroidBridge && typeof window.AndroidBridge.hasFcmSupport==='function' && window.AndroidBridge.hasFcmSupport();
+  if(hasFcm){localStorage.setItem('dailyNotif','1');toast('✅ Daily Ayah notifications are active — you\'ll receive the Ayah of the Day at 7am 🌙');return;}
+  if(window.AndroidBridge){toast('⬇️ Please update the app to the latest version to enable Daily Ayah push notifications');return;}
   if(!('Notification' in window)){toast('Notifications not supported');return;}
   Notification.requestPermission().then(p=>{
     if(p==='granted'){localStorage.setItem('dailyNotif','1');toast('✅ Daily Ayah notifications ON!');}
@@ -5479,7 +5483,7 @@ function requestDailyNotif(){
   });
 }
 function checkDailyNotif(){
-  if(window.AndroidBridge)return; // APK: Daily Ayah comes via Firebase push instead
+  if(window.AndroidBridge)return; // APK (any version): Daily Ayah comes via native push, not the web Notification API
   if(localStorage.getItem('dailyNotif')!=='1'||Notification.permission!=='granted')return;
   const today=new Date().toDateString();
   if(localStorage.getItem('lastNotif')===today)return;
