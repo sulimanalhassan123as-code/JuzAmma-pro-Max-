@@ -88,7 +88,7 @@ body { font-family:'Poppins',sans-serif;
 #ai-view.active { display:flex; }
 
 /* Memorize: full height flex column */
-#memorize-view { display:none; flex-direction:column; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:var(--bg); overflow:hidden; }
+#memorize-view { display:none; flex-direction:column; position:fixed; top:0; left:0; right:0; bottom:var(--nav); background:var(--bg); overflow-y:auto; }
 #memorize-view.active { display:flex; }
 
 /* Admin: standard scrollable view */
@@ -341,7 +341,7 @@ body { font-family:'Poppins',sans-serif;
 .mem-prog-txt { font-size:.71rem; color:var(--txt2); white-space:nowrap; }
 .mem-prog-pct { font-size:.78rem; font-weight:700; color:var(--p); }
 /* verse scroll area */
-.mem-scroll { flex:1; overflow-y:auto; padding:8px 11px 12px; /* removed: -webkit-overflow-scrolling:touch — caused blank-until-scroll paint bug */; }
+.mem-scroll { flex:1; min-height:160px; overflow-y:auto; padding:8px 11px 12px; /* removed: -webkit-overflow-scrolling:touch — caused blank-until-scroll paint bug */; }
 /* verse card -- must be its OWN column flex container. Without
    flex-direction:column here, this .mcard silently inherited
    display:flex (row) + align-items:center from the UNRELATED home
@@ -3089,7 +3089,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v103 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v104 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3149,7 +3149,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v103 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v104 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
