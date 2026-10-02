@@ -1931,6 +1931,8 @@ body { font-family:'Poppins',sans-serif;
 .hadith-card2-ar { font-size:1.2rem; line-height:2; text-align:right; direction:rtl; color:var(--txt); margin:8px 0; font-family:'Noto Naskh Arabic','Amiri',serif; }
 .hadith-card2-en { font-size:.8rem; color:var(--txt); line-height:1.5; }
 .hadith-card2-src { font-size:.65rem; color:var(--txt2); opacity:.6; margin-top:6px; }
+.hadith-card2-tags { display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; }
+.hadith-card2-cat { font-size:.65rem; background:rgba(59,130,246,.13); color:#3b82f6; padding:2px 10px; border-radius:10px; }
 /* PRAYER TRACKER */
 .ptracker-wrap { padding:14px; max-width:480px; margin:0 auto; }
 .ptracker-day { background:var(--card); border:1px solid var(--bdr); border-radius:14px; padding:14px; margin-bottom:12px; }
@@ -10534,56 +10536,73 @@ function hijriNext() { hijriCurrentDate.setMonth(hijriCurrentDate.getMonth() + 1
 // 40 HADITH — Imam Nawawi
 // ═══════════════════════════════════════════════════════════
 const HADITH40 = [
-  {n:1, ar:'إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى', en:'Actions are but by intentions, and every man shall have only that which he intended.', src:'Bukhari & Muslim'},
-  {n:2, ar:'الْإِسْلَامُ أَنْ تَشْهَدَ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَأَنَّ مُحَمَّدًا رَسُولُ اللَّهِ', en:'Islam is to testify that there is no god but Allah and Muhammad is His Messenger, to establish prayer, give zakat, fast Ramadan, and perform Hajj if able.', src:'Bukhari & Muslim'},
-  {n:3, ar:'الْحَلَالُ بَيِّنٌ وَالْحَرَامُ بَيِّنٌ، وَبَيْنَ ذَلِكَ أُمُورٌ مُشْتَبِهَاتٌ', en:'The halal is clear and the haram is clear, and between them are matters that are doubtful.', src:'Bukhari & Muslim'},
-  {n:4, ar:'مَا نَهَيْتُكُمْ عَنْهُ فَاجْتَنِبُوهُ، وَمَا أَمَرْتُكُمْ بِهِ فَأْتُوا مِنْهُ مَا اسْتَطَعْتُمْ', en:'What I have forbidden you, avoid; what I have commanded you, do as much as you can.', src:'Bukhari & Muslim'},
-  {n:5, ar:'إِنَّ اللَّهَ طَيِّبٌ لَا يَقْبَلُ إِلَّا طَيِّبًا', en:'Allah is Good and accepts only what is good.', src:'Muslim'},
-  {n:6, ar:'دَعْ مَا يَرِيبُكَ إِلَى مَا لَا يَرِيبُكَ', en:'Leave what makes you doubt for what does not make you doubt.', src:'Tirmidhi'},
-  {n:7, ar:'مِنْ حُسْنِ إِسْلَامِ الْمَرْءِ تَرْكُهُ مَا لَا يَعْنِيهِ', en:'Part of the excellence of a person\'s Islam is leaving alone what does not concern him.', src:'Tirmidhi'},
-  {n:8, ar:'لَا يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لِأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ', en:'None of you truly believes until he loves for his brother what he loves for himself.', src:'Bukhari & Muslim'},
-  {n:9, ar:'مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الْآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ', en:'Whoever believes in Allah and the Last Day should speak good or remain silent.', src:'Bukhari & Muslim'},
-  {n:10, ar:'لَا تَغْضَبْ وَلَكَ الْجَنَّةُ', en:'Do not get angry, and Paradise is yours.', src:'Bukhari'},
-  {n:11, ar:'إِنَّ اللَّهَ كَتَبَ الْإِحْسَانَ عَلَى كُلِّ شَيْءٍ', en:'Allah has prescribed excellence in all things.', src:'Muslim'},
-  {n:12, ar:'اتَّقِ اللَّهَ حَيْثُمَا كُنْتَ، وَأَتْبِعِ السَّيِّئَةَ الْحَسَنَةَ تَمْحُهَا', en:'Fear Allah wherever you are, and follow a bad deed with a good one to erase it.', src:'Tirmidhi'},
-  {n:13, ar:'احْفَظِ اللَّهَ يَحْفَظْكَ، احْفَظِ اللَّهَ تَجِدْهُ تُجَاهَكَ', en:'Guard Allah\'s commands and Allah will guard you.', src:'Tirmidhi'},
-  {n:14, ar:'الْحَيَاءُ مِنَ الْإِيمَانِ', en:'Modesty is part of faith.', src:'Bukhari & Muslim'},
-  {n:15, ar:'قُلْ آمَنْتُ بِاللَّهِ ثُمَّ اسْتَقِمْ', en:'Say: I have believed in Allah, then be steadfast.', src:'Muslim'},
-  {n:16, ar:'الْإِسْلَامُ بَنَاءٌ عَلَى بِنَاءٍ، فَأَتِمَّ الْبِنَاءَ', en:'Islam is built on five: testifying there is no god but Allah, prayer, zakat, fasting Ramadan, and Hajj.', src:'Bukhari & Muslim'},
-  {n:17, ar:'الطُّهُورُ شَطْرُ الْإِيمَانِ، وَالْحَمْدُ لِلَّهِ تَمْلَأُ الْمِيزَانَ', en:'Purity is half of faith, and praise be to Allah fills the scale.', src:'Muslim'},
-  {n:18, ar:'الصَّدَقَةُ تُطْفِئُ الْخَطِيئَةَ كَمَا يُطْفِئُ الْمَاءُ النَّارَ', en:'Charity extinguishes sin as water extinguishes fire.', src:'Tirmidhi'},
-  {n:19, ar:'الْمُسْلِمُ مَنْ سَلِمَ الْمُسْلِمُونَ مِنْ لِسَانِهِ وَيَدِهِ', en:'A Muslim is the one from whose tongue and hand Muslims are safe.', src:'Bukhari & Muslim'},
-  {n:20, ar:'الْبِرُّ حُسْنُ الْخُلُقِ، وَالْإِثْمُ مَا حَاكَ فِي صَدْرِكَ', en:'Righteousness is good character, and sin is what makes your heart uneasy.', src:'Muslim'},
-  {n:21, ar:'لَا تَحْقِرَنَّ مِنَ الْمَعْرُوفِ شَيْئًا، وَلَوْ أَنْ تَلْقَى أَخَاكَ بِوَجْهٍ طَلِيقٍ', en:'Do not belittle any good deed, even meeting your brother with a cheerful face.', src:'Muslim'},
-  {n:22, ar:'مَنْ دَلَّ عَلَى خَيْرٍ فَلَهُ مِثْلُ أَجْرِ فَاعِلِهِ', en:'Whoever guides someone to goodness will have a reward like the one who does it.', src:'Muslim'},
-  {n:23, ar:'لَا ضَرَرَ وَلَا ضِرَارَ', en:'There should be no harm and no reciprocating of harm.', src:'Ibn Majah'},
-  {n:24, ar:'مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الْآخِرِ فَلْيُكْرِمْ ضَيْفَهُ', en:'Whoever believes in Allah and the Last Day should honor his guest.', src:'Bukhari & Muslim'},
-  {n:25, ar:'السَّمْعُ وَالطَّاعَةُ عَلَى الْمَرْءِ الْمُسْلِمِ', en:'Listening and obedience are upon the Muslim in what he loves and dislikes.', src:'Bukhari & Muslim'},
-  {n:26, ar:'اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ', en:'O Allah, You are Peace and from You comes peace. Blessed are You, O Owner of Majesty and Honor.', src:'Muslim'},
-  {n:27, ar:'مَنْ صَلَّى الصُّبْحَ فَهُوَ فِي ذِمَّةِ اللَّهِ', en:'Whoever prays Fajr is in Allah\'s protection.', src:'Muslim'},
-  {n:28, ar:'الْأَرْضُ مَسْجِدٌ وَطَهُورُهَا تُرَبَتُهَا', en:'The earth has been made a mosque and pure for me, so pray wherever prayer time comes.', src:'Bukhari & Muslim'},
-  {n:29, ar:'ابْنُ آدَمَ كَلَامُهُ عَلَيْكَ مَقَالَةٌ وَبَقِيَّةٌ', en:'The son of Adam: his speech is a proof for or against him.', src:'Bukhari & Muslim'},
-  {n:30, ar:'مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللَّهُ لَهُ طَرِيقًا إِلَى الْجَنَّةِ', en:'Whoever takes a path seeking knowledge, Allah makes easy for him a path to Paradise.', src:'Muslim'},
-  {n:31, ar:'كُلُّ أُمَّتِي مُعَافًى إِلَّا الْمُجَاهِرِينَ', en:'All of my ummah is forgiven except those who sin openly.', src:'Bukhari & Muslim'},
-  {n:32, ar:'إِنَّ اللَّهَ لَا يَنْظُرُ إِلَى صُورِكُمْ وَأَمْوَالِكُمْ وَلَكِنْ يَنْظُرُ إِلَى قُلُوبِكُمْ', en:'Allah does not look at your appearances or wealth, but at your hearts and deeds.', src:'Muslim'},
-  {n:33, ar:'مَنْ لَا يَرْحَمُ النَّاسَ لَا يَرْحَمُهُ اللَّهُ', en:'Whoever does not show mercy to people, Allah will not show mercy to him.', src:'Bukhari & Muslim'},
-  {n:34, ar:'الطَّعَامُ وَاحِدٌ وَالشَّرَابُ وَاحِدٌ، وَنَحْنُ شُرَكَاءُ فِي ثَلَاثٍ', en:'We are partners in three: water, pasture, and fire.', src:'Abu Dawud'},
-  {n:35, ar:'مَنْ قَالَ لَا إِلَهَ إِلَّا اللَّهُ دَخَلَ الْجَنَّةَ', en:'Whoever says there is no god but Allah will enter Paradise.', src:'Ahmad'},
-  {n:36, ar:'الْحَيَاءُ لَا يَأْتِي إِلَّا بِخَيْرٍ', en:'Modesty brings nothing but good.', src:'Bukhari & Muslim'},
-  {n:37, ar:'النَّظَافَةُ مِنَ الْإِيمَانِ', en:'Cleanliness is part of faith.', src:'Muslim'},
-  {n:38, ar:'خَيْرُ النَّاسِ أَنْفَعُهُمْ لِلنَّاسِ', en:'The best of people are those most beneficial to people.', src:'Ahmad'},
-  {n:39, ar:'الْعِلْمُ بِالْعِلْمِ يَتَعَلَّمُهُ الْعَبْدُ خَيْرٌ مِنْ عِبَادَةٍ', en:'Learning knowledge is better than worship.', src:'Tabarani'},
-  {n:40, ar:'كُنْ فِي الدُّنْيَا كَأَنَّكَ غَرِيبٌ أَوْ عَابِرُ سَبِيلٍ', en:'Be in this world as a stranger or a traveler.', src:'Bukhari'},
-  {n:41, ar:'مَنْ صَلَّى عَلَيَّ صَلَاةً صَلَّى اللَّهُ عَلَيْهِ بِهَا عَشْرًا', en:'Whoever sends one blessing upon me, Allah sends ten blessings upon him.', src:'Muslim'},
-  {n:42, ar:'رَبِّ اغْفِرْ لِي ذَنْبِي كُلَّهُ، دِقَّهُ وَجِلَّهُ', en:'My Lord, forgive me all my sins, the small and the great.', src:'Muslim'},
+  {n:1, ar:'إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى', en:'Actions are but by intentions, and every person shall have only that which they intended.', src:'Sahih al-Bukhari & Sahih Muslim', cat:'Faith'},
+  {n:2, ar:'الْإِسْلَامُ أَنْ تَشْهَدَ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَأَنَّ مُحَمَّدًا رَسُولُ اللَّهِ، وَتُقِيمَ الصَّلَاةَ، وَتُؤْتِيَ الزَّكَاةَ، وَتَصُومَ رَمَضَانَ، وَتَحُجَّ الْبَيْتَ إِنِ اسْتَطَعْتَ إِلَيْهِ سَبِيلًا', en:'Islam is to testify that there is no god but Allah and Muhammad is His Messenger, establish prayer, give zakat, fast Ramadan, and perform Hajj if able.', src:'Sahih Muslim', cat:'Faith'},
+  {n:3, ar:'إِنَّ الْحَلَالَ بَيِّنٌ، وَإِنَّ الْحَرَامَ بَيِّنٌ، وَبَيْنَهُمَا أُمُورٌ مُشْتَبِهَاتٌ', en:'Verily, the lawful is clear and the unlawful is clear, and between them are doubtful matters.', src:'Sahih al-Bukhari & Sahih Muslim', cat:'Guidance'},
+  {n:4, ar:'مَا نَهَيْتُكُمْ عَنْهُ فَاجْتَنِبُوهُ، وَمَا أَمَرْتُكُمْ بِهِ فَأْتُوا مِنْهُ مَا اسْتَطَعْتُمْ', en:'What I have forbidden you, avoid; what I have commanded you, do as much as you can.', src:'Sahih al-Bukhari & Sahih Muslim', cat:'Guidance'},
+  {n:5, ar:'إِنَّ اللَّهَ طَيِّبٌ لَا يَقْبُلُ إِلَّا طَيِّبًا', en:'Allah is Good and accepts only what is good.', src:'Sahih Muslim', cat:'Good Deeds'},
+  {n:6, ar:'دَعْ مَا يَرِيبُكَ إِلَى مَا لَا يَرِيبُكَ', en:'Leave what makes you doubt for what does not make you doubt.', src:'Jami at-Tirmidhi & Sunan an-Nasa\'i', cat:'Guidance'},
+  {n:7, ar:'مِنْ حُسْنِ إِسْلَامِ الْمَرْءِ تَرْكُهُ مَا لَا يَعْنِيهِ', en:'Part of the excellence of a person\'s Islam is leaving alone what does not concern him.', src:'Jami at-Tirmidhi', cat:'Character'},
+  {n:8, ar:'لَا يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لِأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ', en:'None of you truly believes until he loves for his brother what he loves for himself.', src:'Sahih al-Bukhari & Sahih Muslim', cat:'Brotherhood'},
+  {n:9, ar:'مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الْآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ', en:'Whoever believes in Allah and the Last Day should speak good or remain silent.', src:'Sahih al-Bukhari & Sahih Muslim', cat:'Character'},
+  {n:10, ar:'لَا تَغْضَبْ', en:'Do not become angry.', src:'Sahih al-Bukhari', cat:'Character'},
+  {n:11, ar:'إِنَّ اللَّهَ كَتَبَ الْإِحْسَانَ عَلَى كُلِّ شَيْءٍ', en:'Allah has prescribed excellence in all things.', src:'Sahih Muslim', cat:'Good Deeds'},
+  {n:12, ar:'اتَّقِ اللَّهَ حَيْثُمَا كُنْتَ، وَأَتْبِعِ السَّيِّئَةَ الْحَسَنَةَ تَمْحُهَا، وَخَالِقِ النَّاسَ بِخُلُقٍ حَسَنٍ', en:'Fear Allah wherever you are, follow a bad deed with a good one to erase it, and treat people with good character.', src:'Jami at-Tirmidhi', cat:'Character'},
+  {n:13, ar:'احْفَظِ اللَّهَ يَحْفَظْكَ، احْفَظِ اللَّهَ تَجِدْهُ تُجَاهَكَ', en:'Be mindful of Allah and Allah will protect you. Be mindful of Allah and you will find Him in front of you.', src:'Jami at-Tirmidhi', cat:'Guidance'},
+  {n:14, ar:'الْحَيَاءُ مِنَ الْإِيمَانِ', en:'Modesty is part of faith.', src:'Sahih al-Bukhari & Sahih Muslim', cat:'Character'},
+  {n:15, ar:'قُلْ آمَنْتُ بِاللَّهِ ثُمَّ اسْتَقِمْ', en:'Say: "I believe in Allah," and then be steadfast.', src:'Sahih Muslim', cat:'Faith'},
+  {n:16, ar:'بُنِيَ الْإِسْلَامُ عَلَى خَمْسٍ: شَهَادَةِ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَأَنَّ مُحَمَّدًا رَسُولُ اللَّهِ، وَإِقَامِ الصَّلَاةِ، وَإِيتَاءِ الزَّكَاةِ، وَحَجِّ الْبَيْتِ، وَصَوْمِ رَمَضَانَ', en:'Islam is built upon five pillars: testifying that there is no god but Allah and Muhammad is the Messenger of Allah, establishing prayer, paying zakat, Hajj to the House, and fasting Ramadan.', src:'Sahih al-Bukhari & Sahih Muslim', cat:'Faith'},
+  {n:17, ar:'الطُّهُورُ شَطْرُ الْإِيمَانِ، وَالْحَمْدُ لِلَّهِ تَمْلَأُ الْمِيزَانَ', en:'Purity is half of faith, and praise be to Allah fills the scale.', src:'Sahih Muslim', cat:'Worship'},
+  {n:18, ar:'الصَّدَقَةُ تُطْفِئُ الْخَطِيئَةَ كَمَا يُطْفِئُ الْمَاءُ النَّارَ', en:'Charity extinguishes sin as water extinguishes fire.', src:'Jami at-Tirmidhi', cat:'Charity'},
+  {n:19, ar:'الْمُسْلِمُ مَنْ سَلِمَ الْمُسْلِمُونَ مِنْ لِسَانِهِ وَيَدِهِ', en:'A Muslim is the one from whose tongue and hand Muslims are safe.', src:'Sahih al-Bukhari & Sahih Muslim', cat:'Character'},
+  {n:20, ar:'الْبِرُّ حُسْنُ الْخُلُقِ، وَالْإِثْمُ مَا حَاكَ فِي صَدْرِكَ وَكَرِهْتَ أَنْ يَطَّلِعَ عَلَيْهِ النَّاسُ', en:'Righteousness is good character, and sin is what wavers in your chest and you hate for people to find out about.', src:'Sahih Muslim', cat:'Character'},
+  {n:21, ar:'لَا تَحْقِرَنَّ مِنَ الْمَعْرُوفِ شَيْئًا، وَلَوْ أَنْ تَلْقَى أَخَاكَ بِوَجْهٍ طَلِيقٍ', en:'Do not belittle any good deed, even meeting your brother with a cheerful face.', src:'Sahih Muslim', cat:'Good Deeds'},
+  {n:22, ar:'مَنْ دَلَّ عَلَى خَيْرٍ فَلَهُ مِثْلُ أَجْرِ فَاعِلِهِ', en:'Whoever guides someone to goodness will have a reward like the one who does it.', src:'Sahih Muslim', cat:'Good Deeds'},
+  {n:23, ar:'لَا ضَرَرَ وَلَا ضِرَارَ', en:'There should be no harm and no reciprocating of harm.', src:'Sunan Ibn Majah', cat:'Guidance'},
+  {n:24, ar:'مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الْآخِرِ فَلْيُكْرِمْ ضَيْفَهُ', en:'Whoever believes in Allah and the Last Day should honor his guest.', src:'Sahih al-Bukhari & Sahih Muslim', cat:'Character'},
+  {n:25, ar:'السَّمْعُ وَالطَّاعَةُ عَلَى الْمَرْءِ الْمُسْلِمِ فِيمَا أَحَبَّ وَكَرِهَ، مَا لَمْ يُؤْمَرْ بِمَعْصِيَةٍ', en:'Listening and obedience are required upon a Muslim in what he likes and dislikes, unless he is commanded to commit a sin.', src:'Sahih al-Bukhari & Sahih Muslim', cat:'Guidance'},
+  {n:26, ar:'اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ', en:'O Allah, You are Peace and from You comes peace. Blessed are You, O Owner of Majesty and Honor.', src:'Sahih Muslim', cat:'Dua & Remembrance'},
+  {n:27, ar:'مَنْ صَلَّى الصُّبْحَ فَهُوَ فِي ذِمَّةِ اللَّهِ', en:'Whoever prays Fajr is under the protection of Allah.', src:'Sahih Muslim', cat:'Worship'},
+  {n:28, ar:'وَجُعِلَتْ لِيَ الْأَرْضُ مَسْجِدًا وَطَهُورًا، فَأَيُّمَا رَجُلٍ مِنْ أُمَّتِي أَدْرَكَتْهُ الصَّلَاةُ فَلْيُصَلِّ', en:'The earth has been made for me a place of worship and pure, so wherever prayer time overtakes anyone of my ummah, let him pray.', src:'Sahih al-Bukhari & Sahih Muslim', cat:'Worship'},
+  {n:29, ar:'كُفَّ عَلَيْكَ هَذَا... وَهَلْ يَكُبُّ النَّاسَ فِي النَّارِ عَلَى وُجُوهِهِمْ إِلَّا حَصَائِدُ أَلْسِنَتِهِمْ', en:'Restrain this (tongue). Is there anything that throws people into the Hellfire on their faces except the harvests of their tongues?', src:'Jami at-Tirmidhi', cat:'Character'},
+  {n:30, ar:'مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللَّهُ لَهُ بِهِ طَرِيقًا إِلَى الْجَنَّةِ', en:'Whoever takes a path seeking knowledge, Allah makes easy for him a path to Paradise.', src:'Sahih Muslim', cat:'Knowledge'},
+  {n:31, ar:'كُلُّ أُمَّتِي مُعَافًى إِلَّا الْمُجَاهِرِينَ', en:'All of my ummah will be forgiven except those who disclose their sins publicly.', src:'Sahih al-Bukhari & Sahih Muslim', cat:'Guidance'},
+  {n:32, ar:'إِنَّ اللَّهَ لَا يَنْظُرُ إِلَى صُورِكُمْ وَأَمْوَالِكُمْ، وَلَكِنْ يَنْظُرُ إِلَى قُلُوبِكُمْ وَأَعْمَالِكُمْ', en:'Allah does not look at your appearances or wealth, but at your hearts and deeds.', src:'Sahih Muslim', cat:'Character'},
+  {n:33, ar:'مَنْ لَا يَرْحَمِ النَّاسَ لَا يَرْحَمْهُ اللَّهُ', en:'Whoever does not show mercy to people, Allah will not show mercy to him.', src:'Sahih al-Bukhari & Sahih Muslim', cat:'Character'},
+  {n:34, ar:'الْمُسْلِمُونَ شُرَكَاءُ فِي ثَلَاثٍ: فِي الْمَاءِ، وَالْكَلَإِ، وَالنَّارِ', en:'Muslims are partners in three things: water, pasture, and fire.', src:'Sunan Abu Dawud', cat:'Brotherhood'},
+  {n:35, ar:'مَنْ مَاتَ وَهُوَ يَعْلَمُ أَنَّهُ لَا إِلَهَ إِلَّا اللَّهُ دَخَلَ الْجَنَّةَ', en:'Whoever dies knowing that there is no god but Allah shall enter Paradise.', src:'Sahih Muslim', cat:'Faith'},
+  {n:36, ar:'الْحَيَاءُ لَا يَأْتِي إِلَّا بِخَيْرٍ', en:'Modesty brings nothing but good.', src:'Sahih al-Bukhari & Sahih Muslim', cat:'Character'},
+  {n:37, ar:'السِّوَاكُ مَطْهَرَةٌ لِلْفَمِ مَرْضَاةٌ لِلرَّبِّ', en:'Using the Siwak (tooth-stick) is a means of purifying the mouth and pleasing to the Lord.', src:'Sunan an-Nasa\'i & Sahih al-Bukhari', cat:'Worship'},
+  {n:38, ar:'خَيْرُ النَّاسِ أَنْفَعُهُمْ لِلنَّاسِ', en:'The best of people are those most beneficial to people.', src:'Al-Tabarani (Al-Mu\'jam al-Awsat)', cat:'Good Deeds'},
+  {n:39, ar:'مَنْ يُرِدِ اللَّهُ بِهِ خَيْرًا يُفَقِّهْهُ فِي الدِّينِ', en:'Whomever Allah intends good for, He grants him understanding of the religion.', src:'Sahih al-Bukhari & Sahih Muslim', cat:'Knowledge'},
+  {n:40, ar:'كُنْ فِي الدُّنْيَا كَأَنَّكَ غَرِيبٌ أَوْ عَابِرُ سَبِيلٍ', en:'Be in this world as though you were a stranger or a traveler.', src:'Sahih al-Bukhari', cat:'Guidance'},
+  {n:41, ar:'مَنْ صَلَّى عَلَيَّ صَلَاةً صَلَّى اللَّهُ عَلَيْهِ بِهَا عَشْرًا', en:'Whoever sends one blessing upon me, Allah sends ten blessings upon him.', src:'Sahih Muslim', cat:'Dua & Remembrance'},
+  {n:42, ar:'اللَّهُمَّ اغْفِرْ لِي ذَنْبِي كُلَّهُ: دِقَّهُ وَجِلَّهُ، وَأَوَّلَهُ وَآخِرَهُ، وَعَلَانِيَتَهُ وَسِرَّهُ', en:'O Allah, forgive me all my sins: the small and the great, the first and the last, the open and the secret.', src:'Sahih Muslim', cat:'Dua & Remembrance'},
 ];
 
-function initHadith40() {
+let h40Filter = 'All';
+const H40_CATS = ['All','Faith','Guidance','Good Deeds','Character','Brotherhood','Worship','Charity','Dua & Remembrance','Knowledge'];
+function setH40Filter(c, el) {
+  h40Filter = c;
+  document.querySelectorAll('#hadith40-chips .fchip').forEach(function(x){ x.classList.remove('on'); });
+  if (el) el.classList.add('on');
+  renderH40();
+}
+function renderH40() {
   const div = document.getElementById('hadith40-list');
   if (!div) return;
-  div.innerHTML = HADITH40.map(h =>
-    '<div class="hadith-card2" onclick="this.classList.toggle(\'expand\')"><div class="hadith-card2-num">Hadith #' + h.n + '</div><div class="hadith-card2-ar">' + h.ar + '</div><div class="hadith-card2-en">' + h.en + '</div><div class="hadith-card2-src">— ' + h.src + '</div></div>'
+  const list = h40Filter === 'All' ? HADITH40 : HADITH40.filter(function(h){ return h.cat === h40Filter; });
+  div.innerHTML = list.map(h =>
+    '<div class="hadith-card2" onclick="this.classList.toggle(\'expand\')"><div class="hadith-card2-tags"><span class="hadith-card2-num">Hadith #' + h.n + '</span><span class="hadith-card2-cat">' + h.cat + '</span></div><div class="hadith-card2-ar">' + h.ar + '</div><div class="hadith-card2-en">' + h.en + '</div><div class="hadith-card2-src">— ' + h.src + '</div></div>'
   ).join('');
+}
+function initHadith40() {
+  const chips = document.getElementById('hadith40-chips');
+  if (chips && !chips.dataset.built) {
+    chips.dataset.built = '1';
+    chips.innerHTML = H40_CATS.map(function(c){ return '<div class="fchip' + (c === 'All' ? ' on' : '') + '" onclick="setH40Filter(\'' + c + '\', this)">' + c + '</div>'; }).join('');
+  }
+  renderH40();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -11304,7 +11323,7 @@ function updateFsapBtn() {
 </div>
 <div id="hadith40-view" class="view">
   <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goToView('home')">← Home</button><div class="htitle">📜 40 Hadith</div><div style="width:60px"></div></div></div>
-  <div class="hadith-list" id="hadith40-list"></div><div style="height:60px"></div>
+  <div class="fchips" id="hadith40-chips"></div><div class="hadith-list" id="hadith40-list"></div><div style="height:60px"></div>
 </div>
 <div id="ptracker-view" class="view">
   <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goToView('home')">← Home</button><div class="htitle">✅ Prayer Tracker</div><div style="width:60px"></div></div></div>
