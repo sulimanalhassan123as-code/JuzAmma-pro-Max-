@@ -2310,7 +2310,7 @@ body { font-family:'Poppins',sans-serif;
 <div id="list-view" class="view">
   <div class="stickyh">
     <div class="hrow">
-      <button class="btn-back" onclick="goToView('home')">← Home</button>
+      <button class="btn-back" onclick="goBack()">← Home</button>
       <div class="htitle">Full Quran</div>
       <div style="width:50px"></div>
     </div>
@@ -2329,7 +2329,7 @@ body { font-family:'Poppins',sans-serif;
 <div id="juz-view" class="view">
   <div class="stickyh">
     <div class="hrow">
-      <button class="btn-back" onclick="goToView('list')">← Surahs</button>
+      <button class="btn-back" onclick="goBack()">← Surahs</button>
       <div class="htitle">Juz Index</div>
       <div style="width:50px"></div>
     </div>
@@ -2342,7 +2342,7 @@ body { font-family:'Poppins',sans-serif;
 <div id="read-view" class="view">
   <div class="stickyh">
     <div class="hrow">
-      <button class="btn-back" onclick="goToView('list')">← Surahs</button>
+      <button class="btn-back" onclick="goBack()">← Surahs</button>
       <div class="htitle" id="read-title">…</div>
       <div style="width:50px"></div>
     </div>
@@ -2394,7 +2394,7 @@ body { font-family:'Poppins',sans-serif;
   <!-- Header -->
   <div class="mem-hdr">
     <div class="hrow">
-      <button class="btn-back" onclick="goToView('home')" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)">← Home</button>
+      <button class="btn-back" onclick="goBack()" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)">← Home</button>
       <div class="htitle" style="color:#fff">🧠 Memorize</div>
       <button onclick="showMemStats()" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);padding:6px 10px;border-radius:9px;font-size:.72rem;cursor:pointer;font-family:Poppins,sans-serif;">📊 Stats</button>
     </div>
@@ -3016,7 +3016,7 @@ body { font-family:'Poppins',sans-serif;
 <div id="help-view" class="view">
   <div class="stickyh">
     <div class="hrow">
-      <button class="btn-back" onclick="goToView('more')">← More</button>
+      <button class="btn-back" onclick="goBack()">← More</button>
       <div class="htitle">📞 Help & Contact</div>
       <div style="width:50px"></div>
     </div>
@@ -3101,7 +3101,7 @@ body { font-family:'Poppins',sans-serif;
 <div id="privacy-view" class="view">
   <div class="stickyh">
     <div class="hrow">
-      <button class="btn-back" onclick="goToView('help')">← Help</button>
+      <button class="btn-back" onclick="goBack()">← Help</button>
       <div class="htitle">🔒 Privacy Policy</div>
       <div style="width:50px"></div>
     </div>
@@ -3161,7 +3161,7 @@ body { font-family:'Poppins',sans-serif;
 <div id="admin-view" class="view">
   <div class="stickyh">
     <div class="hrow">
-      <button class="btn-back" onclick="goToView('help')">← More</button>
+      <button class="btn-back" onclick="goBack()">← More</button>
       <div class="htitle">🛡️ Admin</div>
       <div style="width:50px"></div>
     </div>
@@ -3209,7 +3209,7 @@ body { font-family:'Poppins',sans-serif;
 <div id="prophets-view">
   <div class="proph-hdr">
     <div class="hrow" style="justify-content:space-between">
-      <button class="btn-back" onclick="goToView('home')" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)">← Home</button>
+      <button class="btn-back" onclick="goBack()" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)">← Home</button>
       <div class="htitle" style="color:#fff">🌟 Prophets</div>
       <div style="width:50px"></div>
     </div>
@@ -3259,7 +3259,7 @@ body { font-family:'Poppins',sans-serif;
 <div id="tasbih-view">
   <div class="stickyh" style="background:transparent;border:none;box-shadow:none;padding:10px 13px 6px;flex-shrink:0">
     <div class="hrow">
-      <button class="btn-back" onclick="goToView('home')" style="background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.15)">← Home</button>
+      <button class="btn-back" onclick="goBack()" style="background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.15)">← Home</button>
       <div class="htitle" style="color:#fff">Mountain Journey</div>
       <div style="width:50px"></div>
     </div>
@@ -3376,7 +3376,41 @@ function closeWuduVideo() {
   if (modal) { modal.style.display = 'none'; document.getElementById('wudu-video-frame').src = ''; }
 }
 
+// ── Navigation stack: remembers where you came from ──────────────
+// MAIN_TABS are top-level tabs: tapping them resets the stack (standard mobile UX).
+// Every other view change pushes the current view, so Back always returns
+// you to where you opened the section from (e.g. More → Prophets → Back → More).
+// Android hardware/back-button is wired via history.pushState + popstate.
+const MAIN_TABS = ['home','list','memorize','tasbih','more'];
+let viewStack = [];
+let curView = 'home';
 function goToView(v) {
+  if (v === curView) return;
+  if (MAIN_TABS.indexOf(v) !== -1) {
+    viewStack = [];
+  } else {
+    viewStack.push(curView);
+    if (viewStack.length > 40) viewStack.shift();
+  }
+  curView = v;
+  try { history.pushState({ v: v }, '', '#' + v); } catch (e) {}
+  switchView(v);
+}
+function goBack() {
+  // Called by every in-app back button. Pops browser history; the popstate
+  // listener below performs the actual view switch so UI-back and
+  // hardware-back behave identically.
+  if (viewStack.length) { history.back(); }
+  else if (curView !== 'home') { switchView('home'); curView = 'home'; }
+}
+window.addEventListener('popstate', function() {
+  // Android back button / browser back. Pop our stack and show the
+  // previous view without pushing new history.
+  const prev = viewStack.pop();
+  if (prev) { curView = prev; switchView(prev); }
+});
+
+function switchView(v) {
   // Stop the wudu demo video if it's playing when navigating away (prevents
   // audio continuing to play in the background off-screen)
   if (typeof closeWuduVideo === 'function') closeWuduVideo();
@@ -10891,7 +10925,7 @@ function updateFsapBtn() {
   <div id="gs-lobby-wrap">
     <div class="stickyh">
       <div class="hrow">
-        <button class="btn-back" onclick="goToView('home')">← Home</button>
+        <button class="btn-back" onclick="goBack()">← Home</button>
         <div class="htitle">👥 Group Study</div>
         <div style="width:60px"></div>
       </div>
@@ -11131,7 +11165,7 @@ function updateFsapBtn() {
 <div id="tajweed-view">
   <div class="stickyh">
     <div class="hrow">
-      <button class="btn-back" onclick="goToView('home')">← Home</button>
+      <button class="btn-back" onclick="goBack()">← Home</button>
       <div class="htitle">🎙️ Tajweed Checker</div>
       <div style="width:60px"></div>
     </div>
@@ -11227,11 +11261,11 @@ function updateFsapBtn() {
 </div>
 
 <div id="dua-view" class="view">
-  <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goToView('home')">← Home</button><div class="htitle">🤲 Daily Duas</div><div style="width:60px"></div></div></div>
+  <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goBack()">← Home</button><div class="htitle">🤲 Daily Duas</div><div style="width:60px"></div></div></div>
   <div class="dua-cat-grid" id="dua-cats"></div><div class="dua-list" id="dua-list" style="display:none"></div><div style="height:60px"></div>
 </div>
 <div id="qibla-view" class="view">
-  <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goToView('home')">← Home</button><div class="htitle">🧭 Qibla</div><div style="width:60px"></div></div></div>
+  <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goBack()">← Home</button><div class="htitle">🧭 Qibla</div><div style="width:60px"></div></div></div>
   <div class="qibla-wrap">
 
     <!-- Bearing angle display -->
@@ -11296,7 +11330,7 @@ function updateFsapBtn() {
   </div>
 </div>
 <div id="zakat-view" class="view">
-  <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goToView('home')">← Home</button><div class="htitle">💰 Zakat</div><div style="width:60px"></div></div></div>
+  <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goBack()">← Home</button><div class="htitle">💰 Zakat</div><div style="width:60px"></div></div></div>
   <div class="zakat-form">
     <div class="zakat-section"><div class="zakat-section-hd">💵 Cash & Savings</div>
       <div class="zakat-row"><span class="zakat-lbl">Cash on hand</span><input class="zakat-inp" type="number" id="z-cash" placeholder="0" oninput="calcZakat()"></div>
@@ -11316,17 +11350,17 @@ function updateFsapBtn() {
   </div><div style="height:60px"></div>
 </div>
 <div id="hijri-view" class="view">
-  <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goToView('home')">← Home</button><div class="htitle">📅 Hijri Calendar</div><div style="width:60px"></div></div></div>
+  <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goBack()">← Home</button><div class="htitle">📅 Hijri Calendar</div><div style="width:60px"></div></div></div>
   <div class="hijri-wrap"><div class="hijri-today"><div class="hijri-today-date" id="hijri-today">—</div><div class="hijri-today-eg" id="hijri-today-eg">—</div></div>
   <div class="hijri-month-hd"><div class="hijri-month-nav" onclick="hijriPrev()">‹</div><span id="hijri-month-name">—</span><div class="hijri-month-nav" onclick="hijriNext()">›</div></div>
   <div class="hijri-cal" id="hijri-cal"></div><div class="hijri-events" id="hijri-events"></div></div><div style="height:60px"></div>
 </div>
 <div id="hadith40-view" class="view">
-  <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goToView('home')">← Home</button><div class="htitle">📜 40 Hadith</div><div style="width:60px"></div></div></div>
+  <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goBack()">← Home</button><div class="htitle">📜 40 Hadith</div><div style="width:60px"></div></div></div>
   <div class="fchips" id="hadith40-chips"></div><div class="hadith-list" id="hadith40-list"></div><div style="height:60px"></div>
 </div>
 <div id="ptracker-view" class="view">
-  <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goToView('home')">← Home</button><div class="htitle">✅ Prayer Tracker</div><div style="width:60px"></div></div></div>
+  <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goBack()">← Home</button><div class="htitle">✅ Prayer Tracker</div><div style="width:60px"></div></div></div>
   <div class="ptracker-wrap"><div class="ptracker-stats">
     <div class="ptracker-stat"><div class="ptracker-stat-n" id="pt-today">0/5</div><div class="ptracker-stat-l">Today</div></div>
     <div class="ptracker-stat"><div class="ptracker-stat-n" id="pt-week">0/35</div><div class="ptracker-stat-l">This Week</div></div>
@@ -11334,7 +11368,7 @@ function updateFsapBtn() {
   </div><div id="ptracker-days"></div><div class="ptracker-week" id="ptracker-week"></div></div><div style="height:60px"></div>
 </div>
 <div id="hajj-view" class="view">
-  <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goToView('home')">← Home</button><div class="htitle">🕋 Hajj & Umrah</div><div style="width:60px"></div></div></div>
+  <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goBack()">← Home</button><div class="htitle">🕋 Hajj & Umrah</div><div style="width:60px"></div></div></div>
   <div class="hajj-wrap"><div class="hajj-tabs"><div class="hajj-tab active" id="hajj-tab-umrah" onclick="switchHajjTab('umrah')">Umrah</div><div class="hajj-tab" id="hajj-tab-hajj" onclick="switchHajjTab('hajj')">Hajj</div></div>
   <div id="hajj-steps"></div></div><div style="height:60px"></div>
 </div>
