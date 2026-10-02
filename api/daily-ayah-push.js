@@ -60,7 +60,7 @@ async function getAccessToken(sa) {
   }));
   const signer = crypto.createSign('RSA-SHA256');
   signer.update(header + '.' + claims);
-  const sig = b64url(signer.sign(sa.private_key, 'pem'));
+  const sig = b64url(signer.sign(sa.private_key));
   const assertion = header + '.' + claims + '.' + sig;
   const r = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST',
