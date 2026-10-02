@@ -2433,6 +2433,9 @@ body { font-family:'Poppins',sans-serif;
     </div>
   </div>
 
+  <!-- Teacher Mode: AI Tajweed check feedback (word-accuracy, via Groq Whisper) -->
+  <div class="tj-feedback" id="mt-feedback" style="display:none;margin:10px 11px 0"></div>
+
   <!-- Loop + Pause settings -->
   <div class="mem-settings" id="mem-settings" style="display:none">
     <div class="msetting" id="set-loop" onclick="cycleLoop()">
@@ -3086,7 +3089,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v102 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v103 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3146,7 +3149,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v102 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v103 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -4302,6 +4305,8 @@ function memReciterChange() {
   if(memPlaying) memPlayVerse(memSurahId, memVerseIdx);
 }
 function setMemMode(mode, el) {
+  if(mtRecording) mtCancelRecording();
+  const fb0=document.getElementById('mt-feedback'); if(fb0){ fb0.style.display='none'; fb0.innerHTML=''; }
   memMode=mode;
   document.querySelectorAll('.mtab').forEach(t=>t.classList.remove('on'));
   el.classList.add('on');
@@ -4313,6 +4318,7 @@ function setMemMode(mode, el) {
 }
 function loadMem() {
   const id=parseInt(document.getElementById('mem-surah').value); if(!id) return;
+  if(mtRecording) mtCancelRecording();
   memSurahId=id; memVerseIdx=0; memLoopCount=0;
   memAudio.pause(); memPlaying=false;
   clearTimeout(memPauseTimer); clearInterval(memProgInterval);
@@ -4449,11 +4455,10 @@ function memAudioEnded(sid, idx, total) {
     return;
   }
   memLoopCount=0;
-  // teacher mode — pause and wait for self-check
+  // teacher mode — AI listens and checks the student's repeat
   if(memMode==='teacher'){
     memPlaying=false; updateMemPlayBtn();
-    document.getElementById('teacher-status').innerText='✋ Your turn — tap ✅ or 🔁';
-    document.getElementById('teacher-avatar').innerText='⏸';
+    teacherRepeatPrompt(sid, idx, total);
     return;
   }
   // auto advance?
@@ -4464,7 +4469,132 @@ function memAudioEnded(sid, idx, total) {
   clearTimeout(memPauseTimer);
   memPauseTimer=setTimeout(()=>memPlayVerse(sid,idx+1), memPause*1000);
 }
+// ── Teacher Mode: AI Tajweed check ("repeat after me") ──────────
+// Reuses the exact same /api/tajweed backend (Groq Whisper + word diff)
+// as the standalone Tajweed Checker — just wired into the Teacher flow:
+// qari reads → student repeats → AI checks → corrects mistakes → retry.
+let mtMediaRec=null, mtChunks=[], mtRecording=false, mtSid=0, mtIdx=0, mtTotal=0;
+
+function teacherRepeatPrompt(sid, idx, total) {
+  mtSid=sid; mtIdx=idx; mtTotal=total;
+  const fb=document.getElementById('mt-feedback'); if(fb){ fb.style.display='none'; fb.innerHTML=''; }
+  document.getElementById('teacher-status').innerText='🎤 Your turn — repeat after me!';
+  document.getElementById('teacher-avatar').innerText='🎤';
+  const btn=document.getElementById('mem-play-btn'); if(btn) btn.innerHTML='⏳';
+  setTimeout(mtStartRecording, 500);
+}
+
+async function mtStartRecording() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio:true });
+    mtChunks=[];
+    mtMediaRec=new MediaRecorder(stream);
+    mtMediaRec.ondataavailable=e=>mtChunks.push(e.data);
+    mtMediaRec.onstop=mtAnalyze;
+    mtMediaRec.start();
+    mtRecording=true;
+    document.getElementById('teacher-status').innerText='🔴 Listening... tap ⏹ when done';
+    document.getElementById('teacher-avatar').innerText='🔴';
+    const btn=document.getElementById('mem-play-btn'); if(btn) btn.innerHTML='⏹';
+    // Safety auto-stop so a forgotten mic doesn't record forever
+    clearTimeout(window.__mtAutoStop);
+    window.__mtAutoStop=setTimeout(()=>{ if(mtRecording) mtStopRecording(); }, 25000);
+  } catch(e) {
+    toast('⚠️ Mic permission denied — allow microphone access to use AI check');
+    document.getElementById('teacher-status').innerText='✋ Your turn — tap ✅ or 🔁';
+    document.getElementById('teacher-avatar').innerText='⏸';
+    const btn=document.getElementById('mem-play-btn'); if(btn) btn.innerHTML='▶';
+  }
+}
+
+function mtStopRecording() {
+  if(!mtMediaRec) return;
+  clearTimeout(window.__mtAutoStop);
+  try{ mtMediaRec.stop(); mtMediaRec.stream.getTracks().forEach(t=>t.stop()); }catch(e){}
+  mtRecording=false;
+  document.getElementById('teacher-status').innerText='🧠 Checking your recitation...';
+  const btn=document.getElementById('mem-play-btn'); if(btn) btn.innerHTML='⏳';
+}
+
+function mtCancelRecording() {
+  if(mtMediaRec){ try{ mtMediaRec.onstop=null; mtMediaRec.stop(); mtMediaRec.stream.getTracks().forEach(t=>t.stop()); }catch(e){} }
+  mtRecording=false; mtMediaRec=null;
+  clearTimeout(window.__mtAutoStop);
+  const fb=document.getElementById('mt-feedback'); if(fb){ fb.style.display='none'; fb.innerHTML=''; }
+}
+
+async function mtAnalyze() {
+  const s=qData.find(x=>x.id===mtSid);
+  if(!s || !s.verses[mtIdx]){ document.getElementById('teacher-status').innerText='✋ Your turn — tap ✅ or 🔁'; return; }
+  const v=s.verses[mtIdx];
+  const surahName=s.name||s.englishName||('Surah '+s.id);
+  const verseNum=mtIdx+1;
+  const fb=document.getElementById('mt-feedback');
+  try {
+    if(!mtChunks.length) throw new Error('no audio');
+    const blob=new Blob(mtChunks, { type:(mtMediaRec&&mtMediaRec.mimeType)||'audio/webm' });
+    const b64=await new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(String(r.result).split(',')[1]); r.onerror=rej; r.readAsDataURL(blob); });
+    const r=await fetch('/api/tajweed', { method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ audio:b64, mime:blob.type, reference:v.a, surahName:surahName, verseNum:verseNum, dur:0 }) });
+    if(!r.ok) throw new Error('http '+r.status);
+    const d=await r.json();
+    if(!d.ok) throw new Error(d.error||'failed');
+
+    if(d.note==='NO_SPEECH'){
+      document.getElementById('teacher-status').innerText='⚠️ Could not hear you — tap 🔁 to listen again, then repeat';
+      document.getElementById('teacher-avatar').innerText='⏸';
+      const btn=document.getElementById('mem-play-btn'); if(btn) btn.innerHTML='▶';
+      return;
+    }
+
+    const chip={OK:'tj-w-ok',HARAKAT_ERROR:'tj-w-har',SUBSTITUTION:'tj-w-sub',DELETION:'tj-w-del',INSERTION:'tj-w-ins'};
+    const wordsHtml=d.words.map(w=>{
+      const cls=chip[w.t]||'tj-w-ok';
+      let inner=w.h||'';
+      if(w.t==='DELETION') inner=w.c+' (missed)';
+      if(w.t==='SUBSTITUTION') inner=w.h;
+      const fix=(w.t==='SUBSTITUTION'||w.t==='HARAKAT_ERROR')&&w.c ? '<span class="tj-w-fix">✓ correct: '+w.c+'</span>' : '';
+      return '<span class="tj-word '+cls+'">'+inner+fix+'</span>';
+    }).join('');
+
+    const hasErrors=d.errors && d.errors.length>0;
+    const scoreColor=d.score>=90?'#10b981':(d.score>=60?'#f59e0b':'#ef4444');
+
+    if(fb){
+      fb.style.display='block';
+      fb.innerHTML =
+        '<div class="tj-fb-header">🎤 AI Tajweed Check — Verse '+verseNum+'</div>'+
+        '<div class="tj-score-row"><div class="tj-ring" style="background:conic-gradient('+scoreColor+' '+d.score+'%, var(--bdr) 0)"><div class="tj-ring-in">'+d.score+'%</div></div>'+
+        '<div class="tj-score-lbl">Word match score'+(d.score>=95?' — Mastered 🔥':'')+'</div></div>'+
+        '<div class="tj-words">'+wordsHtml+'</div>'+
+        (hasErrors ? '<div class="tj-fb-item warn" style="margin-top:8px">⚠️ Some mistakes found — tap 🔁 to listen again, then repeat</div>'
+                   : '<div class="tj-fb-item good" style="margin-top:8px">✅ MashaAllah! Recited correctly</div>');
+    }
+
+    const btn=document.getElementById('mem-play-btn');
+    if(hasErrors){
+      document.getElementById('teacher-status').innerText='⚠️ Mistakes found — see below. Tap 🔁 to try again';
+      document.getElementById('teacher-avatar').innerText='⏸';
+      if(btn) btn.innerHTML='▶';
+      if(navigator.vibrate) navigator.vibrate([30,40,30]);
+    } else {
+      document.getElementById('teacher-status').innerText='✅ Well recited! Moving on...';
+      document.getElementById('teacher-avatar').innerText='⏸';
+      if(btn) btn.innerHTML='▶';
+      toast('✅ MashaAllah! Verse '+verseNum+' correct!');
+      setTimeout(()=>memGot(mtIdx, mtTotal), 1200);
+    }
+  } catch(e) {
+    console.warn('Teacher AI check failed:', e);
+    document.getElementById('teacher-status').innerText='✋ Your turn — tap ✅ or 🔁';
+    document.getElementById('teacher-avatar').innerText='⏸';
+    const btn=document.getElementById('mem-play-btn'); if(btn) btn.innerHTML='▶';
+    if(fb){ fb.style.display='block'; fb.innerHTML='<div class="tj-fb-item warn">⚠️ AI check unavailable right now — use ✅/🔁 below to self-check instead.</div>'; }
+  }
+}
+
 function memPlayPause() {
+  if(mtRecording){ mtStopRecording(); return; }
   if(memPlaying){ memAudio.pause(); memPlaying=false; clearTimeout(memPauseTimer); clearInterval(memProgInterval); document.getElementById('teacher-status').innerText='Paused'; }
   else {
     if(!memSurahId){ toast('Select a surah first'); updateMemPlayBtn(); return; }
@@ -4485,7 +4615,7 @@ function memPlayPause() {
   }
   updateMemPlayBtn();
 }
-function memRepeat() { if(memSurahId) memPlayVerse(memSurahId, memVerseIdx); }
+function memRepeat() { if(mtRecording) mtCancelRecording(); if(memSurahId) memPlayVerse(memSurahId, memVerseIdx); }
 function memPlaySingle(sid,idx) { memPlayVerse(sid,idx); }
 function updateMemPlayBtn() {
   const btn=document.getElementById('mem-play-btn'); if(!btn) return;
