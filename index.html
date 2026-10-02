@@ -3086,7 +3086,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v98 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v99 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3146,7 +3146,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v98 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v99 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -5469,6 +5469,9 @@ function renderAzanVoices(){
 
 /* ── DAILY NOTIFICATIONS ── */
 function requestDailyNotif(){
+  // In the native APK, Daily Ayah arrives as an automatic Firebase push
+  // (no browser permission flow exists inside the WebView).
+  if(window.AndroidBridge){localStorage.setItem('dailyNotif','1');toast('✅ Daily Ayah notifications are active — you\'ll receive the Ayah of the Day at 7am 🌙');return;}
   if(!('Notification' in window)){toast('Notifications not supported');return;}
   Notification.requestPermission().then(p=>{
     if(p==='granted'){localStorage.setItem('dailyNotif','1');toast('✅ Daily Ayah notifications ON!');}
@@ -5476,6 +5479,7 @@ function requestDailyNotif(){
   });
 }
 function checkDailyNotif(){
+  if(window.AndroidBridge)return; // APK: Daily Ayah comes via Firebase push instead
   if(localStorage.getItem('dailyNotif')!=='1'||Notification.permission!=='granted')return;
   const today=new Date().toDateString();
   if(localStorage.getItem('lastNotif')===today)return;

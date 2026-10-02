@@ -58,6 +58,14 @@
         </activity>
 
         <service
+            android:name=".DailyAyahFcmService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <service
             android:name=".AzanAlarmService"
             android:enabled="true"
             android:exported="false"

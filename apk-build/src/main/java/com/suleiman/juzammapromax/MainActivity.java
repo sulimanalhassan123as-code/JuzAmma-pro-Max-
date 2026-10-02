@@ -35,6 +35,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
+import android.util.Log;
 import java.util.Locale;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -43,6 +44,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener, SensorEventListener {
 
@@ -104,6 +109,28 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         // Create notification channel for Azan
         createNotificationChannel();
+
+        // ── Daily Ayah FCM push (Firebase Cloud Messaging) ──
+        // Manual Firebase init (no google-services.json needed): the app is
+        // registered in the never-hide-recorder Firebase project.
+        try {
+            if (FirebaseApp.getApps(this).isEmpty()) {
+                FirebaseApp.initializeApp(this, new FirebaseOptions.Builder()
+                    .setApplicationId("1:1013655836375:android:b96f617e4bfc6c8ce58292")
+                    .setApiKey("AIzaSyD_AdZr66BdUqjydyXg-DcZSP43MWQ-zqM")
+                    .setProjectId("never-hide-recorder")
+                    .setGcmSenderId("1013655836375")
+                    .build());
+            }
+            // Fetch this device's push token and register it with the server.
+            // The DailyAyahFcmService (manifest-registered) keeps it fresh.
+            FirebaseMessaging.getInstance().getToken()
+                .addOnSuccessListener(token -> DailyAyahFcmService.registerToken(token))
+                .addOnFailureListener(e ->
+                    Log.w("DailyAyahFCM", "token fetch failed: " + e.getMessage()));
+        } catch (Exception e) {
+            Log.w("DailyAyahFCM", "Firebase init failed: " + e.getMessage());
+        }
 
         // Request all permissions
         requestAllPermissions();

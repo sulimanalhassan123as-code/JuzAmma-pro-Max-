@@ -86,11 +86,7 @@ async function sendToToken(accessToken, projectId, token, title, body, data) {
         data: data || {},
         android: {
           priority: 'HIGH',
-          notification: {
-            channel_id: 'daily_ayah',
-            icon: 'ic_stat_azan',
-            color: '#10b981',
-          },
+          notification: { channel_id: 'daily_ayah' },
         },
       },
     }),
