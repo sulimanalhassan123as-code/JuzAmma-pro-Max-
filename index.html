@@ -7434,8 +7434,8 @@ function gsRankRenderLobby() {
     (next ? '<br>Next rank ' + next.icon + ' ' + next.name + ' at ' + next.min + ' points' : '') +
     (c.points < GS_RANK_CREATE_MIN ? '<br>🔒 <b>Silver (20 points) unlocks creating rooms</b>' : '<br>✅ You can create rooms');
   card.style.display = 'block';
-}
   gsSyncPoints();
+}
 
 function gsRankGatePanel() {
   const c = gsRankCalc();
