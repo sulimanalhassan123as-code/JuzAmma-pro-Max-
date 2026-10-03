@@ -1141,6 +1141,20 @@ body { font-family:'Poppins',sans-serif;
 .gs-rm-nav { display:flex; gap:8px; padding:10px 12px; border-top:1px solid var(--bdr); background:var(--hdr); flex-shrink:0; }
 .gs-rm-nav .gs-tool-btn { flex:1; justify-content:center; }
 .gs-rm-prog { font-size:.65rem; color:var(--txt2); text-align:center; padding-bottom:4px; }
+/* ═══ RANK SYSTEM (v111) ═══ */
+.gs-rank-card { background:var(--card); border:1px solid var(--bdr); border-radius:14px; padding:12px 14px; margin-top:10px; }
+.gs-rank-top { display:flex; align-items:center; gap:10px; }
+.gs-rank-icon { font-size:1.6rem; }
+.gs-rank-info { flex:1; }
+.gs-rank-tier { font-size:.85rem; font-weight:700; }
+.gs-rank-pts { font-size:.68rem; color:var(--txt2); }
+.gs-rank-bar { height:6px; border-radius:4px; background:var(--bdr); margin-top:8px; overflow:hidden; }
+.gs-rank-bar > div { height:100%; border-radius:4px; background:linear-gradient(90deg,var(--p),var(--pa)); transition:width .4s; }
+.gs-rank-how { font-size:.65rem; color:var(--txt2); margin-top:8px; line-height:1.6; }
+.gs-rank-badge { display:inline-flex; align-items:center; gap:3px; font-size:.6rem; padding:1px 6px; border-radius:8px; background:rgba(16,185,129,.12); color:var(--p); font-weight:600; }
+.gs-rank-gate { background:var(--card); border:1px solid var(--bdr); border-radius:14px; padding:16px; margin-top:10px; }
+.gs-rank-gate-t { font-size:.85rem; font-weight:700; margin-bottom:6px; }
+.gs-rank-gate-b { font-size:.72rem; color:var(--txt2); line-height:1.7; }
 .gs-tool-btn.raise-hand.active { background:#ff9800; color:#fff; animation:gsHandPulse 1s infinite; }
 @keyframes gsHandPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,152,0,.4);} 50%{box-shadow:0 0 0 8px rgba(255,152,0,0);} }
 /* Verse area in class tab */
@@ -7324,9 +7338,131 @@ function gsCheckName() {
   if (catSection && !name) catSection.style.display = 'none';
 }
 
+// ═══════════════════════════════════════════════════════════
+// RANK SYSTEM (v111, Stage 2) — Learner points computed from real
+// practice on this device: AI Reading passes, Tajweed mastery,
+// memorized verses and daily streak. Room creation now requires
+// Silver (20+ points) so rooms are created by proven students.
+// Teacher rooms keep their own exam-based qualification path.
+// ═══════════════════════════════════════════════════════════
+const GS_RANK_TIERS = [
+  { id:'bronze',  icon:'🥉', name:'Bronze',  min:0,   color:'#cd7f32' },
+  { id:'silver',  icon:'🥈', name:'Silver',  min:20,  color:'#9ca3af' },
+  { id:'gold',    icon:'🥇', name:'Gold',    min:60,  color:'#f4c95d' },
+  { id:'diamond', icon:'💎', name:'Diamond', min:150, color:'#7dd3fc' },
+];
+const GS_RANK_CREATE_MIN = 20; // Silver required to create community rooms
+
+function gsRankCalc() {
+  let ai = 0, tj = 0, mem = 0;
+  // AI Reading passes (v110): {surah:{verse:score}} — pass = score >= 90
+  try {
+    Object.keys(localStorage).forEach(function(k) {
+      if (k.indexOf('gsRmProg_') === 0) {
+        const p = JSON.parse(localStorage.getItem(k) || '{}');
+        Object.keys(p).forEach(function(s) {
+          Object.keys(p[s]).forEach(function(v) {
+            if (p[s][v] >= 90) ai++;
+          });
+        });
+      }
+    });
+  } catch (e) {}
+  // Tajweed mastery: tjBest_<surah>_<idx> >= 95 (the app marks 95+ as "Mastered")
+  try {
+    Object.keys(localStorage).forEach(function(k) {
+      if (k.indexOf('tjBest_') === 0 && parseInt(localStorage.getItem(k) || '0', 10) >= 95) tj++;
+    });
+  } catch (e) {}
+  // Memorized verses: memProgress {surah:{idx:'done'}}
+  try {
+    const mp = JSON.parse(localStorage.getItem('memProgress') || '{}');
+    Object.keys(mp).forEach(function(s) {
+      Object.keys(mp[s]).forEach(function(i) { if (mp[s][i] === 'done') mem++; });
+    });
+  } catch (e) {}
+  const streak = parseInt(localStorage.getItem('streak') || '0', 10);
+  const streakPts = Math.min(streak, 30);
+  const points = ai * 2 + tj * 3 + mem * 1 + streakPts;
+  return { points: points, ai: ai, tj: tj, mem: mem, streak: streak };
+}
+
+function gsRankTierOf(points) {
+  let t = GS_RANK_TIERS[0];
+  for (let i = 0; i < GS_RANK_TIERS.length; i++) if (points >= GS_RANK_TIERS[i].min) t = GS_RANK_TIERS[i];
+  return t;
+}
+
+function gsRankBadgeHtml(name) {
+  const t = gsRankTierOf(gsRankCalc().points);
+  return '<span class="gs-rank-badge" style="background:' + t.color + '22;color:' + t.color + '">' + t.icon + ' ' + (name || t.name) + '</span>';
+}
+
+// Renders the lobby rank card (called when the Group Study view opens)
+function gsRankRenderLobby() {
+  const card = document.getElementById('gs-rank-card');
+  if (!card) return;
+  const c = gsRankCalc();
+  const t = gsRankTierOf(c.points);
+  const next = GS_RANK_TIERS[GS_RANK_TIERS.indexOf(t) + 1];
+  document.getElementById('gs-rank-icon').textContent = t.icon;
+  document.getElementById('gs-rank-icon').style.filter = 'drop-shadow(0 0 6px ' + t.color + '55)';
+  const tierEl = document.getElementById('gs-rank-tier');
+  tierEl.textContent = t.name;
+  tierEl.style.color = t.color;
+  document.getElementById('gs-rank-pts').textContent = c.points + ' points' + (c.points >= 150 ? ' — top tier!' : '');
+  const fill = document.getElementById('gs-rank-fill');
+  if (next) fill.style.width = Math.min(100, Math.round((c.points - t.min) / (next.min - t.min) * 100)) + '%';
+  else fill.style.width = '100%';
+  document.getElementById('gs-rank-how').innerHTML =
+    'Earn points: 🎙️ AI Reading verse passed <b>+2</b> · 🎯 Tajweed verse mastered <b>+3</b> · ⭐ verse memorized <b>+1</b> · 🔥 streak day <b>+1</b> (max 30)' +
+    (next ? '<br>Next rank ' + next.icon + ' ' + next.name + ' at ' + next.min + ' points' : '') +
+    (c.points < GS_RANK_CREATE_MIN ? '<br>🔒 <b>Silver (20 points) unlocks creating rooms</b>' : '<br>✅ You can create rooms');
+  card.style.display = 'block';
+}
+
+function gsRankGatePanel() {
+  const c = gsRankCalc();
+  const t = gsRankTierOf(c.points);
+  const need = GS_RANK_CREATE_MIN - c.points;
+  return '<div class="gs-rank-gate">' +
+    '<div class="gs-rank-gate-t">' + t.icon + ' ' + t.name + ' — keep learning to create rooms</div>' +
+    '<div class="gs-rank-gate-b">Room creation unlocks at 🥈 <b>Silver (20 points)</b>. You have <b>' + c.points + '</b> — only <b>' + need + '</b> to go!<br><br>' +
+    'Fastest ways to earn:<br>• 🎙️ Read verses aloud in <b>AI Reading Mode</b> in any classroom: <b>+2</b> per verse passed<br>• 🎯 Tajweed Checker: <b>+3</b> per verse mastered (95%+)<br>• ⭐ Mark verses memorized in Memorize: <b>+1</b> each<br>• 🔥 Come back daily for your streak bonus<br><br>' +
+    'You can still <b>join rooms</b> freely with a room code, and teachers can qualify via the Teacher exam. 🚀</div>' +
+    '</div>';
+}
+
+// initGroupStudy: called when the Group Study view opens. It was referenced
+// in switchView since the original build but never defined — a silent
+// ReferenceError that skipped the code after it in switchView. Now it
+// exists (v111) and renders the rank card on entry.
+function initGroupStudy() {
+  gsRankRenderLobby();
+}
+
+function gsShowRankGate() {
+  // insert/refresh the gate panel above the room type card
+  let g = document.getElementById('gs-rank-gate-panel');
+  if (!g) {
+    g = document.createElement('div');
+    g.id = 'gs-rank-gate-panel';
+    const roomCard = document.querySelector('#gs-lobby-wrap .gs-card');
+    if (roomCard) roomCard.parentNode.insertBefore(g, roomCard); else return;
+  }
+  g.innerHTML = gsRankGatePanel();
+  g.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
 function gsCreateStudentRoom() {
   const name = document.getElementById('gs-myname').value.trim();
   if (!name) { toast('✋ Enter your name first'); return; }
+  // RANK GATE (v111): only Silver+ students create rooms
+  const rk = gsRankCalc();
+  if (rk.points < GS_RANK_CREATE_MIN) {
+    gsShowRankGate();
+    return;
+  }
   // Show category picker
   const catSection = document.getElementById('gs-student-categories');
   const grid = document.getElementById('gs-cat-grid');
@@ -7584,7 +7720,9 @@ function gsEnterRoom(roomData) {
   document.getElementById('gs-room-wrap').classList.add('active');
   document.getElementById('gs-room-code-lbl').textContent = gsRoomCode;
   document.getElementById('gs-room-title').textContent = (r.teacherName || gsUserName) + "'s Class";
-  document.getElementById('gs-room-peers').textContent = gsIsTeacher ? '👩‍🏫 Teacher' : '👨‍🎓 Student';
+  document.getElementById('gs-room-peers').textContent = gsIsTeacher ? '👩\u200d🏫 Teacher' : '👨\u200d🎓 Student';
+  const rkBadge = gsRankBadgeHtml();
+  document.getElementById('gs-room-peers').innerHTML += ' ' + rkBadge;
   
   // Show room type badge
   const isTeacherRoom = (r.roomType === 'teacher');
@@ -7723,6 +7861,7 @@ async function gsPollRoom() {
     if (peersEl) {
       const count = r.memberCount || 0;
       peersEl.textContent = (gsIsTeacher ? '👩\u200d🏫 ' : '👨\u200d🎓 ') + (gsIsTeacher ? 'Teacher' : 'Student') + ' · ' + count + ' members';
+      peersEl.innerHTML += ' ' + gsRankBadgeHtml();
     }
   } catch(e) {}
 }
@@ -8431,6 +8570,7 @@ async function gsSaveAnnouncement() {
 
 // ═══ ROOM HUB NAVIGATION ═══
 function gsShowLobby() {
+  gsRankRenderLobby();
   document.getElementById('gs-hub-wrap').style.display = 'none';
   document.getElementById('gs-myrooms-wrap').style.display = 'none';
   document.getElementById('gs-lobby-wrap').style.display = '';
@@ -11184,6 +11324,18 @@ function updateFsapBtn() {
         <h3>✦ Your Name</h3>
         <input id="gs-myname" class="gs-input" placeholder="Enter your name (e.g. Ahmad)" maxlength="20" oninput="gsCheckName()">
       </div>
+        <!-- ═══ RANK CARD (v111) ═══ -->
+        <div class="gs-rank-card" id="gs-rank-card" style="display:none">
+          <div class="gs-rank-top">
+            <div class="gs-rank-icon" id="gs-rank-icon">🥉</div>
+            <div class="gs-rank-info">
+              <div class="gs-rank-tier" id="gs-rank-tier">Bronze</div>
+              <div class="gs-rank-pts" id="gs-rank-pts">0 points</div>
+            </div>
+          </div>
+          <div class="gs-rank-bar"><div id="gs-rank-fill" style="width:0%"></div></div>
+          <div class="gs-rank-how" id="gs-rank-how"></div>
+        </div>
 
       <!-- Room Type Selection -->
       <div class="gs-card">
