@@ -1155,6 +1155,21 @@ body { font-family:'Poppins',sans-serif;
 .gs-rank-gate { background:var(--card); border:1px solid var(--bdr); border-radius:14px; padding:16px; margin-top:10px; }
 .gs-rank-gate-t { font-size:.85rem; font-weight:700; margin-bottom:6px; }
 .gs-rank-gate-b { font-size:.72rem; color:var(--txt2); line-height:1.7; }
+/* ═══ STAGE 3 (v112): leaderboard + testimonies ═══ */
+.gs-lb-row { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; background:var(--card); border:1px solid var(--bdr); margin-bottom:6px; }
+.gs-lb-row.me { border-color:var(--p); background:rgba(16,185,129,.08); }
+.gs-lb-rank { font-size:.85rem; font-weight:800; width:30px; text-align:center; }
+.gs-lb-name { flex:1; font-size:.8rem; font-weight:600; }
+.gs-lb-pts { font-size:.7rem; color:var(--txt2); }
+.gs-lb-mine { margin:10px 0 14px; padding:10px 14px; border-radius:12px; background:var(--card); border:1.5px solid var(--p); font-size:.78rem; font-weight:700; text-align:center; }
+.gs-tw-item { background:var(--card); border:1px solid var(--bdr); border-radius:14px; padding:12px 14px; margin-bottom:10px; }
+.gs-tw-head { display:flex; align-items:center; gap:6px; margin-bottom:6px; flex-wrap:wrap; }
+.gs-tw-name { font-size:.78rem; font-weight:700; }
+.gs-tw-date { font-size:.6rem; color:var(--txt2); margin-left:auto; }
+.gs-tw-text { font-size:.75rem; line-height:1.6; color:var(--txt1); }
+.gs-tw-form { background:var(--card); border:1.5px solid var(--bdr); border-radius:14px; padding:14px; margin-bottom:16px; }
+.gs-cat-btn.diamond { position:relative; border-color:#7dd3fc; }
+.gs-cat-btn .gs-cat-diamond-tag { position:absolute; top:-8px; right:6px; font-size:.5rem; background:#7dd3fc; color:#0a100f; padding:1px 6px; border-radius:6px; font-weight:800; }
 .gs-tool-btn.raise-hand.active { background:#ff9800; color:#fff; animation:gsHandPulse 1s infinite; }
 @keyframes gsHandPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,152,0,.4);} 50%{box-shadow:0 0 0 8px rgba(255,152,0,0);} }
 /* Verse area in class tab */
@@ -7420,6 +7435,7 @@ function gsRankRenderLobby() {
     (c.points < GS_RANK_CREATE_MIN ? '<br>🔒 <b>Silver (20 points) unlocks creating rooms</b>' : '<br>✅ You can create rooms');
   card.style.display = 'block';
 }
+  gsSyncPoints();
 
 function gsRankGatePanel() {
   const c = gsRankCalc();
@@ -7454,6 +7470,112 @@ function gsShowRankGate() {
   g.scrollIntoView({ behavior:'smooth', block:'center' });
 }
 
+// ═══════════════════════════════════════════════════════════
+// STAGE 3 (v112) — community backend: global leaderboard synced
+// from each learner's real practice (same point formula as v111),
+// plus a testimony wall. Backend: nabaCommunity (Base44 function),
+// reached same-origin via /api/naba so carriers/CSP never block it.
+// ═══════════════════════════════════════════════════════════
+function nabaApi(action, payload) {
+  return fetch('/api/naba', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(Object.assign({ action: action }, payload || {}))
+  }).then(function(r) { return r.json(); });
+}
+
+function gsMyName() {
+  return (document.getElementById('gs-myname') || {}).value || gsUserName || '';
+}
+
+// Silent background sync of this device's points (throttled to 10 min)
+function gsSyncPoints() {
+  const name = gsMyName().trim();
+  if (!name) return;
+  const now = Date.now();
+  const last = parseInt(localStorage.getItem('gsLbSyncAt') || '0', 10);
+  if (now - last < 10 * 60 * 1000) return;
+  localStorage.setItem('gsLbSyncAt', String(now));
+  const c = gsRankCalc();
+  nabaApi('syncPoints', { userName: name, points: c.points, ai: c.ai, tj: c.tj, mem: c.mem, streak: c.streak })
+    .catch(function() { localStorage.setItem('gsLbSyncAt', '0'); });
+}
+
+function gsLbOpen() {
+  gsSyncPoints();
+  document.getElementById('gs-lb-overlay').classList.add('active');
+  const body = document.getElementById('gs-lb-body');
+  body.innerHTML = '<div class="gs-rank-how">Loading the top learners…</div>';
+  const me = gsMyName().trim();
+  nabaApi('getLeaderboard', { userName: me }).then(function(d) {
+    if (!d.ok) { body.innerHTML = '<div class="gs-rank-how">Could not load the leaderboard. Check your connection.</div>'; return; }
+    document.getElementById('gs-lb-count').textContent = d.top.length + ' learners';
+    let html = '';
+    if (d.myRank) html += '<div class="gs-lb-mine">Your rank: #' + d.myRank.rank + ' of ' + d.myRank.total + ' · ' + d.myRank.points + ' points</div>';
+    else html += '<div class="gs-rank-how" style="margin-bottom:12px">Sync happens automatically when your points change — read in AI Reading Mode to climb! 🚀</div>';
+    const medals = ['🥇', '🥈', '🥉'];
+    html += d.top.map(function(r) {
+      const t = gsRankTierOf(r.points);
+      const isMe = me && r.userName === me;
+      return '<div class="gs-lb-row' + (isMe ? ' me' : '') + '">' +
+        '<div class="gs-lb-rank">' + (medals[r.rank - 1] || r.rank) + '</div>' +
+        '<div class="gs-lb-name">' + gsEsc(r.userName) + ' <span class="gs-rank-badge" style="background:' + t.color + '22;color:' + t.color + '">' + t.icon + ' ' + t.name + '</span></div>' +
+        '<div class="gs-lb-pts">' + r.points + ' pts' + (r.streak ? ' · 🔥' + r.streak : '') + '</div>' +
+      '</div>';
+    }).join('');
+    body.innerHTML = html;
+  }).catch(function() {
+    body.innerHTML = '<div class="gs-rank-how">Could not load the leaderboard. Check your connection.</div>';
+  });
+}
+function gsLbClose() { document.getElementById('gs-lb-overlay').classList.remove('active'); }
+
+function gsTwOpen() {
+  gsSyncPoints();
+  document.getElementById('gs-tw-overlay').classList.add('active');
+  const body = document.getElementById('gs-tw-body');
+  body.innerHTML = '<div class="gs-rank-how">Loading testimonies…</div>';
+  const me = gsMyName().trim();
+  nabaApi('listTestimonies', {}).then(function(d) {
+    if (!d.ok) { body.innerHTML = '<div class="gs-rank-how">Could not load testimonies. Check your connection.</div>'; return; }
+    document.getElementById('gs-tw-count').textContent = d.list.length + ' shared';
+    let html = '<div class="gs-tw-form">' +
+      '<h3 style="font-size:.85rem;margin-bottom:8px">Share your experience 🌟</h3>' +
+      '<input id="gs-tw-name" class="gs-input" placeholder="Your name" maxlength="20" value="' + gsEsc(me) + '" style="margin-bottom:8px">' +
+      '<textarea id="gs-tw-text" class="gs-input" placeholder="How has learning with Naba Quran helped you? (max 300 chars)" maxlength="300" rows="3" style="margin-bottom:8px;resize:vertical"></textarea>' +
+      '<button class="gs-btn gs-btn-join" onclick="gsTwShare()">Share</button>' +
+      '<div class="gs-rank-how" style="margin-top:6px">One testimony per day per name.</div>' +
+    '</div>';
+    html += d.list.map(function(t) {
+      const tier = gsRankTierOf(t.points || 0);
+      return '<div class="gs-tw-item">' +
+        '<div class="gs-tw-head">' +
+          '<span class="gs-tw-name">' + gsEsc(t.userName) + '</span>' +
+          '<span class="gs-rank-badge" style="background:' + tier.color + '22;color:' + tier.color + '">' + tier.icon + ' ' + tier.name + '</span>' +
+          '<span class="gs-tw-date">' + (t.date ? new Date(t.date).toLocaleDateString() : '') + '</span>' +
+        '</div>' +
+        '<div class="gs-tw-text">' + gsEsc(t.text) + '</div>' +
+      '</div>';
+    }).join('');
+    body.innerHTML = html;
+  }).catch(function() {
+    body.innerHTML = '<div class="gs-rank-how">Could not load testimonies. Check your connection.</div>';
+  });
+}
+function gsTwClose() { document.getElementById('gs-tw-overlay').classList.remove('active'); }
+
+function gsTwShare() {
+  const name = (document.getElementById('gs-tw-name').value || '').trim();
+  const text = (document.getElementById('gs-tw-text').value || '').trim();
+  if (!name) { toast('✋ Enter your name first'); return; }
+  if (text.length < 5) { toast('✍️ Write a little more (min 5 characters)'); return; }
+  const c = gsRankCalc();
+  nabaApi('addTestimony', { userName: name, text: text, points: c.points }).then(function(d) {
+    if (d.ok) { toast('✅ Testimony shared. JazakAllah khair!'); gsTwOpen(); }
+    else toast(d.error || 'Could not share right now');
+  }).catch(function() { toast('Could not share right now — check connection'); });
+}
+
 function gsCreateStudentRoom() {
   const name = document.getElementById('gs-myname').value.trim();
   if (!name) { toast('✋ Enter your name first'); return; }
@@ -7472,6 +7594,13 @@ function gsCreateStudentRoom() {
       '<div class="gs-cat-icon">' + c.icon + '</div>' +
       '<div class="gs-cat-name">' + c.name + '</div></button>'
     ).join('');
+  }
+  // STAGE 3 (v112): Diamond-only competition category
+  if (grid && gsRankCalc().points >= 150) {
+    grid.innerHTML += '<button class="gs-cat-btn diamond" onclick="gsCreateRoomWithCategory(\'competition\')">' +
+      '<span class="gs-cat-diamond-tag">DIAMOND</span>' +
+      '<div class="gs-cat-icon">🏆</div>' +
+      '<div class="gs-cat-name">Competition</div></button>';
   }
   if (catSection) catSection.style.display = 'block';
 }
@@ -11252,6 +11381,26 @@ function updateFsapBtn() {
         <button class="gs-tool-btn lg" id="gs-rm-next" onclick="gsRmNextVerse()" style="display:none">➡ Next Verse</button>
       </div>
     </div>
+
+    <!-- ═══ STAGE 3 (v112): LEADERBOARD OVERLAY ═══ -->
+    <div class="gs-rm-overlay" id="gs-lb-overlay">
+      <div class="gs-rm-hdr">
+        <button class="btn-back" onclick="gsLbClose()">←</button>
+        <div class="gs-rm-title">🏆 Leaderboard</div>
+        <div class="gs-rm-rank" id="gs-lb-count"></div>
+      </div>
+      <div class="gs-rm-body" id="gs-lb-body"><div class="gs-rank-how">Loading the top learners…</div></div>
+    </div>
+
+    <!-- ═══ STAGE 3 (v112): TESTIMONY WALL OVERLAY ═══ -->
+    <div class="gs-rm-overlay" id="gs-tw-overlay">
+      <div class="gs-rm-hdr">
+        <button class="btn-back" onclick="gsTwClose()">←</button>
+        <div class="gs-rm-title">💬 Testimonies</div>
+        <div class="gs-rm-rank" id="gs-tw-count"></div>
+      </div>
+      <div class="gs-rm-body" id="gs-tw-body"><div class="gs-rank-how">Loading testimonies…</div></div>
+    </div>
   <!-- ROOM HUB (browse all public rooms) -->
   <div id="gs-hub-wrap" style="display:none">
     <div class="stickyh">
@@ -11372,6 +11521,20 @@ function updateFsapBtn() {
           <div class="gs-rt-icon">📚</div>
           <div class="gs-rt-title">My Rooms</div>
           <div class="gs-rt-desc">Your rooms & joined</div>
+        </button>
+      </div>
+
+      <!-- ═══ STAGE 3 (v112): Leaderboard & Testimonies ═══ -->
+      <div class="gs-card" style="display:flex; gap:8px;">
+        <button class="gs-room-type-btn" style="flex:1" onclick="gsLbOpen()">
+          <div class="gs-rt-icon">🏆</div>
+          <div class="gs-rt-title">Leaderboard</div>
+          <div class="gs-rt-desc">Top learners</div>
+        </button>
+        <button class="gs-room-type-btn" style="flex:1" onclick="gsTwOpen()">
+          <div class="gs-rt-icon">💬</div>
+          <div class="gs-rt-title">Testimonies</div>
+          <div class="gs-rt-desc">Community wall</div>
         </button>
       </div>
 
