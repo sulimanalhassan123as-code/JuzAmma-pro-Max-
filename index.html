@@ -11244,7 +11244,7 @@ function setH40Filter(c, el) {
 // recitation contains that hadith (verified file-by-file). Cards
 // without a mapping are authentic hadiths outside the matn, so no
 // recitation exists in this set.
-const H40_AUDIO_BASE = 'https://archive.org/download/YHYASHRF/h';
+const H40_AUDIO_BASE = '/audio/h40/h'; // self-hosted (v114): archive.org redirects to ia*.us.archive.org nodes, which the CSP blocks — local files are faster and work offline too
 const H40_AUDIO = { 1:1, 2:2, 3:6, 4:9, 5:10, 6:11, 7:12, 8:13, 9:15, 10:16, 11:17, 12:18, 13:19, 15:21, 16:3, 17:23, 18:29, 20:27, 23:32, 24:15, 25:28, 29:29, 30:36, 40:40 };
 let h40AudioEl = null, h40PlayingN = -1;
 function h40StopAudio() {
@@ -12306,7 +12306,7 @@ document.addEventListener('DOMContentLoaded',function(){
 </div>
 <div id="hadith40-view" class="view">
   <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goBack()">←</button><div class="htitle">📜 40 Hadith</div><div style="width:60px"></div></div></div>
-  <div class="fchips" id="hadith40-chips"></div><div class="hadith-list" id="hadith40-list"></div><div class="h40-credit">🎧 Recitations of the 42-hadith Nawawi matn by Omar Elwazzan — archive.org</div><div style="height:60px"></div>
+  <div class="fchips" id="hadith40-chips"></div><div class="hadith-list" id="hadith40-list"></div><div class="h40-credit">🎧 Recited by Omar Elwazzan (Nawawi matn recording)</div><div style="height:60px"></div>
 </div>
 <div id="competitions-view" class="view">
   <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goBack()">←</button><div class="htitle">🏆 Competitions</div><div style="width:60px"></div></div></div>
