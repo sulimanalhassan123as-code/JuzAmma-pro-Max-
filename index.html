@@ -7444,6 +7444,7 @@ let gsIsTeacher = false, gsRoomState = null, gsRoomPollTimer = null;
 let gsCurrentSurah = 78, gsCurrentVerse = 1;
 let gsPinnedVerses = [], gsCompletedSurahs = [], gsRaisedHands = [];
 let gsHandRaised = false, gsActiveTab = 'class';
+let gsUserName = ''; // was assigned but never declared — gsMyName() crashed outside Group Study (pre-existing bug fixed in v114)
 
 // ═══ ROOM TYPE SELECTION & CREATION ═══
 const GS_STUDENT_CATS = [
@@ -11301,7 +11302,8 @@ function compApi(action, payload) {
 function compMyName() {
   const inp = document.getElementById('comp-name-input');
   if (inp && inp.value.trim()) return inp.value.trim().slice(0, 20);
-  return (localStorage.getItem('nqUserName') || gsMyName() || '').trim().slice(0, 20);
+  const gsInp = document.getElementById('gs-myname');
+  return (localStorage.getItem('nqUserName') || (gsInp ? gsInp.value : '') || gsUserName || '').trim().slice(0, 20);
 }
 function compSaveName(n) {
   localStorage.setItem('nqUserName', n);
