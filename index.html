@@ -1162,6 +1162,33 @@ body { font-family:'Poppins',sans-serif;
 .gs-lb-name { flex:1; font-size:.8rem; font-weight:600; }
 .gs-lb-pts { font-size:.7rem; color:var(--txt2); }
 .gs-lb-mine { margin:10px 0 14px; padding:10px 14px; border-radius:12px; background:var(--card); border:1.5px solid var(--p); font-size:.78rem; font-weight:700; text-align:center; }
+/* Competitions (v114) */
+.comp-card { background:var(--card); border:1px solid var(--bdr); border-radius:16px; padding:16px; margin:12px; }
+.comp-card.hot { border-color:rgba(245,200,121,.45); box-shadow:0 4px 24px rgba(245,200,121,.07); }
+.comp-head { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:4px; }
+.comp-title { font-size:.95rem; font-weight:800; color:var(--txt); }
+.comp-badge { font-size:.62rem; font-weight:800; padding:4px 9px; border-radius:99px; white-space:nowrap; }
+.comp-badge.ai { background:rgba(124,211,252,.15); color:#7dd3fc; }
+.comp-badge.admin { background:rgba(245,200,121,.15); color:#f5c879; }
+.comp-desc { font-size:.76rem; color:var(--txt2); margin:8px 0; line-height:1.45; }
+.comp-meta { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0; }
+.comp-pill { font-size:.66rem; font-weight:700; padding:5px 10px; border-radius:99px; background:var(--bg); border:1px solid var(--bdr); color:var(--txt); }
+.comp-pill.urgent { border-color:#f57c00; color:#f57c00; }
+.comp-range { font-size:.68rem; color:var(--txt2); margin:2px 0 8px; }
+.comp-podium { display:flex; gap:8px; margin:12px 0; }
+.comp-pod { flex:1; text-align:center; padding:10px 6px; border-radius:12px; background:var(--bg); border:1px solid var(--bdr); }
+.comp-pod.first { border-color:#f5c879; background:rgba(245,200,121,.08); }
+.comp-pod-ico { font-size:1.3rem; }
+.comp-pod-name { font-size:.68rem; font-weight:800; margin-top:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.comp-pod-pts { font-size:.62rem; color:var(--txt2); }
+.comp-join-btn { width:100%; background:var(--p); color:#fff; border:none; border-radius:12px; padding:13px; font-size:.85rem; font-weight:700; cursor:pointer; font-family:Poppins,sans-serif; margin-top:10px; }
+.comp-join-btn:active { opacity:.8; }
+.comp-join-btn.joined { background:transparent; border:1.5px solid var(--p); color:var(--p); }
+.comp-sec { font-size:.7rem; font-weight:800; color:var(--txt2); text-transform:uppercase; letter-spacing:.08em; margin:20px 14px 8px; }
+/* Hadith audio (v114) */
+.h40-play { display:inline-flex; align-items:center; gap:7px; margin-top:11px; padding:8px 15px; border-radius:99px; background:rgba(16,185,129,.12); color:#10b981; font-size:.72rem; font-weight:700; cursor:pointer; user-select:none; }
+.h40-play.playing { background:var(--p); color:#fff; }
+.h40-credit { text-align:center; font-size:.64rem; color:var(--txt2); padding:14px 20px 4px; }
 .gs-tw-item { background:var(--card); border:1px solid var(--bdr); border-radius:14px; padding:12px 14px; margin-bottom:10px; }
 .gs-tw-head { display:flex; align-items:center; gap:6px; margin-bottom:6px; flex-wrap:wrap; }
 .gs-tw-name { font-size:.78rem; font-weight:700; }
@@ -3057,6 +3084,11 @@ body { font-family:'Poppins',sans-serif;
       <div class="ccard-t">40 Hadith</div>
       <div class="ccard-s">Imam Nawawi collection</div>
     </div>
+    <div class="ccard" onclick="goToView('competitions')">
+      <div class="ccard-ico ico-sq" style="background:#3a2a12">🏆</div>
+      <div class="ccard-t">Competitions</div>
+      <div class="ccard-s">Journeys · weekly challenges</div>
+    </div>
     <div class="ccard" onclick="goToView('ptracker')">
       <div class="ccard-ico ico-sq" style="background:#1f4a35">✅</div>
       <div class="ccard-t">Prayer Tracker</div>
@@ -3266,6 +3298,23 @@ body { font-family:'Poppins',sans-serif;
       <input id="adm-title" placeholder="Title (e.g. 📣 Assalamu Alaikum)" style="width:100%;box-sizing:border-box;background:var(--card);border:1.5px solid var(--bdr);border-radius:11px;color:var(--txt);padding:11px 12px;font-size:.85rem;font-family:Poppins,sans-serif;margin-bottom:8px">
       <textarea id="adm-body" rows="3" placeholder="Your message to all users…" style="width:100%;box-sizing:border-box;background:var(--card);border:1.5px solid var(--bdr);border-radius:11px;color:var(--txt);padding:11px 12px;font-size:.85rem;font-family:Poppins,sans-serif;margin-bottom:9px;resize:vertical"></textarea>
       <button onclick="adminPushCustom()" id="adm-custom-btn" style="width:100%;background:var(--p);color:#fff;border:none;border-radius:11px;padding:12px;font-size:.85rem;font-weight:600;cursor:pointer;font-family:Poppins,sans-serif">Send Announcement to Everyone</button>
+
+      <h3 style="margin-top:18px">🏆 Create Competition</h3>
+      <p style="font-size:.75rem;color:var(--txt2)">Launch a journey competition — e.g. a 3 Days Journey over An-Naba → An-Nas. Everyone competes on points; winner is announced by push when it ends.</p>
+      <input id="adm-comp-title" placeholder="Title (e.g. 🏔️ 3 Days Journey: Amma to Nas)" style="width:100%;box-sizing:border-box;background:var(--card);border:1.5px solid var(--bdr);border-radius:11px;color:var(--txt);padding:11px 12px;font-size:.85rem;font-family:Poppins,sans-serif;margin-bottom:8px">
+      <textarea id="adm-comp-desc" rows="2" placeholder="Description for participants…" style="width:100%;box-sizing:border-box;background:var(--card);border:1.5px solid var(--bdr);border-radius:11px;color:var(--txt);padding:11px 12px;font-size:.85rem;font-family:Poppins,sans-serif;margin-bottom:8px;resize:vertical"></textarea>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <select id="adm-comp-from" style="flex:1;background:var(--card);border:1.5px solid var(--bdr);border-radius:11px;color:var(--txt);padding:10px;font-size:.8rem;font-family:Poppins,sans-serif"></select>
+        <select id="adm-comp-to" style="flex:1;background:var(--card);border:1.5px solid var(--bdr);border-radius:11px;color:var(--txt);padding:10px;font-size:.8rem;font-family:Poppins,sans-serif"></select>
+      </div>
+      <select id="adm-comp-days" style="width:100%;background:var(--card);border:1.5px solid var(--bdr);border-radius:11px;color:var(--txt);padding:10px;font-size:.8rem;font-family:Poppins,sans-serif;margin-bottom:8px">
+        <option value="3" selected>3 days (Journey)</option>
+        <option value="5">5 days</option>
+        <option value="7">7 days (Weekly)</option>
+        <option value="14">14 days</option>
+      </select>
+      <label style="display:flex;align-items:center;gap:8px;font-size:.75rem;color:var(--txt2);margin-bottom:10px"><input type="checkbox" id="adm-comp-announce" checked> Also push an announcement to everyone</label>
+      <button onclick="adminCreateComp()" id="adm-comp-btn" style="width:100%;background:#b45309;color:#fff;border:none;border-radius:11px;padding:12px;font-size:.85rem;font-weight:600;cursor:pointer;font-family:Poppins,sans-serif">🚀 Launch Competition</button>
     </div>
 
     <div class="help-card" id="admin-result" style="display:none"></div>
@@ -3533,7 +3582,7 @@ function switchView(v) {
 
   // 4. Player bar visibility
   const pb = document.getElementById('pbar');
-  if (v === 'tasbih' || v === 'ai' || v === 'memorize' || v === 'admin' || v === 'prophets' || v === 'night' || v === 'progress' || v === 'groupstudy' || v === 'tajweed' || v === 'wudu' || v === 'names' || v === 'dua' || v === 'qibla' || v === 'zakat' || v === 'hijri' || v === 'hadith40' || v === 'ptracker' || v === 'hajj' || v === 'more' || v === 'help' || v === 'privacy' || v === 'juz') {
+  if (v === 'tasbih' || v === 'ai' || v === 'memorize' || v === 'admin' || v === 'prophets' || v === 'night' || v === 'progress' || v === 'groupstudy' || v === 'tajweed' || v === 'wudu' || v === 'names' || v === 'dua' || v === 'qibla' || v === 'zakat' || v === 'hijri' || v === 'hadith40' || v === 'competitions' || v === 'ptracker' || v === 'hajj' || v === 'more' || v === 'help' || v === 'privacy' || v === 'juz') {
     pb.style.display = 'none';
   } else {
     pb.style.display = 'flex';
@@ -3557,6 +3606,7 @@ function switchView(v) {
   if (v === 'zakat') calcZakat();
   if (v === 'hijri') initHijri();
   if (v === 'hadith40') initHadith40();
+  if (v === 'competitions') initCompetitions();
   if (v === 'ptracker') initPTracker();
   if (v === 'hajj') initHajj();
   if (fsapPlaying && v !== 'read') { fsapAudio.pause(); fsapPlaying = false; updateFsapBtn(); }
@@ -5312,6 +5362,58 @@ function adminPushCustom() {
   const b = (document.getElementById('adm-body').value || '').trim();
   if (!t || !b) { toast('Announcement needs a title and a message'); return; }
   adminDoPush({ customTitle: t, customBody: b }, document.getElementById('adm-custom-btn'));
+}
+function adminPopulateCompSelects() {
+  const from = document.getElementById('adm-comp-from');
+  const to = document.getElementById('adm-comp-to');
+  if (!from || !to || from.dataset.built) return;
+  from.dataset.built = '1';
+  let opts = '';
+  (qData || []).forEach(function(s) {
+    opts += '<option value="' + s.id + '"' + (s.id === 78 ? ' selected' : '') + '>' + s.id + '. ' + gsEsc(s.name) + '</option>';
+  });
+  from.innerHTML = opts;
+  to.innerHTML = opts;
+  to.value = '114';
+}
+function adminCreateComp() {
+  const k = adminGetKey();
+  if (!k) { toast('Panel is locked'); return; }
+  adminPopulateCompSelects();
+  const title = (document.getElementById('adm-comp-title').value || '').trim();
+  const desc = (document.getElementById('adm-comp-desc').value || '').trim();
+  const fromS = parseInt(document.getElementById('adm-comp-from').value || '78', 10);
+  const toS = parseInt(document.getElementById('adm-comp-to').value || '114', 10);
+  const days = parseInt(document.getElementById('adm-comp-days').value || '3', 10);
+  const announce = !!(document.getElementById('adm-comp-announce') || {}).checked;
+  if (!title) { toast('Give the competition a title'); return; }
+  if (toS < fromS) { toast('End surah must be same or higher'); return; }
+  const btn = document.getElementById('adm-comp-btn');
+  btn.disabled = true; btn.textContent = 'Launching…';
+  fetch('/api/comp-admin', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-admin-key': k },
+    body: JSON.stringify({
+      action: 'createCompetition', title: title, description: desc,
+      fromSurah: fromS, toSurah: toS, durationDays: days, type: 'admin', createdBy: 'Admin'
+    })
+  }).then(function(r) { return r.json().catch(function() { return {}; }); }).then(function(j) {
+    btn.disabled = false; btn.textContent = '🚀 Launch Competition';
+    if (j.ok) {
+      adminShowResult(true, 'Competition launched: ' + gsEsc(title) + (announce ? ' — sending announcement…' : ''));
+      if (announce) {
+        adminDoPush({
+          customTitle: '🏆 ' + title.slice(0, 50),
+          customBody: (desc ? desc + ' ' : '') + 'Open Naba Quran → Competitions and join now!'
+        }, null);
+      }
+    } else {
+      adminShowResult(false, j.error || ('HTTP error — wrong admin key?'));
+    }
+  }).catch(function() {
+    btn.disabled = false; btn.textContent = '🚀 Launch Competition';
+    adminShowResult(false, 'Network error — check your connection.');
+  });
 }
 // 5-tap unlock on the version footer (Help & Contact view)
 (function() {
@@ -7499,6 +7601,7 @@ function gsMyName() {
 
 // Silent background sync of this device's points (throttled to 10 min)
 function gsSyncPoints() {
+  compSyncAll();
   const name = gsMyName().trim();
   if (!name) return;
   const now = Date.now();
@@ -11132,13 +11235,44 @@ function setH40Filter(c, el) {
   if (el) el.classList.add('on');
   renderH40();
 }
+// ── Hadith audio (v114) ─────────────────────────────────────
+// Real human recitation of the 42-hadith Nawawi matn by Omar
+// Elwazzan, hosted on archive.org (CSP media-src already allows
+// archive.org). Our collection is a custom selection, so H40_AUDIO
+// maps OUR card number to the matn audio file number whose
+// recitation contains that hadith (verified file-by-file). Cards
+// without a mapping are authentic hadiths outside the matn, so no
+// recitation exists in this set.
+const H40_AUDIO_BASE = 'https://archive.org/download/YHYASHRF/h';
+const H40_AUDIO = { 1:1, 2:2, 3:6, 4:9, 5:10, 6:11, 7:12, 8:13, 9:15, 10:16, 11:17, 12:18, 13:19, 15:21, 16:3, 17:23, 18:29, 20:27, 23:32, 24:15, 25:28, 29:29, 30:36, 40:40 };
+let h40AudioEl = null, h40PlayingN = -1;
+function h40StopAudio() {
+  if (h40AudioEl) { h40AudioEl.pause(); h40AudioEl = null; }
+  h40PlayingN = -1;
+}
+function h40Play(n, ev) {
+  if (ev) ev.stopPropagation();
+  const f = H40_AUDIO[n];
+  if (!f) return;
+  if (h40PlayingN === n) { h40StopAudio(); renderH40(); return; }
+  h40StopAudio();
+  h40AudioEl = new Audio(H40_AUDIO_BASE + f + '.mp3');
+  h40PlayingN = n;
+  h40AudioEl.onended = h40AudioEl.onerror = function() { h40StopAudio(); renderH40(); };
+  h40AudioEl.play().catch(function() { toast('Could not play audio — check your connection'); h40StopAudio(); renderH40(); });
+  renderH40();
+}
 function renderH40() {
   const div = document.getElementById('hadith40-list');
   if (!div) return;
   const list = h40Filter === 'All' ? HADITH40 : HADITH40.filter(function(h){ return h.cat === h40Filter; });
-  div.innerHTML = list.map(h =>
-    '<div class="hadith-card2" onclick="this.classList.toggle(\'expand\')"><div class="hadith-card2-tags"><span class="hadith-card2-num">Hadith #' + h.n + '</span><span class="hadith-card2-cat">' + h.cat + '</span></div><div class="hadith-card2-ar">' + h.ar + '</div><div class="hadith-card2-en">' + h.en + '</div><div class="hadith-card2-src">— ' + h.src + '</div></div>'
-  ).join('');
+  div.innerHTML = list.map(h => {
+    const f = H40_AUDIO[h.n];
+    const playing = h40PlayingN === h.n;
+    return '<div class="hadith-card2" onclick="this.classList.toggle(\'expand\')"><div class="hadith-card2-tags"><span class="hadith-card2-num">Hadith #' + h.n + '</span><span class="hadith-card2-cat">' + h.cat + '</span></div><div class="hadith-card2-ar">' + h.ar + '</div><div class="hadith-card2-en">' + h.en + '</div><div class="hadith-card2-src">— ' + h.src + '</div>' +
+      (f ? '<div class="h40-play' + (playing ? ' playing' : '') + '" onclick="h40Play(' + h.n + ', event)">🎧 ' + (playing ? 'Playing… tap to stop' : 'Listen (recitation)') + '</div>' : '') +
+    '</div>';
+  }).join('');
 }
 function initHadith40() {
   const chips = document.getElementById('hadith40-chips');
@@ -11147,6 +11281,231 @@ function initHadith40() {
     chips.innerHTML = H40_CATS.map(function(c){ return '<div class="fchip' + (c === 'All' ? ' on' : '') + '" onclick="setH40Filter(\'' + c + '\', this)">' + c + '</div>'; }).join('');
   }
   renderH40();
+}
+
+// ═══════════════════════════════════════════════════════════
+// COMPETITIONS (v114) — admin journeys (e.g. 3 Days Journey over
+// An-Naba → An-Nas) + AI weekly auto-hosted challenges. Scores come
+// from the SAME local learning progress the rank system reads
+// (AI Reading passes +2, Tajweed mastery +3, memorized +1), filtered
+// to each competition's surah range and synced to the server with
+// a monotonic max-policy (same trust model as the global leaderboard).
+// ═══════════════════════════════════════════════════════════
+function compApi(action, payload) {
+  return fetch('/api/comp', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(Object.assign({ action: action }, payload || {}))
+  }).then(function(r) { return r.json(); });
+}
+function compMyName() {
+  const inp = document.getElementById('comp-name-input');
+  if (inp && inp.value.trim()) return inp.value.trim().slice(0, 20);
+  return (localStorage.getItem('nqUserName') || gsMyName() || '').trim().slice(0, 20);
+}
+function compSaveName(n) {
+  localStorage.setItem('nqUserName', n);
+  try { gsUserName = n; } catch (e) {}
+}
+function compSurahName(id) {
+  const s = qData && qData.find ? qData.find(function(x) { return x.id === id; }) : null;
+  return s ? s.name : ('Surah ' + id);
+}
+function compRangeLabel(from, to) {
+  if (from === to) return 'Surah ' + from + ' · ' + compSurahName(from);
+  return 'Surahs ' + from + '–' + to + ' · ' + compSurahName(from) + ' → ' + compSurahName(to);
+}
+// Competition score: same sources as gsRankCalc, filtered to range
+function compScoreFor(fromS, toS) {
+  let ai = 0, tj = 0, mem = 0;
+  try {
+    Object.keys(localStorage).forEach(function(k) {
+      if (k.indexOf('gsRmProg_') === 0) {
+        const p = JSON.parse(localStorage.getItem(k) || '{}');
+        Object.keys(p).forEach(function(s) {
+          const sid = parseInt(s, 10);
+          if (sid >= fromS && sid <= toS) {
+            Object.keys(p[s]).forEach(function(v) { if (p[s][v] >= 90) ai++; });
+          }
+        });
+      }
+    });
+  } catch (e) {}
+  try {
+    Object.keys(localStorage).forEach(function(k) {
+      if (k.indexOf('tjBest_') === 0) {
+        const m = k.match(/^tjBest_(\d+)_/);
+        if (m) {
+          const sid = parseInt(m[1], 10);
+          if (sid >= fromS && sid <= toS && parseInt(localStorage.getItem(k) || '0', 10) >= 95) tj++;
+        }
+      }
+    });
+  } catch (e) {}
+  try {
+    const mp = JSON.parse(localStorage.getItem('memProgress') || '{}');
+    Object.keys(mp).forEach(function(s) {
+      const sid = parseInt(s, 10);
+      if (sid >= fromS && sid <= toS) {
+        Object.keys(mp[s]).forEach(function(i) { if (mp[s][i] === 'done') mem++; });
+      }
+    });
+  } catch (e) {}
+  return { score: ai * 2 + tj * 3 + mem, ai: ai, tj: tj, mem: mem };
+}
+let compData = { active: [], ended: [], joined: [] };
+function compDaysLeft(endDate) {
+  const ms = new Date(endDate).getTime() - Date.now();
+  if (ms <= 0) return 0;
+  return Math.max(1, Math.ceil(ms / 86400000));
+}
+function compSyncAll(force) {
+  const name = compMyName();
+  if (!name) return Promise.resolve();
+  const now = Date.now();
+  if (!force && now - parseInt(localStorage.getItem('compSyncAt') || '0', 10) < 10 * 60 * 1000) return Promise.resolve();
+  localStorage.setItem('compSyncAt', String(now));
+  return compApi('myCompetitions', { userName: name }).then(function(d) {
+    if (!d.ok) { localStorage.setItem('compSyncAt', '0'); return; }
+    d.joined.forEach(function(j) {
+      const c = compData.active.find(function(x) { return x.id === j.compId; });
+      if (!c) return;
+      const s = compScoreFor(c.fromSurah, c.toSurah);
+      compApi('scoreCompetition', { compId: j.compId, userName: name, score: s.score }).catch(function() {});
+    });
+  }).catch(function() { localStorage.setItem('compSyncAt', '0'); });
+}
+function compJoin(compId, btn) {
+  const name = compMyName();
+  if (!name) { toast('Enter your name first'); return; }
+  compSaveName(name);
+  if (btn) { btn.disabled = true; btn.textContent = 'Joining…'; }
+  compApi('joinCompetition', { compId: compId, userName: name }).then(function(d) {
+    if (d.ok) {
+      toast('🏆 Joined! Read, recite & memorize to win');
+      if (navigator.vibrate) navigator.vibrate(30);
+      compSyncAll(true);
+      initCompetitions();
+    } else {
+      toast(d.error || 'Could not join');
+      if (btn) { btn.disabled = false; btn.textContent = '🏆 Join Competition'; }
+    }
+  }).catch(function() {
+    toast('Network error');
+    if (btn) { btn.disabled = false; btn.textContent = '🏆 Join Competition'; }
+  });
+}
+function compLeaderboardHtml(comp, lb, me) {
+  const medals = ['🥇', '🥈', '🥉'];
+  let html = '';
+  const top3 = lb.slice(0, 3);
+  if (top3.length) {
+    html += '<div class="comp-podium">' + top3.map(function(r) {
+      return '<div class="comp-pod' + (r.rank === 1 ? ' first' : '') + '">' +
+        '<div class="comp-pod-ico">' + (medals[r.rank - 1] || '🏅') + '</div>' +
+        '<div class="comp-pod-name">' + gsEsc(r.userName) + '</div>' +
+        '<div class="comp-pod-pts">' + r.score + ' pts</div></div>';
+    }).join('') + '</div>';
+  }
+  const rest = lb.slice(3, 10);
+  if (rest.length) {
+    html += rest.map(function(r) {
+      const isMe = me && r.userName === me;
+      return '<div class="gs-lb-row' + (isMe ? ' me' : '') + '">' +
+        '<div class="gs-lb-rank">' + r.rank + '</div>' +
+        '<div class="gs-lb-name">' + gsEsc(r.userName) + '</div>' +
+        '<div class="gs-lb-pts">' + r.score + ' pts</div></div>';
+    }).join('');
+  }
+  if (!lb.length) html += '<div class="comp-desc">No participants yet — be the first! 🚀</div>';
+  if (me && lb.length) {
+    const mine = lb.find(function(r) { return r.userName === me; });
+    if (mine && mine.rank > 3) html += '<div class="gs-lb-mine">Your rank: #' + mine.rank + ' · ' + mine.score + ' pts</div>';
+    else if (mine) html += '<div class="gs-lb-mine">You are #' + mine.rank + ' with ' + mine.score + ' pts — keep going! 🔥</div>';
+  }
+  return html;
+}
+function compCardHtml(comp, joined) {
+  const me = compMyName();
+  const isJoined = joined.indexOf(comp.id) >= 0;
+  const days = compDaysLeft(comp.endDate);
+  const urgent = days <= 1;
+  const range = compRangeLabel(comp.fromSurah, comp.toSurah);
+  let html = '<div class="comp-card hot">' +
+    '<div class="comp-head">' +
+      '<div class="comp-title">' + gsEsc(comp.title) + '</div>' +
+      '<div class="comp-badge ' + (comp.type === 'ai' ? 'ai">🤖 AI' : 'admin">👑 Admin') + '</div>' +
+    '</div>' +
+    '<div class="comp-range">' + range + '</div>' +
+    '<div class="comp-desc">' + gsEsc(comp.description || '') + '</div>' +
+    '<div class="comp-meta">' +
+      '<div class="comp-pill' + (urgent ? ' urgent' : '') + '">' + (urgent ? '⏰ Last day!' : '⏳ ' + days + ' day' + (days === 1 ? '' : 's') + ' left') + '</div>' +
+      '<div class="comp-pill">🎙️ AI Reading +2</div><div class="comp-pill">🎯 Tajweed +3</div><div class="comp-pill">⭐ Memorize +1</div>' +
+    '</div>';
+  if (isJoined) {
+    const s = compScoreFor(comp.fromSurah, comp.toSurah);
+    html += '<div class="gs-lb-mine">You are in! Current score: ' + s.score + ' pts' +
+      (s.ai || s.tj || s.mem ? ' (' + s.ai + ' passes · ' + s.tj + ' tajweed · ' + s.mem + ' memorized)' : ' — start reading to earn!') + '</div>';
+  }
+  html += '<div id="comp-lb-' + comp.id + '"><div class="comp-desc">Loading leaderboard…</div></div>';
+  html += '<button class="comp-join-btn' + (isJoined ? ' joined' : '') + '" onclick="compJoin(\'' + comp.id + '\', this)">' + (isJoined ? '✅ Joined — Go Read!' : '🏆 Join Competition') + '</button>';
+  html += '</div>';
+  return html;
+}
+function compRenderNameBox() {
+  const me = compMyName();
+  return '<div class="comp-card">' +
+    '<div class="comp-title">👋 Your Name</div>' +
+    '<div class="comp-desc">Used on the competition leaderboard — same as your Group Study name.</div>' +
+    '<input id="comp-name-input" placeholder="e.g. Suliyman" value="' + gsEsc(me || '') + '" style="width:100%;box-sizing:border-box;background:var(--bg);border:1.5px solid var(--bdr);border-radius:11px;color:var(--txt);padding:11px 12px;font-size:.85rem;font-family:Poppins,sans-serif">' +
+    '</div>';
+}
+function compRender() {
+  const body = document.getElementById('comp-body');
+  if (!body) return;
+  const me = compMyName();
+  const joined = compData.joined.map(function(j) { return j.compId; });
+  let html = '';
+  if (!compData.active.length) {
+    html += '<div class="comp-card"><div class="comp-title">🕌 No competition right now</div>' +
+      '<div class="comp-desc">The AI hosts a fresh weekly challenge automatically, and admins can launch special journeys (like a 3 Days Journey over An-Naba → An-Nas) anytime. Meanwhile — keep reading! 📖</div></div>';
+  }
+  html += compData.active.map(function(c) { return compCardHtml(c, joined); }).join('');
+  if (compData.ended.length) {
+    html += '<div class="comp-sec">🏁 Past Winners</div>';
+    html += compData.ended.map(function(c) {
+      return '<div class="comp-card">' +
+        '<div class="comp-head"><div class="comp-title">' + gsEsc(c.title) + '</div></div>' +
+        '<div class="comp-desc">' + (c.winnerName
+          ? '🥇 Winner: <b>' + gsEsc(c.winnerName) + '</b> with ' + c.winnerScore + ' points!'
+          : 'Ended with no participants.') + '</div></div>';
+    }).join('');
+  }
+  body.innerHTML = compRenderNameBox() + html;
+  // load leaderboards per active comp
+  compData.active.forEach(function(c) {
+    compApi('getCompLeaderboard', { compId: c.id, userName: me }).then(function(d) {
+      const el = document.getElementById('comp-lb-' + c.id);
+      if (el && d.ok) el.innerHTML = compLeaderboardHtml(c, d.top || [], me);
+    }).catch(function() {});
+  });
+}
+function initCompetitions() {
+  const body = document.getElementById('comp-body');
+  if (!body) return;
+  compData = { active: [], ended: [], joined: [] };
+  const me = compMyName();
+  Promise.all([
+    compApi('getCompetitions', {}),
+    me ? compApi('myCompetitions', { userName: me }) : Promise.resolve({ ok: true, joined: [] })
+  ]).then(function(rs) {
+    if (rs[0].ok) { compData.active = rs[0].active || []; compData.ended = rs[0].ended || []; }
+    if (rs[1].ok) compData.joined = rs[1].joined || [];
+    compRender();
+    compSyncAll();
+  }).catch(function() {
+    document.getElementById('comp-body').innerHTML = '<div class="comp-card"><div class="comp-desc">Could not load competitions. Check your connection and try again.</div></div>';
+  });
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -11945,7 +12304,12 @@ document.addEventListener('DOMContentLoaded',function(){
 </div>
 <div id="hadith40-view" class="view">
   <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goBack()">←</button><div class="htitle">📜 40 Hadith</div><div style="width:60px"></div></div></div>
-  <div class="fchips" id="hadith40-chips"></div><div class="hadith-list" id="hadith40-list"></div><div style="height:60px"></div>
+  <div class="fchips" id="hadith40-chips"></div><div class="hadith-list" id="hadith40-list"></div><div class="h40-credit">🎧 Recitations of the 42-hadith Nawawi matn by Omar Elwazzan — archive.org</div><div style="height:60px"></div>
+</div>
+<div id="competitions-view" class="view">
+  <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goBack()">←</button><div class="htitle">🏆 Competitions</div><div style="width:60px"></div></div></div>
+  <div id="comp-body"><div class="comp-card"><div class="comp-desc">Loading competitions…</div></div></div>
+  <div style="height:60px"></div>
 </div>
 <div id="ptracker-view" class="view">
   <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goBack()">←</button><div class="htitle">✅ Prayer Tracker</div><div style="width:60px"></div></div></div>

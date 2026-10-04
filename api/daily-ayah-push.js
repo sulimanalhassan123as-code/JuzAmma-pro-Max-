@@ -47,6 +47,32 @@ const AYAHS = [
   { en: 'Allah is the ally of those who believe.', ref: 'Quran 2:257' },
 ];
 
+// Short hadiths for the daily "come and read" reminder push —
+// taken from the app's own verified 42-hadith collection (40 Hadith view).
+const HADITHS = [
+  { en: 'Modesty is part of faith.', ref: 'Bukhari & Muslim' },
+  { en: 'Speak good or remain silent.', ref: 'Bukhari & Muslim' },
+  { en: 'The best of people are those most beneficial to people.', ref: 'Al-Tabarani' },
+  { en: 'Whoever prays Fajr is under the protection of Allah.', ref: 'Sahih Muslim' },
+  { en: 'Be in this world as a stranger or a traveler.', ref: 'Sahih al-Bukhari' },
+  { en: 'None of you truly believes until he loves for his brother what he loves for himself.', ref: 'Bukhari & Muslim' },
+  { en: 'Whoever sends one blessing upon me, Allah sends ten blessings upon him.', ref: 'Sahih Muslim' },
+  { en: 'Fear Allah wherever you are, and follow a bad deed with a good one.', ref: 'Jami at-Tirmidhi' },
+  { en: 'Actions are but by intentions.', ref: 'Bukhari & Muslim' },
+  { en: 'Whoever takes a path seeking knowledge, Allah makes easy for him a path to Paradise.', ref: 'Sahih Muslim' },
+];
+
+// Competition backend (Solas app function, same one api/comp.js proxies).
+const COMP_BASE = 'https://solas-39a02ff5.base44.app/functions/nabaCompetition';
+async function compAction(action, extra) {
+  const r = await fetch(COMP_BASE, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action, ...(extra || {}) }),
+  });
+  return r.json();
+}
+
 function b64url(buf) {
   return Buffer.from(buf).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
@@ -138,43 +164,105 @@ export default async function handler(req, res) {
       if (!j.ok) throw new Error('token list failed: ' + JSON.stringify(j).slice(0, 200));
       tokens = j.tokens || [];
     }
-    if (tokens.length === 0) {
-      return res.status(200).json({ ok: true, sent: 0, message: 'no registered devices yet' });
+
+    // 4. Main push (existing behaviour). With no devices, still fall
+    //    through to competition maintenance so the weekly AI host and
+    //    closing keep working even before the first install.
+    let main = { ok: true, sent: 0, total: 0, message: 'no registered devices yet', mode: 'none', ayah: null, results: [] };
+    if (tokens.length > 0) {
+      const hasCustom = typeof body.customTitle === 'string' && body.customTitle.trim()
+        && typeof body.customBody === 'string' && body.customBody.trim();
+      const customTitle = hasCustom ? body.customTitle.trim().slice(0, 60) : null;
+      const customBody  = hasCustom ? body.customBody.trim().slice(0, 240) : null;
+
+      let title, bodyText, ayah = null;
+      if (customTitle) {
+        title = customTitle;
+        bodyText = customBody;
+      } else {
+        const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+        ayah = AYAHS[dayOfYear % AYAHS.length];
+        title = isTest ? '🌙 Daily Ayah (test)' : '🌙 Ayah of the Day';
+        bodyText = `"${ayah.en}" — ${ayah.ref}`;
+      }
+
+      const results = [];
+      for (const t of tokens) {
+        const r = await sendToToken(accessToken, projectId, t, title, bodyText, {
+          ref: ayah.ref, test: isTest ? '1' : '0',
+        });
+        results.push({ token: t.slice(0, 12) + '…', ok: r.ok, status: r.status, detail: r.resp.slice(0, 120) });
+      }
+
+      main = {
+        ok: true, sent: results.filter(r => r.ok).length, total: tokens.length,
+        mode: customTitle ? 'custom' : 'ayah',
+        ayah, results,
+      };
     }
 
-    // 4. Pick notification content
-    //    Admin panel can either send today's rotating Ayah or a fully custom
-    //    announcement (title + message of their own — e.g. greetings,
-    //    news, reminders). Custom requires BOTH fields; caps keep FCM happy.
-    const hasCustom = typeof body.customTitle === 'string' && body.customTitle.trim()
-      && typeof body.customBody === 'string' && body.customBody.trim();
-    const customTitle = hasCustom ? body.customTitle.trim().slice(0, 60) : null;
-    const customBody  = hasCustom ? body.customBody.trim().slice(0, 240) : null;
-
-    let title, bodyText, ayah = null;
-    if (customTitle) {
-      title = customTitle;
-      bodyText = customBody;
-    } else {
-      const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
-      ayah = AYAHS[dayOfYear % AYAHS.length];
-      title = isTest ? '🌙 Daily Ayah (test)' : '🌙 Ayah of the Day';
-      bodyText = `"${ayah.en}" — ${ayah.ref}`;
+    // 5. Competition maintenance — cron only (daily 07:00 UTC), so
+    //    manual admin pushes stay pure. Non-fatal on errors: the
+    //    daily Ayah push must never break because of this block.
+    //      a) close expired competitions + announce winners
+    //      b) AI auto-host: ensure a weekly AI competition exists
+    //      c) daily "come and read" reminder with the day's hadith
+    //         (+ live competition line when one is running)
+    const comp = { closed: [], weekly: null, reminderSent: 0 };
+    if (isCron && !singleToken) {
+      try {
+        // a) close expired
+        const closed = (await compAction('closeExpired')) || {};
+        for (const c of (closed.closed || [])) {
+          comp.closed.push(c.title);
+          if (tokens.length > 0 && c.winnerName) {
+            for (const t of tokens) {
+              await sendToToken(accessToken, projectId, t,
+                '🏆 Competition Finished!',
+                `"${c.title}" has ended. Winner: ${c.winnerName} with ${c.winnerScore} points! مبروك 🎉`,
+                { comp: 'results' });
+            }
+          }
+        }
+        // b) AI weekly host
+        const wk = (await compAction('ensureWeekly')) || {};
+        if (wk.created) {
+          comp.weekly = wk.title || 'this week';
+          if (tokens.length > 0) {
+            for (const t of tokens) {
+              await sendToToken(accessToken, projectId, t,
+                '🤖 New AI Weekly Challenge!',
+                `${wk.title} is live! Read, recite & memorize to top the leaderboard 🏆 Open Naba Quran and join now.`,
+                { comp: 'weekly' });
+            }
+          }
+        }
+        // c) daily read reminder + hadith (+ competition countdown)
+        if (tokens.length > 0 && !isTest) {
+          const doy = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+          const hadith = HADITHS[doy % HADITHS.length];
+          const gc = (await compAction('getCompetitions')) || {};
+          const act = (gc.active || [])[0];
+          let rTitle = '📖 Read Quran Today';
+          let rBody = `Keep your streak alive! 📜 Hadith of the day: "${hadith.en}" — ${hadith.ref}`;
+          if (act) {
+            const daysLeft = Math.max(1, Math.ceil((new Date(act.endDate) - Date.now()) / 86400000));
+            rTitle = `🔥 ${daysLeft} Day${daysLeft === 1 ? '' : 's'} Left: ${act.title.replace(/^🤖\s*/, '')}`;
+            rBody = `Read the Quran & climb the leaderboard! 📜 Hadith: "${hadith.en}" — ${hadith.ref}`;
+          }
+          let okCount = 0;
+          for (const t of tokens) {
+            const r = await sendToToken(accessToken, projectId, t, rTitle, rBody, { comp: 'reminder' });
+            if (r.ok) okCount++;
+          }
+          comp.reminderSent = okCount;
+        }
+      } catch (e) {
+        comp.error = String(e).slice(0, 150);
+      }
     }
 
-    const results = [];
-    for (const t of tokens) {
-      const r = await sendToToken(accessToken, projectId, t, title, bodyText, {
-        ref: ayah.ref, test: isTest ? '1' : '0',
-      });
-      results.push({ token: t.slice(0, 12) + '…', ok: r.ok, status: r.status, detail: r.resp.slice(0, 120) });
-    }
-
-    return res.status(200).json({
-      ok: true, sent: results.filter(r => r.ok).length, total: tokens.length,
-      mode: customTitle ? 'custom' : 'ayah',
-      ayah, results,
-    });
+    return res.status(200).json({ ...main, competitions: comp });
   } catch (e) {
     return res.status(500).json({ error: String(e).slice(0, 300) });
   }
