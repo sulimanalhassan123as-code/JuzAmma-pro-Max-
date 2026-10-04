@@ -1276,6 +1276,16 @@ body { font-family:'Poppins',sans-serif;
 .qa-h-s { font-family:'Amiri', serif; font-size:1.6rem; color:var(--txt); min-width:44px; text-align:center; }
 .qa-h-t { font-size:.74rem; font-weight:800; color:var(--txt); }
 .qa-h-d { font-size:.64rem; color:var(--txt2); line-height:1.45; }
+/* Live follow-along tracking + repeat-after-me (v116) */
+.qc-lw { display:inline; border-radius:5px; padding:0 1px; transition:color .25s, opacity .25s, background .25s, box-shadow .25s; }
+.qc-lw-done { opacity:.42; }
+.qc-lw-cur { background:rgba(16,185,129,.22); box-shadow:0 0 0 2px rgba(16,185,129,.35) inset; opacity:1; }
+.qc-lw-miss { color:#ef4444; text-decoration:underline wavy #ef4444; opacity:1; }
+.qc-live-hint { font-size:.6rem; color:var(--txt2); margin-top:8px; }
+.qc-follow-banner { background:rgba(16,185,129,.08); border:1px solid rgba(16,185,129,.3); border-radius:14px; padding:12px 14px; margin:0 14px 10px; font-size:.76rem; line-height:1.55; color:var(--txt); }
+@keyframes qc-nudge-pulse { 0%,100% { box-shadow:0 6px 18px rgba(16,185,129,.35); } 50% { box-shadow:0 0 0 10px rgba(16,185,129,.25), 0 6px 18px rgba(16,185,129,.35); } }
+.qc-mic-nudge { animation:qc-nudge-pulse 1s infinite; }
+
 
 .gs-tw-item { background:var(--card); border:1px solid var(--bdr); border-radius:14px; padding:12px 14px; margin-bottom:10px; }
 .gs-tw-head { display:flex; align-items:center; gap:6px; margin-bottom:6px; flex-wrap:wrap; }
@@ -11840,20 +11850,37 @@ function qcRenderSession() {
   const q = qcSesVerses();
   const text = qcVerseText(j, n);
   const en = qcVerseEn(j, n);
+  // Live tracking (v116): on supported browsers, split the verse into
+  // word spans so qcLiveApplyHighlight can colour them as the mic hears
+  // you read — green/dim = read, red = skipped, highlighted = current word.
+  const liveOn = qcLiveSupported();
+  const dispWords = text.split(/\s+/).filter(Boolean);
+  const arHtml = liveOn
+    ? dispWords.map(function(w, i) { return '<span class="qc-lw" id="qc-lw-' + i + '">' + w + '</span>'; }).join(' ')
+    : text;
+  // Repeat-after-me mode: after 2 failed attempts on this line, offer the
+  // guided flow (sheikh reads it, then prompts the student to repeat).
+  const followMode = (qcSes.attempts[n] || 0) >= 2 && !((qcSes.scores[n] || 0) >= QC_PASS);
+  const micLbl = qcRecOn ? 'Recording… tap to stop and analyze' : (followMode ? 'Tap the mic when ready to repeat after me' : 'Tap the mic, then recite the verse');
   body.innerHTML =
     '<div class="qc-hero">' +
       '<div class="qc-hero-top"><span class="qc-hello">' + phase + '</span><span class="qc-day-pill">' + (qcSes.idx + 1) + '/' + q.length + '</span></div>' +
       '<div class="qc-jtitle">' + qcSurah(j).name + ' · Verse ' + n + (qcSes.phase === 'new' ? '' : ' (re-test)') + '</div>' +
     '</div>' +
+    (followMode ?
+      '<div class="qc-follow-banner">🤝 <b>Let\'s do this together.</b> I\'ll read the line first — then you repeat right after me.' +
+        '<button class="qc-go" style="margin-top:10px" onclick="qcFollowStart(' + n + ')">🔊 Listen, then repeat</button></div>'
+      : '') +
     '<div class="qc-card qc-verse-card">' +
-      '<div class="qc-big-ar" dir="rtl">' + text + '</div>' +
+      '<div class="qc-big-ar" dir="rtl">' + arHtml + '</div>' +
       (en ? '<div class="qc-big-en">' + en + '</div>' : '') +
+      (liveOn ? '<div class="qc-live-hint">🟢 Live tracking — words glow as you read, turn red if skipped</div>' : '') +
       '<div class="qc-verse-btns">' +
         '<button class="qc-lite" onclick="qcListen(' + n + ')">🎧 Hear sheikh</button>' +
-        '<button class="qc-mic' + (qcRecOn ? ' rec' : '') + '" onclick="qcMic()">' + (qcRecOn ? '⏹' : '🎤') + '</button>' +
+        '<button class="qc-mic' + (qcRecOn ? ' rec' : '') + '" id="qc-mic-btn" onclick="qcMic()">' + (qcRecOn ? '⏹' : '🎤') + '</button>' +
         '<button class="qc-lite" onclick="qcSkip()">Skip →</button>' +
       '</div>' +
-      '<div class="qc-mic-lbl" id="qc-mic-lbl">' + (qcRecOn ? 'Recording… tap to stop and analyze' : 'Tap the mic, then recite the verse') + '</div>' +
+      '<div class="qc-mic-lbl" id="qc-mic-lbl">' + micLbl + '</div>' +
       '<div id="qc-fb"></div>' +
     '</div>' +
     '<div class="qc-foot"><span class="qc-link" onclick="qcAbandon()">← End session early</span></div>';
@@ -11872,17 +11899,21 @@ function qcMic() {
   if (qcBusy) return;
   if (qcRecOn) { qcRecStop(); return; }
   qcChunks = []; qcRecSec = 0;
+  const nudgeBtn = document.getElementById('qc-mic-btn');
+  if (nudgeBtn) nudgeBtn.classList.remove('qc-mic-nudge');
   try {
     navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
       qcRec = new MediaRecorder(stream);
       qcRec.ondataavailable = function(e) { if (e.data.size) qcChunks.push(e.data); };
       qcRec.onstop = function() {
         stream.getTracks().forEach(function(t){ t.stop(); });
+        qcLiveStop();
         qcAnalyze();
       };
       qcRec.start();
       qcRecOn = true;
       qcRecInt = setInterval(function(){ qcRecSec++; if (qcRecSec >= 40) qcRecStop(); }, 1000);
+      qcLiveStart(qcCurVerse());
       qcRender();
     }).catch(function(){ toast('🎤 Mic permission needed — allow microphone access'); });
   } catch (e) { toast('Mic not supported on this device'); }
@@ -11891,7 +11922,106 @@ function qcRecStop() {
   if (qcRec && qcRec.state !== 'inactive') { try { qcRec.stop(); } catch (e) {} }
   qcRecOn = false;
   if (qcRecInt) { clearInterval(qcRecInt); qcRecInt = null; }
+  qcLiveStop();
   qcRender();
+}
+
+// ── Live follow-along tracking (v116) ──────────────────────
+// Runs the browser's own speech recognition (Web Speech API) alongside the
+// existing recording purely as a VISUAL guide — it never decides pass/fail
+// or points. The authoritative score still comes from the proven Groq
+// Whisper pipeline in qcAnalyze() above, unchanged. Supported mainly on
+// Chrome/Android; gracefully does nothing on browsers without it (e.g. iOS
+// Safari), so nothing breaks for those users — they just keep the existing
+// record-then-review flow exactly as it was.
+let qcLiveRec = null, qcLiveRefRasm = [], qcLiveSupportedCache = null;
+
+function qcLiveSupported() {
+  if (qcLiveSupportedCache === null) qcLiveSupportedCache = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+  return qcLiveSupportedCache;
+}
+// Mirrors the server's normalizeT()/rasm() in /api/tajweed.js so live
+// matching lines up with the same letter-level comparison the final score uses.
+function qcNormT(t) {
+  let s = (t || '').normalize('NFC');
+  s = s.replace(/\ufeff/g, '').replace(/ٱ/g, 'ا').replace(/ٰ/g, '');
+  s = s.replace(/[\u06d6-\u06ed]/g, '');
+  s = s.replace(/\u0640/g, '');
+  return s.trim();
+}
+function qcRasm(t) { return t.replace(/[\u064b-\u065f\u0670]/g, ''); }
+
+function qcLiveStart(n) {
+  if (!qcLiveSupported() || !n) return;
+  try {
+    const j = qcLoad();
+    const words = qcVerseText(j, n).split(/\s+/).filter(Boolean);
+    qcLiveRefRasm = words.map(function(w) { return qcRasm(qcNormT(w)); });
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    qcLiveRec = new SR();
+    qcLiveRec.lang = 'ar-SA';
+    qcLiveRec.continuous = true;
+    qcLiveRec.interimResults = true;
+    qcLiveRec.onresult = function(e) { qcLiveHandleResult(e); };
+    qcLiveRec.onerror = function() {};
+    qcLiveRec.onend = function() {
+      // Some mobile browsers auto-stop recognition after a short pause even
+      // in continuous mode — restart it as long as the mic is still live.
+      if (qcRecOn && qcLiveRec) { try { qcLiveRec.start(); } catch (e) {} }
+    };
+    qcLiveRec.start();
+  } catch (e) { qcLiveRec = null; }
+}
+function qcLiveStop() {
+  if (qcLiveRec) { try { qcLiveRec.onend = null; qcLiveRec.stop(); } catch (e) {} qcLiveRec = null; }
+}
+function qcLiveHandleResult(e) {
+  let text = '';
+  for (let i = 0; i < e.results.length; i++) text += e.results[i][0].transcript + ' ';
+  const heard = qcNormT(text).split(/\s+/).filter(Boolean).map(function(w) { return qcRasm(w); });
+  const res = qcLiveMatch(heard, qcLiveRefRasm);
+  qcLiveApplyHighlight(res, qcLiveRefRasm.length);
+}
+// Greedy sequential alignment: walks the heard words in order and matches
+// each against the next expected reference word (looking up to 2 words
+// ahead to absorb a filler/misheard word). Pure function — recomputed fresh
+// on every recognition event, so there's no persisted state to get stuck.
+function qcLiveMatch(heard, ref) {
+  let ri = 0; const doneIdx = [], missIdx = [];
+  for (let hi = 0; hi < heard.length && ri < ref.length; hi++) {
+    let found = -1;
+    for (let k = 0; k <= 2 && ri + k < ref.length; k++) { if (ref[ri + k] === heard[hi]) { found = k; break; } }
+    if (found >= 0) {
+      for (let s = 0; s < found; s++) missIdx.push(ri + s);
+      doneIdx.push(ri + found);
+      ri = ri + found + 1;
+    }
+  }
+  return { doneIdx: doneIdx, missIdx: missIdx, currentIdx: ri < ref.length ? ri : -1 };
+}
+function qcLiveApplyHighlight(res, len) {
+  for (let i = 0; i < len; i++) {
+    const el = document.getElementById('qc-lw-' + i);
+    if (el) el.classList.remove('qc-lw-done', 'qc-lw-miss', 'qc-lw-cur');
+  }
+  res.doneIdx.forEach(function(i) { const el = document.getElementById('qc-lw-' + i); if (el) el.classList.add('qc-lw-done'); });
+  res.missIdx.forEach(function(i) { const el = document.getElementById('qc-lw-' + i); if (el) el.classList.add('qc-lw-miss'); });
+  if (res.currentIdx >= 0) { const el = document.getElementById('qc-lw-' + res.currentIdx); if (el) el.classList.add('qc-lw-cur'); }
+}
+
+// ── Repeat-after-me coaching (v116) ─────────────────────────
+// Offered after 2 failed attempts on the same line: the sheikh reads the
+// verse, then nudges the student to tap the mic and read it right after.
+function qcFollowStart(n) {
+  toast('🔊 Listen carefully…');
+  qcListen(n);
+  if (qcAudio) {
+    qcAudio.onended = function() {
+      toast('🎙️ Now repeat after me — tap the mic');
+      const micBtn = document.getElementById('qc-mic-btn');
+      if (micBtn) micBtn.classList.add('qc-mic-nudge');
+    };
+  }
 }
 
 async function qcAnalyze() {
