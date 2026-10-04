@@ -11952,6 +11952,11 @@ function qcMic() {
   qcChunks = []; qcRecSec = 0;
   const nudgeBtn = document.getElementById('qc-mic-btn');
   if (nudgeBtn) nudgeBtn.classList.remove('qc-mic-nudge');
+  // Claim the mic for live tracking BEFORE the recorder does — on some
+  // Android devices only the first consumer of the mic gets live audio,
+  // which is the real reason the pointer sometimes never appeared.
+  qcRecOn = true;
+  qcLiveStart(qcCurVerse());
   try {
     navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
       qcRec = new MediaRecorder(stream);
@@ -11962,12 +11967,10 @@ function qcMic() {
         qcAnalyze();
       };
       qcRec.start();
-      qcRecOn = true;
       qcRecInt = setInterval(function(){ qcRecSec++; if (qcRecSec >= 40) qcRecStop(); }, 1000);
-      qcLiveStart(qcCurVerse());
       qcRender();
-    }).catch(function(){ toast('🎤 Mic permission needed — allow microphone access'); });
-  } catch (e) { toast('Mic not supported on this device'); }
+    }).catch(function(){ qcRecOn = false; qcLiveStop(); toast('🎤 Mic permission needed — allow microphone access'); });
+  } catch (e) { qcRecOn = false; qcLiveStop(); toast('Mic not supported on this device'); }
 }
 function qcRecStop() {
   if (qcRec && qcRec.state !== 'inactive') { try { qcRec.stop(); } catch (e) {} }
@@ -11985,7 +11988,7 @@ function qcRecStop() {
 // Chrome/Android; gracefully does nothing on browsers without it (e.g. iOS
 // Safari), so nothing breaks for those users — they just keep the existing
 // record-then-review flow exactly as it was.
-let qcLiveRec = null, qcLiveRefRasm = [], qcLiveSupportedCache = null;
+let qcLiveRec = null, qcLiveRefRasm = [], qcLiveSupportedCache = null, qcLiveGotResult = false, qcLiveRestarts = 0, qcLiveWatchdog = null, qcLiveFailed = false;
 
 function qcLiveSupported() {
   if (qcLiveSupportedCache === null) qcLiveSupportedCache = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
@@ -12004,6 +12007,7 @@ function qcRasm(t) { return t.replace(/[\u064b-\u065f\u0670]/g, ''); }
 
 function qcLiveStart(n) {
   if (!qcLiveSupported() || !n) return;
+  qcLiveGotResult = false; qcLiveRestarts = 0; qcLiveFailed = false;
   try {
     const j = qcLoad();
     const words = qcVerseText(j, n).split(/\s+/).filter(Boolean);
@@ -12013,17 +12017,40 @@ function qcLiveStart(n) {
     qcLiveRec.lang = 'ar-SA';
     qcLiveRec.continuous = true;
     qcLiveRec.interimResults = true;
-    qcLiveRec.onresult = function(e) { qcLiveHandleResult(e); };
-    qcLiveRec.onerror = function() {};
+    qcLiveRec.onresult = function(e) { qcLiveGotResult = true; qcLiveHandleResult(e); };
+    qcLiveRec.onerror = function(ev) {
+      const err = ev && ev.error;
+      // 'no-speech' just means nothing heard yet — normal, not a failure.
+      if (err === 'audio-capture' || err === 'not-allowed' || err === 'service-not-allowed') qcLiveNotifyFail(err);
+    };
     qcLiveRec.onend = function() {
       // Some mobile browsers auto-stop recognition after a short pause even
-      // in continuous mode — restart it as long as the mic is still live.
-      if (qcRecOn && qcLiveRec) { try { qcLiveRec.start(); } catch (e) {} }
+      // in continuous mode — restart it as long as the mic is still live
+      // (capped so a persistently broken mic doesn't loop forever).
+      if (qcRecOn && qcLiveRec && qcLiveRestarts < 6) {
+        qcLiveRestarts++;
+        try { qcLiveRec.start(); } catch (e) { qcLiveNotifyFail('restart-failed'); }
+      }
     };
     qcLiveRec.start();
-  } catch (e) { qcLiveRec = null; }
+    if (qcLiveWatchdog) clearTimeout(qcLiveWatchdog);
+    qcLiveWatchdog = setTimeout(function() {
+      if (!qcLiveGotResult && qcRecOn) qcLiveNotifyFail('timeout');
+    }, 4000);
+  } catch (e) { qcLiveRec = null; qcLiveNotifyFail('start-exception'); }
+}
+// Make a live-tracking failure VISIBLE instead of silently doing nothing —
+// the reader should always know whether the pointer is working or not.
+// Recording/scoring is never affected either way.
+function qcLiveNotifyFail(reason) {
+  if (qcLiveFailed) return;
+  qcLiveFailed = true;
+  console.warn('qcLive unavailable:', reason);
+  const hint = document.getElementById('qc-live-hint');
+  if (hint) hint.textContent = '⚠️ Live pointer unavailable right now — your reading is still being recorded and scored normally.';
 }
 function qcLiveStop() {
+  if (qcLiveWatchdog) { clearTimeout(qcLiveWatchdog); qcLiveWatchdog = null; }
   if (qcLiveRec) { try { qcLiveRec.onend = null; qcLiveRec.stop(); } catch (e) {} qcLiveRec = null; }
 }
 function qcLiveHandleResult(e) {
