@@ -3361,7 +3361,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v126 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v127 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3421,7 +3421,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v126 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v127 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3486,7 +3486,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v126 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v127 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -13667,7 +13667,24 @@ async function gsLiveStartMic(){
           const b64 = gsLiveB64(pcm.buffer);
           const seq = Date.now();
           gsLiveApi('chunk', { seq: seq, audioBase64: b64, durMs: 1000 })
-            .then(function(r){ if (!r.ok && r && r.error) gsLiveLog('⚠️ ' + r.error); })
+            .then(function(r){
+              if (!r.ok) {
+                gsLiveLog('⚠️ ' + (r.error || 'chunk rejected'));
+                // The session this mic was streaming into is gone (ended
+                // or someone else took the floor) — keep retrying silently
+                // forever is what made this look like "the mic just stops
+                // working" with no visible cause. Stop for real and say so.
+                GS_LIVE.chunkFails = (GS_LIVE.chunkFails || 0) + 1;
+                if (GS_LIVE.chunkFails >= 3) {
+                  GS_LIVE.chunkFails = 0;
+                  gsLiveStopMic();
+                  toast('🎤 Mic stopped — the live session ended or your floor was taken');
+                  gsLiveRender(false);
+                }
+              } else {
+                GS_LIVE.chunkFails = 0;
+              }
+            })
             .catch(function(){});
           GS_LIVE.sendCount = 0;
         }
