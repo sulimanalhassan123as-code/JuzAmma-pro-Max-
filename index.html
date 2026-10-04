@@ -3361,7 +3361,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v125 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v126 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3421,7 +3421,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v125 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v126 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3486,7 +3486,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v125 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v126 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -12722,9 +12722,26 @@ function updateFsapBtn() {
 
 
 // ---- APK v15 update banner (Safa, Oct 2026) ----
+// Why the raw.githubusercontent.com URL below, not our own vercel.app one:
+// the OLD native shell's WebViewClient treats any *.vercel.app link as an
+// "internal" link and just keeps it inside the WebView instead of handing
+// it to Android — and a WebView with no DownloadListener wired up just
+// silently does nothing with an .apk response. No popup, no error, nothing
+// (that's exactly the "tap it, nothing happens" bug Safa hit). A different
+// host is NOT treated as internal, so the WebView correctly bounces it out
+// to a real Intent, which the OS then opens in Chrome/Download Manager —
+// which is what actually shows a visible download. Same APK bytes, just
+// mirrored from the already-public GitHub repo file, so nothing new to
+// host or maintain.
 function downloadNewApk(){
-  try { window.AndroidBridge.openExternalUrl('https://juz-amma-pro-max.vercel.app/JuzAmmaProMax-v15-signed.apk'); }
-  catch(e){ location.href='https://juz-amma-pro-max.vercel.app/JuzAmmaProMax-v15-signed.apk'; }
+  var url = 'https://raw.githubusercontent.com/sulimanalhassan123as-code/JuzAmma-pro-Max-/main/JuzAmmaProMax-v15-signed.apk';
+  try {
+    if (window.AndroidBridge && typeof window.AndroidBridge.openExternalUrl === 'function') {
+      window.AndroidBridge.openExternalUrl(url);
+    } else {
+      window.open(url, '_blank');
+    }
+  } catch(e) { location.href = url; }
 }
 function dismissApkBanner(){
   var b=document.getElementById('apk-update-banner'); if(b) b.style.display='none';
