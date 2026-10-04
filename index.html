@@ -1464,9 +1464,22 @@ body { font-family:'Poppins',sans-serif;
 .gs-live-log{font-size:.68rem;color:var(--txt2);padding:2px 4px;margin-bottom:8px;max-height:64px;overflow-y:auto}
 .gs-live-log div{padding:2px 0}
 .gs-live-verse{border:1px solid var(--br);border-radius:12px;padding:10px 12px;margin-bottom:8px;margin-left:22px;transition:border-color .3s,box-shadow .3s,background .3s}
+.gs-live-vtoggle{display:flex;gap:8px;margin:0 0 10px 2px}
+.gs-live-vtoggle button{flex:1;padding:8px 6px;border-radius:10px;border:1px solid var(--br);background:var(--card2);color:var(--txt);font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit}
+.gs-live-vtoggle button.sel{background:linear-gradient(135deg,#0e7490,#0891b2);border-color:transparent;color:#fff}
+.gs-live-mushaf{background:linear-gradient(180deg,#fffdf6,#f7f0dc);border:1px solid #d9cfae;border-radius:14px;padding:16px 14px;box-shadow:inset 0 0 26px rgba(160,130,60,.09);direction:rtl;text-align:center;margin-bottom:10px}
+.gs-live-mushaf .mushaf-text{font-size:1.55rem;line-height:2.7;text-align:center;color:#20301f;font-family:'Amiri','Scheherazade New','Noto Naskh Arabic',serif}
+.gs-live-mv{border-radius:8px;padding:1px 3px;transition:background .4s,box-shadow .4s}
+.gs-live-mv.active{background:rgba(16,185,129,.16);box-shadow:0 0 0 1px rgba(16,185,129,.35)}
+.gs-live-mv .ayah-mark{font-size:1.05rem;color:#8a6d1f;display:inline-block;transform:translateY(-2px);margin:0 2px}
+.gs-live-enverse{border:1px solid var(--br);border-radius:12px;padding:10px 12px;margin-bottom:8px;margin-left:22px;transition:border-color .3s,box-shadow .3s,background .3s;background:var(--card2)}
+.gs-live-enverse.active{border-color:#10b981;box-shadow:0 0 0 2px rgba(16,185,129,.25);background:rgba(16,185,129,.09)}
+.gs-live-enverse .env-num{font-size:.68rem;color:var(--txt2);font-weight:700}
+.gs-live-enverse .env-en{font-size:.88rem;line-height:1.6;margin-top:3px}
+.gs-live-enverse.active .env-num{color:#10b981}
 #gs-live-verses{position:relative}
 .gs-live-rail{position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:linear-gradient(180deg,rgba(16,185,129,.08),rgba(16,185,129,.25));border-radius:2px}
-.gs-live-marker{position:absolute;left:0;width:18px;height:18px;margin-left:-8px;border-radius:50%;background:#10b981;box-shadow:0 0 0 4px rgba(16,185,129,.22),0 2px 8px rgba(16,185,129,.5);transition:top .65s cubic-bezier(.22,.9,.3,1.1);display:flex;align-items:center;justify-content:center;font-size:.6rem;z-index:2}
+.gs-live-marker{position:absolute;left:0;width:18px;height:18px;margin-left:-8px;border-radius:50%;background:#10b981;box-shadow:0 0 0 4px rgba(16,185,129,.22),0 2px 8px rgba(16,185,129,.5);transition:top .65s cubic-bezier(.22,.9,.3,1.1),left .65s cubic-bezier(.22,.9,.3,1.1);display:flex;align-items:center;justify-content:center;font-size:.6rem;z-index:2}
 .gs-live-marker::after{content:'🎙️';font-size:.62rem;line-height:1}
 
 .gs-live-verse .vs-num{font-size:.68rem;color:var(--txt2)}
@@ -3348,7 +3361,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v123 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v124 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3408,7 +3421,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v123 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v124 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3473,7 +3486,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v123 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v124 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -13121,6 +13134,10 @@ document.addEventListener('DOMContentLoaded',function(){
         <div class="gs-live-floor-banner" id="gs-live-floor-banner" style="display:none"></div>
         <div class="gs-live-controls" id="gs-live-controls"></div>
         <div class="gs-live-log" id="gs-live-log"></div>
+        <div class="gs-live-vtoggle" id="gs-live-vtoggle" style="display:none">
+          <button id="gs-vbtn-ar" onclick="gsLiveSetView('ar')">📖 Arabic (Mushaf)</button>
+          <button id="gs-vbtn-en" onclick="gsLiveSetView('en')">🌐 English</button>
+        </div>
         <div id="gs-live-verses"></div>
       </div>
     </div>
@@ -13394,6 +13411,7 @@ document.addEventListener('DOMContentLoaded',function(){
    Verse tracker syncs the highlighted verse for everyone. */
 const GS_LIVE = {
   session:null, lastVerse:0, micOn:false, micStream:null, micCtx:null, procNode:null,
+  view:(function(){ try { return localStorage.getItem('gsLiveView') || 'ar'; } catch (e) { return 'ar'; } })(),
   sendBuf:null, sendCount:0, playCtx:null, playNextT:0, lastSpeaker:null, muted:false,
   pullTimer:null, pullBusy:false, lastSeq:0, quietBusy:false, logLines:[]
 };
@@ -13482,23 +13500,25 @@ function gsLiveRender(fresh){
     } else { fb.style.display = 'none'; }
   }
 
+  const vt = document.getElementById('gs-live-vtoggle');
+  if (vt) {
+    vt.style.display = 'flex';
+    const bar = document.getElementById('gs-vbtn-ar');
+    const ben = document.getElementById('gs-vbtn-en');
+    if (bar) bar.classList.toggle('sel', GS_LIVE.view === 'ar');
+    if (ben) ben.classList.toggle('sel', GS_LIVE.view === 'en');
+  }
   const area = document.getElementById('gs-live-verses');
   if (area) {
     if (fresh && surah) {
-      area.innerHTML = '<div class="gs-live-rail"></div><div class="gs-live-marker" id="gs-live-marker" style="display:none"></div>' +
-        '<div style="text-align:center;font-size:.7rem;color:var(--txt2);padding:6px 4px 10px">📍 The marker on the left walks down, line by line, to wherever the reciter is right now.</div>' +
-        surah.verses.map(function(v, i){
-          const n = i + 1;
-          return '<div class="gs-live-verse' + (n === s.verse ? ' active' : '') + '" id="gslv-' + n + '">' +
-            '<div class="vs-num">Verse ' + n + (n === s.verse ? ' · 🎙️ reciting now' : '') + '</div>' +
-            '<div class="vs-ar">' + (v.a || v.text || '') + '</div>' +
-            '<div class="vs-en">' + (v.e || '') + '</div></div>';
-        }).join('');
+      area.innerHTML = '<div class="gs-live-rail" id="gs-live-rail" style="display:' + (GS_LIVE.view === 'en' ? 'block' : 'none') + '"></div><div class="gs-live-marker" id="gs-live-marker" style="display:none"></div>' +
+        '<div style="text-align:center;font-size:.7rem;color:var(--txt2);padding:2px 4px 10px">📍 The marker walks step by step to wherever the reciter is right now — on every screen.</div>' +
+        (GS_LIVE.view === 'ar' ? gsLiveRenderMushaf(surah, s) : gsLiveRenderEnglish(surah, s));
       GS_LIVE.lastVerse = s.verse;
       const cur = document.getElementById('gslv-' + s.verse);
       if (cur) setTimeout(function(){ cur.scrollIntoView({ behavior:'smooth', block:'center' }); gsLiveMoveMarker(cur, true); }, 120);
     } else if (surah && s.verse !== GS_LIVE.lastVerse) {
-      document.querySelectorAll('.gs-live-verse').forEach(function(el){ el.classList.remove('active'); });
+      document.querySelectorAll('#gs-live-verses .active').forEach(function(el){ el.classList.remove('active'); });
       const cur = document.getElementById('gslv-' + s.verse);
       if (cur) { cur.classList.add('active'); cur.scrollIntoView({ behavior:'smooth', block:'center' }); gsLiveMoveMarker(cur, false); }
       GS_LIVE.lastVerse = s.verse;
@@ -13508,21 +13528,80 @@ function gsLiveRender(fresh){
     }
   }
 }
-// Slide the little mic marker down the rail to sit beside whichever verse
-// is currently being recited — the marker moves step by step with the
-// reader, exactly as Safa asked for.
+// Mushaf view — the verses flow together as one continuous page, exactly
+// like the physical copy of the Quran: cream page, Arabic script, and the
+// ornate ayah-sign ۝ with the verse number in Arabic digits at the end of
+// each verse. No English here.
+function gsLiveArabicNum(n){
+  const d = '٠١٢٣٤٥٦٧٨٩';
+  return String(n).split('').map(function(c){ return d[+c]; }).join('');
+}
+function gsLiveRenderMushaf(surah, s){
+  return '<div class="gs-live-mushaf"><div class="mushaf-text">' +
+    surah.verses.map(function(v, i){
+      const n = i + 1;
+      return '<span class="gs-live-mv' + (n === s.verse ? ' active' : '') + '" id="gslv-' + n + '">' +
+        (v.a || v.text || '') +
+        ' <span class="ayah-mark">۝ ' + gsLiveArabicNum(n) + '</span></span> ';
+    }).join('') +
+    '</div></div>';
+}
+// English view — translation only, one row per verse.
+function gsLiveRenderEnglish(surah, s){
+  return surah.verses.map(function(v, i){
+    const n = i + 1;
+    return '<div class="gs-live-enverse' + (n === s.verse ? ' active' : '') + '" id="gslv-' + n + '">' +
+      '<div class="env-num">Verse ' + n + (n === s.verse ? ' · 🎙️ reciting now' : '') + '</div>' +
+      '<div class="env-en">' + (v.e || v.text || '') + '</div></div>';
+  }).join('');
+}
+function gsLiveSetView(v){
+  GS_LIVE.view = v;
+  try { localStorage.setItem('gsLiveView', v); } catch (e) {}
+  const bar = document.getElementById('gs-vbtn-ar');
+  const ben = document.getElementById('gs-vbtn-en');
+  if (bar) bar.classList.toggle('sel', v === 'ar');
+  if (ben) ben.classList.toggle('sel', v === 'en');
+  const s = GS_LIVE.session;
+  const surah = gsLiveSurah();
+  if (!s || !surah) return;
+  const area = document.getElementById('gs-live-verses');
+  if (area) {
+    area.innerHTML = '<div class="gs-live-rail" id="gs-live-rail" style="display:' + (v === 'en' ? 'block' : 'none') + '"></div><div class="gs-live-marker" id="gs-live-marker" style="display:none"></div>' +
+      '<div style="text-align:center;font-size:.7rem;color:var(--txt2);padding:2px 4px 10px">📍 The marker walks step by step to wherever the reciter is right now — on every screen.</div>' +
+      (v === 'ar' ? gsLiveRenderMushaf(surah, s) : gsLiveRenderEnglish(surah, s));
+    const cur = document.getElementById('gslv-' + s.verse);
+    if (cur) setTimeout(function(){ cur.scrollIntoView({ behavior:'smooth', block:'center' }); gsLiveMoveMarker(cur, true); }, 60);
+  }
+}
+// The pointer. In English view it slides down the left rail row by row.
+// In Mushaf view it walks through the flowing Arabic text — verse by
+// verse, line by line, exactly where the reciter is.
 function gsLiveMoveMarker(verseEl, instant){
   const marker = document.getElementById('gs-live-marker');
   if (!marker || !verseEl) return;
-  const targetTop = verseEl.offsetTop + (verseEl.offsetHeight / 2) - 9;
+  const area = document.getElementById('gs-live-verses');
+  if (!area) return;
+  let targetTop, targetLeft;
+  if (GS_LIVE.view === 'ar') {
+    const vr = verseEl.getBoundingClientRect();
+    const ar = area.getBoundingClientRect();
+    targetTop = vr.top - ar.top + (vr.height / 2) - 9;
+    targetLeft = Math.max(0, Math.min(vr.right - ar.left + 8, area.clientWidth - 18));
+  } else {
+    targetTop = verseEl.offsetTop + (verseEl.offsetHeight / 2) - 9;
+    targetLeft = -8;
+  }
   if (instant) {
     marker.style.transition = 'none';
     marker.style.top = targetTop + 'px';
+    marker.style.left = targetLeft + 'px';
     marker.style.display = 'block';
-    requestAnimationFrame(function(){ marker.style.transition = 'top .65s cubic-bezier(.22,.9,.3,1.1)'; });
+    requestAnimationFrame(function(){ marker.style.transition = 'top .65s cubic-bezier(.22,.9,.3,1.1),left .65s cubic-bezier(.22,.9,.3,1.1)'; });
   } else {
     marker.style.display = 'block';
     marker.style.top = targetTop + 'px';
+    marker.style.left = targetLeft + 'px';
   }
 }
 
