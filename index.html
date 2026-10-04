@@ -11881,7 +11881,7 @@ function qcRenderSession() {
       (en ? '<div class="qc-big-en">' + en + '</div>' : '') +
       (liveOn
         ? '<div class="qc-live-hint" id="qc-live-hint">🟢 The pointer ▸ will follow your words as you read — it stops when you stop</div>'
-        : '<div class="qc-live-hint" id="qc-live-hint">ℹ️ The live pointer needs Chrome browser (it does not work inside Telegram\'s browser or on iPhone). Your corrections after reading work exactly the same everywhere.</div>') +
+        : '<div class="qc-live-hint" id="qc-live-hint">ℹ️ The live pointer needs the Chrome browser engine (it does not work inside Telegram\'s browser, the installed app, or on iPhone). Your corrections after reading work exactly the same everywhere.</div>') +
       '<div class="qc-verse-btns">' +
         '<button class="qc-lite" onclick="qcListen(' + n + ')">🎧 Hear sheikh</button>' +
         '<button class="qc-mic' + (qcRecOn ? ' rec' : '') + '" id="qc-mic-btn" onclick="qcMic()">' + (qcRecOn ? '⏹' : '🎤') + '</button>' +
