@@ -1285,6 +1285,15 @@ body { font-family:'Poppins',sans-serif;
 .qc-follow-banner { background:rgba(16,185,129,.08); border:1px solid rgba(16,185,129,.3); border-radius:14px; padding:12px 14px; margin:0 14px 10px; font-size:.76rem; line-height:1.55; color:var(--txt); }
 @keyframes qc-nudge-pulse { 0%,100% { box-shadow:0 6px 18px rgba(16,185,129,.35); } 50% { box-shadow:0 0 0 10px rgba(16,185,129,.25), 0 6px 18px rgba(16,185,129,.35); } }
 .qc-mic-nudge { animation:qc-nudge-pulse 1s infinite; }
+.qc-today-panel { margin-top:12px; }
+.qc-today-title { font-size:.78rem; font-weight:700; color:var(--txt); margin-bottom:10px; }
+.qc-today-row { padding:10px 0; border-top:1px solid var(--bdr); }
+.qc-today-row:first-of-type { border-top:none; }
+.qc-today-row-top { font-size:.62rem; color:var(--txt2); margin-bottom:5px; }
+.qc-today-row-ar { font-size:1.15rem; line-height:2; direction:rtl; }
+.qc-today-row-cur .qc-today-row-top { color:#10b981; font-weight:700; }
+.qc-today-row-cur { background:rgba(16,185,129,.06); border-radius:10px; padding:10px 10px; margin:0 -10px; }
+
 
 
 .gs-tw-item { background:var(--card); border:1px solid var(--bdr); border-radius:14px; padding:12px 14px; margin-bottom:10px; }
@@ -11876,7 +11885,51 @@ function qcRenderSession() {
       '<div class="qc-mic-lbl" id="qc-mic-lbl">' + micLbl + '</div>' +
       '<div id="qc-fb"></div>' +
     '</div>' +
+    qcTodayPanelHtml() +
     '<div class="qc-foot"><span class="qc-link" onclick="qcAbandon()">← End session early</span></div>';
+}
+
+// ── Today's Lines panel (v118) ──────────────────────────────
+// Shows the FULL set of lines planned for today (revision + new) in one
+// place, so students who read rather than recite from memory can see the
+// whole passage. Finished lines keep the exact authoritative red-ink
+// mistake marks (same word diff the AI used to score them); the line
+// currently being recited gets the live word-by-word tracking; lines not
+// reached yet are shown plain so they can be previewed ahead of time.
+function qcTodayPanelHtml() {
+  const j = qcLoad();
+  const all = (qcSes.revQueue || []).concat(qcSes.newQueue || []);
+  if (!all.length) return '';
+  const curN = qcCurVerse();
+  const rows = all.map(function(n) {
+    const text = qcVerseText(j, n);
+    const words = text.split(/\s+/).filter(Boolean);
+    const res = (qcSes.results || []).find(function(r) { return r.v === n; });
+    const diff = qcSes.wordDiffs && qcSes.wordDiffs[n];
+    let bodyHtml, statusIcon;
+    if (res) {
+      statusIcon = res.pass ? '✅' : '⚠️';
+      bodyHtml = (diff && diff.length) ? diff.map(function(w) {
+        const cls = { SUBSTITUTION: 'tj-w-bad', DELETION: 'tj-w-miss', INSERTION: 'tj-w-extra', HARAKAT_ERROR: 'tj-w-har' }[w.t] || 'tj-w-ok';
+        let inner = (w.h || '');
+        if (w.t === 'DELETION') inner = (w.c || '') + ' (missed)';
+        return '<span class="tj-word ' + cls + '">' + inner + '</span>';
+      }).join(' ') : text;
+    } else if (n === curN) {
+      statusIcon = '🎙️';
+      bodyHtml = qcLiveSupported()
+        ? words.map(function(w, i) { return '<span class="qc-lw" id="qc-lw2-' + i + '">' + w + '</span>'; }).join(' ')
+        : text;
+    } else {
+      statusIcon = '⏳';
+      bodyHtml = text;
+    }
+    return '<div class="qc-today-row' + (n === curN ? ' qc-today-row-cur' : '') + '">' +
+      '<div class="qc-today-row-top">' + statusIcon + ' Verse ' + n + '</div>' +
+      '<div class="qc-today-row-ar" dir="rtl">' + bodyHtml + '</div>' +
+    '</div>';
+  }).join('');
+  return '<div class="qc-card qc-today-panel"><div class="qc-today-title">📜 Today\'s Lines</div>' + rows + '</div>';
 }
 
 function qcListen(n) {
@@ -11994,12 +12047,11 @@ function qcLiveMatch(heard, ref) {
 }
 function qcLiveApplyHighlight(res, len) {
   for (let i = 0; i < len; i++) {
-    const el = document.getElementById('qc-lw-' + i);
-    if (el) el.classList.remove('qc-lw-done', 'qc-lw-miss', 'qc-lw-cur');
+    ['qc-lw-', 'qc-lw2-'].forEach(function(pfx) { const el = document.getElementById(pfx + i); if (el) el.classList.remove('qc-lw-done', 'qc-lw-miss', 'qc-lw-cur'); });
   }
-  res.doneIdx.forEach(function(i) { const el = document.getElementById('qc-lw-' + i); if (el) el.classList.add('qc-lw-done'); });
-  res.missIdx.forEach(function(i) { const el = document.getElementById('qc-lw-' + i); if (el) el.classList.add('qc-lw-miss'); });
-  if (res.currentIdx >= 0) { const el = document.getElementById('qc-lw-' + res.currentIdx); if (el) el.classList.add('qc-lw-cur'); }
+  res.doneIdx.forEach(function(i) { ['qc-lw-', 'qc-lw2-'].forEach(function(pfx) { const el = document.getElementById(pfx + i); if (el) el.classList.add('qc-lw-done'); }); });
+  res.missIdx.forEach(function(i) { ['qc-lw-', 'qc-lw2-'].forEach(function(pfx) { const el = document.getElementById(pfx + i); if (el) el.classList.add('qc-lw-miss'); }); });
+  if (res.currentIdx >= 0) { ['qc-lw-', 'qc-lw2-'].forEach(function(pfx) { const el = document.getElementById(pfx + res.currentIdx); if (el) el.classList.add('qc-lw-cur'); }); }
 }
 
 // ── Automatic repeat-after-me coaching (v117) ───────────────
@@ -12050,6 +12102,8 @@ async function qcAnalyze() {
     const score = d.score || 0;
     qcSes.scores[n] = Math.max(qcSes.scores[n] || 0, score);
     qcSes.attempts[n] = (qcSes.attempts[n] || 0) + 1;
+    qcSes.wordDiffs = qcSes.wordDiffs || {};
+    qcSes.wordDiffs[n] = d.words || [];
     if (score >= QC_PASS) gsRmSaveVerse(j.surah, n, score);  // points/rank flow automatically
     if (score >= QC_PASS) qcWeakClean(j, n);
     else qcWeakAdd(j, d.words || []);
