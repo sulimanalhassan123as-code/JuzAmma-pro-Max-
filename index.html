@@ -1442,6 +1442,34 @@ body { font-family:'Poppins',sans-serif;
 .tj-w-ins { background:rgba(148,163,184,.16); color:#64748b; text-decoration:line-through; }
 .tj-w-fix { display:block; font-size:.72rem; opacity:.9; direction:ltr; text-decoration:none; }
 
+.gs-live-hero{font-size:2.6rem;text-align:center;margin-top:24px}
+.gs-live-title{font-size:1.15rem;font-weight:800;text-align:center;margin-top:4px}
+.gs-live-sub{font-size:.78rem;color:var(--txt2);text-align:center;max-width:430px;margin:10px auto 0;line-height:1.55}
+.gs-live-start-btn{display:block;margin:16px auto 0;padding:12px 24px;font-size:.95rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#e11d48,#f43f5e);border:none;border-radius:12px;cursor:pointer;box-shadow:0 4px 14px rgba(225,29,72,.3)}
+.gs-live-start-btn:active{transform:scale(.97)}
+.gs-live-header{border:1px solid rgba(244,63,94,.4);background:linear-gradient(135deg,rgba(225,29,72,.14),rgba(244,63,94,.06));border-radius:12px;padding:10px 12px;margin-bottom:10px}
+.gs-live-head-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.gs-live-head-title{font-weight:800;font-size:.9rem}
+.gs-live-head-sub{font-size:.72rem;color:var(--txt2);margin-top:3px}
+.gs-live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#f43f5e;margin-right:6px;animation:gslivepulse 1.2s infinite}
+@keyframes gslivepulse{0%{opacity:1}50%{opacity:.25}100%{opacity:1}}
+.gs-live-floor-banner{border-radius:10px;padding:9px 12px;margin-bottom:10px;font-size:.78rem;font-weight:700;text-align:center;background:rgba(245,158,11,.14);border:1px solid rgba(245,158,11,.4);color:#f59e0b}
+.gs-live-controls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.gs-live-btn{flex:1;min-width:105px;padding:11px 8px;border-radius:11px;border:1px solid var(--br);background:var(--card2);color:var(--txt);font-size:.8rem;font-weight:700;cursor:pointer;text-align:center;font-family:inherit}
+.gs-live-btn:active{transform:scale(.97)}
+.gs-live-btn.on{background:#10b981;border-color:#10b981;color:#fff}
+.gs-live-btn.correct{background:#f59e0b;border-color:#f59e0b;color:#1c1917}
+.gs-live-btn.end{background:transparent;border-color:#f43f5e;color:#f43f5e}
+.gs-live-btn:disabled{opacity:.45}
+.gs-live-log{font-size:.68rem;color:var(--txt2);padding:2px 4px;margin-bottom:8px;max-height:64px;overflow-y:auto}
+.gs-live-log div{padding:2px 0}
+.gs-live-verse{border:1px solid var(--br);border-radius:12px;padding:10px 12px;margin-bottom:8px;transition:border-color .3s,box-shadow .3s,background .3s}
+.gs-live-verse .vs-num{font-size:.68rem;color:var(--txt2)}
+.gs-live-verse .vs-ar{font-size:1.28rem;line-height:2.15;text-align:right;direction:rtl;margin-top:3px}
+.gs-live-verse .vs-en{font-size:.72rem;color:var(--txt2);margin-top:5px}
+.gs-live-verse.active{border-color:#10b981;box-shadow:0 0 0 2px rgba(16,185,129,.25);background:rgba(16,185,129,.09)}
+.gs-live-verse.active .vs-num{color:#10b981;font-weight:700}
+
 /* Tajweed v3: recitation class */
 .tj-class-row { display:flex; gap:8px; width:100%; max-width:340px; margin-top:10px; }
 .tj-btn { flex:1; padding:10px 12px; border-radius:14px; border:none; background:var(--dark2); color:var(--txt); font-weight:700; font-size:.78rem; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.18); }
@@ -3315,7 +3343,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v107 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v122 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3375,7 +3403,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v107 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v122 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3440,7 +3468,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v107 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v122 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -8777,6 +8805,7 @@ async function gsSaveNotes() {
 
 // ═══ LEAVE ═══
 async function gsLeave() {
+  try { gsLiveSessionOver(); } catch (e) {}
   gsStopVoicePoll();
   gsStopRoomPoll();
   if (gsHandRaised && gsRoomCode) {
@@ -12995,6 +13024,7 @@ document.addEventListener('DOMContentLoaded',function(){
         <button class="gs-tab-btn" style="flex:0;width:36px;font-size:.9rem" onclick="gsToggleSearch()" title="Search">🔎</button>
       <button class="gs-tab" id="gs-tab-hw" onclick="gsSwitchTab('hw')">📝 Homework</button>
       <button class="gs-tab" id="gs-tab-notes" onclick="gsSwitchTab('notes')">🗒️ Notes</button>
+      <button class="gs-tab" id="gs-tab-live" onclick="gsSwitchTab('live')">🎙️ Live</button>
     </div>
 
     <!-- ═══ TAB: CLASS (surah navigation + verse display + tools) ═══ -->
@@ -13073,6 +13103,23 @@ document.addEventListener('DOMContentLoaded',function(){
     </div>
 
     <!-- ═══ TAB: NOTES ═══ -->
+    <!-- LIVE RECITATION CLASSROOM -->
+    <div class="gs-tab-content" id="gs-panel-live">
+      <div id="gs-live-empty">
+        <div class="gs-live-hero">🎙️</div>
+        <div class="gs-live-title">Live Recitation Classroom</div>
+        <div class="gs-live-sub">One person takes the mic and recites. Everyone hears LIVE, like a radio host. If there is a mistake, anyone can jump in and correct immediately. A green tracker shows the exact verse being recited, on everyone's screen.</div>
+        <button class="gs-live-start-btn" id="gs-live-start-btn" onclick="gsLiveStart()">🎙️ Start Live Recitation</button>
+      </div>
+      <div id="gs-live-active" style="display:none">
+        <div class="gs-live-header" id="gs-live-header"></div>
+        <div class="gs-live-floor-banner" id="gs-live-floor-banner" style="display:none"></div>
+        <div class="gs-live-controls" id="gs-live-controls"></div>
+        <div class="gs-live-log" id="gs-live-log"></div>
+        <div id="gs-live-verses"></div>
+      </div>
+    </div>
+
     <div class="gs-tab-content" id="gs-panel-notes">
       <div class="gs-notes-wrap">
         <textarea class="gs-notes-area" id="gs-notes-area" placeholder="Class notes will appear here... The teacher can write lesson summaries, key points, or reminders for students." readonly></textarea>
@@ -13333,5 +13380,322 @@ document.addEventListener('DOMContentLoaded',function(){
   <div id="hajj-steps"></div></div><div style="height:60px"></div>
 </div>
 
+
+<script>
+/* ═══ LIVE RECITATION CLASSROOM — Safa, Oct 2026 ═══
+   One reciter streams live PCM chunks (1s @ 16kHz) through liveHub;
+   listeners pull every 1.2s and play gaplessly. Floor control: reciter by
+   default, any listener can tap Correct to jump in live, then hand back.
+   Verse tracker syncs the highlighted verse for everyone. */
+const GS_LIVE = {
+  session:null, lastVerse:0, micOn:false, micStream:null, micCtx:null, procNode:null,
+  sendBuf:null, sendCount:0, playCtx:null, playNextT:0, lastSpeaker:null, muted:false,
+  pullTimer:null, pullBusy:false, lastSeq:0, quietBusy:false, logLines:[]
+};
+const GS_LIVE_SR = 16000, GS_LIVE_CHUNK = 16000;
+
+function gsLiveRoom(){ return (typeof gsRoomCode !== 'undefined') ? gsRoomCode : null; }
+function gsLiveUser(){ return (typeof gsUserName !== 'undefined') ? gsUserName : ''; }
+async function gsLiveApi(action, extra){
+  const body = JSON.stringify(Object.assign({ action: action, roomCode: gsLiveRoom(), userName: gsLiveUser() }, extra || {}));
+  const opts = { method:'POST', headers:{'Content-Type':'application/json'}, body: body };
+  try {
+    const r = await fetch('/api/live-hub', opts);
+    return await r.json();
+  } catch (e) {
+    const r2 = await fetch('https://superagent-7ce6afb1.base44.app/functions/liveHub', opts);
+    return await r2.json();
+  }
+}
+function gsLiveLog(line){
+  const t = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  GS_LIVE.logLines.push(t + ' · ' + line);
+  if (GS_LIVE.logLines.length > 12) GS_LIVE.logLines.shift();
+  const el = document.getElementById('gs-live-log');
+  if (el) { el.innerHTML = GS_LIVE.logLines.map(function(l){ return '<div>' + gsEsc(l) + '</div>'; }).join(''); el.scrollTop = el.scrollHeight; }
+}
+function gsLiveSurah(){
+  if (typeof qData === 'undefined' || !qData.length) return null;
+  const s = GS_LIVE.session;
+  return s ? qData.find(function(x){ return x.id === s.surah_num; }) : null;
+}
+
+async function gsLiveStart(){
+  if (!gsLiveRoom()) return;
+  const surah = (typeof gsCurrentSurah !== 'undefined') ? gsCurrentSurah : 112;
+  const verse = (typeof gsCurrentVerse !== 'undefined') ? gsCurrentVerse : 1;
+  const d = await gsLiveApi('start', { surah: surah, verse: verse });
+  if (!d.ok) { toast('❌ ' + (d.error || 'Could not start')); return; }
+  GS_LIVE.session = d.session; GS_LIVE.lastSeq = 0; GS_LIVE.lastVerse = 0; GS_LIVE.logLines = [];
+  gsLiveRender(true);
+  gsLiveLog('🎙️ Live session started — Surah ' + d.session.surah_num);
+  toast('🔴 LIVE — you are the reciter. Tap 🎙️ Turn Mic ON.');
+  gsLiveEnsurePoll();
+}
+
+function gsLiveRender(fresh){
+  const s = GS_LIVE.session;
+  if (!s) return;
+  const emp = document.getElementById('gs-live-empty'); if (emp) emp.style.display = 'none';
+  const act = document.getElementById('gs-live-active'); if (act) act.style.display = 'block';
+  const surah = gsLiveSurah();
+  const total = surah ? surah.verses.length : 0;
+  const sname = surah ? surah.name : ('Surah ' + s.surah_num);
+  const isHost = s.host_name === gsLiveUser();
+  const isFloor = s.floor_user === gsLiveUser();
+  const head = document.getElementById('gs-live-header');
+  if (head) head.innerHTML =
+    '<div class="gs-live-head-row"><div><div class="gs-live-head-title"><span class="gs-live-dot"></span>LIVE · ' + gsEsc(sname) + '</div>' +
+    '<div class="gs-live-head-sub">' + (s.floor_mode === 'correct'
+      ? '⛔ ' + gsEsc(s.floor_user) + ' is correcting'
+      : '🎙️ ' + gsEsc(s.host_name) + ' is reciting') +
+    (total ? ' · Verse ' + s.verse + ' / ' + total : '') + '</div></div>' +
+    '<button class="gs-live-btn" style="flex:0;min-width:46px" onclick="gsLiveToggleMute()">' + (GS_LIVE.muted ? '🔇' : '🔊') + '</button></div>';
+
+  let c = '';
+  if (isHost && s.floor_mode === 'recite') {
+    c += '<button class="gs-live-btn ' + (GS_LIVE.micOn ? 'on' : '') + '" onclick="gsLiveToggleMic()">' + (GS_LIVE.micOn ? '🎙️ Mic ON' : '🎙️ Turn Mic ON') + '</button>';
+    c += '<button class="gs-live-btn" onclick="gsLiveNextVerse()">➡ Next Verse</button>';
+    c += '<button class="gs-live-btn end" onclick="gsLiveEnd()">⏹ End Session</button>';
+  } else if (isHost && s.floor_mode === 'correct') {
+    c += '<button class="gs-live-btn end" onclick="gsLiveEnd()">⏹ End Session</button>';
+  } else if (s.floor_mode === 'correct' && isFloor) {
+    c += '<button class="gs-live-btn correct" onclick="gsLiveReleaseFloor()">▶ Hand Mic Back</button>';
+  } else if (s.floor_mode === 'recite') {
+    c += '<button class="gs-live-btn correct" onclick="gsLiveTakeFloor()">🛑 Correct — Jump In</button>';
+  }
+  const ctrl = document.getElementById('gs-live-controls');
+  if (ctrl) ctrl.innerHTML = c;
+
+  const fb = document.getElementById('gs-live-floor-banner');
+  if (fb) {
+    if (s.floor_mode === 'correct') {
+      fb.style.display = 'block';
+      fb.innerHTML = isFloor
+        ? '🎤 You are correcting — speak now, everyone hears you LIVE. Tap ▶ Hand Mic Back when done.'
+        : '⛔ ' + gsEsc(s.floor_user) + ' is correcting. Reciter, pause and listen.';
+    } else { fb.style.display = 'none'; }
+  }
+
+  const area = document.getElementById('gs-live-verses');
+  if (area) {
+    if (fresh && surah) {
+      area.innerHTML = '<div style="text-align:center;font-size:.7rem;color:var(--txt2);padding:6px 4px 10px">📍 Everyone sees the same highlighted verse — it moves as the reciter advances.</div>' +
+        surah.verses.map(function(v, i){
+          const n = i + 1;
+          return '<div class="gs-live-verse' + (n === s.verse ? ' active' : '') + '" id="gslv-' + n + '">' +
+            '<div class="vs-num">Verse ' + n + (n === s.verse ? ' · 🎙️ reciting now' : '') + '</div>' +
+            '<div class="vs-ar">' + (v.a || v.text || '') + '</div>' +
+            '<div class="vs-en">' + (v.e || '') + '</div></div>';
+        }).join('');
+      GS_LIVE.lastVerse = s.verse;
+      const cur = document.getElementById('gslv-' + s.verse);
+      if (cur) setTimeout(function(){ cur.scrollIntoView({ behavior:'smooth', block:'center' }); }, 120);
+    } else if (surah && s.verse !== GS_LIVE.lastVerse) {
+      document.querySelectorAll('.gs-live-verse').forEach(function(el){ el.classList.remove('active'); });
+      const cur = document.getElementById('gslv-' + s.verse);
+      if (cur) { cur.classList.add('active'); cur.scrollIntoView({ behavior:'smooth', block:'center' }); }
+      GS_LIVE.lastVerse = s.verse;
+    }
+  }
+}
+
+async function gsLiveNextVerse(){
+  const s = GS_LIVE.session; if (!s) return;
+  const surah = gsLiveSurah();
+  const max = surah ? surah.verses.length : 999;
+  const nv = Math.min((s.verse || 1) + 1, max);
+  const d = await gsLiveApi('setVerse', { verse: nv });
+  if (d.ok) { GS_LIVE.session = d.session; gsLiveRender(false); gsLiveLog('📍 Verse ' + nv); }
+  else toast('❌ ' + (d.error || ''));
+}
+
+async function gsLiveToggleMic(){
+  if (GS_LIVE.micOn) { gsLiveStopMic(); gsLiveLog('🎙️ Mic OFF'); gsLiveRender(false); return; }
+  const ok = await gsLiveStartMic();
+  if (ok) gsLiveLog('🎙️ Mic ON — everyone hears you live');
+  gsLiveRender(false);
+}
+async function gsLiveStartMic(){
+  if (GS_LIVE.micOn) return true;
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation:true, noiseSuppression:true, autoGainControl:true } });
+    GS_LIVE.micStream = stream;
+    GS_LIVE.micCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: GS_LIVE_SR });
+    const msrc = GS_LIVE.micCtx.createMediaStreamSource(stream);
+    const node = GS_LIVE.micCtx.createScriptProcessor(2048, 1, 1);
+    GS_LIVE.sendBuf = new Float32Array(GS_LIVE_CHUNK);
+    GS_LIVE.sendCount = 0;
+    node.onaudioprocess = function(e) {
+      const s = GS_LIVE.session;
+      if (!s || s.floor_user !== gsLiveUser()) { GS_LIVE.sendCount = 0; return; }
+      const inp = e.inputBuffer.getChannelData(0);
+      let off = 0;
+      while (off < inp.length) {
+        const take = Math.min(GS_LIVE_CHUNK - GS_LIVE.sendCount, inp.length - off);
+        GS_LIVE.sendBuf.set(inp.subarray(off, off + take), GS_LIVE.sendCount);
+        GS_LIVE.sendCount += take; off += take;
+        if (GS_LIVE.sendCount >= GS_LIVE_CHUNK) {
+          const pcm = new Int16Array(GS_LIVE_CHUNK);
+          for (let i = 0; i < GS_LIVE_CHUNK; i++) {
+            let v = GS_LIVE.sendBuf[i];
+            if (v < -1) v = -1; else if (v > 1) v = 1;
+            pcm[i] = v < 0 ? v * 32768 : v * 32767;
+          }
+          const b64 = gsLiveB64(pcm.buffer);
+          const seq = Date.now();
+          gsLiveApi('chunk', { seq: seq, audioBase64: b64, durMs: 1000 })
+            .then(function(r){ if (!r.ok && r && r.error) gsLiveLog('⚠️ ' + r.error); })
+            .catch(function(){});
+          GS_LIVE.sendCount = 0;
+        }
+      }
+    };
+    msrc.connect(node);
+    const muteGain = GS_LIVE.micCtx.createGain();
+    muteGain.gain.value = 0;
+    node.connect(muteGain);
+    muteGain.connect(GS_LIVE.micCtx.destination);
+    GS_LIVE.procNode = node;
+    GS_LIVE.micOn = true;
+    return true;
+  } catch (err) {
+    toast('🎤 Microphone unavailable — check the app permissions');
+    return false;
+  }
+}
+function gsLiveStopMic(){
+  try { if (GS_LIVE.procNode) { GS_LIVE.procNode.onaudioprocess = null; GS_LIVE.procNode.disconnect(); } } catch (e) {}
+  try { if (GS_LIVE.micStream) GS_LIVE.micStream.getTracks().forEach(function(t){ t.stop(); }); } catch (e) {}
+  try { if (GS_LIVE.micCtx) GS_LIVE.micCtx.close(); } catch (e) {}
+  GS_LIVE.procNode = null; GS_LIVE.micStream = null; GS_LIVE.micCtx = null; GS_LIVE.micOn = false; GS_LIVE.sendCount = 0;
+}
+function gsLiveB64(buf){
+  const bytes = new Uint8Array(buf);
+  let bin = ''; const CH = 0x8000;
+  for (let i = 0; i < bytes.length; i += CH) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CH));
+  return btoa(bin);
+}
+
+async function gsLiveTakeFloor(){
+  const d = await gsLiveApi('takeFloor', { mode:'correct' });
+  if (!d.ok) { toast('⏳ ' + (d.error || 'Try again')); gsLiveRender(false); return; }
+  GS_LIVE.session = d.session;
+  gsLiveLog('🛑 You jumped in to correct verse ' + d.session.verse);
+  await gsLiveStartMic();
+  gsLiveRender(false);
+}
+async function gsLiveReleaseFloor(){
+  const d = await gsLiveApi('releaseFloor');
+  if (d.ok) {
+    GS_LIVE.session = d.session;
+    gsLiveLog('▶ Mic handed back to ' + d.session.host_name);
+    gsLiveStopMic();
+  }
+  gsLiveRender(false);
+}
+function gsLiveToggleMute(){
+  GS_LIVE.muted = !GS_LIVE.muted;
+  if (GS_LIVE.muted && GS_LIVE.playCtx) { try { GS_LIVE.playCtx.suspend(); } catch (e) {} }
+  if (!GS_LIVE.muted && GS_LIVE.playCtx) {
+    try { GS_LIVE.playCtx.resume(); GS_LIVE.playNextT = GS_LIVE.playCtx.currentTime + 0.1; } catch (e) {}
+  }
+  gsLiveRender(false);
+}
+
+function gsLiveEnsurePoll(){
+  if (GS_LIVE.pullTimer) return;
+  GS_LIVE.pullTimer = setInterval(gsLivePull, 1200);
+  gsLivePull();
+}
+async function gsLivePull(){
+  if (GS_LIVE.pullBusy || !GS_LIVE.session) return;
+  GS_LIVE.pullBusy = true;
+  try {
+    const d = await gsLiveApi('pull', { sinceSeq: GS_LIVE.lastSeq });
+    if (d.end || !d.session || d.session.status !== 'active') { gsLiveSessionOver(); GS_LIVE.pullBusy = false; return; }
+    const prev = GS_LIVE.session;
+    GS_LIVE.session = d.session;
+    if (d.session.floor_mode === 'correct' && prev && prev.floor_mode !== 'correct') {
+      gsLiveLog('🛑 ' + d.session.floor_user + ' jumped in to correct verse ' + d.session.verse);
+      if (d.session.host_name === gsLiveUser()) toast('⛔ ' + d.session.floor_user + ' is correcting — pause');
+    }
+    if (d.session.floor_mode === 'recite' && prev && prev.floor_mode === 'correct') {
+      gsLiveLog('▶ Mic back to ' + d.session.host_name);
+    }
+    if (d.chunks && d.chunks.length) {
+      for (let i = 0; i < d.chunks.length; i++) {
+        const c = d.chunks[i];
+        if (c.seq > GS_LIVE.lastSeq) GS_LIVE.lastSeq = c.seq;
+        if (c.userName === gsLiveUser()) continue;
+        gsLivePlayChunk(c);
+      }
+    }
+    gsLiveRender(false);
+  } catch (e) {}
+  GS_LIVE.pullBusy = false;
+}
+function gsLivePlayChunk(c){
+  if (GS_LIVE.muted) return;
+  try {
+    if (!GS_LIVE.playCtx) GS_LIVE.playCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: GS_LIVE_SR });
+    const ctx = GS_LIVE.playCtx;
+    if (ctx.state === 'suspended') ctx.resume();
+    const bin = atob(c.audioBase64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    const pcm = new Int16Array(bytes.buffer);
+    const f = new Float32Array(pcm.length);
+    for (let i = 0; i < pcm.length; i++) f[i] = pcm[i] / 32768;
+    const buf = ctx.createBuffer(1, f.length, GS_LIVE_SR);
+    buf.getChannelData(0).set(f);
+    const srcNode = ctx.createBufferSource();
+    srcNode.buffer = buf;
+    let t = Math.max(ctx.currentTime + 0.05, GS_LIVE.playNextT || 0);
+    if (GS_LIVE.lastSpeaker && GS_LIVE.lastSpeaker !== c.userName) t += 0.15;
+    srcNode.connect(ctx.destination);
+    srcNode.start(t);
+    GS_LIVE.playNextT = t + buf.duration;
+    GS_LIVE.lastSpeaker = c.userName;
+  } catch (e) {}
+}
+
+async function gsLiveEnd(){
+  if (!GS_LIVE.session) return;
+  if (!confirm('End the live session for everyone?')) return;
+  const d = await gsLiveApi('end');
+  if (d.ok) gsLiveLog('⏹ Session ended');
+  gsLiveSessionOver();
+}
+function gsLiveSessionOver(){
+  gsLiveStopMic();
+  clearInterval(GS_LIVE.pullTimer); GS_LIVE.pullTimer = null;
+  GS_LIVE.session = null; GS_LIVE.lastSeq = 0; GS_LIVE.lastVerse = 0; GS_LIVE.lastSpeaker = null; GS_LIVE.playNextT = 0;
+  GS_LIVE.logLines = [];
+  const act = document.getElementById('gs-live-active'); if (act) act.style.display = 'none';
+  const emp = document.getElementById('gs-live-empty'); if (emp) emp.style.display = 'block';
+}
+
+setInterval(function(){
+  if (typeof gsRoomCode === 'undefined' || !gsRoomCode) return;
+  const panel = document.getElementById('gs-panel-live');
+  const open = panel && panel.classList.contains('active');
+  if (open && GS_LIVE.session) { gsLiveEnsurePoll(); return; }
+  if (open && !GS_LIVE.session && !GS_LIVE.quietBusy) {
+    GS_LIVE.quietBusy = true;
+    gsLiveApi('state').then(function(d){
+      GS_LIVE.quietBusy = false;
+      if (d.session && d.session.status === 'active') {
+        GS_LIVE.session = d.session;
+        gsLiveRender(true);
+        toast('🔴 LIVE — ' + d.session.host_name + ' is reciting Surah ' + d.session.surah_num);
+        gsLiveEnsurePoll();
+      }
+    }).catch(function(){ GS_LIVE.quietBusy = false; });
+  }
+  const tb = document.getElementById('gs-tab-live');
+  if (tb) tb.innerHTML = '🎙️ Live' + (GS_LIVE.session ? ' <span style="color:#f43f5e">●</span>' : '');
+}, 3000);
+</script>
 </body>
 </html>
