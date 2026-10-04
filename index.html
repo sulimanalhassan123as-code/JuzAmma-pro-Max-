@@ -1277,9 +1277,12 @@ body { font-family:'Poppins',sans-serif;
 .qa-h-t { font-size:.74rem; font-weight:800; color:var(--txt); }
 .qa-h-d { font-size:.64rem; color:var(--txt2); line-height:1.45; }
 /* Live follow-along tracking + repeat-after-me (v116) */
-.qc-lw { display:inline; border-radius:5px; padding:0 1px; transition:color .25s, opacity .25s, background .25s, box-shadow .25s; }
-.qc-lw-done { opacity:.42; }
-.qc-lw-cur { background:rgba(16,185,129,.22); box-shadow:0 0 0 2px rgba(16,185,129,.35) inset; opacity:1; }
+.qc-lw { display:inline; border-radius:5px; padding:0 1px; transition:color .2s, opacity .2s, background .2s, box-shadow .2s; }
+.qc-lw-done { opacity:.38; }
+.qc-lw-cur { background:rgba(16,185,129,.45); box-shadow:0 0 0 2px #10b981 inset, 0 0 12px rgba(16,185,129,.5); opacity:1; animation:qc-word-pulse 1s ease-in-out infinite; }
+.qc-lw-cur::before { content:'▸'; color:#10b981; font-size:.72em; margin-inline-end:3px; animation:qc-bob .7s ease-in-out infinite; }
+@keyframes qc-word-pulse { 0%,100% { background:rgba(16,185,129,.45); } 50% { background:rgba(16,185,129,.7); } }
+@keyframes qc-bob { 0%,100% { opacity:1; } 50% { opacity:.45; } }
 .qc-lw-miss { color:#ef4444; text-decoration:underline wavy #ef4444; opacity:1; }
 .qc-live-hint { font-size:.6rem; color:var(--txt2); margin-top:8px; }
 .qc-follow-banner { background:rgba(16,185,129,.08); border:1px solid rgba(16,185,129,.3); border-radius:14px; padding:12px 14px; margin:0 14px 10px; font-size:.76rem; line-height:1.55; color:var(--txt); }
@@ -11867,7 +11870,7 @@ function qcRenderSession() {
   const arHtml = liveOn
     ? dispWords.map(function(w, i) { return '<span class="qc-lw" id="qc-lw-' + i + '">' + w + '</span>'; }).join(' ')
     : text;
-  const micLbl = qcRecOn ? 'Recording… tap to stop and analyze' : 'Tap the mic, then recite the verse';
+  const micLbl = qcRecOn ? '🔴 Reading with you — the pointer stops when you stop. Tap to finish' : 'Tap the mic, then recite the verse';
   body.innerHTML =
     '<div class="qc-hero">' +
       '<div class="qc-hero-top"><span class="qc-hello">' + phase + '</span><span class="qc-day-pill">' + (qcSes.idx + 1) + '/' + q.length + '</span></div>' +
@@ -11876,7 +11879,9 @@ function qcRenderSession() {
     '<div class="qc-card qc-verse-card">' +
       '<div class="qc-big-ar" dir="rtl">' + arHtml + '</div>' +
       (en ? '<div class="qc-big-en">' + en + '</div>' : '') +
-      (liveOn ? '<div class="qc-live-hint">🟢 Live tracking — words glow as you read, turn red if skipped</div>' : '') +
+      (liveOn
+        ? '<div class="qc-live-hint" id="qc-live-hint">🟢 The pointer ▸ will follow your words as you read — it stops when you stop</div>'
+        : '<div class="qc-live-hint" id="qc-live-hint">ℹ️ The live pointer needs Chrome browser (it does not work inside Telegram\'s browser or on iPhone). Your corrections after reading work exactly the same everywhere.</div>') +
       '<div class="qc-verse-btns">' +
         '<button class="qc-lite" onclick="qcListen(' + n + ')">🎧 Hear sheikh</button>' +
         '<button class="qc-mic' + (qcRecOn ? ' rec' : '') + '" id="qc-mic-btn" onclick="qcMic()">' + (qcRecOn ? '⏹' : '🎤') + '</button>' +
