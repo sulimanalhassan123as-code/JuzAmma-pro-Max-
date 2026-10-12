@@ -3394,7 +3394,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v129 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v130 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3454,7 +3454,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v129 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v130 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3519,7 +3519,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v129 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v130 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3565,6 +3565,7 @@ body { font-family:'Poppins',sans-serif;
       <div class="night-opt on" id="nopt-full" onclick="setNightMode('full',this)">📖 Full Juz</div>
       <div class="night-opt" id="nopt-short" onclick="setNightMode('short',this)">📿 Short Surahs</div>
       <div class="night-opt" id="nopt-loop" onclick="toggleNightLoop()">🔁 Loop OFF</div>
+      <div class="night-opt" id="nopt-save" onclick="nightSaveOffline()">⬇ Save Juz Offline</div>
     </div>
     <select class="night-rec-sel" id="night-rec" onchange="nightRecChange()">
       <option value="Alafasy_128kbps">Mishary Alafasy</option>
@@ -6692,16 +6693,94 @@ function makeNightStars() {
     bg.appendChild(d);
   }
 }
-function nightPlayVerse(sid, vidx) {
+// ── Night Radio audio cache (IndexedDB, works in every WebView, no SW needed) ──
+// One-time download: each verse mp3 is saved on the device the first time it
+// plays (or via "Save Juz Offline"). Every later play is instant and uses
+// ZERO network — weak network or no network cannot stop playback any more.
+let nightIDB = null, nightPlayToken = 0, nightSaving = false;
+function nightDB() {
+  return new Promise((res) => {
+    if (nightIDB) return res(nightIDB);
+    try {
+      const r = indexedDB.open('naba-audio-cache', 1);
+      r.onupgradeneeded = () => { r.result.createObjectStore('verses'); };
+      r.onsuccess = () => { nightIDB = r.result; res(nightIDB); };
+      r.onerror = () => res(null);
+    } catch (e) { res(null); }
+  });
+}
+async function nightCacheGet(key) {
+  const db = await nightDB(); if (!db) return null;
+  return new Promise((res) => {
+    try {
+      const rq = db.transaction('verses').objectStore('verses').get(key);
+      rq.onsuccess = () => res(rq.result || null);
+      rq.onerror = () => res(null);
+    } catch (e) { res(null); }
+  });
+}
+async function nightCachePut(key, blob) {
+  const db = await nightDB(); if (!db || !blob) return;
+  try {
+    db.transaction('verses','readwrite').objectStore('verses').put(blob, key);
+  } catch (e) {}
+}
+function nightNextIn() {
+  // returns [surahId, verseIdx] of what plays after the current verse, or null
+  const s = qData.find(x => x.id === nightSurahId); if (!s) return null;
+  if (nightVerseIdx + 1 < s.verses.length) return [nightSurahId, nightVerseIdx + 1];
+  const allIds = getNightSurahList();
+  const ni = (allIds.indexOf(nightSurahId) + 1) % allIds.length;
+  if (ni === 0 && !nightLoop) return null;
+  return [allIds[ni], 0];
+}
+async function nightPrefetchNext() {
+  // quietly download the NEXT verse while the current one plays, so verse
+  // changes are seamless even on a weak network
+  try {
+    const nx = nightNextIn(); if (!nx) return;
+    const ss = String(nx[0]).padStart(3,'0'), vv = String(nx[1]+1).padStart(3,'0');
+    const key = nightReciter2 + '/' + ss + vv;
+    if (await nightCacheGet(key)) return;
+    const r = await fetch(eyUrl(nightReciter2, ss, vv));
+    if (r.ok) nightCachePut(key, new Blob([await r.arrayBuffer()], {type:'audio/mpeg'}));
+  } catch (e) {}
+}
+async function nightPlayVerse(sid, vidx) {
   if (!qData.length) { toast('⏳ Loading Quran data…'); return; }
   const s = qData.find(x => x.id === sid); if (!s) return;
+  const myTok = ++nightPlayToken;
   nightSurahId = sid; nightVerseIdx = vidx;
   const v = s.verses[vidx];
   document.getElementById('night-ar').innerText = v.a;
   document.getElementById('night-en').innerText = v.e;
   document.getElementById('night-lbl').innerText = `📖 ${s.name} — Verse ${v.n || vidx+1} / ${s.verses.length}`;
   const ss = String(sid).padStart(3,'0'), vv = String(vidx+1).padStart(3,'0');
-  nightAudio.src = eyUrl(nightReciter2, ss, vv);
+  const key = nightReciter2 + '/' + ss + vv;
+  // 1) device cache — instant, zero data
+  let blob = await nightCacheGet(key);
+  // 2) first time: download once and save forever
+  if (!blob) {
+    try {
+      const r = await fetch(eyUrl(nightReciter2, ss, vv));
+      if (r.ok) { blob = new Blob([await r.arrayBuffer()], {type:'audio/mpeg'}); nightCachePut(key, blob); }
+    } catch (e) {}
+  }
+  if (myTok !== nightPlayToken) return; // user moved on meanwhile
+  if (blob) {
+    if (nightAudio._blobUrl) { try { URL.revokeObjectURL(nightAudio._blobUrl); } catch(e){} }
+    nightAudio._blobUrl = URL.createObjectURL(blob);
+    nightAudio.src = nightAudio._blobUrl;
+  } else {
+    // 3) proxy unreachable: stream direct from everyayah so the radio never dies
+    nightAudio.src = 'https://everyayah.com/data/' + key + '.mp3';
+    // if even that fails, skip this verse after a moment and keep playing
+    nightAudio.onerror = () => {
+      nightAudio.onerror = null;
+      setTimeout(() => { if (nightPlaying && myTok === nightPlayToken) nightAutoNext(); }, 1500);
+      toast('⚠ Verse skipped — weak network');
+    };
+  }
   nightAudio.play().catch(()=>{});
   nightPlaying = true; updateNightBtn();
   clearInterval(nightProgInt2);
@@ -6713,7 +6792,43 @@ function nightPlayVerse(sid, vidx) {
     }
   }, 500);
   nightAudio.onended = nightAutoNext;
+  nightPrefetchNext();
   requestWakeLock();
+}
+async function nightSaveOffline() {
+  // One-time download of the WHOLE current playlist (Full Juz or Short Surahs,
+  // for the selected reciter). Tap again to cancel.
+  if (nightSaving) { nightSaving = false; return; }
+  if (!qData.length) { toast('⏳ Loading Quran data…'); return; }
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch(e){}
+  const ids = getNightSurahList();
+  const verses = [];
+  ids.forEach(id => { const s = qData.find(x => x.id === id); if (s) for (let i = 0; i < s.verses.length; i++) verses.push([id, i]); });
+  if (!verses.length) return;
+  nightSaving = true;
+  const el = document.getElementById('nopt-save');
+  let done = 0, failed = 0, bytes = 0;
+  for (const vv of verses) {
+    if (!nightSaving) break;
+    const ss = String(vv[0]).padStart(3,'0'), vn = String(vv[1]+1).padStart(3,'0');
+    const key = nightReciter2 + '/' + ss + vn;
+    if (!(await nightCacheGet(key))) {
+      try {
+        const r = await fetch(eyUrl(nightReciter2, ss, vn));
+        if (r.ok) {
+          const b = new Blob([await r.arrayBuffer()], {type:'audio/mpeg'});
+          bytes += b.size; nightCachePut(key, b);
+        } else failed++;
+      } catch (e) { failed++; }
+    }
+    done++;
+    if (el) el.innerText = '⬇ ' + Math.round(done / verses.length * 100) + '%' + (done % 5 === 0 ? ' · tap to cancel' : '');
+  }
+  const cancelled = !nightSaving;
+  nightSaving = false;
+  if (el) el.innerText = '⬇ Save Juz Offline';
+  if (cancelled) { toast('⏸ Save cancelled — what downloaded stays saved'); return; }
+  toast(failed ? ('⚠ Saved, but ' + failed + ' verses missing — tap again later to finish') : ('✅ Saved! ~' + Math.max(1, Math.round(bytes/1048576)) + 'MB on your phone. Night Radio now plays with zero data, even offline'));
 }
 function nightAutoNext() {
   clearInterval(nightProgInt2);
@@ -6726,7 +6841,7 @@ function nightAutoNext() {
     const allIds = getNightSurahList();
     const ci = allIds.indexOf(nightSurahId);
     const ni = (ci + 1) % allIds.length;
-    if (ni === 0 && !nightLoop) { nightPlaying = false; updateNightBtn(); toast('🌙 Juz complete!'); return; }
+    if (ni === 0 && !nightLoop) { nightPlaying = false; updateNightBtn(); nightAudio.src = ''; toast('🌙 Juz complete!'); return; }
     nightPlayVerse(allIds[ni], 0);
   }
 }
