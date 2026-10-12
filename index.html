@@ -1327,6 +1327,21 @@ body { font-family:'Poppins',sans-serif;
 @keyframes qc-nudge-pulse { 0%,100% { box-shadow:0 6px 18px rgba(16,185,129,.35); } 50% { box-shadow:0 0 0 10px rgba(16,185,129,.25), 0 6px 18px rgba(16,185,129,.35); } }
 .qc-mic-nudge { animation:qc-nudge-pulse 1s infinite; }
 .qc-today-panel { margin-top:12px; }
+/* Today's Lines as a cream Mushaf page with a gliding pointer */
+.qc-mushaf { position:relative; background:linear-gradient(180deg,#fffdf6,#f7f0dc); border:1px solid #d9cfae; border-radius:14px; padding:16px 14px 14px; box-shadow:inset 0 0 26px rgba(160,130,60,.09); }
+.qc-mushaf-text { font-family:'Amiri','Scheherazade New','Noto Naskh Arabic',serif; font-size:1.5rem; line-height:2.7; color:#20301f; text-align:center; direction:rtl; font-feature-settings:'liga' 1,'calt' 1; }
+.qc-mv { border-radius:8px; padding:1px 3px; transition:background .4s, box-shadow .4s; }
+.qc-mv-cur { background:rgba(16,185,129,.16); box-shadow:0 0 0 1px rgba(16,185,129,.35); }
+.qc-mv-ok { background:rgba(16,185,129,.08); }
+.qc-mv-warn { background:rgba(239,68,68,.07); }
+.qc-ayah-mark { font-size:1.05rem; color:#8a6d1f; display:inline-block; transform:translateY(-2px); margin:0 2px; }
+.qc-ptr { display:none; position:absolute; left:0; top:0; width:18px; height:18px; border-radius:50%; background:#10b981; box-shadow:0 0 0 4px rgba(16,185,129,.22),0 2px 8px rgba(16,185,129,.5); transition:top .55s cubic-bezier(.22,.9,.3,1.1), left .55s cubic-bezier(.22,.9,.3,1.1); z-index:3; pointer-events:none; }
+.qc-ptr::after { content:'▸'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#fff; font-size:.6rem; transform:scaleX(-1); }
+/* inside the cream page the tracked word needs dark-on-cream colours */
+.qc-mushaf .qc-lw-done { opacity:.45; }
+.qc-mushaf .qc-lw-cur { color:#064e3b; }
+.qc-mushaf .qc-lw-cur::before { content:none; }
+.qc-mushaf .tj-word { font-size:inherit; }
 .qc-today-title { font-size:.78rem; font-weight:700; color:var(--txt); margin-bottom:10px; }
 .qc-today-row { padding:10px 0; border-top:1px solid var(--bdr); }
 .qc-today-row:first-of-type { border-top:none; }
@@ -3394,7 +3409,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v131 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v132 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3454,7 +3469,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v131 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v132 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3519,7 +3534,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v131 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v132 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -12098,6 +12113,8 @@ function qcRenderSession() {
     '</div>' +
     qcTodayPanelHtml() +
     '<div class="qc-foot"><span class="qc-link" onclick="qcAbandon()">← End session early</span></div>';
+  // park the page pointer on the verse being read (or its current word)
+  setTimeout(qcPlacePtrAtCurrent, 30);
 }
 
 // ── Today's Lines panel (v118) ──────────────────────────────
@@ -12112,14 +12129,18 @@ function qcTodayPanelHtml() {
   const all = (qcSes.revQueue || []).concat(qcSes.newQueue || []);
   if (!all.length) return '';
   const curN = qcCurVerse();
-  const rows = all.map(function(n) {
+  const ar = function(n){ return String(n).split('').map(function(c){ return '٠١٢٣٤٥٦٧٨٩'[+c]; }).join(''); };
+  // Cream Mushaf page: today's verses flow together like a printed page, each
+  // ending in a verse mark. Finished verses keep the exact red-ink mistake marks,
+  // the verse being recited gets live word-by-word tracking (same ids as
+  // before), and verses not reached yet are shown plain so they can be read ahead.
+  const flow = all.map(function(n) {
     const text = qcVerseText(j, n);
     const words = text.split(/\s+/).filter(Boolean);
     const res = (qcSes.results || []).find(function(r) { return r.v === n; });
     const diff = qcSes.wordDiffs && qcSes.wordDiffs[n];
-    let bodyHtml, statusIcon;
+    let bodyHtml;
     if (res) {
-      statusIcon = res.pass ? '✅' : '⚠️';
       bodyHtml = (diff && diff.length) ? diff.map(function(w) {
         const cls = { SUBSTITUTION: 'tj-w-bad', DELETION: 'tj-w-miss', INSERTION: 'tj-w-extra', HARAKAT_ERROR: 'tj-w-har' }[w.t] || 'tj-w-ok';
         let inner = (w.h || '');
@@ -12127,20 +12148,42 @@ function qcTodayPanelHtml() {
         return '<span class="tj-word ' + cls + '">' + inner + '</span>';
       }).join(' ') : text;
     } else if (n === curN) {
-      statusIcon = '🎙️';
       bodyHtml = qcLiveSupported()
         ? words.map(function(w, i) { return '<span class="qc-lw" id="qc-lw2-' + i + '">' + w + '</span>'; }).join(' ')
         : text;
     } else {
-      statusIcon = '⏳';
       bodyHtml = text;
     }
-    return '<div class="qc-today-row' + (n === curN ? ' qc-today-row-cur' : '') + '">' +
-      '<div class="qc-today-row-top">' + statusIcon + ' Verse ' + n + '</div>' +
-      '<div class="qc-today-row-ar" dir="rtl">' + bodyHtml + '</div>' +
-    '</div>';
+    return '<span class="qc-mv' + (n === curN ? ' qc-mv-cur' : '') + (res ? (res.pass ? ' qc-mv-ok' : ' qc-mv-warn') : '') + '" id="qc-mv-' + n + '">' +
+      bodyHtml + ' <span class="qc-ayah-mark">۝ ' + ar(n) + '</span></span> ';
   }).join('');
-  return '<div class="qc-card qc-today-panel"><div class="qc-today-title">📜 Today\'s Lines</div>' + rows + '</div>';
+  return '<div class="qc-card qc-today-panel"><div class="qc-today-title">📜 Today\'s Lines</div>' +
+    '<div class="qc-mushaf" id="qc-mushaf"><div class="qc-ptr" id="qc-ptr"></div><div class="qc-mushaf-text" dir="rtl">' + flow + '</div></div></div>';
+}
+
+// The pointer: a green dot that glides to the word being read (or, before
+// reading starts / when word tracking is unavailable, to the current verse),
+// line by line down the page. Purely visual — never affects scoring.
+function qcMovePtr(el, instant) {
+  const ptr = document.getElementById('qc-ptr');
+  const page = document.getElementById('qc-mushaf');
+  if (!ptr || !page || !el) return;
+  const pr = page.getBoundingClientRect(), er = el.getBoundingClientRect();
+  // RTL text: the dot sits just to the right of the word being read
+  const top = er.top - pr.top + (er.height / 2) - 9;
+  const left = Math.min(er.right - pr.left + 6, page.clientWidth - 20);
+  ptr.style.display = 'block';
+  if (instant) {
+    ptr.style.transition = 'none';
+    ptr.style.top = top + 'px'; ptr.style.left = left + 'px';
+    requestAnimationFrame(function(){ ptr.style.transition = ''; });
+  } else {
+    ptr.style.top = top + 'px'; ptr.style.left = left + 'px';
+  }
+}
+function qcPlacePtrAtCurrent() {
+  const cur = document.querySelector('#qc-mushaf .qc-lw-cur') || document.querySelector('#qc-mushaf .qc-mv-cur');
+  if (cur) qcMovePtr(cur, true);
 }
 
 function qcListen(n) {
@@ -12290,6 +12333,7 @@ function qcLiveApplyHighlight(res, len) {
   res.doneIdx.forEach(function(i) { ['qc-lw-', 'qc-lw2-'].forEach(function(pfx) { const el = document.getElementById(pfx + i); if (el) el.classList.add('qc-lw-done'); }); });
   res.missIdx.forEach(function(i) { ['qc-lw-', 'qc-lw2-'].forEach(function(pfx) { const el = document.getElementById(pfx + i); if (el) el.classList.add('qc-lw-miss'); }); });
   if (res.currentIdx >= 0) { ['qc-lw-', 'qc-lw2-'].forEach(function(pfx) { const el = document.getElementById(pfx + res.currentIdx); if (el) el.classList.add('qc-lw-cur'); }); }
+  try { const cw = document.getElementById('qc-lw2-' + res.currentIdx); if (cw && res.currentIdx >= 0) { qcMovePtr(cw, false); const r = cw.getBoundingClientRect(); if (r.top < 90 || r.bottom > window.innerHeight - 140) cw.scrollIntoView({ behavior:'smooth', block:'center' }); } } catch (e) {}
 }
 
 // ── Automatic repeat-after-me coaching (v117) ───────────────
