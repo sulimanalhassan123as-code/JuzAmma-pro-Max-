@@ -3394,7 +3394,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v130 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v131 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3454,7 +3454,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v130 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v131 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3519,7 +3519,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v130 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v131 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -8277,6 +8277,12 @@ function gsEnterRoom(roomData) {
   try { gsRaisedHands = JSON.parse(r.raisedHands || '[]'); } catch(e) { gsRaisedHands = []; }
   
   document.getElementById('gs-lobby-wrap').style.display = 'none';
+  // Entering a room must replace every other Group Study screen. Previously
+  // only the lobby was hidden, so opening a room from My Rooms left the list
+  // showing above the room (and the Hub/qualification screens could too).
+  ['gs-hub-wrap','gs-myrooms-wrap','gs-qual-wrap'].forEach(function(id){
+    var el = document.getElementById(id); if (el) el.style.display = 'none';
+  });
   document.getElementById('gs-room-wrap').classList.add('active');
   document.getElementById('gs-room-code-lbl').textContent = gsRoomCode;
   document.getElementById('gs-room-title').textContent = (r.teacherName || gsUserName) + "'s Class";
@@ -8992,6 +8998,9 @@ async function gsLeave() {
   const chatArea = document.getElementById('gs-chat-area');
   if (chatArea) chatArea.innerHTML = '<div class="gs-chat-date-sep">💬 Messages appear here</div>';
   document.getElementById('gs-room-wrap').classList.remove('active');
+  ['gs-hub-wrap','gs-myrooms-wrap','gs-qual-wrap'].forEach(function(id){
+    var el = document.getElementById(id); if (el) el.style.display = 'none';
+  });
   document.getElementById('gs-lobby-wrap').style.display = '';
   document.getElementById('gs-lobby-status').textContent = '';
   toast('👋 Left the class');
