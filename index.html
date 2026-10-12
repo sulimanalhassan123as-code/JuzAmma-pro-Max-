@@ -303,6 +303,14 @@ body { font-family:'Poppins',sans-serif;
 .btn-reset { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); color:rgba(255,255,255,.38); padding:7px 14px; border-radius:14px; font-size:.76rem; cursor:pointer; font-family:'Poppins',sans-serif; transition:all .2s; }
 .btn-reset:active { background:#ef4444; color:#fff; border-color:#ef4444; }
 
+
+/* Coming Soon placeholder (Daily Duas) */
+.cs-wrap { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:90px 28px 60px; }
+.cs-ico { font-size:4rem; animation:csfloat 3.2s ease-in-out infinite; }
+@keyframes csfloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.cs-title { font-size:1.35rem; font-weight:700; color:var(--gold); margin-top:14px; }
+.cs-sub { font-size:.8rem; color:var(--txt2); margin-top:8px; line-height:1.7; }
+
 /* ── MEMORIZE ─────────────────────────── */
 .mem-hdr { background:linear-gradient(135deg,var(--dark),var(--dark2)); padding:14px 15px 16px; color:#fff; flex-shrink:0; }
 .mem-hdr h2 { font-size:1rem; font-weight:700; margin-top:6px; }
@@ -661,6 +669,36 @@ body { font-family:'Poppins',sans-serif;
 .n-star { position:absolute; background:#fff; border-radius:50%; animation:twinkle 2s infinite alternate; }
 .night-moon { font-size:4rem; margin-bottom:6px; animation:moonpulse 4s ease-in-out infinite; }
 @keyframes moonpulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+/* Night Radio motion: runs only while audio is playing (#night-view.playing) */
+.night-moon-wrap { position:relative; display:flex; align-items:center; justify-content:center; width:120px; height:120px; margin-bottom:4px; }
+.night-moon-wrap .night-moon { margin:0; position:relative; z-index:2; }
+.night-halo { position:absolute; inset:14px; border-radius:50%; border:1.5px solid rgba(201,168,76,.45); opacity:0; pointer-events:none; }
+#night-view.playing .night-halo { animation:nhalo 3.6s ease-out infinite; }
+#night-view.playing .night-halo.h2 { animation-delay:1.2s; }
+#night-view.playing .night-halo.h3 { animation-delay:2.4s; }
+@keyframes nhalo { 0%{transform:scale(.7);opacity:.7} 100%{transform:scale(1.55);opacity:0} }
+#night-view.playing .night-moon { filter:drop-shadow(0 0 14px rgba(201,168,76,.55)); animation:moonpulse 4s ease-in-out infinite, moonglow 4s ease-in-out infinite; }
+@keyframes moonglow { 0%,100%{filter:drop-shadow(0 0 8px rgba(201,168,76,.35))} 50%{filter:drop-shadow(0 0 22px rgba(255,225,130,.8))} }
+.night-eq { display:flex; align-items:flex-end; justify-content:center; gap:4px; height:26px; margin:2px 0 10px; opacity:.25; transition:opacity .5s; }
+.night-eq i { display:block; width:4px; height:6px; border-radius:2px; background:linear-gradient(180deg,var(--gold),var(--p)); transform-origin:bottom; }
+#night-view.playing .night-eq { opacity:1; }
+#night-view.playing .night-eq i { animation:neq 1.1s ease-in-out infinite; }
+#night-view.playing .night-eq i:nth-child(2){animation-delay:.12s;animation-duration:.9s}
+#night-view.playing .night-eq i:nth-child(3){animation-delay:.31s;animation-duration:1.3s}
+#night-view.playing .night-eq i:nth-child(4){animation-delay:.07s;animation-duration:.8s}
+#night-view.playing .night-eq i:nth-child(5){animation-delay:.42s;animation-duration:1.2s}
+#night-view.playing .night-eq i:nth-child(6){animation-delay:.2s;animation-duration:1s}
+#night-view.playing .night-eq i:nth-child(7){animation-delay:.36s;animation-duration:.85s}
+@keyframes neq { 0%,100%{height:6px} 50%{height:24px} }
+#night-view.playing .night-play { animation:nplayglow 2.6s ease-in-out infinite; }
+@keyframes nplayglow { 0%,100%{box-shadow:0 0 22px var(--pg)} 50%{box-shadow:0 0 42px var(--pg), 0 0 8px var(--gold)} }
+#night-view.playing .night-now-play { animation:nfade 3.2s ease-in-out infinite; }
+@keyframes nfade { 0%,100%{opacity:.82} 50%{opacity:1} }
+.n-shoot { position:absolute; width:90px; height:1.5px; background:linear-gradient(90deg,rgba(255,255,255,0),#fff); opacity:0; transform:rotate(-28deg); pointer-events:none; }
+#night-view.playing .n-shoot { animation:nshoot 7s linear infinite; }
+#night-view.playing .n-shoot.s2 { animation-delay:3.5s; animation-duration:9s; }
+@keyframes nshoot { 0%{opacity:0;transform:translate(0,0) rotate(-28deg)} 4%{opacity:.9} 14%{opacity:0;transform:translate(-180px,95px) rotate(-28deg)} 100%{opacity:0} }
+@media (prefers-reduced-motion:reduce){ #night-view.playing *{animation:none !important} }
 .night-title { font-size:1.1rem; font-weight:700; color:#fff; margin-bottom:3px; }
 .night-sub { font-size:.73rem; color:rgba(255,255,255,.35); margin-bottom:18px; text-align:center; }
 .night-now-play { font-family:'Amiri','Noto Naskh Arabic','Scheherazade New',serif; font-size:1.4rem; color:var(--gold); text-align:center; margin-bottom:6px; min-height:2.5rem; line-height:1.7; padding:0 15px; direction:rtl; font-feature-settings:'liga' 1,'calt' 1; }
@@ -3210,15 +3248,10 @@ body { font-family:'Poppins',sans-serif;
       <div class="ccard-t">Group Study</div>
       <div class="ccard-s">Read with friends live</div>
     </div>
-    <div class="ccard" onclick="setLangAndGo('ha')">
-      <div class="ccard-ico ico-sq" style="background:#182238">🌍</div>
-      <div class="ccard-t">Multi-Language</div>
-      <div class="ccard-s">Hausa · English</div>
-    </div>
     <div class="ccard" onclick="goToView('dua')">
       <div class="ccard-ico ico-sq" style="background:#1f4a35">🤲</div>
       <div class="ccard-t">Daily Duas</div>
-      <div class="ccard-s">Hisn al-Muslim 130+</div>
+      <div class="ccard-s">Coming soon</div>
     </div>
     <div class="ccard" onclick="goToView('qibla')">
       <div class="ccard-ico ico-sq" style="background:#6b5220">🧭</div>
@@ -3361,7 +3394,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v128 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v129 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3421,7 +3454,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v128 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v129 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3486,7 +3519,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v128 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v129 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3510,9 +3543,11 @@ body { font-family:'Poppins',sans-serif;
 <div id="night-view">
   <div class="night-sky">
     <div class="night-stars-bg" id="night-stars-bg"></div>
-    <div class="night-moon">🌙</div>
+    <div class="n-shoot" style="top:12%;right:8%"></div><div class="n-shoot s2" style="top:26%;right:30%"></div>
+    <div class="night-moon-wrap"><span class="night-halo"></span><span class="night-halo h2"></span><span class="night-halo h3"></span><div class="night-moon">🌙</div></div>
     <div class="night-title">Quran Night Mode</div>
     <div class="night-sub">Keep screen on · Plays continuously · Sleep to Quran</div>
+    <div class="night-eq"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="night-now-play" id="night-ar">—</div>
     <div class="night-verse-en" id="night-en">—</div>
     <div class="night-surah-lbl" id="night-lbl">Select surah to begin</div>
@@ -6715,7 +6750,7 @@ function nightPrev() { if(nightVerseIdx>0){nightPlayVerse(nightSurahId,nightVers
 function setNightMode(m, el) { nightMode_type=m; document.querySelectorAll('.night-opt:not(#nopt-loop)').forEach(o=>o.classList.remove('on')); el.classList.add('on'); toast('Night mode: '+el.innerText); }
 function toggleNightLoop() { nightLoop=!nightLoop; const el=document.getElementById('nopt-loop'); el.classList.toggle('on',nightLoop); el.innerText='🔁 Loop '+(nightLoop?'ON':'OFF'); }
 function nightRecChange() { nightReciter2=document.getElementById('night-rec').value; if(nightPlaying) nightPlayVerse(nightSurahId,nightVerseIdx); }
-function updateNightBtn() { document.getElementById('night-play-btn').innerHTML=nightPlaying?'⏸':'▶'; }
+function updateNightBtn() { document.getElementById('night-play-btn').innerHTML=nightPlaying?'⏸':'▶'; const nv=document.getElementById('night-view'); if(nv) nv.classList.toggle('playing',!!nightPlaying); }
 function fmtTime(s) { const m=Math.floor(s/60); const sec=Math.floor(s%60); return m+':'+(sec<10?'0':'')+sec; }
 async function requestWakeLock() { try { if('wakeLock' in navigator && !nightWakeLock) { nightWakeLock=await navigator.wakeLock.request('screen'); } } catch(e){} }
 
@@ -13293,7 +13328,7 @@ document.addEventListener('DOMContentLoaded',function(){
 
 <div id="dua-view" class="view">
   <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goBack()">←</button><div class="htitle">🤲 Daily Duas</div><div style="width:60px"></div></div></div>
-  <div class="dua-cat-grid" id="dua-cats"></div><div class="dua-list" id="dua-list" style="display:none"></div><div style="height:60px"></div>
+  <div class="cs-wrap"><div class="cs-ico">🤲</div><div class="cs-title">Coming Soon</div><div class="cs-sub">Daily Duas is being rebuilt to be better.<br>In shaa Allah, it will be back soon.</div></div>
 </div>
 <div id="qibla-view" class="view">
   <div class="stickyh"><div class="hrow"><button class="btn-back" onclick="goBack()">←</button><div class="htitle">🧭 Qibla</div><div style="width:60px"></div></div></div>
