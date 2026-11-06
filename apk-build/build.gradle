@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.1.2'
+        classpath 'com.android.tools.build:gradle:8.9.1'
     }
 }
 
@@ -13,19 +13,32 @@ apply plugin: 'com.android.application'
 
 android {
     namespace 'com.suleiman.juzammapromax'
-    compileSdk 34
+    compileSdk 36
 
     defaultConfig {
         applicationId "com.suleiman.juzammapromax"
         minSdk 24
-        targetSdk 34
-        versionCode 13
-        versionName "13.0.0"
+        targetSdk 36
+        versionCode 16
+        versionName "16.0.0"
         multiDexEnabled true
+    }
+
+    signingConfigs {
+        release {
+            def props = new Properties()
+            def f = new File('../apk-release/keystore.properties')
+            if (f.exists()) props.load(new FileInputStream(f))
+            storeFile file(props['storeFile'] ?: '../apk-release/keystore/juzamma-release.keystore')
+            storePassword props['storePassword'] ?: ''
+            keyAlias props['keyAlias'] ?: 'juzamma'
+            keyPassword props['keyPassword'] ?: ''
+        }
     }
 
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
