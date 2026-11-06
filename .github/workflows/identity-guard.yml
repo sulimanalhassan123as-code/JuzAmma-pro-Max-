@@ -1,0 +1,79 @@
+name: Identity and Scope Guard
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  identity:
+    name: Identity and Scope Guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify every commit against the registry
+        run: |
+          python3 - <<'PY'
+          import json,subprocess,fnmatch,sys,os
+          reg=json.load(open('AGENT-IDENTITIES.json'))
+          ids={i['email'].lower():i for i in reg['identities']}
+          base=os.environ.get('GITHUB_BASE_REF')
+          if base:
+              rng='origin/%s..HEAD'%base
+          else:
+              rng='HEAD~1..HEAD'
+          out=subprocess.run(['git','log','--format=%H%x09%ae%x09%s%x09%b%x01',rng],capture_output=True,text=True).stdout
+          commits=[c for c in out.split('\x01') if c.strip()]
+          def matches(path,pats):
+              for p in pats:
+                  if p=='**': return True
+                  if p.endswith('/**') and (path==p[:-3] or path.startswith(p[:-2])): return True
+                  if fnmatch.fnmatch(path,p): return True
+              return False
+          bad=[]
+          for c in commits:
+              parts=c.strip().split('\t')
+              if len(parts)<4: continue
+              sha,email,subj,body=parts[0][:8],parts[1].lower(),parts[2],parts[3]
+              ident=ids.get(email)
+              if not ident:
+                  bad.append('%s author "%s" is not in AGENT-IDENTITIES.json'%(sha,email)); continue
+              if ident['id']!='owner':
+                  if not subj.lower().startswith(ident['commit_prefix'].lower()):
+                      bad.append('%s %s message must start with "%s" (got "%s")'%(sha,ident['id'],ident['commit_prefix'],subj[:40]))
+                  if ('Agent-ID: '+ident['id']) not in body:
+                      bad.append('%s %s commit body missing trailer "Agent-ID: %s"'%(sha,ident['id'],ident['id']))
+              files=subprocess.run(['git','show','--pretty=format:','--name-only',sha],capture_output=True,text=True).stdout.split()
+              for f in files:
+                  if not matches(f,ident['paths']):
+                      bad.append('%s %s touched "%s" which is outside its scope'%(sha,ident['id'],f))
+          if bad:
+              print('::error::Identity and scope violations found')
+              for b in bad: print('  FAIL '+b)
+              print('')
+              print('Registered identities:')
+              for i in reg['identities']:
+                  print('   %-14s %-34s prefix %-8s scope %s'%(i['id'],i['email'],i['commit_prefix'] or '-',', '.join(i['paths'])[:60]))
+              sys.exit(1)
+          print('PASS - %d commit(s) match their registered identity and scope'%len(commits))
+          PY
+
+      - name: Reject signing material and build output
+        run: |
+          bad=$(git ls-files | grep -Ei '\.(jks|keystore|p12|pfx)$|(^|/)(local\.properties|keystore\.properties)$' || true)
+          if [ -n "$bad" ]; then
+            echo "::error::Signing material must never be committed:"
+            echo "$bad"
+            exit 1
+          fi
+          echo "PASS - no signing material tracked"
