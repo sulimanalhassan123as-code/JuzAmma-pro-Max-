@@ -28,7 +28,7 @@ jobs:
 
       - name: Reject signing material
         run: |
-          bad=$(git ls-files | grep -Ei '\.(jks|keystore|p12|pfx)$|(^|/)(local\.properties|keystore\.properties)$' || true)
+          bad=$(git ls-files | grep -Ei '\.(jks|keystore|p12|pfx|apk|aab|aar|zip)$|(^|/)(local\.properties|keystore\.properties)$' || true)
           if [ -n "$bad" ]; then
             echo "::error::Signing material must never be committed:"
             echo "$bad"
