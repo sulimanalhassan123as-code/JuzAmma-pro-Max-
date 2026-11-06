@@ -1,0 +1,77 @@
+{
+  "_comment": "Single source of truth for who may commit what in this repo. Consumed by .github/workflows/identity-guard.yml. A commit author is only a LABEL; the enforcement is the path scope + trailer + branch prefix checked in CI.",
+  "version": 1,
+  "updated": "2026-11-06",
+  "identities": [
+    {
+      "id": "kestrel",
+      "display": "KESTREL (security desk)",
+      "email": "kestrel@neverhide.tech",
+      "role": "Security, CI, build integrity, dependency and permission review",
+      "paths": [
+        ".github/**",
+        "AGENT-IDENTITIES.json",
+        "docs/**",
+        ".gitignore",
+        "api/_lib.js"
+      ],
+      "commit_prefix": "sec:",
+      "branch_prefix": "agent/kestrel/"
+    },
+    {
+      "id": "naba-ui",
+      "display": "Naba UI (front-end)",
+      "email": "ui@naba-quran.app",
+      "role": "Screens, styles, navigation, i18n strings, PWA shell",
+      "paths": [
+        "index.html",
+        "assets/**",
+        "icons/**",
+        "manifest.json",
+        "sw.js",
+        "pages/**"
+      ],
+      "commit_prefix": "ui:",
+      "branch_prefix": "agent/naba-ui/"
+    },
+    {
+      "id": "naba-core",
+      "display": "Naba Core (data and audio)",
+      "email": "core@naba-quran.app",
+      "role": "Quran data, audio library, playback engine, offline cache",
+      "paths": [
+        "audio/**",
+        "quran-full.json",
+        "data/**",
+        "functions/**",
+        "api/**"
+      ],
+      "commit_prefix": "core:",
+      "branch_prefix": "agent/naba-core/"
+    },
+    {
+      "id": "naba-android",
+      "display": "Naba Android (app wrapper)",
+      "email": "android@naba-quran.app",
+      "role": "Android wrapper, manifest, signing, Play Store compliance",
+      "paths": [
+        "apk-build/**",
+        "AndroidManifest.xml",
+        "android/**"
+      ],
+      "commit_prefix": "android:",
+      "branch_prefix": "agent/naba-android/"
+    },
+    {
+      "id": "owner",
+      "display": "Sulley Alhassan (owner)",
+      "email": "sulimanalhassan.123.as@gmail.com",
+      "role": "Owner. May touch anything.",
+      "paths": [
+        "**"
+      ],
+      "commit_prefix": "",
+      "branch_prefix": "owner/"
+    }
+  ]
+}
