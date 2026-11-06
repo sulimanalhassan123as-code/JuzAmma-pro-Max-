@@ -4,13 +4,13 @@
 // Strategy: Cache-first for assets, Network-first for Quran API
 // ============================================================
 
-const CACHE_NAME = 'juzamma-pro-v133-20261012';
+const CACHE_NAME = 'juzamma-pro-v134-20261106';
 const STATIC_ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './icons/icon-192x192.svg',
-  './icons/icon-512x512.svg',
+  './icons/icon-192x192.png',
+  './icons/icon-512x512.png',
   'https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@300;400;500;600;700;800&display=swap'
 ];
 
@@ -69,7 +69,7 @@ function fireAzanNotification(prayerName) {
   const arabicNames = {Fajr:'الفجر',Dhuhr:'الظهر',Asr:'العصر',Maghrib:'المغرب',Isha:'العشاء'};
   self.registration.showNotification('🕌 Azan — ' + prayerName + ' Prayer', {
     body: 'Hayya ala al-Salah — Come to Prayer\n' + (arabicNames[prayerName] || ''),
-    icon: './icons/icon-192x192.svg',
+    icon: './icons/icon-192x192.png',
     badge: './icons/icon-192x192.svg',
     tag: 'azan-' + prayerName,
     requireInteraction: true,

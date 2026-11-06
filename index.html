@@ -12,7 +12,9 @@
 <meta name="apple-mobile-web-app-title" content="Naba Quran">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
-<link rel="apple-touch-icon" href="icons/icon-192x192.svg">
+<link rel="apple-touch-icon" href="icons/icon-180x180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512x512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -3416,7 +3418,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v133 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v134 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3476,7 +3478,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v133 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v134 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3541,7 +3543,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v133 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v134 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -6100,7 +6102,7 @@ function playAzanFor(prayerName){
   if(Notification.permission === 'granted'){
     new Notification('🕌 Azan — ' + prayerName + ' Time', {
       body: 'Hayya ala al-Salah — Come to Prayer',
-      icon: '/icon-192.png',
+      icon: 'icons/icon-192x192.png',
       requireInteraction: true
     });
   }
@@ -6254,7 +6256,7 @@ function checkDailyNotif(){
   const today=new Date().toDateString();
   if(localStorage.getItem('lastNotif')===today)return;
   const msgs=['SubhanAllah — Glory be to Allah ✨','Alhamdulillah — All praise is for Allah 🌙','Allahu Akbar — Allah is the Greatest 🕌','La ilaha illallah — There is no god but Allah ☪️'];
-  new Notification('🌙 Juz Amma Pro Max',{body:msgs[Math.floor(Math.random()*msgs.length)],icon:'/icon-192.png'});
+  new Notification('🌙 Juz Amma Pro Max',{body:msgs[Math.floor(Math.random()*msgs.length)],icon:'icons/icon-192x192.png'});
   localStorage.setItem('lastNotif',today);
 }
 function updateStreak() {
