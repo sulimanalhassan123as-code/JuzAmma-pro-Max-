@@ -5,3 +5,8 @@
 apk-build/build/
 apk-build/.gradle/
 apk-build/*.apk
+keystore.properties
+*.jks
+*.keystore
+*.p12
+local.properties
