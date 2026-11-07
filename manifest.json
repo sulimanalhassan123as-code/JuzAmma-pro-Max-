@@ -1,7 +1,7 @@
 {
-  "name": "Juz Amma Pro",
-  "short_name": "Juz Amma",
-  "description": "Complete Juz 30 Quran app \u2014 Read, Listen, Memorize, Dhikr & Islamic AI Guide",
+  "name": "Naba Quran",
+  "short_name": "Naba Quran",
+  "description": "Complete Juz Amma Quran app: read, listen, memorise, duas, Qibla, prayer times and dhikr.",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
