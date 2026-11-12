@@ -819,6 +819,14 @@ body { font-family:'Poppins',sans-serif;
 .name-card .name-mean { font-size:.72rem; color:#94a3b8; line-height:1.3; }
 .name-card .name-desc { display:none; font-size:.72rem; color:#cbd5e1; line-height:1.4; margin-top:6px; padding-top:6px; border-top:1px solid rgba(255,215,0,.1); }
 .name-card.expanded .name-desc { display:block; }
+.name-card { position:relative; }
+.name-card .name-play { position:absolute; top:6px; right:6px; width:26px; height:26px; border-radius:50%;
+  border:1px solid rgba(255,215,0,.28); background:rgba(255,215,0,.10); color:#ffd700;
+  font-size:.62rem; line-height:1; display:flex; align-items:center; justify-content:center;
+  cursor:pointer; padding:0; -webkit-tap-highlight-color:transparent; }
+.name-card .name-play:active { transform:scale(.9); }
+.name-card.speaking { border-color:rgba(255,215,0,.75); box-shadow:0 0 0 2px rgba(255,215,0,.22), 0 6px 18px rgba(255,215,0,.14); }
+.name-card.speaking .name-play { background:#ffd700; color:#0b1220; }
 .names-virtue { background:rgba(255,215,0,.08); border:1px solid rgba(255,215,0,.2); border-radius:12px; padding:12px 14px; margin-bottom:14px; text-align:center; }
 .names-virtue p { color:#fcd34d; font-size:.8rem; margin:0; line-height:1.4; }
 .names-virtue p span { color:#94a3b8; font-size:.72rem; }
@@ -3078,9 +3086,6 @@ body { font-family:'Poppins',sans-serif;
       <button class="names-audio-btn" id="names-play-btn" onclick="toggleNamesAudio()">▶ Play All 99 Names</button>
       <div class="names-audio-status" id="names-audio-status">Beautiful continuous recitation</div>
     </div>
-    <audio id="names-audio" preload="none" style="display:none">
-      <source src="https://archive.org/download/nasheeds2021/ILYAS%20MAO%20-%2099%20NAMES%20OF%20ALLAH%20-%20ASMA%20-%20UL%20-%20HUSNA.mp3" type="audio/mpeg">
-    </audio>
     <div class="names-virtue">
       <p>The Prophet ﷺ said: "Allah has 99 names, 100 minus one. Whoever memorizes them will enter Paradise." <span>— Bukhari 2736</span></p>
     </div>
@@ -3418,7 +3423,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v135 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v136 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3478,7 +3483,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v135 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v136 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3543,7 +3548,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v135 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v136 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -5295,8 +5300,9 @@ function renderNames(filter) {
   const list = f ? ALLAH_NAMES.filter(n => n.en.toLowerCase().includes(f) || n.mean.toLowerCase().includes(f)) : ALLAH_NAMES;
   grid.innerHTML = list.map((n, i) => {
     const origIdx = ALLAH_NAMES.indexOf(n) + 1;
-    return `<div class="name-card" onclick="this.classList.toggle('expanded')">
+    return `<div class="name-card" data-idx="${origIdx}" onclick="this.classList.toggle('expanded')">
       <div class="name-num">#${origIdx}</div>
+      <button class="name-play" title="Play this name" onclick="event.stopPropagation();namesPlayOne(${origIdx-1})">▶</button>
       <div class="name-ar" dir="rtl">${n.ar}</div>
       <div class="name-en">${n.en}</div>
       <div class="name-mean">${n.mean}</div>
@@ -5307,38 +5313,116 @@ function renderNames(filter) {
 
 function filterNames(v) { renderNames(v); }
 
-// ===== 99 NAMES CONTINUOUS AUDIO =====
-function toggleNamesAudio() {
-  const audio = document.getElementById('names-audio');
-  const btn = document.getElementById('names-play-btn');
-  const status = document.getElementById('names-audio-status');
-  if (audio.paused) {
-    status.textContent = 'Loading audio...';
-    audio.play().then(() => {
-      btn.textContent = '⏸ Pause Recitation';
-      btn.classList.add('playing');
-      status.textContent = 'Now playing — all 99 Names of Allah';
-    }).catch(() => {
-      status.textContent = 'Could not play audio — tap again or check your connection';
-    });
-  } else {
-    audio.pause();
-    btn.textContent = '▶ Play All 99 Names';
-    btn.classList.remove('playing');
-    status.textContent = 'Paused';
-  }
+// ===== 99 NAMES PLAYER (per name, and continuous) =====
+// The old player was one 4MB archive.org track whose URL 302-redirects to a
+// dn####.archive.org node, which the CSP media-src allowlist blocks, so it sat
+// on "Loading audio..." forever. There is no per-name audio source we can rely
+// on, so playback goes through the app's TTS engine: native TextToSpeech in the
+// APK, Web Speech in the browser. Tap a name to hear it alone, or play all.
+const NAMES_PLAYER = { on:false, i:0, list:[], token:0, timer:null };
+
+function namesStatus(t){ const el=document.getElementById('names-audio-status'); if(el) el.textContent=t; }
+function namesClearHi(){ document.querySelectorAll('.name-card.speaking').forEach(function(c){ c.classList.remove('speaking'); }); }
+function namesHi(origIdx){
+  namesClearHi();
+  const el=document.querySelector('.name-card[data-idx="'+origIdx+'"]');
+  if(el){ el.classList.add('speaking'); try{ el.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){} }
 }
-document.addEventListener('DOMContentLoaded', () => {
-  const audio = document.getElementById('names-audio');
-  if (audio) {
-    audio.addEventListener('ended', () => {
-      const btn = document.getElementById('names-play-btn');
-      const status = document.getElementById('names-audio-status');
-      if (btn) { btn.textContent = '▶ Play All 99 Names'; btn.classList.remove('playing'); }
-      if (status) status.textContent = 'Recitation complete — tap to replay';
-    });
+function namesVisibleList(){
+  const inp=document.getElementById('names-search');
+  const f=inp ? (inp.value||'').trim().toLowerCase() : '';
+  if(!f) return ALLAH_NAMES.slice();
+  return ALLAH_NAMES.filter(function(n){
+    return n.en.toLowerCase().indexOf(f)>=0 || n.mean.toLowerCase().indexOf(f)>=0;
+  });
+}
+function namesStop(){
+  NAMES_PLAYER.on=false; NAMES_PLAYER.token++; NAMES_PLAYER.stalls=0;
+  if(NAMES_PLAYER.timer){ clearTimeout(NAMES_PLAYER.timer); NAMES_PLAYER.timer=null; }
+  universalStopSpeaking(); namesClearHi();
+  const btn=document.getElementById('names-play-btn');
+  if(btn){ btn.textContent='▶ Play All 99 Names'; btn.classList.remove('playing'); }
+}
+/* Speaks one name: Arabic first, then the English meaning. Calls done() once. */
+function namesSpeak(n, done){
+  const tok=NAMES_PLAYER.token;
+  let finished=false, heardArabic=false;
+  const finish=function(){
+    if(finished) return;
+    finished=true;
+    if(NAMES_PLAYER.timer){ clearTimeout(NAMES_PLAYER.timer); NAMES_PLAYER.timer=null; }
+    if(tok===NAMES_PLAYER.token && done) done();
+  };
+  const saidEn=function(){
+    if(tok!==NAMES_PLAYER.token) return;
+    universalSpeak(n.en + '. ' + n.mean, 'en', 0.9, finish);
+    NAMES_PLAYER.timer=setTimeout(finish, 7000);   /* engine that never fires onend */
+  };
+  const saidAr = universalSpeak(n.ar, 'ar', 0.7, function(){
+    if(tok!==NAMES_PLAYER.token) return;
+    heardArabic=true; NAMES_PLAYER.stalls=0;
+    if(NAMES_PLAYER.timer){ clearTimeout(NAMES_PLAYER.timer); NAMES_PLAYER.timer=null; }
+    NAMES_PLAYER.timer=setTimeout(saidEn, 250);
+  });
+  if(!saidAr){ finish(); toast('🔇 Voice is not available on this device'); return false; }
+  /* Watchdog: an engine that never calls back must not freeze the list. */
+  NAMES_PLAYER.timer=setTimeout(function(){
+    if(tok!==NAMES_PLAYER.token) return;
+    if(!heardArabic) NAMES_PLAYER.stalls=(NAMES_PLAYER.stalls||0)+1;
+    finish();
+  }, 4500);
+  return true;
+}
+function namesPlayOne(i){
+  namesStop();
+  const n=ALLAH_NAMES[i];
+  if(!n) return;
+  namesHi(i+1);
+  namesStatus(n.en + ' — ' + n.mean);
+  namesSpeak(n, function(){ namesClearHi(); namesStatus('Tap ▶ on a name, or play all 99'); });
+}
+function namesPlayAll(){
+  if(NAMES_PLAYER.on){ namesStop(); namesStatus('Stopped'); return; }
+  const list=namesVisibleList();
+  if(!list.length){ toast('No names match your search'); return; }
+  NAMES_PLAYER.list=list; NAMES_PLAYER.i=0; NAMES_PLAYER.on=true; NAMES_PLAYER.token++; NAMES_PLAYER.stalls=0;
+  const btn=document.getElementById('names-play-btn');
+  if(btn){ btn.textContent='⏸ Stop'; btn.classList.add('playing'); }
+  namesStep();
+}
+function namesStep(){
+  if(!NAMES_PLAYER.on) return;
+  const list=NAMES_PLAYER.list;
+  if(NAMES_PLAYER.i>=list.length){ namesStop(); namesStatus('Completed — all names recited'); return; }
+  const n=list[NAMES_PLAYER.i];
+  const orig=ALLAH_NAMES.indexOf(n)+1;
+  NAMES_PLAYER.i++;
+  namesHi(orig);
+  namesStatus('Name '+NAMES_PLAYER.i+' of '+list.length+' — '+n.en);
+  namesSpeak(n, function(){
+    if(!NAMES_PLAYER.on) return;
+    if((NAMES_PLAYER.stalls||0)>=2){
+      namesStop();
+      namesStatus('Voice engine is not responding — restart the app and try again');
+      toast('🔇 Voice engine not responding');
+      return;
+    }
+    const tok=NAMES_PLAYER.token;
+    NAMES_PLAYER.timer=setTimeout(function(){ if(tok===NAMES_PLAYER.token) namesStep(); }, 350);
+  });
+}
+/* kept for the existing onclick handler */
+function toggleNamesAudio(){ namesPlayAll(); }
+/* stop recitation when leaving the screen */
+(function(){
+  const origGoToView = window.goToView;
+  if(typeof origGoToView === 'function'){
+    window.goToView = function(v){
+      if(v!=='names'){ try{ namesStop(); }catch(e){} }
+      return origGoToView.apply(this, arguments);
+    };
   }
-});
+})();
 
 // ===== UNIVERSAL TTS (native Android bridge first, Web Speech API fallback) =====
 // Plain Android WebView (used by our APK wrapper) does NOT implement the Web
