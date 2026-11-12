@@ -3418,7 +3418,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v134 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v135 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3478,7 +3478,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v134 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v135 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3543,7 +3543,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v134 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v135 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -13671,16 +13671,35 @@ const GS_LIVE_SR = 16000, GS_LIVE_CHUNK = 16000;
 
 function gsLiveRoom(){ return (typeof gsRoomCode !== 'undefined') ? gsRoomCode : null; }
 function gsLiveUser(){ return (typeof gsUserName !== 'undefined') ? gsUserName : ''; }
+const GS_LIVE_TIMEOUT = 8000;
+function gsLiveFetch(url, opts, ms){
+  const ctl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+  const o = Object.assign({}, opts);
+  if (ctl) o.signal = ctl.signal;
+  const timer = ctl ? setTimeout(function(){ try { ctl.abort(); } catch (e) {} }, ms) : null;
+  return fetch(url, o).finally(function(){ if (timer) clearTimeout(timer); });
+}
+/* Never throws, never hangs forever, and reports a reason the UI can show.
+   A single stalled request used to freeze the whole live room because the
+   pull lock was only released when the request settled. */
 async function gsLiveApi(action, extra){
   const body = JSON.stringify(Object.assign({ action: action, roomCode: gsLiveRoom(), userName: gsLiveUser() }, extra || {}));
   const opts = { method:'POST', headers:{'Content-Type':'application/json'}, body: body };
-  try {
-    const r = await fetch('/api/live-hub', opts);
-    return await r.json();
-  } catch (e) {
-    const r2 = await fetch('https://superagent-7ce6afb1.base44.app/functions/liveHub', opts);
-    return await r2.json();
+  const endpoints = ['/api/live-hub', 'https://superagent-7ce6afb1.base44.app/functions/liveHub'];
+  let lastErr = 'Connection problem';
+  for (let i = 0; i < endpoints.length; i++) {
+    try {
+      const r = await gsLiveFetch(endpoints[i], opts, GS_LIVE_TIMEOUT);
+      const txt = await r.text();
+      let data = null;
+      try { data = JSON.parse(txt); } catch (e2) { data = null; }
+      if (data && typeof data === 'object') return data;
+      lastErr = 'Server returned a bad response (' + r.status + ')';
+    } catch (e) {
+      lastErr = (e && e.name === 'AbortError') ? 'Timed out — check your connection' : 'Connection problem';
+    }
   }
+  return { ok:false, error:lastErr };
 }
 function gsLiveLog(line){
   const t = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
@@ -13700,8 +13719,9 @@ async function gsLiveStart(){
   const surah = (typeof gsCurrentSurah !== 'undefined') ? gsCurrentSurah : 112;
   const verse = (typeof gsCurrentVerse !== 'undefined') ? gsCurrentVerse : 1;
   const d = await gsLiveApi('start', { surah: surah, verse: verse });
-  if (!d.ok) { toast('❌ ' + (d.error || 'Could not start')); return; }
+  if (!d.ok || !d.session) { toast('❌ ' + (d.error || 'Could not start the live room')); return; }
   GS_LIVE.session = d.session; GS_LIVE.lastSeq = 0; GS_LIVE.lastVerse = 0; GS_LIVE.logLines = [];
+  GS_LIVE.gen = (GS_LIVE.gen || 0) + 1; GS_LIVE.pullBusy = false; GS_LIVE.failStreak = 0;
   gsLiveRender(true);
   gsLiveLog('🎙️ Live session started — Surah ' + d.session.surah_num);
   toast('🔴 LIVE — you are the reciter. Tap 🎙️ Turn Mic ON.');
@@ -13984,10 +14004,20 @@ function gsLiveEnsurePoll(){
 }
 async function gsLivePull(){
   if (GS_LIVE.pullBusy || !GS_LIVE.session) return;
+  const gen = GS_LIVE.gen || 0;
   GS_LIVE.pullBusy = true;
   try {
     const d = await gsLiveApi('pull', { sinceSeq: GS_LIVE.lastSeq });
-    if (d.end || !d.session || d.session.status !== 'active') { gsLiveSessionOver(); GS_LIVE.pullBusy = false; return; }
+    if (gen !== (GS_LIVE.gen || 0)) return;          /* session ended or restarted mid-request */
+    if (!d.session && d.error) {
+      /* keep the room alive through a wobble instead of silently freezing */
+      GS_LIVE.failStreak = (GS_LIVE.failStreak || 0) + 1;
+      if (GS_LIVE.failStreak === 5) gsLiveLog('⚠️ ' + d.error + ' — retrying…');
+      if (GS_LIVE.failStreak === 25) toast('📶 Live room lost connection — tap Live to rejoin');
+      return;
+    }
+    GS_LIVE.failStreak = 0;
+    if (d.end || !d.session || d.session.status !== 'active') { gsLiveSessionOver(); return; }
     const prev = GS_LIVE.session;
     GS_LIVE.session = d.session;
     if (d.session.floor_mode === 'correct' && prev && prev.floor_mode !== 'correct') {
@@ -14006,8 +14036,11 @@ async function gsLivePull(){
       }
     }
     gsLiveRender(false);
-  } catch (e) {}
-  GS_LIVE.pullBusy = false;
+  } catch (e) {
+    GS_LIVE.failStreak = (GS_LIVE.failStreak || 0) + 1;
+  } finally {
+    GS_LIVE.pullBusy = false;
+  }
 }
 function gsLivePlayChunk(c){
   if (GS_LIVE.muted) return;
@@ -14025,7 +14058,12 @@ function gsLivePlayChunk(c){
     buf.getChannelData(0).set(f);
     const srcNode = ctx.createBufferSource();
     srcNode.buffer = buf;
-    let t = Math.max(ctx.currentTime + 0.05, GS_LIVE.playNextT || 0);
+    const now = ctx.currentTime;
+    let next = GS_LIVE.playNextT || 0;
+    /* If the tab was backgrounded or throttled the schedule drifts seconds
+       ahead and playback falls behind the live voice. Resync instead. */
+    if (!next || next < now - 0.2 || next > now + 2.5) next = now + 0.05;
+    let t = Math.max(now + 0.05, next);
     if (GS_LIVE.lastSpeaker && GS_LIVE.lastSpeaker !== c.userName) t += 0.15;
     srcNode.connect(ctx.destination);
     srcNode.start(t);
@@ -14042,8 +14080,10 @@ async function gsLiveEnd(){
   gsLiveSessionOver();
 }
 function gsLiveSessionOver(){
+  GS_LIVE.gen = (GS_LIVE.gen || 0) + 1;   /* invalidate any in-flight pull */
   gsLiveStopMic();
   clearInterval(GS_LIVE.pullTimer); GS_LIVE.pullTimer = null;
+  GS_LIVE.pullBusy = false; GS_LIVE.failStreak = 0;
   GS_LIVE.session = null; GS_LIVE.lastSeq = 0; GS_LIVE.lastVerse = 0; GS_LIVE.lastSpeaker = null; GS_LIVE.playNextT = 0;
   GS_LIVE.logLines = [];
   const act = document.getElementById('gs-live-active'); if (act) act.style.display = 'none';
