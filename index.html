@@ -4188,7 +4188,6 @@ function renderJuzIndex() {
       /* Opening this screen before the data arrived used to spin forever:
          nothing here ever asked for the data. */
       loadQ();
-  try { renderQiblaLine(null); } catch (e) {}
     }
     return;
   }
@@ -11651,6 +11650,9 @@ function renderQiblaLine(bearing, distanceKm, cardinal, accuracy) {
 }
 
 function initQibla() {
+  /* Paint the dial immediately so the card is never blank, even before
+     location is granted (this used to be an empty Google Maps iframe). */
+  try { renderQiblaLine(null); } catch (e) {}
   if (!navigator.geolocation) {
     document.getElementById('qibla-info').textContent = 'Geolocation not supported on this device.';
     return;
