@@ -446,6 +446,11 @@ body { font-family:'Poppins',sans-serif;
 .cinp:focus { border-color:var(--p); }
 .csend { width:41px; height:41px; background:var(--p); border:none; border-radius:50%; color:#fff; font-size:.9rem; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 11px var(--pg); transition:transform .15s; }
 .csend:active { transform:scale(.9); }
+.cmic { width:41px; height:41px; background:rgba(255,255,255,.07); border:1px solid rgba(255,215,0,.35); border-radius:50%; color:#ffd700; font-size:.95rem; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+.cmic:active { transform:scale(.92); }
+.cmic.rec { background:#dc2626; color:#fff; border-color:#dc2626; animation:micPulse 1.2s infinite; }
+.cmic.busy { opacity:.6; pointer-events:none; }
+@keyframes micPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(220,38,38,.55); } 50%{ box-shadow:0 0 0 9px rgba(220,38,38,0); } }
 
 /* ── ADMIN ────────────────────────────── */
 .adm-wrap { padding:14px; }
@@ -2822,7 +2827,8 @@ body { font-family:'Poppins',sans-serif;
     <textarea class="cinp" id="cinp" rows="1" placeholder="Ask about Islam…"
       onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"
       oninput="this.style.height='';this.style.height=Math.min(this.scrollHeight,96)+'px'"></textarea>
-    <button class="csend" onclick="sendChat()">➤</button>
+    <button class="cmic" id="ai-mic-btn" onclick="aiMic()" title="Speak your question">🎤</button>
+<button class="csend" onclick="sendChat()">➤</button>
   </div>
 </div>
 
@@ -3430,7 +3436,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v141 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v142 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3490,7 +3496,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v141 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v142 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3555,7 +3561,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v141 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v142 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -5541,6 +5547,130 @@ function universalStopSpeaking() {
   }
   window.__nativeTtsDone = null;
   if ('speechSynthesis' in window) speechSynthesis.cancel();
+}
+
+
+// ===== AI GUIDE VOICE INPUT =====
+// Browser: live dictation via SpeechRecognition.
+// APK/WebView: no SpeechRecognition exists there, so record with MediaRecorder and
+// transcribe server-side through the existing Whisper endpoint (api/tajweed).
+var AI_MIC = { rec:null, chunks:[], on:false, t0:0, timer:null, sr:null };
+
+function aiMicBtn(){ return document.getElementById('ai-mic-btn'); }
+function aiMicReset(){
+  AI_MIC.on=false;
+  if(AI_MIC.timer){ clearTimeout(AI_MIC.timer); AI_MIC.timer=null; }
+  const b=aiMicBtn();
+  if(b){ b.classList.remove('rec','busy'); b.textContent='\uD83C\uDFA4'; }
+}
+function aiMicHint(t){
+  const c=document.getElementById('chat-area');
+  if(!c) return;
+  let h=document.getElementById('ai-mic-hint');
+  if(!t){ if(h) h.remove(); return; }
+  if(!h){
+    h=document.createElement('div');
+    h.id='ai-mic-hint';
+    h.style.cssText='font-size:.72rem;color:#93a3b8;padding:6px 10px;text-align:center';
+    c.appendChild(h);
+  }
+  h.textContent=t;
+  c.scrollTop=c.scrollHeight;
+}
+function aiMicFill(text){
+  const box=document.getElementById('cinp');
+  if(!box) return;
+  box.value = (box.value ? box.value.trim()+' ' : '') + text;
+  box.style.height='';
+  box.style.height=Math.min(box.scrollHeight,96)+'px';
+  try{ box.focus(); }catch(e){}
+}
+function aiMicSupported(){ return !!(window.SpeechRecognition || window.webkitSpeechRecognition) || !!(navigator.mediaDevices && window.MediaRecorder); }
+
+function aiMic(){
+  if(AI_MIC.on){ aiMicStop(); return; }
+  const b=aiMicBtn();
+  if(!aiMicSupported()){ toast('\uD83C\uDFA4 Voice input is not available on this device'); return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(SR){
+    try{
+      const sr=new SR();
+      sr.lang='en-US'; sr.interimResults=true; sr.continuous=false;
+      sr.onresult=function(ev){
+        let txt='';
+        for(let i=ev.resultIndex;i<ev.results.length;i++) txt+=ev.results[i][0].transcript;
+        aiMicFill(txt);
+        aiMicHint('Listening\u2026');
+      };
+      sr.onerror=function(ev){
+        aiMicReset(); aiMicHint('');
+        if(ev && ev.error==='not-allowed') toast('\uD83C\uDFA4 Allow microphone access to speak');
+        else if(ev && ev.error!=='no-speech') toast('\uD83C\uDFA4 Could not hear that, try again');
+      };
+      sr.onend=function(){ aiMicReset(); aiMicHint(''); };
+      AI_MIC.sr=sr; AI_MIC.on=true;
+      if(b){ b.classList.add('rec'); b.textContent='\u23F9'; }
+      aiMicHint('Listening\u2026 tap \u23F9 when done');
+      sr.start();
+      return;
+    }catch(e){ /* fall through to recorder */ }
+  }
+  aiMicRecord();
+}
+
+async function aiMicRecord(){
+  const b=aiMicBtn();
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    const mime = (window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) ? 'audio/webm;codecs=opus' : '';
+    const rec = mime ? new MediaRecorder(stream,{mimeType:mime}) : new MediaRecorder(stream);
+    AI_MIC.rec=rec; AI_MIC.chunks=[]; AI_MIC.on=true; AI_MIC.t0=Date.now();
+    rec.ondataavailable=e=>{ if(e.data && e.data.size) AI_MIC.chunks.push(e.data); };
+    rec.onstop=function(){
+      try{ stream.getTracks().forEach(t=>t.stop()); }catch(e){}
+      const blob=new Blob(AI_MIC.chunks,{type:'audio/webm'});
+      AI_MIC.chunks=[];
+      aiMicUpload(blob);
+    };
+    rec.start();
+    if(b){ b.classList.add('rec'); b.textContent='\u23F9'; }
+    aiMicHint('Recording\u2026 tap \u23F9 to send');
+    AI_MIC.timer=setTimeout(function(){ if(AI_MIC.on) aiMicStop(); }, 30000);
+  }catch(e){
+    aiMicReset();
+    toast('\uD83C\uDFA4 Allow microphone access to speak');
+  }
+}
+
+function aiMicStop(){
+  if(AI_MIC.sr){ try{ AI_MIC.sr.stop(); }catch(e){} AI_MIC.sr=null; aiMicReset(); aiMicHint(''); return; }
+  if(AI_MIC.rec && AI_MIC.rec.state!=='inactive'){ try{ AI_MIC.rec.stop(); }catch(e){} }
+  AI_MIC.on=false;
+  if(AI_MIC.timer){ clearTimeout(AI_MIC.timer); AI_MIC.timer=null; }
+  aiMicHint('Transcribing\u2026');
+}
+
+function aiMicUpload(blob){
+  const b=aiMicBtn();
+  if(b){ b.classList.remove('rec'); b.classList.add('busy'); b.textContent='\u23F3'; }
+  const done=function(){ if(b){ b.classList.remove('busy'); b.textContent='\uD83C\uDFA4'; } aiMicHint(''); };
+  if(!blob || blob.size<1200){ done(); toast('\uD83C\uDFA4 Too short, hold and speak'); return; }
+  const fr=new FileReader();
+  fr.onload=function(){
+    const b64=String(fr.result||'').split(',')[1]||'';
+    fetch('api/tajweed',{ method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ audio:b64, mime:'audio/webm', reference:'', dur: Math.round((Date.now()-AI_MIC.t0)/1000) }) })
+      .then(r=>r.json())
+      .then(function(j){
+        done();
+        const txt=(j && j.transcript || '').trim();
+        if(txt){ aiMicFill(txt); }
+        else{ toast('\uD83C\uDFA4 Could not hear that, try again'); }
+      })
+      .catch(function(){ done(); toast('\uD83C\uDFA4 Connection problem, try again'); });
+  };
+  fr.onerror=function(){ done(); toast('\uD83C\uDFA4 Could not read the recording'); };
+  fr.readAsDataURL(blob);
 }
 
 // ===== WUDU AUDIO (Text-to-Speech) =====
@@ -14276,7 +14406,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v141';
+var NQ_BUILD = 'v142';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
