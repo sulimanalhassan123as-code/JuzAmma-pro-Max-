@@ -3552,7 +3552,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v155 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v156 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3612,7 +3612,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v155 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v156 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3677,7 +3677,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v155 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v156 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -15077,9 +15077,9 @@ function gsLiveRender(fresh){
   const head = document.getElementById('gs-live-header');
   if (head) head.innerHTML =
     '<div class="gs-live-head-row"><div><div class="gs-live-head-title"><span class="gs-live-dot"></span>LIVE · ' + gsEsc(sname) + '</div>' +
-    '<div class="gs-live-head-sub">' + (s.floor_mode === 'correct'
+    '<div class="gs-live-head-sub">' + (GS_LIVE.offline ? '📴 You are offline — the room continues for everyone else' : (s.floor_mode === 'correct'
       ? '⛔ ' + gsEsc(s.floor_user) + ' is correcting'
-      : '🎙️ ' + gsEsc(s.host_name) + ' is reciting') +
+      : '🎙️ ' + gsEsc(s.host_name) + ' is reciting')) +
     (total ? ' · Verse ' + s.verse + ' / ' + total : '') + '</div></div>' +
     '<button class="gs-live-btn" style="flex:0;min-width:46px" onclick="gsLiveToggleMute()">' + (GS_LIVE.muted ? '🔇' : '🔊') + '</button></div>';
 
@@ -15266,7 +15266,12 @@ async function gsLiveStartMic(){
                 // forever is what made this look like "the mic just stops
                 // working" with no visible cause. Stop for real and say so.
                 GS_LIVE.chunkFails = (GS_LIVE.chunkFails || 0) + 1;
-                if (GS_LIVE.chunkFails >= 3) {
+                if (GS_LIVE.offline || (typeof navigator !== 'undefined' && navigator.onLine === false)) {
+                  /* Signal gone: hold the mic rather than tear the session down. */
+                  GS_LIVE.chunkFails = 0;
+                  if (GS_LIVE.micOn) { GS_LIVE.wantedMic = true; gsLiveStopMic(); }
+                  gsLiveGoOffline('chunk');
+                } else if (GS_LIVE.chunkFails >= 3) {
                   GS_LIVE.chunkFails = 0;
                   gsLiveStopMic();
                   toast('🎤 Mic stopped — the live session ended or your floor was taken');
@@ -15333,6 +15338,59 @@ function gsLiveToggleMute(){
   gsLiveRender(false);
 }
 
+/* ── Per-phone isolation ────────────────────────────────────────────────
+   Probed the live hub directly: a host that goes silent for 45s does NOT end
+   the session, and there is no 'leave' action. So the room dying for everybody
+   was this client's own doing — a dropped connection ended the session locally
+   and looked like the group had gone. A phone that loses signal now detaches
+   itself only: mic off, polling paused, same session reattached on return. It
+   never calls 'end' unless the host taps End for everyone. */
+GS_LIVE.offline = false;
+GS_LIVE.wantedMic = false;
+
+function gsLiveGoOffline(why){
+  if (GS_LIVE.offline) return;
+  GS_LIVE.offline = true;
+  if (GS_LIVE.micOn) { GS_LIVE.wantedMic = true; gsLiveStopMic(); }
+  if (GS_LIVE.pullTimer) { clearTimeout(GS_LIVE.pullTimer); GS_LIVE.pullTimer = null; }
+  gsLiveLog('📴 Your connection dropped — you are out, the room is still live for everyone else');
+  gsLiveRender(false);
+}
+function gsLiveGoOnline(){
+  if (!GS_LIVE.offline) return;
+  GS_LIVE.offline = false;
+  GS_LIVE.pollMs = GS_LIVE_BASE_MS;
+  if (GS_LIVE.session) {
+    gsLiveLog('✅ Back online — rejoined the same session');
+    gsLiveSchedule(0);
+  } else {
+    gsLiveReattach();
+  }
+  const s2 = GS_LIVE.session;
+  if (GS_LIVE.wantedMic && s2 && s2.host_name === gsLiveUser() && s2.floor_mode === 'recite') {
+    GS_LIVE.wantedMic = false;
+    gsLiveStartMic();
+  }
+  gsLiveRender(false);
+}
+async function gsLiveReattach(){
+  if (!gsLiveRoom()) return;
+  try {
+    const d = await gsLiveApi('state');
+    if (d && d.session && d.session.status === 'active') {
+      GS_LIVE.session = d.session;
+      GS_LIVE.pollMs = GS_LIVE_BASE_MS;
+      gsLiveRender(true);
+      gsLiveSchedule(0);
+      gsLiveLog('🔴 Session still live — reattached');
+    }
+  } catch (e) {}
+}
+try {
+  window.addEventListener('offline', function () { gsLiveGoOffline('event'); });
+  window.addEventListener('online', function () { gsLiveGoOnline(); });
+} catch (e) {}
+
 /* Poll cadence. 1200ms on a setInterval plus the room poll (6s) and the chat
    poll (4.5s) came to ~73 requests a minute against a 70/min ceiling, so a live
    session eventually tripped the platform rate limit and the raw error text got
@@ -15370,6 +15428,8 @@ function gsLiveBackoff(err){
 
 async function gsLivePull(){
   if (GS_LIVE.pullBusy || !GS_LIVE.session) return;
+  if (GS_LIVE.offline) return;                     /* the online handler restarts us */
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) { gsLiveGoOffline('navigator'); return; }
   /* While the shared cooldown runs, send nothing at all. The old code kept
      firing and pushed the limit further away. */
   if (typeof gsInCooldown === 'function' && gsInCooldown()) { gsLiveSchedule(2200); return; }
@@ -15392,7 +15452,15 @@ async function gsLivePull(){
     GS_LIVE.failStreak = 0;
     GS_LIVE.pollMs = GS_LIVE_BASE_MS;
     if (GS_LIVE.wasBusy) { GS_LIVE.wasBusy = false; gsLiveLog('✅ Live reconnected'); }
-    if (d.end || !d.session || d.session.status !== 'active') { gsLiveSessionOver(); return; }
+    /* Only a real end or a dead record ends the room. A reply with no session
+       field is a wobble, not the end of everyone's session. */
+    if (d.end) { gsLiveSessionOver(); return; }
+    if (!d.session) {
+      GS_LIVE.failStreak = (GS_LIVE.failStreak || 0) + 1;
+      if (GS_LIVE.failStreak === 5) gsLiveLog('📶 Waiting for the room to answer…');
+      return;
+    }
+    if (d.session.status !== 'active') { gsLiveSessionOver(); return; }
     const prev = GS_LIVE.session;
     GS_LIVE.session = d.session;
     if (d.session.floor_mode === 'correct' && prev && prev.floor_mode !== 'correct') {
@@ -15500,7 +15568,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v155';
+var NQ_BUILD = 'v156';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
