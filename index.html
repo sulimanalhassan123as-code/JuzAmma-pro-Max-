@@ -3505,7 +3505,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v153 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v154 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3565,7 +3565,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v153 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v154 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3630,7 +3630,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v153 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v154 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -9318,7 +9318,7 @@ async function gsPollRoom() {
       body: JSON.stringify({ action:'getRoom', roomCode: gsRoomCode, userName: gsUserName })
     });
     const d = await res.json();
-    if (!d.ok) { if (d.error && d.error.includes('Rate limit')) gsNoteRateLimit(); return; }
+    if (!d.ok) { if (gsIsRateLimit(d.error)) gsNoteRateLimit(); return; }
     const r = d.room;
     gsIsTeacher = r.isTeacher;
     const isTeacherRoom = (r.roomType === 'teacher');
@@ -9958,6 +9958,13 @@ let gsVoicePollTimer = null, gsVoiceCount = 0, gsCurrentlyPlayingAudio = null;
 // (chat + room state + hub) backs off together instead of hammering it.
 let gsRateLimitUntil = 0;
 function gsNoteRateLimit() { gsRateLimitUntil = Date.now() + 20000; }
+/* The platform does not always say "rate limit": the common body is
+   "entity_list allows 70 requests per 60s for each caller". Matching only the
+   words "Rate limit" let those through as generic errors, so every poller kept
+   hammering. One detector, used everywhere. */
+function gsIsRateLimit(msg) {
+  return /rate\s*limit|requests per \d+\s*s|too many requests|quota exceeded|\b429\b/i.test(String(msg || ''));
+}
 function gsInCooldown() { return Date.now() < gsRateLimitUntil; }
 let gsRecTimerInt = null;
 
@@ -10123,7 +10130,7 @@ async function hubLoad() {
     });
     const d = await res.json();
     if (!d.ok) {
-      if (d.error && d.error.includes('Rate limit')) { gsNoteRateLimit(); toast('⏳ Busy right now — try again in a few seconds'); }
+      if (gsIsRateLimit(d.error)) { gsNoteRateLimit(); toast('⏳ Busy right now — try again in a few seconds'); }
       return;
     }
     hubAllRooms = d.rooms || [];
@@ -10305,7 +10312,7 @@ async function gsPollVoice() {
         toast('⚠️ ' + d.error);
         gsLeave();
       } else {
-        if (d.error && d.error.includes('Rate limit')) gsNoteRateLimit();
+        if (gsIsRateLimit(d.error)) gsNoteRateLimit();
         if (gsVoiceCount === 0) {
           // Server unreachable / rate-limited -- WhatsApp-mode: open the
           // chat from this phone's own storage instead of showing nothing.
@@ -15046,13 +15053,46 @@ function gsLiveToggleMute(){
   gsLiveRender(false);
 }
 
+/* Poll cadence. 1200ms on a setInterval plus the room poll (6s) and the chat
+   poll (4.5s) came to ~73 requests a minute against a 70/min ceiling, so a live
+   session eventually tripped the platform rate limit and the raw error text got
+   printed into the room. The pull now runs on its own timeout chain: it starts
+   at 1.5s, slows down by itself when the server is busy, and stops entirely
+   while the shared cooldown is active. */
+const GS_LIVE_BASE_MS = 1500, GS_LIVE_MAX_MS = 7000;
+
+function gsLiveSchedule(ms){
+  if (GS_LIVE.pullTimer) { clearTimeout(GS_LIVE.pullTimer); GS_LIVE.pullTimer = null; }
+  if (!GS_LIVE.session) return;
+  GS_LIVE.pullTimer = setTimeout(gsLivePull, Math.max(800, ms || GS_LIVE.pollMs || GS_LIVE_BASE_MS));
+}
 function gsLiveEnsurePoll(){
   if (GS_LIVE.pullTimer) return;
-  GS_LIVE.pullTimer = setInterval(gsLivePull, 1200);
+  GS_LIVE.pollMs = GS_LIVE.pollMs || GS_LIVE_BASE_MS;
+  /* A live stream is the only thing that needs the wire. Park the room and chat
+     pollers while it runs so all three do not spend the same request budget. */
+  try { gsStopRoomPoll(); } catch (e) {}
+  try { gsStopVoicePoll(); } catch (e) {}
   gsLivePull();
 }
+/* Honour the server's own advice when it names a wait, otherwise wait a bit. */
+function gsLiveBackoff(err){
+  var wait = 8;
+  var m = /retry after (\d+)\s*s/i.exec(err || '');
+  if (m) wait = Math.max(wait, parseInt(m[1], 10) + 2);
+  gsRateLimitUntil = Date.now() + wait * 1000;
+  GS_LIVE.pollMs = Math.min(GS_LIVE_MAX_MS, (GS_LIVE.pollMs || GS_LIVE_BASE_MS) + 1500);
+  if (!GS_LIVE.wasBusy) {
+    GS_LIVE.wasBusy = true;
+    gsLiveLog('⏳ Live paused for a moment — the server is busy, reconnecting by itself');
+  }
+}
+
 async function gsLivePull(){
   if (GS_LIVE.pullBusy || !GS_LIVE.session) return;
+  /* While the shared cooldown runs, send nothing at all. The old code kept
+     firing and pushed the limit further away. */
+  if (typeof gsInCooldown === 'function' && gsInCooldown()) { gsLiveSchedule(2200); return; }
   const gen = GS_LIVE.gen || 0;
   GS_LIVE.pullBusy = true;
   try {
@@ -15061,11 +15101,17 @@ async function gsLivePull(){
     if (!d.session && d.error) {
       /* keep the room alive through a wobble instead of silently freezing */
       GS_LIVE.failStreak = (GS_LIVE.failStreak || 0) + 1;
-      if (GS_LIVE.failStreak === 5) gsLiveLog('⚠️ ' + d.error + ' — retrying…');
+      if (gsIsRateLimit(d.error)) {
+        gsLiveBackoff(d.error);
+      } else if (GS_LIVE.failStreak === 5) {
+        gsLiveLog('📶 Connection unstable — retrying…');
+      }
       if (GS_LIVE.failStreak === 25) toast('📶 Live room lost connection — tap Live to rejoin');
       return;
     }
     GS_LIVE.failStreak = 0;
+    GS_LIVE.pollMs = GS_LIVE_BASE_MS;
+    if (GS_LIVE.wasBusy) { GS_LIVE.wasBusy = false; gsLiveLog('✅ Live reconnected'); }
     if (d.end || !d.session || d.session.status !== 'active') { gsLiveSessionOver(); return; }
     const prev = GS_LIVE.session;
     GS_LIVE.session = d.session;
@@ -15087,8 +15133,10 @@ async function gsLivePull(){
     gsLiveRender(false);
   } catch (e) {
     GS_LIVE.failStreak = (GS_LIVE.failStreak || 0) + 1;
+    if (GS_LIVE.failStreak % 6 === 0) GS_LIVE.pollMs = Math.min(GS_LIVE_MAX_MS, (GS_LIVE.pollMs || GS_LIVE_BASE_MS) + 1200);
   } finally {
     GS_LIVE.pullBusy = false;
+    if (gen === (GS_LIVE.gen || 0) && GS_LIVE.session) gsLiveSchedule(GS_LIVE.pollMs);
   }
 }
 function gsLivePlayChunk(c){
@@ -15131,8 +15179,12 @@ async function gsLiveEnd(){
 function gsLiveSessionOver(){
   GS_LIVE.gen = (GS_LIVE.gen || 0) + 1;   /* invalidate any in-flight pull */
   gsLiveStopMic();
-  clearInterval(GS_LIVE.pullTimer); GS_LIVE.pullTimer = null;
+  clearTimeout(GS_LIVE.pullTimer); GS_LIVE.pullTimer = null;
   GS_LIVE.pullBusy = false; GS_LIVE.failStreak = 0;
+  GS_LIVE.pollMs = GS_LIVE_BASE_MS; GS_LIVE.wasBusy = false;
+  /* hand the wire back to the room once the live stream is gone */
+  try { if (gsRoomCode) gsStartRoomPoll(); } catch (e) {}
+  try { gsStartVoicePoll(); } catch (e) {}
   GS_LIVE.session = null; GS_LIVE.lastSeq = 0; GS_LIVE.lastVerse = 0; GS_LIVE.lastSpeaker = null; GS_LIVE.playNextT = 0;
   GS_LIVE.logLines = [];
   const act = document.getElementById('gs-live-active'); if (act) act.style.display = 'none';
@@ -15144,7 +15196,7 @@ setInterval(function(){
   const panel = document.getElementById('gs-panel-live');
   const open = panel && panel.classList.contains('active');
   if (open && GS_LIVE.session) { gsLiveEnsurePoll(); return; }
-  if (open && !GS_LIVE.session && !GS_LIVE.quietBusy) {
+  if (open && !GS_LIVE.session && !GS_LIVE.quietBusy && !(typeof gsInCooldown === 'function' && gsInCooldown())) {
     GS_LIVE.quietBusy = true;
     gsLiveApi('state').then(function(d){
       GS_LIVE.quietBusy = false;
@@ -15168,7 +15220,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v153';
+var NQ_BUILD = 'v154';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
