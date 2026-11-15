@@ -3552,7 +3552,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v156 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v157 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3612,7 +3612,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v156 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v157 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3677,7 +3677,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v156 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v157 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -15003,7 +15003,13 @@ const GS_LIVE = {
   sendBuf:null, sendCount:0, playCtx:null, playNextT:0, lastSpeaker:null, muted:false,
   pullTimer:null, pullBusy:false, lastSeq:0, quietBusy:false, logLines:[]
 };
-const GS_LIVE_SR = 16000, GS_LIVE_CHUNK = 16000;
+/* 16000 samples at 16kHz = 1 second per chunk, which costs the reciter 60
+   requests a minute on its own. Measured 2026-11-15: two phones on one live
+   room produced ~77 entity requests/min against a 70/min ceiling and were
+   rejected within seconds (even the closing "end" call). 2-second chunks halve
+   that to 30/min; with listener pulls at 2.5s a two-phone room sits at ~54/min
+   and stayed at zero rejections in a 60s test. */
+const GS_LIVE_SR = 16000, GS_LIVE_CHUNK = 32000;
 
 function gsLiveRoom(){ return (typeof gsRoomCode !== 'undefined') ? gsRoomCode : null; }
 function gsLiveUser(){ return (typeof gsUserName !== 'undefined') ? gsUserName : ''; }
@@ -15257,7 +15263,7 @@ async function gsLiveStartMic(){
           }
           const b64 = gsLiveB64(pcm.buffer);
           const seq = Date.now();
-          gsLiveApi('chunk', { seq: seq, audioBase64: b64, durMs: 1000 })
+          gsLiveApi('chunk', { seq: seq, audioBase64: b64, durMs: 2000 })
             .then(function(r){
               if (!r.ok) {
                 gsLiveLog('⚠️ ' + (r.error || 'chunk rejected'));
@@ -15397,7 +15403,7 @@ try {
    printed into the room. The pull now runs on its own timeout chain: it starts
    at 1.5s, slows down by itself when the server is busy, and stops entirely
    while the shared cooldown is active. */
-const GS_LIVE_BASE_MS = 1500, GS_LIVE_MAX_MS = 7000;
+const GS_LIVE_BASE_MS = 2500, GS_LIVE_MAX_MS = 8000;
 
 function gsLiveSchedule(ms){
   if (GS_LIVE.pullTimer) { clearTimeout(GS_LIVE.pullTimer); GS_LIVE.pullTimer = null; }
@@ -15568,7 +15574,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v156';
+var NQ_BUILD = 'v157';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
