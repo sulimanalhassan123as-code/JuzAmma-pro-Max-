@@ -2537,6 +2537,96 @@ body { font-family:'Poppins',sans-serif;
 .nq-sname { color:#fff; font-size:.82rem; font-weight:600; }
 .nq-sar { color:rgba(201,168,76,.85); font-family:'Amiri',serif; font-size:.84rem; margin-top:1px; }
 .nq-smeta { margin-left:auto; font-size:.63rem; color:rgba(255,255,255,.34); white-space:nowrap; }
+
+/* ══════════════════════════════════════════════════════════════
+   WUDU — guided step flow (v153)
+   Starts where wudu starts: intention, Bismillah, then the acts in order.
+   The pillars are reference material underneath, not the front door.
+   ══════════════════════════════════════════════════════════════ */
+#wudu-view { background:#05121c; }
+.wd-scene { position:absolute; inset:0; pointer-events:none; overflow:hidden;
+  background:
+    radial-gradient(900px 460px at 50% -10%, rgba(56,148,196,.30), transparent 64%),
+    radial-gradient(620px 380px at 90% 12%, rgba(201,168,76,.09), transparent 62%),
+    linear-gradient(180deg,#071726 0%,#05121c 55%,#030c14 100%); }
+.wd-top { position:relative; z-index:2; display:flex; align-items:center; gap:12px; padding:14px 16px 4px; }
+.wd-back { width:38px; height:38px; flex:0 0 38px; border-radius:12px; border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.06); color:#fff; font-size:1rem; display:grid; place-items:center; cursor:pointer; }
+.wd-head { flex:1; min-width:0; }
+.wd-title { font-size:1.02rem; font-weight:700; color:#fff; letter-spacing:.2px; line-height:1.2; }
+.wd-sub { font-size:.60rem; color:rgba(255,255,255,.40); margin-top:3px; letter-spacing:.7px; text-transform:uppercase; }
+.wd-drop { width:38px; height:38px; flex:0 0 38px; border-radius:12px; display:grid; place-items:center; font-size:1.05rem;
+  border:1px solid rgba(56,189,248,.30); background:rgba(56,189,248,.12); box-shadow:0 0 22px rgba(56,189,248,.20); }
+.wd-body { position:relative; z-index:2; padding:12px 16px 104px; display:flex; flex-direction:column; gap:14px; }
+.wd-card { background:linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.022));
+  border:1px solid rgba(255,255,255,.075); border-radius:24px; padding:16px;
+  box-shadow:0 22px 46px -30px #000, inset 0 1px 0 rgba(255,255,255,.05); }
+.wd-prog-row { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:8px; }
+.wd-prog-lbl { font-size:.66rem; letter-spacing:1.1px; text-transform:uppercase; color:#7dd3fc; font-weight:700; font-variant-numeric:tabular-nums; }
+.wd-prog-hint { font-size:.60rem; color:rgba(255,255,255,.30); }
+.wd-prog { height:5px; border-radius:99px; background:rgba(255,255,255,.09); overflow:hidden; margin-bottom:16px; }
+.wd-prog-fill { height:100%; width:0%; border-radius:99px; background:linear-gradient(90deg,#38bdf8,#34d399); transition:width .35s cubic-bezier(.2,.8,.2,1); }
+.wd-step { display:flex; flex-direction:column; gap:12px; }
+.wd-step-top { display:flex; align-items:center; gap:13px; }
+.wd-orb { width:52px; height:52px; flex:0 0 52px; border-radius:50%; position:relative; display:grid; place-items:center; font-size:1.5rem; }
+.wd-orb.fard { background:radial-gradient(circle at 32% 26%, rgba(255,255,255,.6), rgba(255,255,255,0) 48%), linear-gradient(150deg,#34d399,#059669); box-shadow:0 8px 20px -8px rgba(5,150,105,.9); }
+.wd-orb.sunnah { background:radial-gradient(circle at 32% 26%, rgba(255,255,255,.6), rgba(255,255,255,0) 48%), linear-gradient(150deg,#7dd3fc,#0284c7); box-shadow:0 8px 20px -8px rgba(2,132,199,.9); }
+.wd-orb-n { position:absolute; bottom:-2px; right:-2px; width:20px; height:20px; border-radius:50%; background:#05121c;
+  border:1.5px solid rgba(255,255,255,.18); color:#fff; font-size:.62rem; font-weight:800; display:grid; place-items:center; }
+.wd-step-t { font-size:1.02rem; font-weight:700; color:#fff; line-height:1.25; }
+.wd-step-tag { font-size:.58rem; letter-spacing:1px; text-transform:uppercase; font-weight:700; margin-top:4px; }
+.wd-step-tag.fard { color:#6ee7b7; }
+.wd-step-tag.sunnah { color:#7dd3fc; }
+.wd-aya { border-radius:18px; padding:14px 12px; background:rgba(4,12,20,.55); border:1px solid rgba(56,189,248,.16); }
+.wd-aya-ar { font-family:'Amiri','Noto Naskh Arabic',serif; direction:rtl; font-size:1.32rem; line-height:2.05;
+  color:#f3e5c2; text-align:center; }
+.wd-aya-tr { margin-top:9px; font-size:.76rem; font-style:italic; color:#a5d8f3; text-align:center; line-height:1.5; }
+.wd-aya-en { margin-top:6px; font-size:.76rem; color:rgba(255,255,255,.58); text-align:center; line-height:1.55; }
+.wd-desc { font-size:.82rem; color:rgba(255,255,255,.72); line-height:1.66; }
+.wd-ev { display:flex; gap:8px; align-items:flex-start; font-size:.7rem; color:#7dd3fc; line-height:1.5;
+  padding:9px 11px; border-radius:12px; background:rgba(56,189,248,.07); border:1px solid rgba(56,189,248,.14); }
+.wd-tip { display:flex; gap:8px; align-items:flex-start; font-size:.72rem; color:#fcd34d; line-height:1.55;
+  padding:9px 11px; border-radius:12px; background:rgba(252,211,77,.07); border:1px solid rgba(252,211,77,.16); }
+.wd-nav { display:flex; gap:10px; margin-top:16px; }
+.wd-btn { flex:1; height:44px; border-radius:14px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.05);
+  color:rgba(255,255,255,.85); font-family:'Poppins',sans-serif; font-size:.82rem; font-weight:600; cursor:pointer; transition:.16s; }
+.wd-btn:active { transform:scale(.97); }
+.wd-btn.wd-primary { background:linear-gradient(180deg,#2bb3e8,#0284c7); border-color:rgba(125,211,252,.45); color:#fff;
+  box-shadow:0 10px 24px -12px rgba(2,132,199,.95); }
+.wd-btn[disabled] { opacity:.35; }
+.wd-dots { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:13px; }
+.wd-dot { width:22px; height:5px; border-radius:99px; background:rgba(255,255,255,.13); cursor:pointer; transition:.2s; }
+.wd-dot.on { background:#38bdf8; }
+.wd-dot.done { background:rgba(56,189,248,.42); }
+.wd-sec-h { display:flex; align-items:center; justify-content:space-between; margin:0 2px 10px; }
+.wd-sec-h span:first-child { font-size:.63rem; letter-spacing:1.1px; text-transform:uppercase; color:rgba(255,255,255,.40); font-weight:700; }
+.wd-sec-h .wd-hint { font-size:.62rem; color:#7dd3fc; }
+.wd-note { font-size:.72rem; color:rgba(255,255,255,.50); line-height:1.6; margin-bottom:12px; }
+.wd-row { display:flex; gap:12px; align-items:flex-start; padding:11px 0; border-bottom:1px solid rgba(255,255,255,.055); }
+.wd-row:last-child { border-bottom:none; padding-bottom:0; }
+.wd-row-n { width:26px; height:26px; flex:0 0 26px; border-radius:8px; background:rgba(16,185,129,.14); color:#6ee7b7;
+  font-size:.7rem; font-weight:800; display:grid; place-items:center; font-variant-numeric:tabular-nums; }
+.wd-row-t { font-size:.83rem; font-weight:600; color:#fff; line-height:1.35; }
+.wd-row-d { font-size:.72rem; color:rgba(255,255,255,.52); line-height:1.55; margin-top:3px; }
+.wd-ayah { border-radius:18px; padding:14px 12px; background:rgba(56,189,248,.06); border:1px solid rgba(56,189,248,.15); margin-bottom:12px; }
+.wd-ayah-ar { font-family:'Amiri','Noto Naskh Arabic',serif; direction:rtl; font-size:1.28rem; line-height:2.2; color:#bfe6fb; text-align:center; }
+.wd-ayah-en { font-size:.76rem; color:rgba(255,255,255,.60); line-height:1.6; text-align:center; margin-top:9px; }
+.wd-ayah-ref { font-size:.68rem; color:#7dd3fc; text-align:center; margin-top:7px; font-weight:600; }
+.wd-vid { display:flex; gap:12px; align-items:center; border-radius:18px; padding:12px; cursor:pointer;
+  background:linear-gradient(120deg, rgba(56,189,248,.12), rgba(16,185,129,.10)); border:1px solid rgba(125,211,252,.22); }
+.wd-vid:active { transform:scale(.99); }
+.wd-vid-orb { width:38px; height:38px; flex:0 0 38px; border-radius:50%; background:rgba(255,255,255,.14); display:grid; place-items:center; }
+.wd-vid-orb svg { width:18px; height:18px; fill:#fff; }
+.wd-vid-t { font-size:.82rem; font-weight:700; color:#fff; }
+.wd-vid-s { font-size:.66rem; color:rgba(255,255,255,.45); margin-top:2px; }
+.wd-madhab { border-radius:16px; border:1px solid rgba(255,255,255,.07); background:rgba(255,255,255,.03); padding:12px; margin-bottom:10px; }
+.wd-madhab:last-child { margin-bottom:0; }
+.wd-madhab-n { font-size:.82rem; font-weight:700; color:#fff; margin-bottom:7px; }
+.wd-madhab-p { font-size:.71rem; color:rgba(255,255,255,.55); line-height:1.55; margin-bottom:4px; }
+.wd-madhab-p b { color:rgba(255,255,255,.78); font-weight:600; }
+.wd-virtue { font-size:.75rem; color:rgba(255,255,255,.60); line-height:1.65; padding:11px 0; border-bottom:1px solid rgba(255,255,255,.055); }
+.wd-virtue:last-child { border-bottom:none; padding-bottom:0; }
+.wd-virtue b { color:#7dd3fc; font-weight:600; }
 </style>
 </head>
 <body>
@@ -2941,247 +3031,120 @@ body { font-family:'Poppins',sans-serif;
 
 <!-- ════════════════ WUDU / ABLUTION GUIDE ════════════════ -->
 <div id="wudu-view">
-  <div class="wudu-header">
-    <button class="prog-back" onclick="goToView('home')" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)">← Home</button>
-    <div class="wudu-badge">💧 Purification</div>
-    <h2>How to Perform Wudu</h2>
-    <p class="wudu-sub">The Prophetic Method ﷺ · Based on Sahih al-Bukhari & Muslim</p>
+  <div class="wd-scene"></div>
+  <div class="wd-top">
+    <button class="wd-back" onclick="goToView('home')">←</button>
+    <div class="wd-head">
+      <div class="wd-title">Wudu</div>
+      <div class="wd-sub">Step by step · Qur'an 5:6 and the Sunnah</div>
+    </div>
+    <div class="wd-drop">💧</div>
   </div>
 
-  <div class="wudu-body">
+  <div class="wd-body">
 
-    <!-- In-App Browser Notice -->
-    <div class="inapp-banner" id="inapp-notice">
-      <div class="inapp-banner-title">📱 Open in Browser for Full Features</div>
-      <div class="inapp-banner-desc">Audio features need a full browser. Tap below to open this page in your phone's browser.</div>
-      <a class="inapp-banner-btn" href="https://juz-amma-pro-max.vercel.app" target="_blank" rel="noopener">Open in Browser →</a>
+    <!-- GUIDED FLOW -->
+    <div class="wd-card">
+      <div class="wd-prog-row">
+        <span class="wd-prog-lbl" id="wd-prog-lbl">Step 1 of 11</span>
+        <span class="wd-prog-hint">tap a bar to jump</span>
+      </div>
+      <div class="wd-prog"><div class="wd-prog-fill" id="wd-prog-fill"></div></div>
+      <div class="wd-step" id="wd-step"></div>
+      <div class="wd-nav">
+        <button class="wd-btn" id="wd-prev" onclick="wdGo(-1)">← Back</button>
+        <button class="wd-btn wd-primary" id="wd-next" onclick="wdGo(1)">Next →</button>
+      </div>
+      <div class="wd-dots" id="wd-dots"></div>
     </div>
-    <!-- Quranic Basis -->
-    <div class="wudu-section wudu-quran">
-      <div class="wudu-section-title">📖 Quranic Foundation</div>
-      <div class="wudu-ayah" dir="rtl">يَا أَيُّهَا الَّذِينَ آمَنُوا إِذَا قُمْتُمْ إِلَى الصَّلَاةِ فَاغْسِلُوا وُجُوهَكُمْ وَأَيْدِيَكُمْ إِلَى الْمَرَافِقِ وَامْسَحُوا بِرُءُوسِكُمْ وَأَرْجُلَكُمْ إِلَى الْكَعْبَيْنِ</div>
-      <div class="wudu-translation">"O you who believe! When you intend to offer the prayer, wash your faces and your hands (forearms) up to the elbows, rub (by passing wet hands over) your heads, and (wash) your feet up to ankles."</div>
-      <div class="wudu-ref">— Surah Al-Ma'idah 5:6</div>
-    </div>
 
-    <!-- The 6 Fard (Obligatory) Acts -->
-    <div class="wudu-section wudu-fard">
-      <div class="wudu-section-title">✅ The 6 Obligatory Acts (Fard)</div>
-      <div class="wudu-note">These are the pillars — wudu is invalid without any of them. (Shaykh Ibn 'Uthaymeen, Ar-Rawd al-Murbi')</div>
-      <div class="wudu-step">
-        <div class="wudu-step-icon wsi-fard">🧼<span class="wsi-num">1</span></div>
-        <div class="wudu-step-body">
-          <div class="wudu-step-title">Wash the Face</div>
-          <div class="wudu-step-desc">From hairline to chin, ear to ear. Includes rinsing mouth and nose.</div>
-        </div>
-      </div>
-      <div class="wudu-step">
-        <div class="wudu-step-icon wsi-fard">💪<span class="wsi-num">2</span></div>
-        <div class="wudu-step-body">
-          <div class="wudu-step-title">Wash the Arms to the Elbows</div>
-          <div class="wudu-step-desc">Both arms including the elbows — right arm first, then left.</div>
-        </div>
-      </div>
-      <div class="wudu-step">
-        <div class="wudu-step-icon wsi-fard">🧠<span class="wsi-num">3</span></div>
-        <div class="wudu-step-body">
-          <div class="wudu-step-title">Wipe the Head</div>
-          <div class="wudu-step-desc">With wet hands — the amount differs by school (see below).</div>
-        </div>
-      </div>
-      <div class="wudu-step">
-        <div class="wudu-step-icon wsi-fard">🦶<span class="wsi-num">4</span></div>
-        <div class="wudu-step-body">
-          <div class="wudu-step-title">Wash the Feet to the Ankles</div>
-          <div class="wudu-step-desc">Both feet including the ankles — right foot first, then left.</div>
-        </div>
-      </div>
-      <div class="wudu-step">
-        <div class="wudu-step-icon wsi-fard">🔢<span class="wsi-num">5</span></div>
-        <div class="wudu-step-body">
-          <div class="wudu-step-title">Sequence (Tartib)</div>
-          <div class="wudu-step-desc">Follow the order: face → arms → head → feet. Required by Shafi'i, Maliki, Hanbali. Recommended by Hanafi.</div>
-        </div>
-      </div>
-      <div class="wudu-step">
-        <div class="wudu-step-icon wsi-fard">⏱️<span class="wsi-num">6</span></div>
-        <div class="wudu-step-body">
-          <div class="wudu-step-title">Continuity (Muwalah)</div>
-          <div class="wudu-step-desc">Wash each part before the previous one dries — no long gaps between steps.</div>
-        </div>
-      </div>
-
-      <div class="wudu-video-card" onclick="openWuduVideo('fard')">
-        <div class="wudu-video-card-content">
-          <div class="wudu-video-play-orb">
-            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-          </div>
-          <div class="wudu-video-card-text">
-            <div class="wudu-video-card-label">Watch Video</div>
-            <div class="wudu-video-card-title">The 6 Fard Acts — Demonstrated</div>
-            <div class="wudu-video-card-sub">Real human demonstration · Tap to play</div>
-          </div>
+    <!-- VIDEO -->
+    <div class="wd-card">
+      <div class="wd-vid" onclick="openWuduVideo('sunnah')">
+        <div class="wd-vid-orb"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        <div>
+          <div class="wd-vid-t">Watch the full method</div>
+          <div class="wd-vid-s">Sheikh Majed Mahmoud · the complete prophetic wudu</div>
         </div>
       </div>
     </div>
 
-    <!-- The Prophetic Method (Most Authentic) -->
-    <div class="wudu-section wudu-sunnah">
-      <div class="wudu-section-title">🌟 The Prophetic Method ﷺ (Most Authentic)</div>
-      <div class="wudu-note">Based on the Hadith of Uthman ibn Affan (RA) — Sahih al-Bukhari 1934 & Sahih Muslim 226. Ibn Shihab said: "This is the most complete way of performing wudu."</div>
+    <!-- PILLARS -->
+    <div class="wd-card" id="wd-pillars">
+      <div class="wd-sec-h"><span>The pillars (fard)</span><span class="wd-hint">Qur'an 5:6</span></div>
+      <div class="wd-ayah">
+        <div class="wd-ayah-ar" dir="rtl">يَا أَيُّهَا الَّذِينَ آمَنُوا إِذَا قُمْتُمْ إِلَى الصَّلَاةِ فَاغْسِلُوا وُجُوهَكُمْ وَأَيْدِيَكُمْ إِلَى الْمَرَافِقِ وَامْسَحُوا بِرُءُوسِكُمْ وَأَرْجُلَكُمْ إِلَى الْكَعْبَيْنِ</div>
+        <div class="wd-ayah-en">"O you who believe, when you rise for prayer, wash your faces and your forearms to the elbows, wipe your heads, and wash your feet to the ankles."</div>
+        <div class="wd-ayah-ref">— Surah Al-Ma'idah 5:6</div>
+      </div>
+      <div class="wd-row"><div class="wd-row-n">1</div><div><div class="wd-row-t">Wash the face</div><div class="wd-row-d">Hairline to chin, ear to ear. The mouth and nose are part of the face.</div></div></div>
+      <div class="wd-row"><div class="wd-row-n">2</div><div><div class="wd-row-t">Wash both arms to the elbows</div><div class="wd-row-d">Including the elbows, right arm first.</div></div></div>
+      <div class="wd-row"><div class="wd-row-n">3</div><div><div class="wd-row-t">Wipe the head</div><div class="wd-row-d">With wet hands. How much of the head is required differs by school.</div></div></div>
+      <div class="wd-row"><div class="wd-row-n">4</div><div><div class="wd-row-t">Wash both feet to the ankles</div><div class="wd-row-d">Including the ankles, right foot first.</div></div></div>
+      <div class="wd-note" style="margin:12px 0 0">These four are agreed by every school. Schools that count six add to them: the Shafi'i school includes the intention and the order; the Hanbali school includes the order (tartib) and continuity (muwalah), which is the list given in Ar-Rawd al-Murbi'.</div>
+    </div>
 
-      <div class="wudu-step wudu-step-sunnah">
-        <div class="wudu-step-icon wsi-sunnah">💭<span class="wsi-num">1</span></div>
-        <div class="wudu-step-body">
-          <div class="wudu-step-title">Make Intention (Niyyah)</div>
-          <div class="wudu-step-desc">Intend in your heart to perform wudu for Allah's sake. Shafi'i school also recommends verbal intention.</div>
-        </div>
+    <!-- BEFORE YOU START -->
+    <div class="wd-card">
+      <div class="wd-sec-h"><span>Before you start</span><span class="wd-hint">conditions</span></div>
+      <div class="wd-row"><div class="wd-row-n">✓</div><div><div class="wd-row-t">Water that is pure</div><div class="wd-row-d">Plain water. A little used water is fine; anything that changes its colour, taste or smell by impurity is not.</div></div></div>
+      <div class="wd-row"><div class="wd-row-n">✓</div><div><div class="wd-row-t">Nothing blocking the skin</div><div class="wd-row-d">Remove nail polish, wax, dough or thick cream under the nails — water must reach the skin.</div></div></div>
+      <div class="wd-row"><div class="wd-row-n">✓</div><div><div class="wd-row-t">Intention in the heart</div><div class="wd-row-d">Required by the Shafi'i and Hanbali schools, Sunnah in the Hanafi and Maliki schools. It is not said out loud as a formula.</div></div></div>
+      <div class="wd-row"><div class="wd-row-n">✓</div><div><div class="wd-row-t">Free of major impurity</div><div class="wd-row-d">Not menstruating or in postnatal bleeding; if in a state needing ghusl, wudu alone is not enough.</div></div></div>
+    </div>
+
+    <!-- NULLIFIERS -->
+    <div class="wd-card">
+      <div class="wd-sec-h"><span>What breaks wudu</span><span class="wd-hint">school-tagged</span></div>
+      <div class="wd-row"><div class="wd-row-n">✕</div><div><div class="wd-row-t">Anything leaving the front or back passage</div><div class="wd-row-d">Urine, stool, wind — agreed by all.</div></div></div>
+      <div class="wd-row"><div class="wd-row-n">✕</div><div><div class="wd-row-t">Deep sleep</div><div class="wd-row-d">Sleep in which you lose awareness. Dozing while seated does not break it (Hanafi, Shafi'i).</div></div></div>
+      <div class="wd-row"><div class="wd-row-n">✕</div><div><div class="wd-row-t">Loss of consciousness</div><div class="wd-row-d">Fainting, intoxication or insanity — agreed by all.</div></div></div>
+      <div class="wd-row"><div class="wd-row-n">✕</div><div><div class="wd-row-t">Touching the private parts</div><div class="wd-row-d">Skin to skin, without a barrier — Shafi'i and Hanbali. Hanafi and Maliki do not count it.</div></div></div>
+      <div class="wd-row"><div class="wd-row-n">✕</div><div><div class="wd-row-t">Vomiting a mouthful</div><div class="wd-row-d">Hanafi and Hanbali. Not counted by Shafi'i or Maliki.</div></div></div>
+      <div class="wd-row"><div class="wd-row-n">✕</div><div><div class="wd-row-t">Flowing blood</div><div class="wd-row-d">Blood that flows beyond the wound — Hanafi. Not counted by the majority of Shafi'i scholars.</div></div></div>
+    </div>
+
+    <!-- MADHABS -->
+    <div class="wd-card">
+      <div class="wd-sec-h"><span>School differences</span><span class="wd-hint">all four are valid</span></div>
+      <div class="wd-note">Every school agrees on the four pillars. These are the details where they differ.</div>
+      <div class="wd-madhab">
+        <div class="wd-madhab-n">🕌 Hanafi</div>
+        <div class="wd-madhab-p"><b>Wiping the head:</b> at least a quarter of it</div>
+        <div class="wd-madhab-p"><b>Order (tartib):</b> Sunnah, not obligatory</div>
+        <div class="wd-madhab-p"><b>Bismillah:</b> Sunnah</div>
+        <div class="wd-madhab-p"><b>Intention:</b> in the heart, Sunnah</div>
       </div>
-      <div class="wudu-step wudu-step-sunnah">
-        <div class="wudu-step-icon wsi-sunnah">🗣️<span class="wsi-num">2</span></div>
-        <div class="wudu-step-body">
-          <div class="wudu-step-title">Say Bismillah</div>
-          <div class="wudu-step-desc">Say "Bismillah" before starting. (Imam Ahmad considered it obligatory; majority consider it Sunnah)</div>
-        </div>
+      <div class="wd-madhab">
+        <div class="wd-madhab-n">🕌 Shafi'i</div>
+        <div class="wd-madhab-p"><b>Wiping the head:</b> any part, even part of one hair</div>
+        <div class="wd-madhab-p"><b>Order (tartib):</b> obligatory</div>
+        <div class="wd-madhab-p"><b>Bismillah:</b> Sunnah</div>
+        <div class="wd-madhab-p"><b>Intention:</b> obligatory, in the heart at the first wash</div>
       </div>
-      <div class="wudu-step wudu-step-sunnah">
-        <div class="wudu-step-icon wsi-sunnah">🖐️<span class="wsi-num">3</span></div>
-        <div class="wudu-step-body">
-          <div class="wudu-step-title">Wash Hands 3× </div>
-          <div class="wudu-step-desc">Wash both hands up to the wrists, three times. Use siwak/miswak if available.</div>
-        </div>
+      <div class="wd-madhab">
+        <div class="wd-madhab-n">🕌 Maliki</div>
+        <div class="wd-madhab-p"><b>Wiping the head:</b> the entire head</div>
+        <div class="wd-madhab-p"><b>Order (tartib):</b> obligatory</div>
+        <div class="wd-madhab-p"><b>Continuity:</b> obligatory</div>
+        <div class="wd-madhab-p"><b>Bismillah:</b> Sunnah</div>
       </div>
-      <div class="wudu-step wudu-step-sunnah">
-        <div class="wudu-step-icon wsi-sunnah">👄<span class="wsi-num">4</span></div>
-        <div class="wudu-step-body">
-          <div class="wudu-step-title">Rinse Mouth 3×</div>
-          <div class="wudu-step-desc">Circulate water thoroughly throughout the mouth, three times. (When fasting, do so lightly)</div>
-        </div>
-      </div>
-      <div class="wudu-step wudu-step-sunnah">
-        <div class="wudu-step-icon wsi-sunnah">👃<span class="wsi-num">5</span></div>
-        <div class="wudu-step-body">
-          <div class="wudu-step-title">Rinse Nose 3×</div>
-          <div class="wudu-step-desc">Inhale water into the nose and blow it out, three times. (When fasting, do not inhale deeply)</div>
-        </div>
-      </div>
-      <div class="wudu-step wudu-step-sunnah">
-        <div class="wudu-step-icon wsi-sunnah">🧼<span class="wsi-num">6</span></div>
-        <div class="wudu-step-body">
-          <div class="wudu-step-title">Wash Face 3×</div>
-          <div class="wudu-step-desc">From hairline to chin, ear to ear — three times. Run wet fingers through a thick beard.</div>
-        </div>
-      </div>
-      <div class="wudu-step wudu-step-sunnah">
-        <div class="wudu-step-icon wsi-sunnah">💪<span class="wsi-num">7</span></div>
-        <div class="wudu-step-body">
-          <div class="wudu-step-title">Wash Right Arm 3×, Then Left Arm 3×</div>
-          <div class="wudu-step-desc">From fingertips to elbow (including the elbow). Right arm three times first, then left arm three times.</div>
-        </div>
-      </div>
-      <div class="wudu-step wudu-step-sunnah">
-        <div class="wudu-step-icon wsi-sunnah">🧠<span class="wsi-num">8</span></div>
-        <div class="wudu-step-body">
-          <div class="wudu-step-title">Wipe the Head Once</div>
-          <div class="wudu-step-desc">Wet both hands, wipe from front to back of head, then back to front (Hadith of Abdullah bin Zayd, Bukhari 185). </div>
-        </div>
-      </div>
-      <div class="wudu-step wudu-step-sunnah">
-        <div class="wudu-step-icon wsi-sunnah">👂<span class="wsi-num">9</span></div>
-        <div class="wudu-step-body">
-          <div class="wudu-step-title">Wipe the Ears Once</div>
-          <div class="wudu-step-desc">Index fingers inside the ears, thumbs wipe the outer ears — once. (Imam Ahmad considered it obligatory; majority Sunnah)</div>
-        </div>
-      </div>
-      <div class="wudu-step wudu-step-sunnah">
-        <div class="wudu-step-icon wsi-sunnah">🦶<span class="wsi-num">10</span></div>
-        <div class="wudu-step-body">
-          <div class="wudu-step-title">Wash Right Foot 3×, Then Left Foot 3×</div>
-          <div class="wudu-step-desc">From toes to ankle (including the ankle). Run fingers between toes. Right foot three times, then left three times.</div>
-        </div>
-      </div>
-      <div class="wudu-step wudu-step-sunnah">
-        <div class="wudu-step-icon wsi-sunnah">🤲<span class="wsi-num">11</span></div>
-        <div class="wudu-step-body">
-          <div class="wudu-step-title">Recite the Du'a</div>
-          <div class="wudu-step-desc">"Ashhadu an la ilaha ill-Allah wahdahu la sharika lah, wa ashhadu anna Muhammadan 'abduhu wa rasuluhu. Allahummaj'alni min al-tawwabina waj'alni min al-mutatahhirina."</div>
-          <div class="wudu-step-desc" style="margin-top:4px;font-style:italic;color:#94a3b8">"I bear witness that there is no god except Allah alone, with no partner, and I bear witness that Muhammad is His slave and Messenger. O Allah, make me one of those who repent and make me one of those who purify themselves."</div>
-        </div>
-      </div>
-      <div class="wudu-video-card" onclick="openWuduVideo('sunnah')">
-        <div class="wudu-video-card-content">
-          <div class="wudu-video-play-orb">
-            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-          </div>
-          <div class="wudu-video-card-text">
-            <div class="wudu-video-card-label">Watch Video</div>
-            <div class="wudu-video-card-title">The Full Prophetic Method — Demonstrated</div>
-            <div class="wudu-video-card-sub">Real human demonstration · Tap to play</div>
-          </div>
-        </div>
+      <div class="wd-madhab">
+        <div class="wd-madhab-n">🕌 Hanbali</div>
+        <div class="wd-madhab-p"><b>Wiping the head:</b> the entire head</div>
+        <div class="wd-madhab-p"><b>Order and continuity:</b> both obligatory (six obligations in Ar-Rawd al-Murbi')</div>
+        <div class="wd-madhab-p"><b>Bismillah:</b> obligatory (the view of Imam Ahmad)</div>
+        <div class="wd-madhab-p"><b>Intention:</b> obligatory, in the heart</div>
       </div>
     </div>
 
-    <!-- Scholarly Differences -->
-    <div class="wudu-section wudu-madhabs">
-      <div class="wudu-section-title">📚 Scholarly Opinions (The 4 Madhabs)</div>
-      <div class="wudu-note">All four schools agree on the obligatory acts. They differ on some details — all are valid.</div>
-
-      <div class="wudu-madhab-card">
-        <div class="wudu-madhab-name">🕌 Hanafi</div>
-        <div class="wudu-madhab-point"><b>Wiping head:</b> At least 1/4 of the head</div>
-        <div class="wudu-madhab-point"><b>Order (Tartib):</b> Sunnah, not obligatory</div>
-        <div class="wudu-madhab-point"><b>Bismillah:</b> Sunnah</div>
-        <div class="wudu-madhab-point"><b>Intention:</b> In the heart</div>
-      </div>
-
-      <div class="wudu-madhab-card">
-        <div class="wudu-madhab-name">🕌 Shafi'i</div>
-        <div class="wudu-madhab-point"><b>Wiping head:</b> Any portion (even one hair)</div>
-        <div class="wudu-madhab-point"><b>Order (Tartib):</b> Obligatory</div>
-        <div class="wudu-madhab-point"><b>Bismillah:</b> Sunnah</div>
-        <div class="wudu-madhab-point"><b>Intention:</b> In the heart + recommended verbally</div>
-      </div>
-
-      <div class="wudu-madhab-card">
-        <div class="wudu-madhab-name">🕌 Maliki</div>
-        <div class="wudu-madhab-point"><b>Wiping head:</b> Entire head</div>
-        <div class="wudu-madhab-point"><b>Order (Tartib):</b> Obligatory</div>
-        <div class="wudu-madhab-point"><b>Bismillah:</b> Sunnah</div>
-        <div class="wudu-madhab-point"><b>Intention:</b> In the heart</div>
-      </div>
-
-      <div class="wudu-madhab-card">
-        <div class="wudu-madhab-name">🕌 Hanbali</div>
-        <div class="wudu-madhab-point"><b>Wiping head:</b> Entire head</div>
-        <div class="wudu-madhab-point"><b>Order (Tartib):</b> Obligatory</div>
-        <div class="wudu-madhab-point"><b>Bismillah:</b> Obligatory (Imam Ahmad's view)</div>
-        <div class="wudu-madhab-point"><b>Intention:</b> In the heart</div>
-      </div>
+    <!-- VIRTUES -->
+    <div class="wd-card">
+      <div class="wd-sec-h"><span>Virtues of wudu</span></div>
+      <div class="wd-virtue">"Whoever performs wudu like this, then stands and prays two rak'ahs without letting his thoughts wander, his previous sins will be forgiven." <b>— Bukhari and Muslim</b></div>
+      <div class="wd-virtue">"When a Muslim washes his face in wudu, every sin he committed with his eyes leaves with the water... when he washes his feet, every sin his feet committed leaves with the water." <b>— Sahih Muslim 244</b></div>
+      <div class="wd-virtue">To Bilal (RA): "I heard the sound of your footsteps ahead of me in Paradise" — because of the steps he took to wudu. <b>— Bukhari and Muslim</b></div>
     </div>
-
-    <!-- What Nullifies Wudu -->
-    <div class="wudu-section wudu-nullifiers">
-      <div class="wudu-section-title">⚠️ What Nullifies Wudu</div>
-      <div class="wudu-null-list">
-        <div class="wudu-null-item">Natural discharges (urine, stool, gas)</div>
-        <div class="wudu-null-item">Deep sleep that causes loss of awareness</div>
-        <div class="wudu-null-item">Loss of consciousness</div>
-        <div class="wudu-null-item">Touching the private parts directly (Shafi'i & Hanbali)</div>
-        <div class="wudu-null-item">Vomiting a mouthful (Hanafi & Hanbali)</div>
-        <div class="wudu-null-item">Bleeding that flows from the skin (majority)</div>
-      </div>
-    </div>
-
-    <!-- Virtues -->
-    <div class="wudu-section wudu-virtues">
-      <div class="wudu-section-title">✨ Virtues of Wudu</div>
-      <div class="wudu-virtue">The Prophet ﷺ said: "Whoever performs wudu like this, then stands and prays two rak'ahs without letting his thoughts wander, his previous sins will be forgiven." <span class="wudu-ref-inline">— Bukhari & Muslim</span></div>
-      <div class="wudu-virtue">The Prophet ﷺ said: "When a Muslim — or a believer — performs wudu and washes his face, every sin he committed with his eyes comes out with the water... When he washes his feet, every sin his feet walked toward comes out with the water." <span class="wudu-ref-inline">— Sahih Muslim 244</span></div>
-      <div class="wudu-virtue">The Prophet ﷺ said to Bilal (RA): "You will hear the footsteps of your shoes in Paradise ahead of you — because of the extra steps you take in wudu." <span class="wudu-ref-inline">— Bukhari & Muslim</span></div>
-    </div>
-
-    <!-- Watch & Learn section removed — video cards are now inline in each section -->
 
   </div>
 </div>
@@ -3542,7 +3505,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v152 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v153 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3602,7 +3565,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v152 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v153 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3667,7 +3630,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v152 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v153 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -4018,6 +3981,7 @@ function switchView(v) {
   if (v === 'admin') initAdminPanel();
   if (v === 'progress') initProgress();
   if (v === 'night')    initNight();
+  if (v === 'wudu')     initWudu();
   if (v === 'groupstudy') initGroupStudy();
   if (v === 'dua') initDua();
   if (v === 'qibla') initQibla();
@@ -6107,6 +6071,139 @@ function aiMicUpload(blob){
 const WUDU_FARD_VIDEO_ID = 'CO5O3JBjgGI';
 // Sunnah video: Sheikh Majed Mahmoud "How to Make Wudu | Step by Step"
 const WUDU_SUNNAH_VIDEO_ID = 'P29LMOHhpjE';
+
+// ══════════════════════════════════════════════════════════════
+// WUDU GUIDE (v153) — data-driven step flow
+// Order follows the hadith of Uthman ibn Affan as narrated in Sahih
+// al-Bukhari 159 and Sahih Muslim 226, which Ibn Shihab called the most
+// complete wudu. The four pillars are reference material below the flow.
+// ══════════════════════════════════════════════════════════════
+const WUDU_STEPS = [
+  { icon:'💭', kind:'sunnah', tag:'Intention',
+    title:'Niyyah — intend it in the heart',
+    desc:'Decide in your heart that this is wudu for Allah, to be pure for prayer. There is no formula to recite: the Prophet ﷺ and his Companions did not say an intention out loud, and inventing words for it is a later addition.',
+    ev:'"Actions are judged by intentions, and each person has what he intended." — Sahih al-Bukhari 1',
+    tip:'Required by the Shafi\'i and Hanbali schools, Sunnah in the Hanafi and Maliki schools. Either way, do not say it aloud.' },
+  { icon:'🗣️', kind:'sunnah', tag:'Sunnah to start',
+    title:'Say Bismillah',
+    ar:'بِسْمِ اللَّهِ', tr:'Bismillah', en:'In the name of Allah.',
+    desc:'Say it as you begin, then begin with the right hand.',
+    ev:'"There is no wudu for the one who does not mention the name of Allah over it." — Abu Dawud 101, Ibn Majah 399 (graded sahih)',
+    tip:'Obligatory in the Hanbali school, Sunnah in the other three. Saying it costs nothing and covers every view.' },
+  { icon:'🖐️', kind:'fard', tag:'Sunnah act',
+    title:'Wash both hands three times, to the wrists',
+    desc:'Pour over the right hand and rub it with the left, through the fingers, up to and including the wrist. Then the left. Three times each.',
+    ev:'Uthman (RA) poured water over his hands three times and washed them. — Sahih al-Bukhari 159, Sahih Muslim 226' },
+  { icon:'👄', kind:'fard', tag:'Part of the face',
+    title:'Rinse the mouth three times',
+    desc:'Take water into the mouth, move it around until it reaches the whole mouth, then spit it out. Three times.',
+    ev:'The Prophet ﷺ rinsed his mouth and sniffed water into his nose. — Sahih Muslim 226',
+    tip:'Fasting? Do it gently and do not let the water go far down the throat.' },
+  { icon:'👃', kind:'fard', tag:'Part of the face',
+    title:'Rinse the nose three times',
+    desc:'Draw water up into the nose, then blow it out with the left hand. Three times.',
+    ev:'He would sniff water up, then blow it out. — Sahih al-Bukhari 162, Sahih Muslim 226',
+    tip:'Fasting? Sniff lightly, without forcing water high into the nose.' },
+  { icon:'🧼', kind:'fard', tag:'Pillar 1 of 4',
+    title:'Wash the face three times',
+    desc:'From the hairline to the bottom of the chin, and from ear to ear. Run wet fingers through the beard so water reaches the skin underneath.',
+    ev:'"...wash your faces..." — Qur\'an 5:6, and three times in the wudu of Uthman (RA), Sahih al-Bukhari 159' },
+  { icon:'💪', kind:'fard', tag:'Pillar 2 of 4',
+    title:'Wash the arms to the elbows — right, then left',
+    desc:'From the fingertips, over the hand and forearm, through the elbow. Right arm three times, then the left three times.',
+    ev:'"...and your forearms to the elbows..." — Qur\'an 5:6' },
+  { icon:'🧠', kind:'fard', tag:'Pillar 3 of 4',
+    title:'Wipe the head once',
+    desc:'With wet hands, wipe from the front of the head to the back, then bring them back to the front. Once is the Sunnah.',
+    ev:'Abdullah ibn Zayd (RA) described the Prophet ﷺ wiping his head front to back and back to front. — Sahih al-Bukhari 185, Sahih Muslim 235',
+    tip:'How much of the head is required differs: any part (Shafi\'i), a quarter (Hanafi), the whole head (Maliki and Hanbali).' },
+  { icon:'👂', kind:'sunnah', tag:'Sunnah act',
+    title:'Wipe the ears once',
+    desc:'Index fingers inside the ears, thumbs behind them, wiped once with the same water as the head.',
+    ev:'"He wiped his head and his ears, inside with the index fingers and outside with the thumbs." — Ibn Majah 402 (graded sahih)',
+    tip:'Obligatory in the Hanbali school, Sunnah in the other three.' },
+  { icon:'🦶', kind:'fard', tag:'Pillar 4 of 4',
+    title:'Wash the feet to the ankles — right, then left',
+    desc:'Through the ankles, and pass the little finger between the toes so no dry skin is left. Right foot three times, then the left.',
+    ev:'"...and your feet to the ankles." — Qur\'an 5:6, and three times in Sahih al-Bukhari 159' },
+  { icon:'🤲', kind:'sunnah', tag:'After finishing',
+    title:'Say the du\'a after wudu',
+    ar:'أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ',
+    tr:'Ash-hadu an la ilaha illa Allah, wahdahu la sharika lah, wa ash-hadu anna Muhammadan \'abduhu wa rasuluh.',
+    en:'I bear witness that there is no god but Allah alone, with no partner, and that Muhammad is His servant and Messenger.',
+    desc:'Then, if you can, add the second du\'a below. Both are reported from the Prophet ﷺ after wudu.',
+    ev:'"Whoever performs wudu and then says this, the eight gates of Paradise are opened for him." — Sahih Muslim 234',
+    tip:'Second du\'a: اللَّهُمَّ اجْعَلْنِي مِنَ التَّوَّابِينَ وَاجْعَلْنِي مِنَ الْمُتَطَهِّرِينَ — "Allahumma ij\'alni min at-tawwabin waj\'alni min al-mutatahhirin" — O Allah, make me among those who repent and among those who purify themselves. (Jami\' at-Tirmidhi 55, graded sahih)' }
+];
+
+let wdIdx = 0;
+
+function wdSave() { try { localStorage.setItem('wuduStep', String(wdIdx)); } catch (e) {} }
+
+function wdRender() {
+  const step = WUDU_STEPS[wdIdx];
+  if (!step) return;
+  const host = document.getElementById('wd-step');
+  if (!host) return;
+  let html = '<div class="wd-step-top">' +
+      '<div class="wd-orb ' + step.kind + '">' + step.icon + '<span class="wd-orb-n">' + (wdIdx + 1) + '</span></div>' +
+      '<div><div class="wd-step-t">' + step.title + '</div>' +
+      '<div class="wd-step-tag ' + step.kind + '">' + step.tag + '</div></div>' +
+    '</div>';
+  if (step.ar) {
+    html += '<div class="wd-aya">' +
+      '<div class="wd-aya-ar" dir="rtl">' + step.ar + '</div>' +
+      (step.tr ? '<div class="wd-aya-tr">' + step.tr + '</div>' : '') +
+      (step.en ? '<div class="wd-aya-en">' + step.en + '</div>' : '') +
+      '</div>';
+  }
+  html += '<div class="wd-desc">' + step.desc + '</div>';
+  if (step.ev) html += '<div class="wd-ev"><span>📖</span><span>' + step.ev + '</span></div>';
+  if (step.tip) html += '<div class="wd-tip"><span>💡</span><span>' + step.tip + '</span></div>';
+  host.innerHTML = html;
+
+  const n = WUDU_STEPS.length;
+  const lbl = document.getElementById('wd-prog-lbl');
+  if (lbl) lbl.textContent = 'Step ' + (wdIdx + 1) + ' of ' + n;
+  const fill = document.getElementById('wd-prog-fill');
+  if (fill) fill.style.width = (((wdIdx + 1) / n) * 100) + '%';
+  const prev = document.getElementById('wd-prev');
+  if (prev) prev.disabled = wdIdx === 0;
+  const next = document.getElementById('wd-next');
+  if (next) next.textContent = (wdIdx === n - 1) ? 'See the pillars ✓' : 'Next →';
+  const dots = document.getElementById('wd-dots');
+  if (dots) {
+    dots.innerHTML = WUDU_STEPS.map(function (_, i) {
+      const cls = i === wdIdx ? ' on' : (i < wdIdx ? ' done' : '');
+      return '<div class="wd-dot' + cls + '" onclick="wdJump(' + i + ')"></div>';
+    }).join('');
+  }
+  wdSave();
+}
+
+function wdGo(d) {
+  if (d > 0 && wdIdx === WUDU_STEPS.length - 1) {
+    const target = document.getElementById('wd-pillars');
+    if (target) { try { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) { target.scrollIntoView(); } }
+    return;
+  }
+  wdIdx = Math.min(WUDU_STEPS.length - 1, Math.max(0, wdIdx + d));
+  wdRender();
+}
+
+function wdJump(i) {
+  if (i < 0 || i >= WUDU_STEPS.length) return;
+  wdIdx = i;
+  wdRender();
+}
+
+function initWudu() {
+  try {
+    const v = parseInt(localStorage.getItem('wuduStep') || '0', 10);
+    wdIdx = (isFinite(v) && v >= 0 && v < WUDU_STEPS.length) ? v : 0;
+  } catch (e) { wdIdx = 0; }
+  wdRender();
+}
 
 function openWuduVideo(section) {
   const modal = document.getElementById('wvid-modal');
@@ -15071,7 +15168,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v152';
+var NQ_BUILD = 'v153';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
