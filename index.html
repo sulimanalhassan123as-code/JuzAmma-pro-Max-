@@ -2822,10 +2822,10 @@ body { font-family:'Poppins',sans-serif;
     <div class="aichip" onclick="ask(this.innerText)">What is the Quran?</div>
     <div class="aichip" onclick="ask(this.innerText)">Night Prayer</div>
     <div class="aichip" onclick="ask(this.innerText)">Islamic months</div>
-    <div class="aichip" onclick="ask(this.innerText)">How many rak\u2019ahs?</div>
+    <div class="aichip" onclick="ask(this.innerText)">How many rak’ahs?</div>
     <div class="aichip" onclick="ask(this.innerText)">6 pillars of Iman</div>
-    <div class="aichip" onclick="ask(this.innerText)">What is Jumu\u2019ah?</div>
-    <div class="aichip" onclick="ask(this.innerText)">How to make du\u2019a?</div>
+    <div class="aichip" onclick="ask(this.innerText)">What is Jumu’ah?</div>
+    <div class="aichip" onclick="ask(this.innerText)">How to make du’a?</div>
     <div class="aichip" onclick="ask(this.innerText)">What is Sadaqah?</div>
     <div class="aichip" onclick="ask(this.innerText)">How to memorise Quran?</div>
   </div>
@@ -3443,7 +3443,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v144 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v145 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3503,7 +3503,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v144 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v145 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3568,7 +3568,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v144 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v145 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -5774,7 +5774,7 @@ function closeWuduVideo() {
 function getAnswer(q) {
   /* Apostrophes are dropped, not spaced: "du'a" must match the keyword "dua",
      which it silently failed to do when the apostrophe became a space. */
-  const l=' '+(q||'').toLowerCase().replace(/[\u2019']/g,'').replace(/[^a-z0-9\u0600-\u06ff ]/g,' ').replace(/\s+/g,' ').trim()+' ';
+  const l=' '+(q||'').toLowerCase().replace(/[’']/g,'').replace(/[^a-z0-9\u0600-\u06ff ]/g,' ').replace(/\s+/g,' ').trim()+' ';
   /* Scored matching: a question about "how many rakats in jumuah" touches two
      topics, and first-match order used to answer with whichever came first.
      Highest keyword score wins; ties keep the earlier (more general) topic. */
@@ -12426,11 +12426,11 @@ function qcRenderDash(j) {
     planHtml = '<div class="qc-card"><div class="qc-coach">🎉 <b>' + j.name + ', you finished ' + s.name + ' verses ' + j.fromV + '–' + j.toV + '!</b><br>MashaAllah, incredible work. Your Companion is ready for the next section whenever you are.</div>' +
       '<button class="qc-go" onclick="qcReset()">➕ Start a New Journey</button></div>';
   } else {
-    let inner = '<div class="qc-card"><div class="qc-sec">' + (doneToday ? '✅ Today\u2019s session — completed' : '🎯 Today\u2019s plan') + '</div>';
+    let inner = '<div class="qc-card"><div class="qc-sec">' + (doneToday ? '✅ Today’s session — completed' : '🎯 Today’s plan') + '</div>';
     if (doneToday) inner += '<div class="qc-desc">You already trained today. Come back tomorrow — your Companion has planned <b>' + j.lines + ' new line' + (j.lines > 1 ? 's' : '') + '</b>.</div>';
     else {
       inner += '<div class="qc-desc">' + (revN.length ? 'Quick revision of <b>' + revN.length + ' line' + (revN.length > 1 ? 's' : '') + '</b> from last session, then ' : '') + '<b>' + nextQ.length + ' new line' + (nextQ.length > 1 ? 's' : '') + '</b>' + (nextQ.length ? ' (verses ' + nextQ[0] + (nextQ.length > 1 ? '–' + nextQ[nextQ.length-1] : '') + ')' : '') + '. I will listen and correct you word by word.</div>';
-      inner += '<button class="qc-go" onclick="qcStartSession()">🎤 Start Today\u2019s Session</button>';
+      inner += '<button class="qc-go" onclick="qcStartSession()">🎤 Start Today’s Session</button>';
     }
     inner += '</div>';
     planHtml = inner;
@@ -12915,7 +12915,7 @@ function qcSessionEnd() {
   } else {
     adj = -1;
     j.struggle = (j.struggle || 0) + 1;
-    if (j.struggle >= 3) { adj = -2; j.struggle = 0; why = 'Tough few days — slowing down, you\u2019ve got this. 💪'; }
+    if (j.struggle >= 3) { adj = -2; j.struggle = 0; why = 'Tough few days — slowing down, you’ve got this. 💪'; }
     else why = 'Tomorrow trims a line so you can master it.';
     j.streakClean = 0;
   }
@@ -12960,7 +12960,7 @@ function qcRenderResults() {
         '<div class="qc-mom"><span class="qc-mom-n">' + (u.failed.length ? u.failed.length : 0) + '</span><span class="qc-mom-l">to revise</span></div>' +
       '</div>' +
       '<div class="qc-coach-mini">' + u.why + '</div>' +
-      (u.failed.length ? '<div class="qc-desc">Verses ' + u.failed.join(', ') + ' will repeat in tomorrow\u2019s revision until clean.</div>' : '') +
+      (u.failed.length ? '<div class="qc-desc">Verses ' + u.failed.join(', ') + ' will repeat in tomorrow’s revision until clean.</div>' : '') +
       (j.hw && !j.hw.complete ? '<div class="qc-desc">📝 Homework: recite verses ' + j.hw.from + '–' + j.hw.to + ' five times today.</div>' : '') +
       '<div class="qc-tomorrow">Tomorrow: <b>' + u.lines + ' new line' + (u.lines > 1 ? 's' : '') + '</b></div>' +
       '<button class="qc-go" onclick="qcSes=null; qcScreen=\'dash\'; qcRender();">Back to Companion →</button>' +
@@ -13117,7 +13117,7 @@ function qcAlphaRender() {
     har += '<div class="qa-h"><span class="qa-h-s">' + h.s + '</span><div><div class="qa-h-t">' + h.t + '</div><div class="qa-h-d">' + h.d + '</div></div></div>';
   });
   body.innerHTML =
-    '<div class="qc-card"><div class="qc-coach">🔤 <b>Alphabet Academy</b><br>Master every letter\u2019s makhraj (where it comes from in your mouth), its joined forms, and the harakat. Tap any letter.</div></div>' +
+    '<div class="qc-card"><div class="qc-coach">🔤 <b>Alphabet Academy</b><br>Master every letter’s makhraj (where it comes from in your mouth), its joined forms, and the harakat. Tap any letter.</div></div>' +
     '<div class="qa-grid">' + letters + '</div>' +
     '<div class="qc-card" style="margin-top:14px"><div class="qc-sec">✨ Harakat — the vowel marks</div>' + har + '</div>' +
     '<div class="qc-card"><button class="qc-go" onclick="qcAlphaQuizStart()">🎯 Take the Makhraj Quiz</button></div>' +
@@ -14523,7 +14523,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v144';
+var NQ_BUILD = 'v145';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
