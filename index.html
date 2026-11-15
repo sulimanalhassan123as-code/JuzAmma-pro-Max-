@@ -3443,7 +3443,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v145 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v146 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3503,7 +3503,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v145 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v146 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3568,7 +3568,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v145 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v146 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -5848,14 +5848,29 @@ function getAnswer(q) {
 // illustrated step guide available. Checked first so "how to" questions get
 // the visual walkthrough instead of a text paragraph.
 function getGuide(q) {
-  const l=q.toLowerCase();
+  /* Word-aware, same rules as getAnswer. The old substring test returned the
+     5 Pillars guide for "6 pillars of Iman", which is a different question
+     (the articles of faith), so that phrasing is left to the knowledge base. */
+  const l=' '+(q||'').toLowerCase().replace(/[\u2019']/g,'').replace(/[^a-z0-9\u0600-\u06ff ]/g,' ').replace(/\s+/g,' ').trim()+' ';
+  const toks=l.trim().split(' ').filter(Boolean);
+  function hit(k){
+    if (k.indexOf(' ')<0) return k.length>=4 ? toks.some(function(t){ return t.indexOf(k)===0; }) : toks.indexOf(k)>=0;
+    return l.indexOf(k+' ')>=0;
+  }
+  const asksIman = hit('iman') || hit('article of faith') || hit('articles of faith') ||
+                   hit('pillars of iman') || hit('pillars of faith') || hit('6 pillars') || hit('six pillars');
   const map=[
     [['wudu','ablution','purif'],'wudu'],
     [['pillar','five pillars'],'pillars'],
     [['tasbih','subhan','dhikr','zikr'],'tasbih'],
     [['pray','salah','namaz','salat'],'prayer'],
   ];
-  for (const [kws,key] of map) { if (kws.some(k=>l.includes(k))) return AI_GUIDES[key]; }
+  for (const [kws,key] of map) {
+    if (kws.some(hit)) {
+      if (key==='pillars' && asksIman) continue;
+      return AI_GUIDES[key];
+    }
+  }
   return null;
 }
 function addGuideMsg(guide) {
@@ -14523,7 +14538,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v145';
+var NQ_BUILD = 'v146';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
