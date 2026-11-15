@@ -2822,6 +2822,12 @@ body { font-family:'Poppins',sans-serif;
     <div class="aichip" onclick="ask(this.innerText)">What is the Quran?</div>
     <div class="aichip" onclick="ask(this.innerText)">Night Prayer</div>
     <div class="aichip" onclick="ask(this.innerText)">Islamic months</div>
+    <div class="aichip" onclick="ask(this.innerText)">How many rak\u2019ahs?</div>
+    <div class="aichip" onclick="ask(this.innerText)">6 pillars of Iman</div>
+    <div class="aichip" onclick="ask(this.innerText)">What is Jumu\u2019ah?</div>
+    <div class="aichip" onclick="ask(this.innerText)">How to make du\u2019a?</div>
+    <div class="aichip" onclick="ask(this.innerText)">What is Sadaqah?</div>
+    <div class="aichip" onclick="ask(this.innerText)">How to memorise Quran?</div>
   </div>
   <div class="chat-area" id="chat-area"></div>
   <div class="chat-inp">
@@ -3437,7 +3443,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v143 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v144 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3497,7 +3503,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v143 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v144 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3562,7 +3568,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v143 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v144 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -5239,19 +5245,52 @@ const AI_GUIDES = {
 };
 const KB={
   fatiha:"Al-Fatiha (The Opening) is the first surah of the Quran, called 'Umm al-Kitab' (Mother of the Book). It has 7 verses and is recited in every unit of prayer. It covers praise of Allah, acknowledgment of His Lordship, and the prayer for guidance to the straight path.",
-  prayer:"Muslims perform 5 daily prayers: Fajr (dawn), Dhuhr (midday), Asr (afternoon), Maghrib (sunset), and Isha (night). Prayer is the 2nd pillar of Islam — the Prophet ﷺ said: 'The key to Paradise is prayer.' (Tirmidhi)",
-  wudu:"Wudu (ablution) is purification before prayer. The 6 obligatory acts: wash face (including mouth & nose), wash arms to elbows, wipe head, wash feet to ankles, do them in order, and do them consecutively. The Prophetic method ﷺ (Bukhari 1934): 1) Make intention + say Bismillah 2) Wash hands 3× 3) Rinse mouth 3× 4) Rinse nose 3× 5) Wash face 3× 6) Wash right arm to elbow 3×, then left 3× 7) Wipe head once (front to back, back to front) 8) Wipe ears once 9) Wash right foot to ankle 3×, then left 3× 10) Recite the shahada dua. Tap the Wudu Guide on the homepage for the full step-by-step with scholarly opinions from all 4 madhabs.",
+  prayer:"Muslims perform 5 daily prayers: Fajr (dawn), Dhuhr (midday), Asr (afternoon), Maghrib (sunset), and Isha (night). Prayer is the 2nd pillar of Islam and the first thing a person is asked about on the Day of Judgement (Tirmidhi).",
+  rakat:"Obligatory rak'ahs: Fajr 2, Dhuhr 4, Asr 4, Maghrib 3, Isha 4. Sunnah emphasis: 2 before Fajr (the strongest), 4 before and 2 after Dhuhr, 2 after Maghrib, 2 after Isha, and Witr to close the night. Voluntary prayers are never obligatory, so a missed sunnah is not a sin.",
+  witr:"Witr is the odd-numbered prayer that closes the night, prayed after Isha and before Fajr. The Prophet ﷺ said: 'Make Witr the last of your prayer at night.' (Bukhari 998). It can be 1, 3, 5 or more rak'ahs, and it is strongly recommended rather than obligatory.",
+  duha:"Salat al-Duha is a voluntary mid-morning prayer, prayed after sunrise (about 15 minutes after) until just before Dhuhr. It is 2 to 12 rak'ahs. The Prophet ﷺ described it as charity on behalf of every joint in the body (Muslim 720).",
+  jumuah:"Jumu'ah is the Friday congregational prayer, required of adult men and strongly encouraged for women. It replaces Dhuhr, consists of a khutbah (sermon) followed by 2 rak'ahs in congregation, and is the most virtuous day of the week. The Prophet ﷺ said the best day on which the sun rises is Friday (Muslim 854).",
+  eid:"There are two Eids. Eid al-Fitr falls on 1 Shawwal after Ramadan, and Eid al-Adha falls on 10 Dhul Hijjah during Hajj. Each is marked by a special congregational prayer of 2 rak'ahs with extra takbirs, and Eid al-Adha follows the Day of Arafah.",
+  iman:"The 6 articles of faith (Iman): 1) Belief in Allah 2) His angels 3) His revealed books 4) His prophets 5) The Day of Judgement 6) Divine decree, both good and bad (qadr). This is from the hadith of Jibril (Muslim 8).",
+  qadr:"Qadr is the belief that Allah's knowledge and decree encompass everything, while people still choose freely and are accountable for their choices. Believing in qadr is one of the 6 articles of faith, and it is meant to bring calm, not passivity: you act, then trust the outcome.",
+  angels:"Angels are created from light, do not disobey Allah, and carry out His commands (Quran 66:6). Among them: Jibril (revelation), Mikail (provision and rain), Israfil (the trumpet), and the two recording angels who write each person's deeds.",
+  books:"Allah revealed books to guide people: the Tawrah to Musa, the Zabur to Dawud, the Injil to Isa, and the Quran to Muhammad ﷺ — the final revelation, preserved unchanged, and the judge over what came before it.",
+  judgement:"On the Day of Judgement every person is raised and shown their deeds. The Quran describes the scales of good and bad actions, the bridge (sirat), and the Prophet's ﷺ intercession. Belief in that day is one of the 6 articles of faith and a reason to keep intentions clean.",
+  names99:"Allah has 99 names, 'whoever memorises them will enter Paradise' (Bukhari 2736). They describe His attributes: Ar-Rahman (The Most Compassionate), Al-Malik (The King), As-Salam (The Source of Peace), and so on. This app's 99 Names screen has each name with its meaning and a real recitation clip.",
+  ikhlas:"Surah Al-Ikhlas (112) is 4 verses and is the purest statement of Allah's oneness: He is One, eternal, neither born nor begetting, and nothing is comparable to Him. The Prophet ﷺ said it equals a third of the Quran in reward (Bukhari 5013).",
+  muawwidhat:"Al-Falaq (113) and An-Nas (114) are the two surahs of refuge. Al-Falaq seeks protection from created harms, magic and envy; An-Nas seeks protection from the whisperer among jinn and people. The Prophet ﷺ recited them for protection night and morning.",
+  kawthar:"Surah Al-Kawthar (108) is the shortest surah, 3 verses. It reassures the Prophet ﷺ that he has been given abundance (kawthar, a river in Paradise) and commands prayer and sacrifice for Allah alone.",
+  ayatalqursi:"Ayat al-Kursi is verse 255 of Surah Al-Baqarah, the greatest verse of the Quran by the Prophet's ﷺ description (Muslim 810). It states Allah's complete knowledge and power, that He neither tires nor sleeps, and is recited for protection morning, evening and after each prayer.",
+  qibla:"The Qibla is the direction of the Ka'bah in Makkah, faced in every prayer wherever you are (Quran 2:144). The app's Qibla Finder shows the direction and distance from your location, and 'Accra times' on the home card uses your location for prayer accuracy.",
+  tajweed:"Tajweed is reciting the Quran the way it was revealed: correct articulation points (makharij), letter qualities, and measured lengths. Basics worth knowing: ghunnah (2-count nasalising of نّ and مّ), madd (elongation, natural 2 counts), and qalqalah (a bounce on the letters qaf, taa, baa, jeem, dal).",
+  alphabet:"The Arabic alphabet has 28 letters and is written right to left. Letters change shape slightly depending on whether they begin, join in the middle or end a word. The app's Alphabet Academy teaches letters, makhraj and harakat one at a time.",
+  halal:"Halal food means what Islam permits: pork and its by-products and alcohol are forbidden, meat must be from an animal slaughtered in Allah's name, and fish is generally permitted without slaughter. When in doubt about an ingredient, check the label or leave it if it is doubtful.",
+  marriage:"Marriage (nikah) in Islam is a legal and spiritual contract, requiring mutual consent, a wali for the bride in most madhabs, a mahr (gift to the bride), and witnesses. It is a serious personal matter with real legal consequences, so take rulings from a qualified scholar of your own madhab rather than from an app.",
+  janazah:"The Muslim funeral process: washing the body (ghusl), wrapping in a shroud (kafan), the janazah prayer with 4 takbirs standing, and burial without cremation. Family and community are encouraged to attend, supplicate and provide food for the bereaved.",
+  dua:"Du'a is asking Allah directly, with no intermediary needed. Etiquette: begin with praise of Allah and salawat on the Prophet ﷺ, face the Qibla, raise your hands, ask with certainty, and end with salawat. Strongly reported moments for acceptance include the last third of the night, between adhan and iqamah, while fasting, in sujud, and before breaking the fast.",
+  istighfar:"Istighfar is seeking Allah's forgiveness: Astaghfirullah. The Prophet ﷺ sought forgiveness more than seventy times a day (Bukhari 6307), and the Quran pairs istighfar with relief, provision and forgiveness (71:10-12). It is not only for big sins; it is daily maintenance of the heart.",
+  sadaqah:"Sadaqah is voluntary charity, separate from the obligatory Zakat. It can be money, food, help, a kind word, or knowledge (Quran 2:261). Sadaqah jariyah is ongoing charity whose reward continues after death, such as a well or a copy of the Quran.",
+  adhan:"The adhan is the call to prayer, made 5 times daily: Allahu Akbar, then the shahada, then Hayya ala-salah, Hayya ala-l-falah, then the takbir again. Listen and respond to it, then make du'a — the banyan: the du'a after adhan is not refused.",
+  mosque:"Mosque etiquette: enter with the right foot, remove your shoes, keep your voice low, greet those inside, do not walk directly in front of a person who is praying, and pray 2 rak'ahs on arrival (tahiyyat al-masjid). Keep the space clean — a mosque is a place of worship first.",
+  hifz:"Memorising the Quran works best in small portions daily. Pick 3 to 5 lines, listen to your reciter several times, repeat each line 5 to 10 times, then recite the whole portion, and revise yesterday's portion before adding new material. The app's memorisation mode loops verses; consistency matters more than speed.",
+  tafsir:"A translation gives the meaning of the words; tafsir explains context, grammar, occasions of revelation and rulings. So a single translated line can mislead when read without context — use a trusted tafsir for anything that seems unclear.",
+  jannah:"Jannah and Jahannam are described in the Quran in vivid terms: Jannah as gardens with rivers beneath, and Jahannam as a place of regret. Both are real outcomes of a lifelong choice, and the Quran pairs hope of Jannah with fear of loss to encourage sincere action.",
+  shahada:"To accept Islam, a person says the shahada with conviction: Ash-hadu an la ilaha illa Allah wa ash-hadu anna Muhammadan rasul Allah — 'I bear witness that there is no god but Allah, and that Muhammad is His messenger'. It requires no ceremony, no witness for validity, and no scholars present; washing (ghusl) and learning the prayer follow.",
+  wudu:"Wudu (ablution) is purification before prayer. The 6 obligatory acts: wash face (including mouth & nose), wash arms to elbows, wipe head, wash feet to ankles, do them in order, and do them consecutively. The Prophetic method ﷺ: 1) Intention + Bismillah 2) Wash hands 3× 3) Rinse mouth 3× 4) Rinse nose 3× 5) Wash face 3× 6) Wash right arm to elbow 3×, then left 3× 7) Wipe head once 8) Wipe ears once 9) Wash right foot to ankle 3×, then left 3× 10) Recite the shahada dua. Tap the Wudu Guide on the homepage for the full step-by-step.",
   tasbih:"Tasbih is glorifying Allah. After each prayer: SubhanAllah (33×) + Alhamdulillah (33×) + Allahu Akbar (34×) = 100 total. This is the Tasbeeh of Fatimah. The Quran says: 'In the remembrance of Allah do hearts find rest.' (13:28)",
-  juzz:"The Quran contains 114 surahs (chapters) revealed to Prophet Muhammad ﷺ over 23 years. This app includes the full Quran with audio recitations, translations, and memorization tools.",
-  ramadan:"Ramadan is the 9th Islamic month — Muslims fast from Fajr to Maghrib. The Quran was revealed in Ramadan. Laylatul Qadr in the last 10 nights is worth more than 1,000 months of worship.",
-  pillars:"The 5 Pillars of Islam: 1) Shahada — testimony of faith. 2) Salah — 5 daily prayers. 3) Zakat — 2.5% annual charity. 4) Sawm — fasting in Ramadan. 5) Hajj — pilgrimage to Mecca once in a lifetime.",
-  quran:"The Quran is the holy book of Islam, revealed to Prophet Muhammad ﷺ over 23 years. It contains 114 surahs and 6,236 verses. Quran Pro Max includes the complete Quran with audio recitations, translations, and memorization tools, plus Daily Duas, Qibla, Zakat Calculator, Hijri Calendar, 40 Hadith, Prayer Tracker, and Hajj guide.",
-  prophet:"Prophet Muhammad ﷺ (born 570 CE, Mecca) is the final prophet of Allah. He received the first revelation at 40 in the Cave of Hira. He is described in the Quran as 'a mercy to all worlds.' (21:107)",
-  hajj:"Hajj is the annual pilgrimage to Mecca during Dhul Hijja, obligatory once for every able Muslim. Key rituals: Tawaf (7 circles of Ka'bah), Sa'i (Safa-Marwa), Standing at Arafah, and stoning at Jamarat.",
-  zakat:"Zakat is the 3rd pillar — 2.5% of savings above the nisab given annually to the poor, needy, those in debt, and others (Quran 9:60). It purifies wealth and strengthens community.",
-  tahajjud:"Tahajjud is the voluntary night prayer performed in the last third of the night. Highly recommended in Quran (17:79) and Sunnah. 2-12 rak'ahs — a time when Allah accepts supplications.",
-  months:"The 12 Islamic months: 1) Muharram 2) Safar 3) Rabi al-Awwal (Prophet's birth) 4) Rabi al-Thani 5) Jumada al-Awwal 6) Jumada al-Thani 7) Rajab 8) Sha'ban 9) Ramadan 10) Shawwal (Eid) 11) Dhul Qa'dah 12) Dhul Hijja (Hajj & Eid al-Adha).",
-  default:"Bismillah! Islam is a complete way of life based on submission to Allah ﷻ. It is built on Tawhid (Oneness of God), following Prophet Muhammad ﷺ, and living by the Quran and Sunnah. Ask me about prayer, Quran, fasting, Hajj, Zakat, Islamic history, or daily Islamic practices!"
+  juzz:"The Quran contains 114 surahs (chapters) revealed to Prophet Muhammad ﷺ over 23 years, arranged into 30 Juz. This app includes the full Quran with audio recitation, translations, the Juz Index and memorisation tools.",
+  ramadan:"Ramadan is the 9th Islamic month — Muslims fast from Fajr to Maghrib. The Quran was revealed in Ramadan. Laylatul Qadr in the last 10 nights is worth more than 1,000 months of worship. The ill, travelling, pregnant and menstruating are exempt and make up the days later.",
+  pillars:"The 5 Pillars of Islam: 1) Shahada — testimony of faith. 2) Salah — 5 daily prayers. 3) Zakat — 2.5% annual charity. 4) Sawm — fasting in Ramadan. 5) Hajj — pilgrimage to Mecca once in a lifetime for the able.",
+  quran:"The Quran is the holy book of Islam, revealed to Prophet Muhammad ﷺ over 23 years. It contains 114 surahs and 6,236 verses in 30 Juz. Naba Quran includes the complete Quran with audio recitation, translations, the Juz Index, memorisation tools, Daily Duas, Qibla, Zakat Calculator, Hijri Calendar, 40 Hadith and a prayer tracker.",
+  prophet:"Prophet Muhammad ﷺ (born 570 CE in Makkah) is the final prophet of Allah. He received the first revelation at 40 in the Cave of Hira, called people to Tawhid for 13 years in Makkah, then migrated to Madinah. He is described in the Quran as 'a mercy to all the worlds' (21:107).",
+  hajj:"Hajj is the annual pilgrimage to Makkah during Dhul Hijjah, obligatory once in a lifetime for every able Muslim. Key rituals: ihram, Tawaf of the Ka'bah, Sa'i between Safa and Marwah, standing at Arafah on 9 Dhul Hijjah, and stoning the Jamarat.",
+  umrah:"Umrah is the lesser pilgrimage, performed any time of year: ihram, Tawaf, Sa'i, then trimming or shaving the hair. It is not a substitute for Hajj, and it takes a few hours rather than several days.",
+  zakat:"Zakat is the 3rd pillar — 2.5% of savings held for a lunar year above the nisab, given to the poor, needy, those in debt and others named in Quran 9:60. It purifies wealth and strengthens community. The app has a Zakat Calculator for the 2.5% figure.",
+  tahajjud:"Tahajjud is the voluntary night prayer performed after sleeping, in the last third of the night. Highly recommended in Quran (17:79) and Sunnah — 2 to 12 rak'ahs — and a time when Allah answers supplications.",
+  fasting:"Beyond Ramadan, fasting is recommended on Mondays and Thursdays, the 13th-15th of each lunar month, the day of Arafah (9 Dhul Hijjah, which expiates two years, Muslim 1162) and Ashura. Fasting on Eid days is forbidden.",
+  ashura:"Ashura is the 10th of Muharram. Musa was saved from Pharaoh on that day, so the Prophet ﷺ fasted it and said fasting it expiates the previous year's sins (Muslim 1162). He encouraged also fasting the 9th, to differ from other communities.",
+  months:"The 12 Islamic months: 1) Muharram 2) Safar 3) Rabi al-Awwal (Prophet's birth) 4) Rabi al-Thani 5) Jumada al-Awwal 6) Jumada al-Thani 7) Rajab 8) Sha'ban 9) Ramadan 10) Shawwal (Eid al-Fitr) 11) Dhul Qa'dah 12) Dhul Hijjah (Hajj & Eid al-Adha).",
+  default:"Bismillah! Islam is a complete way of life based on submission to Allah ﷻ. It is built on Tawhid (Oneness of God), following Prophet Muhammad ﷺ, and living by the Quran and Sunnah. Ask me about prayer, rak'ahs, wudu, fasting, Zakat, Hajj, Jumu'ah, the 99 Names, Tajweed, how to make du'a, or Islamic history. For personal rulings, ask a qualified scholar of your own madhab."
 };
 
 // ===== 99 NAMES OF ALLAH =====
@@ -5733,24 +5772,77 @@ function closeWuduVideo() {
 }
 
 function getAnswer(q) {
-  const l=q.toLowerCase();
+  /* Apostrophes are dropped, not spaced: "du'a" must match the keyword "dua",
+     which it silently failed to do when the apostrophe became a space. */
+  const l=' '+(q||'').toLowerCase().replace(/[\u2019']/g,'').replace(/[^a-z0-9\u0600-\u06ff ]/g,' ').replace(/\s+/g,' ').trim()+' ';
+  /* Scored matching: a question about "how many rakats in jumuah" touches two
+     topics, and first-match order used to answer with whichever came first.
+     Highest keyword score wins; ties keep the earlier (more general) topic. */
   const map=[
-    [['fatiha','opening','al-fat'],'fatiha'],
-    [['wudu','ablution','purif','wash'],'wudu'],
-    [['pray','salah','namaz','salat'],'prayer'],
+    [['fatiha','al-fat','opening','umm al-kitab'],'fatiha'],
+    [['wudu','ablution','purif','wash before'],'wudu'],
+    [['witr'],'witr'],
+    [['duha','mid-morning','ishraq'],'duha'],
+    [['jumu','jumua','jummah','friday','friday prayer','khutbah'],'jumuah'],
+    [['eid','fitr','adha'],'eid'],
+    [['how many rakat','how many rakah','rakat','rakah','units of prayer','how many units'],'rakat'],
+    [['article of faith','articles of faith','pillars of iman','pillars of faith','6 pillars','six pillars','iman'],'iman'],
+    [['five pillars','5 pillars','pillars of islam','pillar','kalima'],'pillars'],
+    [['qadr','destiny','predestination','decree'],'qadr'],
+    [['angel','jibril','gabriel','mikail'],'angels'],
+    [['revealed book','tawrah','torah','injil','zabur','gospel'],'books'],
+    [['day of judgement','judgment day','resurrection','hereafter','akhirah','after death','life after death','the grave','barzakh'],'judgement'],
+    [['99 name','99 names','asma','names of allah','asma ul husna','asmaul husna','husna'],'names99'],
+    [['ikhlas'],'ikhlas'],
+    [['falaq','nas','ruqyah','evil eye','magic'],'muawwidhat'],
+    [['kawthar'],'kawthar'],
+    [['ayat al-kursi','kursi','2:255','255 of baqarah'],'ayatalqursi'],
+    [['qibla','direction of prayer','kaaba direction'],'qibla'],
+    [['tajweed','madd','ghunnah','makhraj','qalqalah'],'tajweed'],
+    [['alphabet','arabic letters','harakat','how to read arabic'],'alphabet'],
+    [['halal','haram food','pork','alcohol','slaughter'],'halal'],
+    [['marriage','nikah','mahr','wali'],'marriage'],
+    [['funeral','janazah','burial','death rite','kafan'],'janazah'],
+    [['dua','supplicat','how to ask allah','make dua'],'dua'],
+    [['istighfar','forgive me','seek forgiveness'],'istighfar'],
+    [['sadaqah','charity','donate','waqf'],'sadaqah'],
+    [['adhan','azan','call to prayer','iqamah'],'adhan'],
+    [['mosque','masjid','etiquette in the mosque'],'mosque'],
+    [['memoris','memoriz','hifz','learn the quran by heart'],'hifz'],
+    [['tafsir','explanation of the verse','interpret'],'tafsir'],
+    [['jannah','paradise','jahannam','hellfire'],'jannah'],
+    [['become muslim','convert','revert','shahada','take shahada'],'shahada'],
+    [['pray','salah','namaz','salat','salah times'],'prayer'],
     [['tasbih','subhan','dhikr','zikr','glorif','rememb'],'tasbih'],
-    [['juz','amma','chapter','30'],'juzz'],
-    [['ramadan','fast','sawm','laylat','iftar'],'ramadan'],
-    [['pillar','five','shahada'],'pillars'],
-    [['quran','koran','book','ayah','verse'],'quran'],
-    [['prophet','muhammad','messenger','pbuh','rasul'],'prophet'],
-    [['hajj','pilgrim','mecca','kabah','kaaba','umrah'],'hajj'],
-    [['zakat','charity','nisab','poor'],'zakat'],
-    [['tahajjud','night pray','qiyam'],'tahajjud'],
-    [['month','hijri','muharram','shawwal','dhul'],'months'],
+    [['juz','amma','30 parts'],'juzz'],
+    [['ramadan','sawm','laylat','iftar','suhoor'],'ramadan'],
+    [['fast','fasting'],'fasting'],
+    [['ashura','muharram 10'],'ashura'],
+    [['quran','koran','the book','ayah','verse','surah'],'quran'],
+    [['prophet','muhammad','messenger','pbuh','rasul','seerah'],'prophet'],
+    [['hajj','pilgrim','mecca','makkah','kabah'],'hajj'],
+    [['umrah','lesser pilgrimage'],'umrah'],
+    [['zakat','nisab','obligatory charity'],'zakat'],
+    [['tahajjud','night pray','night prayer','night prayers','late night prayer','qiyam'],'tahajjud'],
+    [['month','hijri','muharram','shawwal','dhul','rajab','shaban'],'months'],
   ];
-  for (const [kws,key] of map) { if (kws.some(k=>l.includes(k))) return KB[key]; }
-  return KB.default;
+  /* Word-aware matching, not raw substring. Loose matching made "adha" fire
+     inside "adhan", so "adhan meaning" answered about Eid al-Adha. Short words
+     must match a whole word; longer ones may match a word prefix ("rakat"
+     matches "rakats", "jumu" matches "jumuah"). */
+  const toks=l.trim().split(' ').filter(Boolean);
+  function kwHit(k){
+    if (k.indexOf(' ')>=0) return l.indexOf(k+' ')>=0;   // phrase must end on a word boundary
+    if (k.length>=5) return toks.some(function(t){ return t.indexOf(k)===0 || t===k; });
+    return toks.indexOf(k)>=0 || toks.some(function(t){ return t===k+'s'; });
+  }
+  let best=null, bestScore=0;
+  for (const [kws,key] of map) {
+    let sc=0;
+    for (const k of kws) if (kwHit(k)) sc += 1 + (k.length>6?1:0);
+    if (sc>bestScore) { bestScore=sc; best=key; }
+  }
+  return best ? KB[best] : KB.default;
 }
 // Same keyword routing as getAnswer(), but for topics that have a rich
 // illustrated step guide available. Checked first so "how to" questions get
@@ -14431,7 +14523,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v143';
+var NQ_BUILD = 'v144';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
