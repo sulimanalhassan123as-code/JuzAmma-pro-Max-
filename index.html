@@ -2439,6 +2439,7 @@ body { font-family:'Poppins',sans-serif;
 .hp-text { font-size:.74rem; font-weight:600; color:var(--txt); }
 .hp-sub { font-size:.6rem; color:var(--txt2); margin-top:1px; }
 
+.zakat-inp select, select.zakat-inp, .zakat-row select.zakat-inp { background:var(--card2,#12241e); color:var(--txt,#fff); width:132px; text-align:left; }
 </style>
 </head>
 <body>
@@ -3444,7 +3445,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v148 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v149 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3504,7 +3505,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v148 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v149 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3569,7 +3570,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v148 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v149 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3855,6 +3856,7 @@ function switchView(v) {
   if (v === 'groupstudy') initGroupStudy();
   if (v === 'dua') initDua();
   if (v === 'qibla') initQibla();
+  if (v === 'zakat') { restoreZakatInputs(); calcZakat(); }
   if (v === 'zakat') calcZakat();
   if (v === 'hijri') initHijri();
   if (v === 'hadith40') initHadith40();
@@ -11930,22 +11932,101 @@ function openGoogleQiblaFinder() {
 // ═══════════════════════════════════════════════════════════
 // ZAKAT CALCULATOR
 // ═══════════════════════════════════════════════════════════
+/* Zakat calculator.
+   Rewritten because the old one multiplied gold and silver by hardcoded
+   US-dollar prices (65 and 0.77 per gram) and then added that to cash typed in
+   cedis, printing a "$" over the lot. Nisab came out at a fixed $5,525 for
+   every user on earth, which told people below the real nisab to pay.
+   Now the price and the currency are the user's, saved between visits, and the
+   nisab follows whichever metal gives the lower threshold. */
+const ZAKAT_CURRENCIES = { GHS:'GH\u20b5', USD:'$', EUR:'\u20ac', GBP:'\u00a3', SAR:'SAR ', NGN:'\u20a6' };
+const NISAB_GOLD_G = 87.48;      /* classical 7.5 tola */
+const NISAB_SILVER_G = 612.36;   /* classical 52.5 tola */
+
+function zakatSymbol() {
+  const el = document.getElementById('z-currency');
+  const code = (el && el.value) || 'GHS';
+  return ZAKAT_CURRENCIES[code] || '';
+}
+function zakatMoney(v) {
+  return zakatSymbol() + Math.abs(v).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function rememberZakatInputs() {
+  try {
+    localStorage.setItem('nqZakat', JSON.stringify({
+      cur: (document.getElementById('z-currency') || {}).value || 'GHS',
+      gold: (document.getElementById('z-gold-price') || {}).value || '',
+      silver: (document.getElementById('z-silver-price') || {}).value || ''
+    }));
+  } catch (e) {}
+}
+function restoreZakatInputs() {
+  try {
+    const raw = localStorage.getItem('nqZakat');
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    const cur = document.getElementById('z-currency');
+    const gp = document.getElementById('z-gold-price');
+    const sp = document.getElementById('z-silver-price');
+    if (cur && d.cur) cur.value = d.cur;
+    if (gp && d.gold) gp.value = d.gold;
+    if (sp && d.silver) sp.value = d.silver;
+  } catch (e) {}
+}
+
 function calcZakat() {
-  const get = id => parseFloat(document.getElementById(id).value) || 0;
-  const goldPrice = 65;
-  const cash = get('z-cash') + get('z-bank') + get('z-fx');
-  const goldVal = get('z-gold') * goldPrice;
-  const silverVal = get('z-silver') * 0.77;
-  const investments = get('z-stocks') + get('z-biz');
-  const total = cash + goldVal + silverVal + investments + get('z-debts-in') - get('z-debts-out');
-  const nisab = 85 * goldPrice;
-  document.getElementById('z-total').textContent = '$' + total.toFixed(2);
+  const num = id => {
+    const el = document.getElementById(id);
+    return el ? (parseFloat(el.value) || 0) : 0;
+  };
+  const sym = zakatSymbol();
+  rememberZakatInputs();
+
+  const goldPrice = num('z-gold-price');
+  const silverPrice = num('z-silver-price');
+
+  const cash = num('z-cash') + num('z-bank') + num('z-fx');
+  const goldVal = num('z-gold') * goldPrice;
+  const silverVal = num('z-silver') * silverPrice;
+  const investments = num('z-stocks') + num('z-biz');
+  const owedToYou = num('z-debts-in');
+  const youOwe = num('z-debts-out');
+  const raw = cash + goldVal + silverVal + investments + owedToYou - youOwe;
+  const total = Math.max(0, raw);   /* debts above assets is zero, never negative */
+
+  document.getElementById('z-total').textContent = zakatMoney(total);
+
+  /* Nisab needs a price. Without one there is no honest threshold, so say so
+     instead of inventing a number like the old fixed $5,525. */
+  const nisabGold = goldPrice > 0 ? NISAB_GOLD_G * goldPrice : null;
+  const nisabSilver = silverPrice > 0 ? NISAB_SILVER_G * silverPrice : null;
+  let nisab = null, basis = '';
+  if (nisabGold && nisabSilver) {
+    if (nisabSilver <= nisabGold) { nisab = nisabSilver; basis = '612.36g silver'; }
+    else { nisab = nisabGold; basis = '87.48g gold'; }
+  } else if (nisabSilver) { nisab = nisabSilver; basis = '612.36g silver'; }
+  else if (nisabGold) { nisab = nisabGold; basis = '87.48g gold'; }
+
+  if (nisab === null) {
+    document.getElementById('z-nisab').textContent = "Nisab: enter today's gold or silver price above";
+    document.getElementById('z-due').textContent = zakatMoney(0);
+    document.getElementById('z-note').textContent = 'Enter a metal price so the nisab can be worked out.';
+    return;
+  }
+
+  document.getElementById('z-nisab').textContent = 'Nisab (' + basis + '): ' + zakatMoney(nisab);
+
   if (total >= nisab) {
-    document.getElementById('z-due').textContent = '$' + (total * 0.025).toFixed(2);
-    document.getElementById('z-note').textContent = 'Assets exceed Nisab (~$' + nisab.toFixed(0) + '). Zakat due at 2.5%.';
+    document.getElementById('z-due').textContent = zakatMoney(total * 0.025);
+    document.getElementById('z-note').textContent =
+      'Above the nisab of ' + zakatMoney(nisab) + '. Zakat is due at 2.5%.';
   } else {
-    document.getElementById('z-due').textContent = '$0.00';
-    document.getElementById('z-note').textContent = 'Assets (' + total.toFixed(2) + ') below Nisab (~$' + nisab.toFixed(0) + '). No Zakat due.';
+    document.getElementById('z-due').textContent = zakatMoney(0);
+    document.getElementById('z-note').textContent =
+      'Below the nisab of ' + zakatMoney(nisab) + ', so no Zakat is due yet.';
+  }
+  if (raw < 0) {
+    document.getElementById('z-note').textContent += ' Debts are larger than your assets, so the total counts as zero.';
   }
 }
 
@@ -14086,7 +14167,26 @@ document.addEventListener('DOMContentLoaded',function(){
     <div class="zakat-section"><div class="zakat-section-hd">⏳ Debts</div>
       <div class="zakat-row"><span class="zakat-lbl">Debts owed to you</span><input class="zakat-inp" type="number" id="z-debts-in" placeholder="0" oninput="calcZakat()"></div>
       <div class="zakat-row"><span class="zakat-lbl">Debts you owe</span><input class="zakat-inp" type="number" id="z-debts-out" placeholder="0" oninput="calcZakat()"></div></div>
-    <div class="zakat-total"><div class="zakat-total-lbl">Total Zakatable Assets</div><div class="zakat-total-val" id="z-total">0.00</div><div class="zakat-nisab">Nisab (85g gold): ~$5,525</div></div>
+    <!-- Nisab depends on TODAY'S gold/silver price in the user's own currency.
+         These were hardcoded (65 / 0.77 US dollars per gram), so every user was
+         judged against a dollar threshold that never moved and never matched
+         cedis. They are now entered once, saved, and used for the nisab. -->
+    <div class="zakat-section"><div class="zakat-section-hd">⚖️ Today's Price &amp; Currency</div>
+      <div class="zakat-row"><span class="zakat-lbl">Currency</span>
+        <select class="zakat-inp" id="z-currency" onchange="calcZakat()">
+          <option value="GHS" selected>GH₵ cedi</option>
+          <option value="USD">$ dollar</option>
+          <option value="EUR">€ euro</option>
+          <option value="GBP">£ pound</option>
+          <option value="SAR">SAR riyal</option>
+          <option value="NGN">₦ naira</option>
+        </select></div>
+      <div class="zakat-row"><span class="zakat-lbl">Gold, per gram</span><input class="zakat-inp" type="number" step="0.01" id="z-gold-price" placeholder="today's price" oninput="calcZakat()"></div>
+      <div class="zakat-row"><span class="zakat-lbl">Silver, per gram</span><input class="zakat-inp" type="number" step="0.01" id="z-silver-price" placeholder="today's price" oninput="calcZakat()"></div>
+      <div style="font-size:.72rem;color:var(--txt2);line-height:1.45;padding:6px 2px 2px">Ask your gold dealer or check a metals price today, then type it above. Enter gold <b>or</b> silver, or both. The app uses whichever gives the lower nisab, so you are not pushed over the line by a high gold price.</div>
+    </div>
+
+    <div class="zakat-total"><div class="zakat-total-lbl">Total Zakatable Assets</div><div class="zakat-total-val" id="z-total">0.00</div><div class="zakat-nisab" id="z-nisab">Nisab: enter today's gold or silver price above</div></div>
     <div class="zakat-due"><div class="zakat-due-lbl">🕌 Your Zakat (2.5%)</div><div class="zakat-due-val" id="z-due">0.00</div><div class="zakat-due-note" id="z-note">Enter your assets above</div></div>
   </div><div style="height:60px"></div>
 </div>
@@ -14594,7 +14694,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v148';
+var NQ_BUILD = 'v149';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
