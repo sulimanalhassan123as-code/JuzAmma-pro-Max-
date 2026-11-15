@@ -3430,7 +3430,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v140 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v141 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3490,7 +3490,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v140 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v141 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3555,7 +3555,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v140 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v141 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -5877,10 +5877,17 @@ function showBanner(t) { let b=document.getElementById('app-banner'); if(!b){b=d
 // ================================================================
 function updateResumeUI() {
   if (!lastRead) return;
-  document.getElementById('resume-wrap').style.display='block';
-  document.getElementById('resume-title').innerText=lastRead.surahName||'—';
-  const s=qData.find(x=>x.id===lastRead.surahId);
-  document.getElementById('resume-sub').innerText=s?`Verse ${lastRead.verse+1} of ${s.verses.length}`:'';
+  /* Guarded: this used to throw when an element was missing, which aborted
+     initApp and left the NEXT PRAYER card on its placeholder markup. */
+  const wrap=document.getElementById('resume-wrap');
+  if (!wrap) return;
+  wrap.style.display='block';
+  const tEl=document.getElementById('resume-title');
+  if (tEl) tEl.innerText=lastRead.surahName||'—';
+  const arr=(typeof qData!=='undefined' && qData) ? qData : [];
+  const s=arr.find(x=>x.id===lastRead.surahId);
+  const sEl=document.getElementById('resume-sub');
+  if (sEl) sEl.innerText=s?`Verse ${lastRead.verse+1} of ${s.verses.length}`:'';
 }
 function resumeRead() { if(lastRead&&qData.length) openSurah(lastRead.surahId); }
 
@@ -6454,6 +6461,19 @@ function updateNextPrayerCard() {
   if (!nameEl || !countEl || !timeEl) return;
   let times = null;
   try { times = JSON.parse(localStorage.getItem('prayerTimes') || 'null'); } catch(e) {}
+  if (!times) {
+    /* Fall back to the times already rendered on the card. A failed storage
+       write used to leave the countdown blank even though the times were
+       visible right below it. */
+    const ids = {Fajr:'pt-fajr', Dhuhr:'pt-dhuhr', Asr:'pt-asr', Maghrib:'pt-maghrib', Isha:'pt-isha'};
+    const dom = {};
+    Object.keys(ids).forEach(function(k){
+      const el = document.getElementById(ids[k]);
+      const v = el ? (el.textContent||'').trim() : '';
+      if (/^\d{1,2}:\d{2}$/.test(v)) dom[k] = v;
+    });
+    if (Object.keys(dom).length) times = dom;
+  }
   if (!times) { nameEl.textContent = 'Allow location'; countEl.textContent = '--:--:--'; timeEl.textContent = ''; return; }
   const now = new Date();
   const order = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
@@ -6491,6 +6511,9 @@ function startNextPrayerCountdown() {
 function initApp() {
   const t=localStorage.getItem('theme')||'default';
   applyTheme(t);
+  /* Start the live prayer countdown first: the steps below can throw on a
+     given device, and when they did the countdown never started at all. */
+  try { startNextPrayerCountdown(); } catch(e) {}
   initHadith();
   updateStreak();
   loadPrayerTimes();
@@ -6524,11 +6547,10 @@ function initApp() {
     azanBtn.classList.remove('on');
     azanBtn.textContent = '🔕 OFF';
   }
-  loadQ();
-  updateResumeUI();
-  renderHijriHeaderChip();
-  startNextPrayerCountdown();
-  loadServerConfig(); // fetch global settings from server (banner, welcome, etc.)
+  try { loadQ(); } catch(e) {}
+  try { updateResumeUI(); } catch(e) {}
+  try { renderHijriHeaderChip(); } catch(e) {}
+  try { loadServerConfig(); } catch(e) {} // fetch global settings from server (banner, welcome, etc.)
   if (window.location.hash==='#admin') goToView('admin');
   else goToView('home');
 }
@@ -14244,7 +14266,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v140';
+var NQ_BUILD = 'v141';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
