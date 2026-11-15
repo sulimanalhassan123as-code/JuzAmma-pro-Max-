@@ -3425,7 +3425,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v138 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v139 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3485,7 +3485,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v138 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v139 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3550,7 +3550,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v138 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v139 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3995,7 +3995,15 @@ function fetchWithRetry(url, tries=3, delayMs=800, timeoutMs=15000) {
   });
 }
 
+let qLoading = false;
+let qLoadFail = false;
+/* One retry-safe cache write: a full storage quota must never discard data
+   that already loaded fine (that was pushing users to a slow fallback). */
+function qSaveCache(obj){ try { localStorage.setItem('quranProMax_v18', JSON.stringify(obj)); } catch(e) {} }
 async function loadQ() {
+  if (qLoading) return;
+  qLoading = true; qLoadFail = false;
+  try {
   // Self-hosted first: quran-full.json is bundled on our OWN domain
   // (same server as the app — no CORS, no third-party outage risk).
   // The third-party alquran.cloud API is kept only as a last-resort
@@ -4018,7 +4026,7 @@ async function loadQ() {
     const data = await fetchWithRetry('quran-full.json', 4, 700, 20000);
     if (Array.isArray(data) && data.length >= 114) {
       qData = data;
-      localStorage.setItem('quranProMax_v18', JSON.stringify(qData));
+      qSaveCache(qData);
       renderList(); populateMemSel();
       return;
     }
@@ -4043,11 +4051,18 @@ async function loadQ() {
         });
         return { id: surah.number, name: surah.englishName, ar: surah.name, meaning: surah.englishNameTranslation||'', verses };
       });
-      localStorage.setItem('quranProMax_v18', JSON.stringify(qData));
+      qSaveCache(qData);
       renderList(); populateMemSel();
     } catch(e) {
+      qLoadFail = true;
       document.getElementById('surah-container').innerHTML = '<div style="padding:40px;text-align:center;color:#ef4444">⚠️ Couldn\'t load the Quran.<br><small>Check your connection and try again.</small><br><button onclick="loadQ()" style="margin-top:14px;padding:10px 22px;border-radius:20px;border:none;background:#d4a342;color:#1a1a1a;font-weight:600;cursor:pointer">🔄 Retry</button></div>';
     }
+  }
+  } finally {
+    qLoading = false;
+    /* The Juz Index used to sit on "Loading the Quran..." forever because
+       nothing re-rendered it once the data arrived. */
+    try { renderJuzIndex(); } catch (e) {}
   }
 }
 
@@ -4121,7 +4136,18 @@ function surahNameById(id) { const s=qData.find(x=>x.id===id); return s ? s.name
 
 function renderJuzIndex() {
   const c = document.getElementById('juz-container');
-  if (!qData.length) { c.innerHTML = '<div class="jz-loading">⏳ Loading the Quran…</div>'; return; }
+  if (!c) return;
+  if (!qData.length) {
+    if (qLoadFail) {
+      c.innerHTML = '<div class="jz-loading">⚠️ Couldn\'t load the Quran.<br><small>Check your connection and tap retry.</small><br><button onclick="loadQ()" style="margin-top:14px;padding:10px 22px;border-radius:20px;border:none;background:#d4a342;color:#1a1a1a;font-weight:600">🔄 Retry</button></div>';
+    } else {
+      c.innerHTML = '<div class="jz-loading">⏳ Loading the Quran…</div>';
+      /* Opening this screen before the data arrived used to spin forever:
+         nothing here ever asked for the data. */
+      loadQ();
+    }
+    return;
+  }
   c.innerHTML = JUZ_INDEX.map(j => {
     const sameSurah = j.s[0] === j.e[0];
     const range = sameSurah
