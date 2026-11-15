@@ -3234,6 +3234,11 @@ body { font-family:'Poppins',sans-serif;
   </div>
   <div class="cgrid-wrap" style="margin-top:14px">
     <div class="cgrid cgrid3">
+    <div class="ccard" onclick="nqRefresh(true)">
+      <div class="ccard-ico ico-sq" style="background:#334155">🔄</div>
+      <div class="ccard-t">Refresh App</div>
+      <div class="ccard-s" id="nq-refresh-sub">Get the latest version</div>
+    </div>
     <div class="ccard" onclick="goToView('progress')">
       <div class="ccard-ico ico-sq" style="background:#1f4a35">📊</div>
       <div class="ccard-t">Progress Tracker</div>
@@ -3425,7 +3430,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v139 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v140 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3485,7 +3490,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v139 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v140 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3550,7 +3555,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v139 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v140 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -14230,6 +14235,77 @@ setInterval(function(){
   const tb = document.getElementById('gs-tab-live');
   if (tb) tb.innerHTML = '🎙️ Live' + (GS_LIVE.session ? ' <span style="color:#f43f5e">●</span>' : '');
 }, 3000);
+</script>
+<script>
+/* ===== UPDATE / REFRESH =====
+   The app is a web shell, so new fixes reach a phone only when the shell is
+   re-fetched. The service worker caches that shell, which is good for speed and
+   bad when you are waiting for a fix. This gives one obvious control that
+   drops the cached shell, keeps the user's own data, and reloads from network.
+   It never clears localStorage, so tasbih counts, streak and bookmarks survive.
+*/
+var NQ_BUILD = 'v140';
+var NQ_COPY  = '© 2026 Suliyman Alhassan';
+
+function nqStampVersion(){
+  var t = 'Naba Quran ' + NQ_BUILD + ' · ' + NQ_COPY;
+  var els = document.querySelectorAll('[data-nq-ver]');
+  for (var i = 0; i < els.length; i++) els[i].textContent = t;
+}
+
+async function nqRefresh(clearCaches){
+  var sub = document.getElementById('nq-refresh-sub');
+  if (sub) sub.textContent = 'Refreshing…';
+  try {
+    if (clearCaches !== false && 'caches' in window) {
+      var keys = await caches.keys();
+      await Promise.all(keys.map(function(k){ return caches.delete(k); }));
+    }
+  } catch (e) {}
+  try {
+    if ('serviceWorker' in navigator) {
+      var regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(function(r){ return r.unregister().catch(function(){}); }));
+    }
+  } catch (e) {}
+  /* cache-busting query keeps any intermediate proxy from serving the old shell */
+  var url = location.pathname + '?refresh=' + Date.now();
+  location.replace(url);
+}
+
+function nqShowUpdateChip(){
+  if (document.getElementById('nq-update-chip')) return;
+  var d = document.createElement('div');
+  d.id = 'nq-update-chip';
+  d.textContent = '🔄 New version ready — tap to update';
+  d.onclick = function(){ nqRefresh(true); };
+  d.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);bottom:84px;z-index:99999;' +
+    'background:#ffd700;color:#0b1220;font-weight:700;font-size:.8rem;padding:10px 16px;' +
+    'border-radius:99px;box-shadow:0 8px 24px rgba(0,0,0,.4);cursor:pointer;max-width:90vw;text-align:center';
+  document.body.appendChild(d);
+}
+
+function nqInstallVersionStamp(){
+  nqStampVersion();
+  if (!('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.addEventListener('controllerchange', nqShowUpdateChip);
+  navigator.serviceWorker.ready.then(function(reg){
+    if (reg.waiting) nqShowUpdateChip();
+    reg.addEventListener('updatefound', function(){
+      var sw = reg.installing;
+      if (!sw) return;
+      sw.addEventListener('statechange', function(){
+        if (sw.state === 'installed' && navigator.serviceWorker.controller) nqShowUpdateChip();
+      });
+    });
+    /* look for a new shell at launch, then hourly while the app stays open */
+    reg.update().catch(function(){});
+    setInterval(function(){ reg.update().catch(function(){}); }, 3600000);
+  }).catch(function(){});
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', nqInstallVersionStamp);
+else nqInstallVersionStamp();
 </script>
 </body>
 </html>
