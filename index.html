@@ -827,6 +827,7 @@ body { font-family:'Poppins',sans-serif;
 .name-card .name-play:active { transform:scale(.9); }
 .name-card.speaking { border-color:rgba(255,215,0,.75); box-shadow:0 0 0 2px rgba(255,215,0,.22), 0 6px 18px rgba(255,215,0,.14); }
 .name-card.speaking .name-play { background:#ffd700; color:#0b1220; }
+.names-credit { font-size:.66rem; color:var(--txt2); opacity:.8; text-align:center; margin:0 0 10px; line-height:1.4; }
 .names-virtue { background:rgba(255,215,0,.08); border:1px solid rgba(255,215,0,.2); border-radius:12px; padding:12px 14px; margin-bottom:14px; text-align:center; }
 .names-virtue p { color:#fcd34d; font-size:.8rem; margin:0; line-height:1.4; }
 .names-virtue p span { color:#94a3b8; font-size:.72rem; }
@@ -3084,8 +3085,9 @@ body { font-family:'Poppins',sans-serif;
   <div class="names-body">
     <div class="names-audio-bar">
       <button class="names-audio-btn" id="names-play-btn" onclick="toggleNamesAudio()">▶ Play All 99 Names</button>
-      <div class="names-audio-status" id="names-audio-status">Beautiful continuous recitation</div>
+      <div class="names-audio-status" id="names-audio-status">Tap ▶ on any name, or play all 99</div>
     </div>
+    <div class="names-credit">Recitation of the 99 Names: freely redistributable Asma ul Husna audio collection (© soachishti, BSD licence).</div>
     <div class="names-virtue">
       <p>The Prophet ﷺ said: "Allah has 99 names, 100 minus one. Whoever memorizes them will enter Paradise." <span>— Bukhari 2736</span></p>
     </div>
@@ -3423,7 +3425,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v136 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v138 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3483,7 +3485,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v136 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)">Naba Quran v138 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3548,7 +3550,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v136 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)">Naba Quran v138 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -5313,13 +5315,14 @@ function renderNames(filter) {
 
 function filterNames(v) { renderNames(v); }
 
-// ===== 99 NAMES PLAYER (per name, and continuous) =====
-// The old player was one 4MB archive.org track whose URL 302-redirects to a
-// dn####.archive.org node, which the CSP media-src allowlist blocks, so it sat
-// on "Loading audio..." forever. There is no per-name audio source we can rely
-// on, so playback goes through the app's TTS engine: native TextToSpeech in the
-// APK, Web Speech in the browser. Tap a name to hear it alone, or play all.
-const NAMES_PLAYER = { on:false, i:0, list:[], token:0, timer:null };
+// ===== 99 NAMES AUDIO (real recitation, served from our own domain) =====
+// Why audio files and not device TTS: the Asma ul Husna names are recited, not
+// pronounced. Text-to-speech reads them as ordinary words, which is wrong, and
+// it depends on the phone having an Arabic voice installed at all.
+// 99 clips live in assets/names/ (file N = the Nth name, 1-based).
+// Device TTS is kept only as a per-name fallback if a file cannot load.
+const NAMES_AUDIO_BASE = 'assets/names/';
+const NAMES_PLAYER = { on:false, i:0, list:[], audio:null, token:0, preload:null };
 
 function namesStatus(t){ const el=document.getElementById('names-audio-status'); if(el) el.textContent=t; }
 function namesClearHi(){ document.querySelectorAll('.name-card.speaking').forEach(function(c){ c.classList.remove('speaking'); }); }
@@ -5336,84 +5339,91 @@ function namesVisibleList(){
     return n.en.toLowerCase().indexOf(f)>=0 || n.mean.toLowerCase().indexOf(f)>=0;
   });
 }
+function namesSrc(appIdx){ return NAMES_AUDIO_BASE + (appIdx+1) + '.mp3'; }
+
 function namesStop(){
-  NAMES_PLAYER.on=false; NAMES_PLAYER.token++; NAMES_PLAYER.stalls=0;
-  if(NAMES_PLAYER.timer){ clearTimeout(NAMES_PLAYER.timer); NAMES_PLAYER.timer=null; }
-  universalStopSpeaking(); namesClearHi();
+  NAMES_PLAYER.on=false; NAMES_PLAYER.token++;
+  if(NAMES_PLAYER.audio){ try{ NAMES_PLAYER.audio.pause(); }catch(e){} NAMES_PLAYER.audio=null; }
+  if(NAMES_PLAYER.preload){ try{ NAMES_PLAYER.preload.src=''; }catch(e){} NAMES_PLAYER.preload=null; }
+  try { universalStopSpeaking(); } catch(e) {}
+  namesClearHi();
   const btn=document.getElementById('names-play-btn');
   if(btn){ btn.textContent='▶ Play All 99 Names'; btn.classList.remove('playing'); }
 }
-/* Speaks one name: Arabic first, then the English meaning. Calls done() once. */
-function namesSpeak(n, done){
-  const tok=NAMES_PLAYER.token;
-  let finished=false, heardArabic=false;
-  const finish=function(){
-    if(finished) return;
-    finished=true;
-    if(NAMES_PLAYER.timer){ clearTimeout(NAMES_PLAYER.timer); NAMES_PLAYER.timer=null; }
-    if(tok===NAMES_PLAYER.token && done) done();
-  };
-  const saidEn=function(){
+
+/* Speaks one name via device TTS, used only when its clip cannot load. */
+function namesSpeakFallback(n, done){
+  let done1=false;
+  const fin=function(){ if(done1) return; done1=true; if(done) done(); };
+  const ok = universalSpeak(n.ar, 'ar', 0.7, function(){ universalSpeak(n.en + '. ' + n.mean, 'en', 0.9, fin); });
+  if(!ok) fin();
+  setTimeout(fin, 9000);
+}
+
+/* Plays the clip for one name. done() fires once, whether audio worked or not. */
+function namesPlayClip(appIdx, done){
+  const tok = NAMES_PLAYER.token;
+  let finished=false;
+  const fin=function(){ if(finished) return; finished=true; if(tok===NAMES_PLAYER.token && done) done(); };
+  let a;
+  try { a = new Audio(namesSrc(appIdx)); } catch(e) { namesSpeakFallback(ALLAH_NAMES[appIdx], fin); return; }
+  NAMES_PLAYER.audio = a;
+  a.addEventListener('ended', fin);
+  a.addEventListener('error', function(){
+    /* clip missing or blocked: fall back to voice so the sequence never stalls */
     if(tok!==NAMES_PLAYER.token) return;
-    universalSpeak(n.en + '. ' + n.mean, 'en', 0.9, finish);
-    NAMES_PLAYER.timer=setTimeout(finish, 7000);   /* engine that never fires onend */
-  };
-  const saidAr = universalSpeak(n.ar, 'ar', 0.7, function(){
-    if(tok!==NAMES_PLAYER.token) return;
-    heardArabic=true; NAMES_PLAYER.stalls=0;
-    if(NAMES_PLAYER.timer){ clearTimeout(NAMES_PLAYER.timer); NAMES_PLAYER.timer=null; }
-    NAMES_PLAYER.timer=setTimeout(saidEn, 250);
+    namesSpeakFallback(ALLAH_NAMES[appIdx], function(){ if(tok===NAMES_PLAYER.token) fin(); });
   });
-  if(!saidAr){ finish(); toast('🔇 Voice is not available on this device'); return false; }
-  /* Watchdog: an engine that never calls back must not freeze the list. */
-  NAMES_PLAYER.timer=setTimeout(function(){
-    if(tok!==NAMES_PLAYER.token) return;
-    if(!heardArabic) NAMES_PLAYER.stalls=(NAMES_PLAYER.stalls||0)+1;
-    finish();
-  }, 4500);
+  const pr = a.play();
+  if(pr && pr.catch) pr.catch(function(){ /* error handler above covers real failures */ });
+  /* watchdog: a stalled element must not freeze the list */
+  setTimeout(function(){ if(!finished && tok===NAMES_PLAYER.token && a.ended) fin(); }, 15000);
   return true;
 }
+
 function namesPlayOne(i){
   namesStop();
   const n=ALLAH_NAMES[i];
   if(!n) return;
+  NAMES_PLAYER.token++;
   namesHi(i+1);
   namesStatus(n.en + ' — ' + n.mean);
-  namesSpeak(n, function(){ namesClearHi(); namesStatus('Tap ▶ on a name, or play all 99'); });
+  namesPlayClip(i, function(){ namesClearHi(); namesStatus('Tap ▶ on a name, or play all 99'); });
 }
+
 function namesPlayAll(){
   if(NAMES_PLAYER.on){ namesStop(); namesStatus('Stopped'); return; }
   const list=namesVisibleList();
   if(!list.length){ toast('No names match your search'); return; }
-  NAMES_PLAYER.list=list; NAMES_PLAYER.i=0; NAMES_PLAYER.on=true; NAMES_PLAYER.token++; NAMES_PLAYER.stalls=0;
+  NAMES_PLAYER.list=list; NAMES_PLAYER.i=0; NAMES_PLAYER.on=true; NAMES_PLAYER.token++;
   const btn=document.getElementById('names-play-btn');
   if(btn){ btn.textContent='⏸ Stop'; btn.classList.add('playing'); }
   namesStep();
 }
+
 function namesStep(){
   if(!NAMES_PLAYER.on) return;
   const list=NAMES_PLAYER.list;
   if(NAMES_PLAYER.i>=list.length){ namesStop(); namesStatus('Completed — all names recited'); return; }
   const n=list[NAMES_PLAYER.i];
-  const orig=ALLAH_NAMES.indexOf(n)+1;
+  const appIdx=ALLAH_NAMES.indexOf(n);
   NAMES_PLAYER.i++;
-  namesHi(orig);
+  namesHi(appIdx+1);
   namesStatus('Name '+NAMES_PLAYER.i+' of '+list.length+' — '+n.en);
-  namesSpeak(n, function(){
+  /* warm the next clip so playback is continuous */
+  const next=list[NAMES_PLAYER.i];
+  if(next){ try { NAMES_PLAYER.preload = new Audio(namesSrc(ALLAH_NAMES.indexOf(next))); NAMES_PLAYER.preload.preload='auto'; } catch(e) {} }
+  namesPlayClip(appIdx, function(){
     if(!NAMES_PLAYER.on) return;
-    if((NAMES_PLAYER.stalls||0)>=2){
-      namesStop();
-      namesStatus('Voice engine is not responding — restart the app and try again');
-      toast('🔇 Voice engine not responding');
-      return;
-    }
     const tok=NAMES_PLAYER.token;
-    NAMES_PLAYER.timer=setTimeout(function(){ if(tok===NAMES_PLAYER.token) namesStep(); }, 350);
+    setTimeout(function(){ if(tok===NAMES_PLAYER.token) namesStep(); }, 180);
   });
 }
+
 /* kept for the existing onclick handler */
 function toggleNamesAudio(){ namesPlayAll(); }
-/* stop recitation when leaving the screen */
+
+/* stop playback when leaving the screen */
 (function(){
   const origGoToView = window.goToView;
   if(typeof origGoToView === 'function'){
