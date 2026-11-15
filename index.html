@@ -5902,10 +5902,11 @@ function initHadith() {
     {t:"Smile at your brother — that is charity.",src:"Tirmidhi 1956"},
     {t:"None of you truly believes until he loves for his brother what he loves for himself.",src:"Bukhari 13"},
   ];
-  if (custom) { document.getElementById('daily-hadith').innerText=custom; document.getElementById('daily-hadith-src').innerText=localStorage.getItem('customHadithSrc')||''; return; }
+  const hd=document.getElementById('daily-hadith'), hs=document.getElementById('daily-hadith-src');
+  if (custom) { if(hd) hd.innerText=custom; if(hs) hs.innerText=localStorage.getItem('customHadithSrc')||''; return; }
   const h=list[new Date().getDate()%list.length];
-  document.getElementById('daily-hadith').innerText='"'+h.t+'"';
-  document.getElementById('daily-hadith-src').innerText='— '+h.src;
+  if (hd) hd.innerText='"'+h.t+'"';
+  if (hs) hs.innerText='— '+h.src;
 }
 
 
@@ -6398,8 +6399,9 @@ function updateStreak() {
     streak=last===yesterday?streak+1:1;
     localStorage.setItem('streak',streak); localStorage.setItem('lastVisit',today);
   }
-  document.getElementById('h-streak').innerText=streak;
-  document.getElementById('h-tasbih').innerText=totTasbih;
+  const sk=document.getElementById('h-streak'), st=document.getElementById('h-tasbih');
+  if (sk) sk.innerText=streak;
+  if (st) st.innerText=totTasbih;
 }
 
 // ================================================================
@@ -6508,17 +6510,25 @@ function startNextPrayerCountdown() {
   _npInterval = setInterval(updateNextPrayerCard, 1000);
 }
 
+/* Runs one startup step in isolation. A missing element in one step must not
+   cancel the steps after it; that is exactly how the next-prayer countdown and
+   the prayer times themselves ended up never running. */
+function nqSafe(label, fn){
+  try { return fn(); }
+  catch(e){ try { console.warn('[init] ' + label + ' failed:', e && e.message); } catch(_) {} }
+}
+
 function initApp() {
   const t=localStorage.getItem('theme')||'default';
-  applyTheme(t);
+  nqSafe('theme', function(){ applyTheme(t); });
   /* Start the live prayer countdown first: the steps below can throw on a
      given device, and when they did the countdown never started at all. */
-  try { startNextPrayerCountdown(); } catch(e) {}
-  initHadith();
-  updateStreak();
-  loadPrayerTimes();
-  checkDailyNotif();
-  renderAzanVoices();
+  nqSafe('nextPrayerCountdown', startNextPrayerCountdown);
+  nqSafe('hadith', initHadith);
+  nqSafe('streak', updateStreak);
+  nqSafe('prayerTimes', loadPrayerTimes);
+  nqSafe('dailyNotif', checkDailyNotif);
+  nqSafe('azanVoices', renderAzanVoices);
   // Show the Azan voice picker expanded by default so users can see it
   const azD=document.getElementById('azan-details');
   const azC=document.getElementById('azan-b-chev');
@@ -6547,10 +6557,10 @@ function initApp() {
     azanBtn.classList.remove('on');
     azanBtn.textContent = '🔕 OFF';
   }
-  try { loadQ(); } catch(e) {}
-  try { updateResumeUI(); } catch(e) {}
-  try { renderHijriHeaderChip(); } catch(e) {}
-  try { loadServerConfig(); } catch(e) {} // fetch global settings from server (banner, welcome, etc.)
+  nqSafe('quranData', loadQ);
+  nqSafe('resumeCard', updateResumeUI);
+  nqSafe('hijriChip', renderHijriHeaderChip);
+  nqSafe('serverConfig', loadServerConfig); // global settings from server (banner, welcome, etc.)
   if (window.location.hash==='#admin') goToView('admin');
   else goToView('home');
 }
@@ -6563,7 +6573,7 @@ document.addEventListener('visibilitychange', () => {
     // Reload prayer times if stale
     const savedDate = localStorage.getItem('prayerTimesDate');
     if(savedDate !== new Date().toDateString()){
-      loadPrayerTimes();
+      nqSafe('prayerTimes', loadPrayerTimes);
     } else {
       // Restore from localStorage
       const savedTimes = localStorage.getItem('prayerTimes');
