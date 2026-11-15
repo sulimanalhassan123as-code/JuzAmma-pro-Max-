@@ -751,6 +751,7 @@ body { font-family:'Poppins',sans-serif;
 .tfab.dragging { transition:none; }
 .tpanel { position:fixed; right:13px; bottom:calc(var(--nav) + 62px); z-index:10; background:var(--dark2); border-radius:17px; padding:11px; display:flex; flex-direction:column; gap:7px; box-shadow:0 8px 28px rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.09); transform:scale(.7) translateY(20px); opacity:0; transition:transform .25s cubic-bezier(.34,1.56,.64,1),opacity .2s; pointer-events:none; min-width:138px; }
 .tpanel.open { transform:scale(1) translateY(0); opacity:1; pointer-events:all; }
+.tpanel { max-height:min(52vh,260px); overflow-y:auto; overscroll-behavior:contain; }
 .topt { display:flex; align-items:center; gap:9px; cursor:pointer; padding:5px 6px; border-radius:10px; transition:background .15s; }
 .topt:active { background:rgba(255,255,255,.07); }
 .tdot { width:24px; height:24px; border-radius:50%; border:2.5px solid transparent; flex-shrink:0; transition:all .2s; }
@@ -3436,7 +3437,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v142 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v143 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3496,7 +3497,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v142 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v143 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3561,7 +3562,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v142 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v143 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3871,7 +3872,32 @@ function applyTheme(t) {
   document.querySelectorAll('.tdot').forEach(d => d.classList.toggle('sel', d.dataset.t === t));
 }
 function setTheme(t) { applyTheme(t); closeTP(); toast('🎨 Theme: ' + t); }
-function toggleTP() { document.getElementById('tpanel').classList.toggle('open'); }
+/* Placement rule: the panel always hangs off the FAB and never spans the screen.
+   Bug this fixes: the drag code set panel.top but left the CSS bottom in place,
+   so a fixed element with both top and bottom set is stretched between them. The
+   palette became a tall column over the chat input instead of a small menu. */
+function placePanelNearFab(){
+  const fab = document.getElementById('tfab');
+  const panel = document.getElementById('tpanel');
+  if (!fab || !panel) return;
+  panel.style.bottom = 'auto';            // never both top and bottom
+  const fr = fab.getBoundingClientRect();
+  panel.style.top = Math.max(8, fr.bottom + 8) + 'px';
+  requestAnimationFrame(function(){
+    const pr = panel.getBoundingClientRect();
+    if (pr.bottom > window.innerHeight - 8) {
+      panel.style.top = Math.max(8, fr.top - pr.height - 8) + 'px';   // flip above the fab
+    }
+    if (pr.right > window.innerWidth - 8 || pr.left < 8) {
+      panel.style.right = '8px'; panel.style.left = 'auto';           // keep it on screen
+    }
+  });
+}
+function toggleTP() {
+  const panel = document.getElementById('tpanel');
+  if (!panel.classList.contains('open')) placePanelNearFab();
+  panel.classList.toggle('open');
+}
 function closeTP()  { document.getElementById('tpanel').classList.remove('open'); }
 document.addEventListener('click', e => { if (!e.target.closest('#tfab') && !e.target.closest('#tpanel')) closeTP(); });
 
@@ -3893,11 +3919,11 @@ document.addEventListener('click', e => { if (!e.target.closest('#tfab') && !e.t
     fab.style.left = finalL+'px'; fab.style.right='auto';
     fab.style.top = finalT+'px';
     fab.style.opacity = '0.55'; // dim slightly at rest so it's less obtrusive over content
-    // Flip the settings panel to open on the side away from the screen edge
-    // so it never opens off-screen when the fab is snapped to the left/right.
+    // Open on the side away from the edge the fab snapped to, then let one
+    // helper own the vertical placement so top/bottom can never both be set.
     if (goLeft) { panel.style.left=(finalL)+'px'; panel.style.right='auto'; }
     else { panel.style.left='auto'; panel.style.right=(6)+'px'; }
-    panel.style.top=(finalT+52)+'px';
+    placePanelNearFab();
   }
 
   fab.addEventListener('touchstart', e => {
@@ -3916,8 +3942,7 @@ document.addEventListener('click', e => { if (!e.target.closest('#tfab') && !e.t
     const nt=Math.max(0,Math.min(window.innerHeight-100,iT+dy));
     fab.style.left=nl+'px'; fab.style.right='auto';
     fab.style.top=nt+'px';
-    panel.style.left=(nl-95)+'px'; panel.style.right='auto';
-    panel.style.top=(nt+52)+'px';
+    if (panel.classList.contains('open')) panel.classList.remove('open');
     e.preventDefault();
   }, {passive:false});
   document.addEventListener('touchend', () => {
@@ -14406,7 +14431,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v142';
+var NQ_BUILD = 'v143';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
