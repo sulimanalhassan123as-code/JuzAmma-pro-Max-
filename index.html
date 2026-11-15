@@ -3540,7 +3540,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v150 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v151 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3600,7 +3600,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v150 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v151 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3665,7 +3665,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v150 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v151 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3737,7 +3737,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="nq-card">
       <div class="nq-secH"><span>Playlist</span><span class="nq-hint" id="nq-count"></span></div>
       <div class="nq-chips">
-        <button class="nq-chip nq-mode on" id="nopt-full" onclick="setNightMode('full',this)">📖 Full Juz</button>
+        <button class="nq-chip nq-mode on" id="nopt-full" onclick="setNightMode('full',this)">📖 Full Juz · 30</button>
         <button class="nq-chip nq-mode" id="nopt-short" onclick="setNightMode('short',this)">📿 Short Surahs</button>
         <button class="nq-chip" onclick="nightOpenPicker()">📚 Choose surah</button>
       </div>
@@ -4863,13 +4863,17 @@ let nqRate = 1, nqRepeatOne = false, nqSleepInt = null, nqSleepEnd = 0;
    for the one playing, faint for the rest. Geometry is exact: slot = C / n
    where C = 2*pi*96, and each segment fills 72% of its slot so the gaps stay
    even no matter how many verses the surah has (40 for An-Naba, 3 for Al-Asr). */
-function nightRenderWheel(s, vidx) {
+function nightRenderWheel(s, vidx, duringPlayback) {
   const svg = document.getElementById('nq-wheel');
   if (!svg) return;
   const n = (s && s.verses) ? s.verses.length : 0;
   const R = 96, C = 2 * Math.PI * R;
-  let out = '<circle cx="112" cy="112" r="' + R + '" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="10"/>';
-  out += '<circle cx="112" cy="112" r="80" fill="none" stroke="rgba(255,255,255,.035)" stroke-width="1"/>';
+  let out = '<defs><radialGradient id="nqInner" cx="50%" cy="38%" r="62%">' +
+    '<stop offset="0%" stop-color="rgba(255,255,255,.075)"/><stop offset="100%" stop-color="rgba(255,255,255,.012)"/>' +
+    '</radialGradient></defs>';
+  out += '<circle cx="112" cy="112" r="106" fill="url(#nqInner)"/>';
+  out += '<circle cx="112" cy="112" r="' + R + '" fill="none" stroke="rgba(255,255,255,.055)" stroke-width="11"/>';
+  out += '<circle cx="112" cy="112" r="82" fill="none" stroke="rgba(255,255,255,.03)" stroke-width="1"/>';
   if (n > 0) {
     const slot = C / n, dash = Math.max(1.5, slot * 0.72);
     for (let i = 0; i < n; i++) {
@@ -4887,6 +4891,14 @@ function nightRenderWheel(s, vidx) {
     if (en) en.textContent = s.name || '';
     if (ar) ar.textContent = s.ar || '';
     if (me) me.textContent = s.meaning || '';
+    /* Nothing has played yet: preview verse 1 so the card holds real content
+       instead of two dashes on an empty dark block. */
+    if (!duringPlayback && !nightPlaying && s.verses && s.verses[0]) {
+      const arEl = document.getElementById('night-ar'), enEl = document.getElementById('night-en'), lblEl = document.getElementById('night-lbl');
+      if (arEl) arEl.textContent = s.verses[0].a || '';
+      if (enEl) enEl.textContent = s.verses[0].e || '';
+      if (lblEl) lblEl.textContent = 'Ready \u00b7 ' + s.verses.length + ' verses \u00b7 tap \u25b6 to begin';
+    }
   }
   nightUpdateCount();
 }
@@ -7572,7 +7584,7 @@ async function nightPlayVerse(sid, vidx) {
   document.getElementById('night-ar').innerText = v.a;
   document.getElementById('night-en').innerText = v.e;
   document.getElementById('night-lbl').innerText = `📖 ${s.name} — Verse ${v.n || vidx+1} / ${s.verses.length}`;
-  try { nightRenderWheel(s, vidx); } catch (e) {}
+  try { nightRenderWheel(s, vidx, true); } catch (e) {}
   const ss = String(sid).padStart(3,'0'), vv = String(vidx+1).padStart(3,'0');
   const key = nightReciter2 + '/' + ss + vv;
   // 1) device cache — instant, zero data
@@ -7670,7 +7682,10 @@ function nightAutoNext() {
 function getNightSurahList() {
   if (!qData.length) return [78];
   if (nightMode_type === 'short') return qData.filter(s => s.verses.length <= 10).map(s => s.id);
-  return qData.map(s => s.id);
+  /* "Full Juz" means Juz 30, the 37 surahs from An-Naba to An-Nas.
+     It used to return every surah in the file (114), so the label lied. */
+  const juz30 = qData.filter(s => s.id >= 78).map(s => s.id);
+  return juz30.length ? juz30 : qData.map(s => s.id);
 }
 function nightPlayPause() {
   if (nightPlaying) { nightAudio.pause(); nightPlaying = false; clearInterval(nightProgInt2); }
@@ -15047,7 +15062,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v150';
+var NQ_BUILD = 'v151';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
