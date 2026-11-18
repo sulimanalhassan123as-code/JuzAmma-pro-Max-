@@ -2674,6 +2674,26 @@ body { font-family:'Poppins',sans-serif;
 .dd-dbtn.on { border-color:rgba(16,185,129,.5); background:rgba(16,185,129,.16); color:var(--p); }
 .dd-empty { text-align:center; padding:34px 16px; color:var(--txt2); font-size:.82rem; line-height:1.6; }
 .dd-src { font-size:.62rem; color:var(--txt2); text-align:center; margin-top:16px; line-height:1.55; }
+
+/* ── Continue Reading, promoted to the top of Home ── */
+.resume-hero{ margin:2px 0 14px; border-radius:20px; padding:1.5px; cursor:pointer;
+  background:linear-gradient(135deg, rgba(201,168,76,.75), rgba(15,157,99,.45) 52%, rgba(201,168,76,.25));
+  box-shadow:0 16px 32px -22px rgba(0,0,0,.85); transition:transform .12s ease; }
+.resume-hero:active{ transform:scale(.985); }
+.resume-hero-in{ display:flex; align-items:center; gap:13px; padding:15px 16px; border-radius:19px;
+  background:linear-gradient(135deg,#1c3a2b 0%,#0e2318 100%); }
+.resume-hero-ico{ width:46px; height:46px; flex:0 0 auto; border-radius:14px; display:grid; place-items:center; font-size:1.35rem;
+  background:rgba(201,168,76,.15); border:1px solid rgba(201,168,76,.38); }
+.resume-hero-body{ flex:1; min-width:0; }
+.resume-hero-lbl{ font-size:.6rem; letter-spacing:1.2px; text-transform:uppercase; color:var(--gold,#c9a84c); font-weight:800; }
+.resume-hero .resume-title{ font-size:1.04rem; font-weight:800; color:#fff; margin-top:3px; line-height:1.25;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.resume-hero .resume-sub{ font-size:.73rem; color:rgba(255,255,255,.66); margin-top:3px; }
+.resume-hero-go{ flex:0 0 auto; background:var(--gold,#c9a84c); color:#1a1a1a; font-weight:800; font-size:.73rem;
+  padding:9px 14px; border-radius:12px; }
+[data-theme="light"] .resume-hero-in{ background:linear-gradient(135deg,#fff9ea,#f4ecd6); }
+[data-theme="light"] .resume-hero .resume-title{ color:#1c2b22; }
+[data-theme="light"] .resume-hero .resume-sub{ color:#5c6b60; }
 </style>
 </head>
 <body>
@@ -2701,8 +2721,21 @@ body { font-family:'Poppins',sans-serif;
     </div>
     <div class="hero-stats">
       <div class="hstat"><div class="hstat-n">114</div><div class="hstat-l">Surahs</div></div>
-      <div class="hstat"><div class="hstat-n" id="h-tasbih">0</div><div class="hstat-l">Tasbih</div></div>
-      <div class="hstat"><div class="hstat-n" id="h-streak">0</div><div class="hstat-l">Streak</div></div>
+      <div class="hstat" id="hstat-tasbih"><div class="hstat-n" id="h-tasbih">0</div><div class="hstat-l">Tasbih</div></div>
+      <div class="hstat" id="hstat-streak"><div class="hstat-n" id="h-streak">0</div><div class="hstat-l">Streak</div></div>
+    </div>
+  </div>
+
+  <!-- CONTINUE READING — promoted to the top of Home -->
+  <div id="resume-wrap" class="resume-hero" style="display:none" onclick="resumeRead()">
+    <div class="resume-hero-in">
+      <div class="resume-hero-ico">📖</div>
+      <div class="resume-hero-body">
+        <div class="resume-hero-lbl">Continue reading</div>
+        <div class="resume-title" id="resume-title">—</div>
+        <div class="resume-sub" id="resume-sub">—</div>
+      </div>
+      <div class="resume-hero-go">Resume →</div>
     </div>
   </div>
 
@@ -2729,18 +2762,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
   </div>
 
-  <!-- CONTINUE READING CARD -->
-  <div id="resume-wrap" class="home-card hc-stagger-3" style="display:none;cursor:pointer" onclick="resumeRead()">
-    <div style="padding:14px 16px;display:flex;align-items:center;gap:13px;background:linear-gradient(135deg,#173d2e,#0d2419);border-radius:16px">
-      <div style="font-size:1.7rem">📖</div>
-      <div style="flex:1">
-        <div style="font-size:.66rem;color:var(--gold);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Continue Reading</div>
-        <div class="resume-title" id="resume-title" style="font-size:.9rem;font-weight:700;color:var(--txt);margin-top:2px">—</div>
-        <div class="resume-sub" id="resume-sub" style="font-size:.72rem;color:var(--txt2)">—</div>
-      </div>
-      <button style="background:var(--gold);color:#1a1a1a;border:none;padding:8px 14px;border-radius:12px;font-size:.74rem;font-weight:700;cursor:pointer">Resume →</button>
-    </div>
-  </div>
+
 
   <!-- NEXT PRAYER CARD -->
   <div class="home-card hc-stagger-4" id="next-prayer-card" onclick="loadPrayerTimes()" style="cursor:pointer">
@@ -3552,7 +3574,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v158 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v159 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3612,7 +3634,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v158 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v159 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3677,7 +3699,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v158 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v159 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -5110,7 +5132,7 @@ function tap() {
   cnt++; totTasbih++;
   localStorage.setItem('totTasbih',totTasbih);
   document.getElementById('tot-today').innerText=totTasbih;
-  document.getElementById('h-tasbih').innerText=totTasbih;
+  document.getElementById('h-tasbih').innerText=totTasbih; nqSyncStats();
   if (navigator.vibrate) navigator.vibrate(20);
   updateTUI();
   updateScene();
@@ -7158,6 +7180,16 @@ function checkDailyNotif(){
   new Notification('🌙 Juz Amma Pro Max',{body:msgs[Math.floor(Math.random()*msgs.length)],icon:'icons/icon-192x192.png'});
   localStorage.setItem('lastNotif',today);
 }
+function nqSyncStats(){
+  /* A row of zeros reads like failure on first open. Show a stat only once it has a value. */
+  [['hstat-tasbih','h-tasbih'],['hstat-streak','h-streak']].forEach(function(pair){
+    const wrap = document.getElementById(pair[0]);
+    const num  = document.getElementById(pair[1]);
+    if (!wrap || !num) return;
+    const v = parseInt(String(num.innerText || num.textContent || '0').replace(/[^0-9]/g,''), 10) || 0;
+    wrap.style.display = v > 0 ? '' : 'none';
+  });
+}
 function updateStreak() {
   const today=new Date().toDateString(), last=localStorage.getItem('lastVisit');
   if (last!==today) {
@@ -7168,6 +7200,7 @@ function updateStreak() {
   const sk=document.getElementById('h-streak'), st=document.getElementById('h-tasbih');
   if (sk) sk.innerText=streak;
   if (st) st.innerText=totTasbih;
+  nqSyncStats();
 }
 
 // ================================================================
@@ -7180,11 +7213,26 @@ function toast(msg) { const t=document.getElementById('toast-el'); t.innerText=m
 // PWA INSTALL
 // ================================================================
 let deferredPrompt;
+function nqIsInstalled(){
+  try {
+    if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) return true;
+    if (window.matchMedia && window.matchMedia('(display-mode: fullscreen)').matches) return true;
+    if (window.navigator && navigator.standalone === true) return true;
+    if (window.NabaAndroid || /NabaQuranApp/i.test(navigator.userAgent || '')) return true;
+  } catch (e) {}
+  return false;
+}
+function nqSyncInstallPill(){
+  const ib = document.getElementById('install-btn');
+  if (!ib) return;
+  if (nqIsInstalled() || !deferredPrompt) { ib.style.display = 'none'; return; }
+  ib.style.display = 'flex';
+}
 window.addEventListener('beforeinstallprompt', e=>{
   e.preventDefault(); deferredPrompt=e;
-  const ib=document.getElementById('install-btn'); if(ib) ib.style.display='flex';
+  nqSyncInstallPill();
 });
-window.addEventListener('appinstalled', ()=>{ const ib=document.getElementById('install-btn'); if(ib) ib.style.display='none'; toast('📲 App installed!'); });
+window.addEventListener('appinstalled', ()=>{ deferredPrompt=null; nqSyncInstallPill(); toast('📲 App installed!'); });
 function installPWA() { if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(r=>{if(r.outcome==='accepted')toast('📲 Installing…');deferredPrompt=null;});} else { toast('📲 To install: tap your browser menu → Add to Home Screen'); } }
 
 // ================================================================
@@ -15574,7 +15622,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v158';
+var NQ_BUILD = 'v159';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
