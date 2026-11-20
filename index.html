@@ -200,6 +200,11 @@ body { font-family:'Poppins',sans-serif;
 .bism-ar { font-family:'Amiri','Noto Naskh Arabic','Scheherazade New',serif; font-size:1.75rem; color:var(--gold); line-height:1.8; direction:rtl; text-align:center; font-feature-settings:'liga' 1,'calt' 1; }
 .bism-en { font-size:.72rem; color:rgba(255,255,255,.38); margin-top:3px; }
 .vcard { margin:7px 12px; background:var(--card); border-radius:15px; padding:15px; border:2px solid var(--bdr); cursor:pointer; transition:all .25s; scroll-margin-top:120px; }
+/* Hausa coverage notice (v164) */
+.lang-note{ margin:10px 12px 4px; padding:11px 13px; border-radius:13px; font-size:.78rem; line-height:1.45;
+  background:rgba(201,168,76,.12); border:1px solid rgba(201,168,76,.34); color:var(--txt2,#cfd8d2); }
+.lang-note b{ color:var(--txt,#fff); }
+.lang-note-go{ display:inline-block; margin-top:6px; color:var(--gold,#c9a84c); font-weight:700; cursor:pointer; text-decoration:underline; }
 .vcard.playing { border-color:var(--p); box-shadow:0 4px 18px var(--pg); }
 .vcard.bookmarked { border-color:var(--gold); }
 .vcard-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:9px; }
@@ -3574,7 +3579,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v163 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v164 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3634,7 +3639,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v163 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v164 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3699,7 +3704,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v163 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v164 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -4483,7 +4488,14 @@ function openSurah(id) {
 
 function renderVerses(s) {
   const bm = bookmarks[s.id]||[];
-  let html=`<div class="bism-card"><div class="bism-ar">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div><div class="bism-en">In the name of Allah, the Most Gracious, the Most Merciful</div></div>`;
+  /* Hausa only exists for Juz Amma (78-114). Before this, choosing Hausa on any
+     other surah showed English with no explanation, which reads as a broken
+     button. Say so plainly and offer the surahs that do have it. */
+  const noHausa = showTrans && curLang === 'ha' && !HAUSA[s.id];
+  let html = noHausa
+    ? `<div class="lang-note">🌍 Hausa translation covers Juz Amma, surahs 78 to 114. <b>${s.name}</b> is not in that range, so its translation stays English. <span class="lang-note-go" onclick="goToView('list')">Pick a Juz Amma surah →</span></div>`
+    : '';
+  html+=`<div class="bism-card"><div class="bism-ar">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div><div class="bism-en">In the name of Allah, the Most Gracious, the Most Merciful</div></div>`;
   s.verses.forEach((v,i) => {
     const isBm = bm.includes(i);
     html += `<div class="vcard ${isBm?'bookmarked':''}" id="vc-${s.id}-${i}" onclick="openMushaf(${s.id},${i})">
@@ -15773,7 +15785,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v163';
+var NQ_BUILD = 'v164';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
