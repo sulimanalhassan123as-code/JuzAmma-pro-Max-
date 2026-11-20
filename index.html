@@ -3574,7 +3574,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v159 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v160 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3634,7 +3634,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v159 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v160 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3699,7 +3699,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v159 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v160 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -4770,32 +4770,42 @@ function attachEyFallback(el) {
   });
 }
 
+function readVerseKey(sid, vidx) {
+  const ss = String(sid).padStart(3,'0'), vv = String(vidx+1).padStart(3,'0');
+  return reciter + '/' + ss + vv;
+}
+let readBlobUrl = null, nqWantPlay = false;
+/* Verse audio, cache first. Night Radio already downloads a verse once and
+   keeps it forever; the read player streamed every verse fresh, so any dip in
+   signal killed playback mid-verse. Both now share one store: a verse heard in
+   either place is instant in the other, and works with no signal afterwards. */
+async function readVerseBlob(sid, vidx) {
+  const key = readVerseKey(sid, vidx);
+  let blob = null;
+  try { blob = await nightCacheGet(key); } catch (e) {}
+  if (!blob) {
+    try {
+      const r = await fetch(getVerseUrl(sid, vidx));
+      if (r && r.ok) { blob = new Blob([await r.arrayBuffer()], { type: 'audio/mpeg' }); nightCachePut(key, blob); }
+    } catch (e) {}
+  }
+  return blob;
+}
+function nqWarmVerse(sid, vidx) { readVerseBlob(sid, vidx).catch(function(){}); }
+
 function getVerseUrl(sid, vidx) {
   const ss=String(sid).padStart(3,'0'), vv=String(vidx+1).padStart(3,'0');
   return eyUrl(reciter, ss, vv);
 }
 
 function preloadNextVerse() {
-  const s=qData.find(x=>x.id===curS);
-  if (s && curV < s.verses.length-1) {
-    const nextUrl = getVerseUrl(curS, curV+1);
-    if (preloadAud.src !== nextUrl) {
-      preloadAud.src = nextUrl;
-      preloadAud.load();
-    }
-  } else {
-    // Try to preload first verse of next surah
-    const sIdx = qData.findIndex(x=>x.id===curS);
-    if (sIdx >= 0 && sIdx < qData.length-1) {
-      const nextS = qData[sIdx+1];
-      const nextUrl = getVerseUrl(nextS.id, 0);
-      preloadAud.src = nextUrl;
-      preloadAud.load();
-    }
-  }
+  const s = qData.find(x => x.id === curS);
+  if (s && curV < s.verses.length - 1) { nqWarmVerse(curS, curV + 1); return; }
+  const sIdx = qData.findIndex(x => x.id === curS);
+  if (sIdx >= 0 && sIdx < qData.length - 1) nqWarmVerse(qData[sIdx + 1].id, 0);
 }
 
-function playV(sid, vidx, isRetry) {
+async function playV(sid, vidx, isRetry) {
   // Stop full-surah continuous audio if it's playing (prevents overlapping/garbled audio)
   if (typeof fsapPlaying !== 'undefined' && fsapPlaying) {
     fsapAudio.pause();
@@ -4820,23 +4830,30 @@ function playV(sid, vidx, isRetry) {
   // <audio> element (aud) instead of swapping object identity — swapping used
   // to move playback onto a bare Audio() with no onended/onerror handlers
   // wired up, which silently broke auto-advance after the first verse.
-  if (preloadAud.src && preloadAud.src.includes(url.split('/').pop())) {
-    aud.src = preloadAud.src;
-    preloadAud.src = '';
+  nqWantPlay = true;
+  const blob = await readVerseBlob(sid, vidx);
+  if (blob) {
+    if (readBlobUrl) { try { URL.revokeObjectURL(readBlobUrl); } catch (e) {} }
+    readBlobUrl = URL.createObjectURL(blob);
+    aud.src = readBlobUrl;          // local copy: a dropped connection cannot cut this verse
   } else {
-    aud.src = url;
+    aud.src = url;                  // nothing cached and the download failed: stream as before
   }
   
   aud.playbackRate = speed;
   aud.play().catch(() => {
     audioRetryCount++;
-    if (audioRetryCount < MAX_RETRIES) {
+    if (audioRetryCount <= MAX_RETRIES + 2) {
       const status = document.getElementById('p-sub');
-      if (status) status.innerText = `Buffering... (retry ${audioRetryCount}/${MAX_RETRIES})`;
-      setTimeout(() => playV(sid, vidx, true), 1500);
+      if (status) status.innerText = `Buffering… retry ${audioRetryCount}`;
+      setTimeout(() => playV(sid, vidx, true), 700 * audioRetryCount);
+    } else if (autoPlay) {
+      audioRetryCount = 0;
+      toast('⚠ Verse skipped — weak network');
+      setTimeout(() => { try { nextV(); } catch (e) {} }, 600);
     } else {
       toast('⚠️ Network slow — tap play to retry');
-      isPlaying = false;
+      isPlaying = false; nqWantPlay = false;
       document.getElementById('btn-play').innerHTML = '▶';
     }
     return;
@@ -4850,10 +4867,11 @@ function playV(sid, vidx, isRetry) {
   lastRead={surahId:sid,surahName:su.name,verse:vidx}; localStorage.setItem('lastRead',JSON.stringify(lastRead));
 }
 function togglePlay() {
-  if (isPlaying) { aud.pause(); isPlaying=false; document.getElementById('btn-play').innerHTML='▶'; clearInterval(progInt); }
-  else { aud.play(); isPlaying=true; document.getElementById('btn-play').innerHTML='⏸'; }
+  if (isPlaying) { nqWantPlay=false; aud.pause(); isPlaying=false; document.getElementById('btn-play').innerHTML='▶'; clearInterval(progInt); }
+  else { nqWantPlay=true; aud.play(); isPlaying=true; document.getElementById('btn-play').innerHTML='⏸'; }
 }
 function stopPlayback() {
+  nqWantPlay = false;
   aud.pause();
   isPlaying = false;
   const btn = document.getElementById('btn-play');
@@ -4881,10 +4899,28 @@ function nextV() {
 }
 function prevV() { if (curV>0) playV(curS,curV-1); }
 aud.onended = () => { if (autoPlay) nextV(); else { isPlaying=false; document.getElementById('btn-play').innerHTML='▶'; } };
+/* Signal back after a drop: carry on from the same verse without a tap. */
+window.addEventListener('online', () => {
+  if (nqWantPlay && !isPlaying && curS !== null && curS !== undefined) {
+    audioRetryCount = 0;
+    try { playV(curS, curV, true); } catch (e) {}
+  }
+});
 aud.onerror = () => {
-  if (isPlaying && audioRetryCount < MAX_RETRIES) {
+  if (!isPlaying) return;
+  if (audioRetryCount < MAX_RETRIES + 2) {
     audioRetryCount++;
-    setTimeout(() => playV(curS, curV, true), 1500);
+    const status = document.getElementById('p-sub');
+    if (status) status.innerText = `Reconnecting… retry ${audioRetryCount}`;
+    setTimeout(() => playV(curS, curV, true), 700 * audioRetryCount);
+  } else if (autoPlay) {
+    audioRetryCount = 0;
+    toast('⚠ Verse skipped — weak network');
+    try { nextV(); } catch (e) {}
+  } else {
+    toast('⚠️ Network slow — tap play to retry');
+    isPlaying = false; nqWantPlay = false;
+    document.getElementById('btn-play').innerHTML = '▶';
   }
 };
 function changeReciter() { reciter=document.getElementById('reciter-sel').value; localStorage.setItem('reciter',reciter); preloadAud.src=''; if(isPlaying) playV(curS,curV); toast('🎙️ Reciter changed'); }
@@ -7744,6 +7780,12 @@ async function nightCacheGet(key) {
 }
 async function nightCachePut(key, blob) {
   const db = await nightDB(); if (!db || !blob) return;
+  try {
+    if (navigator.storage && navigator.storage.estimate) {
+      const est = await navigator.storage.estimate();
+      if (est && est.usage > 250 * 1024 * 1024) return;   // stop growing past 250MB
+    }
+  } catch (e) {}
   try {
     db.transaction('verses','readwrite').objectStore('verses').put(blob, key);
   } catch (e) {}
@@ -15622,7 +15664,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v159';
+var NQ_BUILD = 'v160';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
