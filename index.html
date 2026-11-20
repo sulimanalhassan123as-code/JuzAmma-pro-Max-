@@ -3574,7 +3574,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v160 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v161 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3634,7 +3634,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v160 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v161 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3699,7 +3699,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v160 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v161 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -4901,6 +4901,7 @@ function prevV() { if (curV>0) playV(curS,curV-1); }
 aud.onended = () => { if (autoPlay) nextV(); else { isPlaying=false; document.getElementById('btn-play').innerHTML='▶'; } };
 /* Signal back after a drop: carry on from the same verse without a tap. */
 window.addEventListener('online', () => {
+  if (fsapWant && !fsapPlaying && fsapUrlNow) { fsapFail(0); }
   if (nqWantPlay && !isPlaying && curS !== null && curS !== undefined) {
     audioRetryCount = 0;
     try { playV(curS, curV, true); } catch (e) {}
@@ -14290,7 +14291,38 @@ function getFullSurahUrl() {
   const [code, server] = sel.split('|');
   if (!curS) return '';
   const ss = String(curS).padStart(3, '0');
+  // Own domain first: mp3quran is throttled or blocked on some carriers here.
+  if (EY_PROXY) return '/api/full-surah?r=' + encodeURIComponent(code) + '&s=' + ss + '&srv=' + encodeURIComponent(server);
   return 'https://' + server + '/' + code + '/' + ss + '.mp3';
+}
+
+/* Full-surah playback: retry with backoff and resume where it stopped,
+   instead of one attempt and a dead button. */
+let fsapWant = false, fsapResumeAt = 0, fsapUrlNow = '';
+function fsapStart(url, at, attempt) {
+  attempt = attempt || 0;
+  fsapUrlNow = url;
+  const st = document.getElementById('fsap-time');
+  if (attempt > 0 && st) st.textContent = 'Reconnecting… ' + attempt;
+  else if (st) st.textContent = 'Loading…';
+  fsapAudio.src = url;
+  if (at > 0) {
+    const seek = () => { try { fsapAudio.currentTime = at; } catch (e) {} fsapAudio.removeEventListener('loadedmetadata', seek); };
+    fsapAudio.addEventListener('loadedmetadata', seek);
+  }
+  fsapAudio.play().catch(() => fsapFail(attempt));
+}
+function fsapFail(attempt) {
+  if (!fsapWant) return;
+  if (attempt < 5) {
+    const st = document.getElementById('fsap-time');
+    if (st) st.textContent = 'Reconnecting…';
+    setTimeout(() => { if (fsapWant) fsapStart(fsapUrlNow, fsapResumeAt, attempt + 1); }, 700 * (attempt + 1));
+  } else {
+    toast('⚠️ Audio failed to load — check connection and try again');
+    fsapPlaying = false; fsapWant = false;
+    updateFsapBtn();
+  }
 }
 
 function changeFullSurahReciter() {
@@ -14301,6 +14333,7 @@ function changeFullSurahReciter() {
 function toggleFullSurah() {
   if (!curS) { toast('Open a surah first'); return; }
   if (fsapPlaying) {
+    fsapWant = false;
     fsapAudio.pause();
     fsapPlaying = false;
     updateFsapBtn();
@@ -14309,21 +14342,11 @@ function toggleFullSurah() {
     if (isPlaying) stopPlayback();
     const url = getFullSurahUrl();
     if (!url) return;
-    fsapAudio.src = url;
     fsapPlaying = true; // optimistic UI update so the button reflects state immediately
+    fsapWant = true; fsapResumeAt = 0;
     updateFsapBtn();
-    const st = document.getElementById('fsap-time');
-    if (st) st.textContent = 'Loading…';
-    fsapAudio.play().catch(e => {
-      // Retry once on failure (common on slow mobile networks)
-      fsapAudio.src = url;
-      fsapAudio.play().catch(() => {
-        toast('⚠️ Audio failed to load — check connection and try again');
-        fsapPlaying = false;
-        updateFsapBtn();
-      });
-    });
-    fsapAudio.onended = () => { fsapPlaying = false; updateFsapBtn(); };
+    fsapStart(url, 0, 0);
+    fsapAudio.onended = () => { fsapPlaying = false; fsapWant = false; updateFsapBtn(); };
     fsapAudio.ontimeupdate = () => {
       const t = document.getElementById('fsap-time');
       if (t && fsapAudio.duration) {
@@ -14333,10 +14356,11 @@ function toggleFullSurah() {
       }
     };
     fsapAudio.onerror = () => {
-      toast('⚠️ Audio error — try a different reciter');
-      fsapPlaying = false;
-      updateFsapBtn();
+      // remember the spot and try again rather than stopping dead
+      fsapResumeAt = fsapAudio.currentTime || fsapResumeAt;
+      fsapFail(0);
     };
+    fsapAudio.onstalled = () => { if (fsapWant) { fsapResumeAt = fsapAudio.currentTime || fsapResumeAt; } };
     return; // updateFsapBtn already called above
   }
 }
@@ -15664,7 +15688,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v160';
+var NQ_BUILD = 'v161';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
