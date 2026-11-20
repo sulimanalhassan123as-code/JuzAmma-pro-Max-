@@ -5,6 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Naba Quran</title>
 <meta name="description" content="Naba Quran — Juz Amma: Read, Listen, Memorize, Duas, Qibla, Zakat, Prayer Tracker, AI Guide">
+<!-- Link preview: what friends see when the link is pasted in WhatsApp/Telegram -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Naba Quran">
+<meta property="og:title" content="Naba Quran — read, listen and memorise Juz Amma">
+<meta property="og:description" content="A calm Quran companion: full Juz Amma with recitation that keeps playing on weak data, memorisation mode, 122 du'as, 99 Names, prayer times with azan alarm, Qibla, zakat calculator and a hifz coach.">
+<meta property="og:url" content="https://juz-amma-pro-max.vercel.app/">
+<meta property="og:image" content="https://juz-amma-pro-max.vercel.app/icons/icon-512x512.png">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Naba Quran — read, listen and memorise Juz Amma">
+<meta name="twitter:description" content="Full Juz Amma with recitation that holds on weak data, memorisation mode, 122 du'as, 99 Names, prayer times and Qibla.">
+<meta name="twitter:image" content="https://juz-amma-pro-max.vercel.app/icons/icon-512x512.png">
 <meta name="theme-color" content="#0b1f1a">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3488,6 +3501,11 @@ body { font-family:'Poppins',sans-serif;
       <div class="ccard-t">Help & Contact</div>
       <div class="ccard-s">Support · FAQ</div>
     </div>
+    <div class="ccard" onclick="shareNaba()">
+      <div class="ccard-ico ico-sq" style="background:#1c3a6b">📤</div>
+      <div class="ccard-t">Share Naba Quran</div>
+      <div class="ccard-s">Send the link to friends</div>
+    </div>
     <div class="ccard" onclick="goToView('privacy')">
       <div class="ccard-ico ico-sq" style="background:#1f4a35">🔒</div>
       <div class="ccard-t">Privacy Policy</div>
@@ -3579,7 +3597,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v164 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v165 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3639,7 +3657,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v164 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v165 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3704,7 +3722,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v164 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v165 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -8915,6 +8933,30 @@ function getLangTrans(surahId, verseIdx, englishFallback) {
     if (h && h[verseIdx]) return h[verseIdx];
   }
   return englishFallback;
+}
+
+
+/* Share: hands the phone a ready message plus the link, so forwarding to
+   friends takes one tap. Falls back to copying if the phone has no share sheet. */
+function shareNaba(){
+  const url = 'https://juz-amma-pro-max.vercel.app';
+  const msg = 'Naba Quran 🕌\n\n'
+    + 'Assalamu Alaikum. I have been using this and wanted to share it with you.\n\n'
+    + 'It reads and recites Juz Amma, keeps the recitation going even when the network drops, '
+    + 'has a memorisation mode, 122 du\'as with audio, the 99 Names of Allah, prayer times with azan alarm, '
+    + 'Qibla, zakat calculator and a hifz coach.\n\n'
+    + 'It is free and works on any phone: ' + url;
+  if (navigator.share) {
+    navigator.share({ title: 'Naba Quran', text: msg, url: url }).catch(function(){});
+    return;
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(msg)
+      .then(function(){ toast('📋 Message copied — paste it in WhatsApp'); })
+      .catch(function(){ toast('🔗 ' + url); });
+    return;
+  }
+  toast('🔗 ' + url);
 }
 
 function toggleLang() {
@@ -15785,7 +15827,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v164';
+var NQ_BUILD = 'v165';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
