@@ -3574,7 +3574,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v161 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v162 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3634,7 +3634,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v161 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v162 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3699,7 +3699,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v161 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v162 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -4783,11 +4783,30 @@ async function readVerseBlob(sid, vidx) {
   const key = readVerseKey(sid, vidx);
   let blob = null;
   try { blob = await nightCacheGet(key); } catch (e) {}
-  if (!blob) {
+  if (blob) return blob;
+  // Two routes and a hard timeout: a hung request must not stall the verse
+  // for a minute, and if our proxy is unreachable the carrier may still let
+  // the direct host through (and the other way round).
+  const proxy = getVerseUrl(sid, vidx);
+  const direct = proxy.indexOf('/api/ey?p=') === 0
+    ? 'https://everyayah.com/data/' + decodeURIComponent(proxy.split('p=')[1])
+    : '';
+  const routes = direct && direct !== proxy ? [proxy, direct] : [proxy];
+  for (let i = 0; i < routes.length; i++) {
+    const ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    const timer = ctrl ? setTimeout(() => { try { ctrl.abort(); } catch (e) {} }, 12000) : null;
     try {
-      const r = await fetch(getVerseUrl(sid, vidx));
-      if (r && r.ok) { blob = new Blob([await r.arrayBuffer()], { type: 'audio/mpeg' }); nightCachePut(key, blob); }
-    } catch (e) {}
+      const r = await fetch(routes[i], ctrl ? { signal: ctrl.signal } : undefined);
+      if (r && r.ok) {
+        blob = new Blob([await r.arrayBuffer()], { type: 'audio/mpeg' });
+        nightCachePut(key, blob);
+        break;
+      }
+    } catch (e) {
+      /* try the next route */
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
   }
   return blob;
 }
@@ -4800,9 +4819,9 @@ function getVerseUrl(sid, vidx) {
 
 function preloadNextVerse() {
   const s = qData.find(x => x.id === curS);
-  if (s && curV < s.verses.length - 1) { nqWarmVerse(curS, curV + 1); return; }
-  const sIdx = qData.findIndex(x => x.id === curS);
-  if (sIdx >= 0 && sIdx < qData.length - 1) nqWarmVerse(qData[sIdx + 1].id, 0);
+  if (!s) return;
+  if (curV + 1 < s.verses.length) nqWarmVerse(curS, curV + 1);
+  if (curV + 2 < s.verses.length) setTimeout(() => nqWarmVerse(curS, curV + 2), 400);
 }
 
 async function playV(sid, vidx, isRetry) {
@@ -4843,24 +4862,20 @@ async function playV(sid, vidx, isRetry) {
   aud.playbackRate = speed;
   aud.play().catch(() => {
     audioRetryCount++;
-    if (audioRetryCount <= MAX_RETRIES + 2) {
-      const status = document.getElementById('p-sub');
-      if (status) status.innerText = `Buffering… retry ${audioRetryCount}`;
-      setTimeout(() => playV(sid, vidx, true), 700 * audioRetryCount);
-    } else if (autoPlay) {
-      audioRetryCount = 0;
-      toast('⚠ Verse skipped — weak network');
-      setTimeout(() => { try { nextV(); } catch (e) {} }, 600);
-    } else {
-      toast('⚠️ Network slow — tap play to retry');
-      isPlaying = false; nqWantPlay = false;
-      document.getElementById('btn-play').innerHTML = '▶';
-    }
+    // Hold the verse and keep trying. Skipping used to jump the recitation
+    // forward on a weak network, which is worse than waiting: the marker,
+    // the memorisation loop and the listener all lose their place.
+    const wait = Math.min(5000, Math.round(600 * Math.pow(1.55, audioRetryCount)));
+    const status = document.getElementById('p-sub');
+    if (status) status.innerText = 'Reconnecting…';
+    const btn = document.getElementById('btn-play');
+    if (btn) btn.innerHTML = '⏸';
+    setTimeout(() => { if (nqWantPlay) playV(sid, vidx, true); }, wait);
     return;
   });
   
   // Start preloading next verse immediately
-  setTimeout(preloadNextVerse, 500);
+  setTimeout(preloadNextVerse, 150);
   
   clearInterval(progInt);
   progInt=setInterval(()=>{ if(aud.duration) document.getElementById('pfill').style.width=(aud.currentTime/aud.duration*100)+'%'; },400);
@@ -4908,21 +4923,12 @@ window.addEventListener('online', () => {
   }
 });
 aud.onerror = () => {
-  if (!isPlaying) return;
-  if (audioRetryCount < MAX_RETRIES + 2) {
-    audioRetryCount++;
-    const status = document.getElementById('p-sub');
-    if (status) status.innerText = `Reconnecting… retry ${audioRetryCount}`;
-    setTimeout(() => playV(curS, curV, true), 700 * audioRetryCount);
-  } else if (autoPlay) {
-    audioRetryCount = 0;
-    toast('⚠ Verse skipped — weak network');
-    try { nextV(); } catch (e) {}
-  } else {
-    toast('⚠️ Network slow — tap play to retry');
-    isPlaying = false; nqWantPlay = false;
-    document.getElementById('btn-play').innerHTML = '▶';
-  }
+  if (!isPlaying || !nqWantPlay) return;
+  audioRetryCount++;
+  const wait = Math.min(5000, Math.round(600 * Math.pow(1.55, audioRetryCount)));
+  const status = document.getElementById('p-sub');
+  if (status) status.innerText = 'Reconnecting…';
+  setTimeout(() => { if (nqWantPlay) playV(curS, curV, true); }, wait);
 };
 function changeReciter() { reciter=document.getElementById('reciter-sel').value; localStorage.setItem('reciter',reciter); preloadAud.src=''; if(isPlaying) playV(curS,curV); toast('🎙️ Reciter changed'); }
 function changeSpeed() { speed=parseFloat(document.getElementById('speed-sel').value); localStorage.setItem('speed',speed); aud.playbackRate=speed; toast('⚡ Speed: '+speed+'×'); }
@@ -15688,7 +15694,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v161';
+var NQ_BUILD = 'v162';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
