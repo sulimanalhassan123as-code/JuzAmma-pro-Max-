@@ -3574,7 +3574,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v162 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v163 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3634,7 +3634,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v162 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v163 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3699,7 +3699,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v162 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v163 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -4811,6 +4811,98 @@ async function readVerseBlob(sid, vidx) {
   return blob;
 }
 function nqWarmVerse(sid, vidx) { readVerseBlob(sid, vidx).catch(function(){}); }
+
+/* ── Shared resilient audio (v163) ────────────────────────────────
+   One engine for every section that plays a file, so none of them
+   stream a fresh copy and die on a wobble the way the read player used
+   to. Small clips are downloaded once and kept on the phone; heavy ones
+   (a 40 Hadith recording) are streamed. Either way a failure retries
+   with backoff, resumes where it stopped, and picks up again when the
+   signal returns. Nothing is ever skipped or silently dropped. */
+const NQ_AUDIO_CACHE_MAX = 4 * 1024 * 1024;
+async function nqAudioBlob(url) {
+  const key = 'audio:' + url;
+  let blob = null;
+  try { blob = await nightCacheGet(key); } catch (e) {}
+  if (blob) return blob;
+  /* Ask the size before pulling anything. A heavy recording must start
+     streaming at once instead of downloading in full and making the user
+     wait, which is the whole complaint this section is fixing. */
+  try {
+    const h = await fetch(url, { method: 'HEAD' });
+    const len = h && h.headers && h.headers.get ? parseInt(h.headers.get('content-length') || '0', 10) : 0;
+    if (len > NQ_AUDIO_CACHE_MAX) return null;
+  } catch (e) {}
+  try {
+    const r = await fetch(url);
+    if (!r || !r.ok) return null;
+    const b = new Blob([await r.arrayBuffer()], { type: 'audio/mpeg' });
+    if (b.size <= NQ_AUDIO_CACHE_MAX) { try { nightCachePut(key, b); } catch (e) {} }
+    return b;
+  } catch (e) { return null; }
+}
+function nqAudioPlay(urls, opts) {
+  opts = opts || {};
+  const list = (Array.isArray(urls) ? urls : [urls]).filter(Boolean);
+  const el = new Audio();
+  el.preload = 'auto';
+  if (opts.rate) el.playbackRate = opts.rate;
+  let idx = 0, tries = 0, want = true, stopped = false, resumeAt = 0, blobUrl = null, onlineH = null;
+
+  const ctl = {
+    el: el,
+    get src() { return el.src; }, set src(v) { el.src = v; },
+    get currentTime() { return el.currentTime; }, set currentTime(v) { try { el.currentTime = v; } catch (e) {} },
+    get paused() { return el.paused; },
+    get ended() { return el.ended; },
+    get duration() { return el.duration; },
+    get playbackRate() { return el.playbackRate; }, set playbackRate(v) { el.playbackRate = v; },
+    pause: function () { want = false; try { el.pause(); } catch (e) {} },
+    play: function () { want = true; tries = 0; resumeAt = 0; start(); return Promise.resolve(); },
+    stop: function () {
+      want = false; stopped = true;
+      try { el.pause(); } catch (e) {}
+      if (blobUrl) { try { URL.revokeObjectURL(blobUrl); } catch (e) {} blobUrl = null; }
+      if (onlineH) { window.removeEventListener('online', onlineH); onlineH = null; }
+    }
+  };
+
+  function fail() {
+    if (!want || stopped) return;
+    tries++;
+    if (opts.onretry) { try { opts.onretry(tries); } catch (e) {} }
+    if (tries >= 2 && list.length > 1) { idx = (idx + 1) % list.length; tries = 0; }
+    const wait = Math.min(5000, Math.round(500 * Math.pow(1.5, Math.max(1, tries))));
+    setTimeout(start, wait);
+  }
+  async function start() {
+    if (!want || stopped) return;
+    try { if (!el.ended && el.currentTime > 0.2) resumeAt = el.currentTime; } catch (e) {}
+    const url = list[idx] || list[0];
+    if (!url) return;
+    const blob = await nqAudioBlob(url);
+    if (!want || stopped) return;
+    if (blobUrl) { try { URL.revokeObjectURL(blobUrl); } catch (e) {} blobUrl = null; }
+    if (blob) { blobUrl = URL.createObjectURL(blob); el.src = blobUrl; }
+    else { el.src = url; }
+    if (resumeAt > 0.2) {
+      el.addEventListener('loadedmetadata', function once() {
+        el.removeEventListener('loadedmetadata', once);
+        try { el.currentTime = resumeAt; } catch (e) {}
+      });
+    }
+    el.play().then(function () {
+      tries = 0;
+      if (opts.onplay) { try { opts.onplay(); } catch (e) {} }
+    }).catch(fail);
+  }
+  el.onended = function () { if (opts.onended) { try { opts.onended(); } catch (e) {} } };
+  el.onerror = fail;
+  onlineH = function () { if (want && el.paused) { tries = 0; start(); } };
+  window.addEventListener('online', onlineH);
+  start();
+  return ctl;
+}
 
 function getVerseUrl(sid, vidx) {
   const ss=String(sid).padStart(3,'0'), vv=String(vidx+1).padStart(3,'0');
@@ -12031,34 +12123,21 @@ function ddPlayId(id, repeatTimes) {
   ddStopAudio();
   if (wasPlaying && !repeatTimes) { ddRender(); return; }
   const urls = ddSrcFor(row.d);
-  let i = 0;
-  const audio = new Audio();
-  const tryNext = function () {
-    if (i >= urls.length) {
+  const audio = nqAudioPlay(urls, {
+    onended: function () {
+      if (DD_STATE.repeatLeft > 1) { DD_STATE.repeatLeft--; audio.play(); return; }
       DD_STATE.playingId = null; DD_STATE.repeatLeft = 0; DD_STATE.repeatId = null;
-      const b = document.getElementById('dd-search');
+      const q = DD_STATE.q;
       ddRender();
-      if (b) b.value = DD_STATE.q;
-      return;
+      const b = document.getElementById('dd-search');
+      if (b) b.value = q;
+      if (q) ddSearch(q);
     }
-    audio.src = urls[i++];
-    audio.play().catch(function () { tryNext(); });
-  };
-  audio.onended = function () {
-    if (DD_STATE.repeatLeft > 1) { DD_STATE.repeatLeft--; audio.currentTime = 0; audio.play().catch(function () {}); return; }
-    DD_STATE.playingId = null; DD_STATE.repeatLeft = 0; DD_STATE.repeatId = null;
-    const q = DD_STATE.q;
-    ddRender();
-    const b = document.getElementById('dd-search');
-    if (b) b.value = q;
-    if (q) ddSearch(q);
-  };
-  audio.onerror = function () { tryNext(); };
+  });
   DD_STATE.audio = audio;
   DD_STATE.playingId = id;
   DD_STATE.repeatId = id;
   DD_STATE.repeatLeft = repeatTimes > 1 ? repeatTimes : 1;
-  tryNext();
   ddRender();
   if (DD_STATE.q) ddSearch(DD_STATE.q);
 }
@@ -13034,10 +13113,10 @@ function h40Play(n, ev) {
   if (!f) return;
   if (h40PlayingN === n) { h40StopAudio(); renderH40(); return; }
   h40StopAudio();
-  h40AudioEl = new Audio(H40_AUDIO_BASE + f + '.mp3');
-  h40PlayingN = n;
-  h40AudioEl.onended = h40AudioEl.onerror = function() { h40StopAudio(); renderH40(); };
-  h40AudioEl.play().catch(function() { toast('Could not play audio — check your connection'); h40StopAudio(); renderH40(); });
+    h40AudioEl = nqAudioPlay(H40_AUDIO_BASE + f + '.mp3', {
+      onended: function () { h40StopAudio(); renderH40(); }
+    });
+    h40PlayingN = n;
   renderH40();
 }
 function renderH40() {
@@ -15694,7 +15773,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v162';
+var NQ_BUILD = 'v163';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
