@@ -9,7 +9,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Naba Quran">
 <meta property="og:title" content="Naba Quran — read, listen and memorise Juz Amma">
-<meta property="og:description" content="A calm Quran companion: full Juz Amma with recitation that keeps playing on weak data, memorisation mode, 122 du'as, 99 Names, prayer times with azan alarm, Qibla, zakat calculator and a hifz coach.">
+<meta property="og:description" content="A Quran companion for Juz Amma: recitation that keeps playing on weak data, memorisation mode, and Group Study rooms where a class reads the same verse together, a teacher speaks live, and homework is tracked. Plus 122 du'as, 99 Names, prayer times with azan alarm and Qibla.">
 <meta property="og:url" content="https://juz-amma-pro-max.vercel.app/">
 <meta property="og:image" content="https://juz-amma-pro-max.vercel.app/icons/icon-512x512.png">
 <meta property="og:image:width" content="512">
@@ -3597,7 +3597,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v165 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v166 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3657,7 +3657,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v165 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v166 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3722,7 +3722,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v165 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v166 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -8940,12 +8940,15 @@ function getLangTrans(surahId, verseIdx, englishFallback) {
    friends takes one tap. Falls back to copying if the phone has no share sheet. */
 function shareNaba(){
   const url = 'https://juz-amma-pro-max.vercel.app';
-  const msg = 'Naba Quran 🕌\n\n'
-    + 'Assalamu Alaikum. I have been using this and wanted to share it with you.\n\n'
-    + 'It reads and recites Juz Amma, keeps the recitation going even when the network drops, '
-    + 'has a memorisation mode, 122 du\'as with audio, the 99 Names of Allah, prayer times with azan alarm, '
-    + 'Qibla, zakat calculator and a hifz coach.\n\n'
-    + 'It is free and works on any phone: ' + url;
+  const msg = 'Naba Quran \u{1F54C}\n\n'
+    + 'Assalamu Alaikum. I wanted to share this with you.\n\n'
+    + 'It is a Quran app for Juz Amma: you can read and listen, the recitation keeps playing even when the network drops, '
+    + 'and there is a memorisation mode that repeats a verse until you have it.\n\n'
+    + 'The part made for our group is Group Study. You create a room, share the code, and everyone opens the same surah. '
+    + 'All of you follow the same verse, verses turn green as they are recited, the teacher can speak live to correct a mistake, '
+    + 'and you can post announcements and homework with due dates that members tick off.\n\n'
+    + 'It also has 122 du\'as with audio, the 99 Names of Allah, prayer times with azan alarm, Qibla, zakat calculator and a hifz coach.\n\n'
+    + 'Free, and it works on any phone: ' + url;
   if (navigator.share) {
     navigator.share({ title: 'Naba Quran', text: msg, url: url }).catch(function(){});
     return;
@@ -15827,7 +15830,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v165';
+var NQ_BUILD = 'v166';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
