@@ -3597,7 +3597,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v166 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v167 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3657,7 +3657,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v166 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v167 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3722,7 +3722,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v166 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v167 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -4900,6 +4900,11 @@ function nqAudioPlay(urls, opts) {
   function fail() {
     if (!want || stopped) return;
     tries++;
+    if (opts.maxTries && tries >= opts.maxTries) {
+      want = false;
+      if (opts.onfail) opts.onfail();
+      return;
+    }
     if (opts.onretry) { try { opts.onretry(tries); } catch (e) {} }
     if (tries >= 2 && list.length > 1) { idx = (idx + 1) % list.length; tries = 0; }
     const wait = Math.min(5000, Math.round(500 * Math.pow(1.5, Math.max(1, tries))));
@@ -6024,19 +6029,19 @@ function namesPlayClip(appIdx, done){
   const tok = NAMES_PLAYER.token;
   let finished=false;
   const fin=function(){ if(finished) return; finished=true; if(tok===NAMES_PLAYER.token && done) done(); };
-  let a;
-  try { a = new Audio(namesSrc(appIdx)); } catch(e) { namesSpeakFallback(ALLAH_NAMES[appIdx], fin); return; }
-  NAMES_PLAYER.audio = a;
-  a.addEventListener('ended', fin);
-  a.addEventListener('error', function(){
-    /* clip missing or blocked: fall back to voice so the sequence never stalls */
-    if(tok!==NAMES_PLAYER.token) return;
-    namesSpeakFallback(ALLAH_NAMES[appIdx], function(){ if(tok===NAMES_PLAYER.token) fin(); });
-  });
-  const pr = a.play();
-  if(pr && pr.catch) pr.catch(function(){ /* error handler above covers real failures */ });
-  /* watchdog: a stalled element must not freeze the list */
-  setTimeout(function(){ if(!finished && tok===NAMES_PLAYER.token && a.ended) fin(); }, 15000);
+  const n = ALLAH_NAMES[appIdx];
+  let ctl;
+  try {
+    ctl = nqAudioPlay(namesSrc(appIdx), {
+      maxTries: 3,
+      onended: fin,
+      /* three real attempts failed: only now fall back to device voice */
+      onfail: function(){ if(tok===NAMES_PLAYER.token) namesSpeakFallback(n, fin); }
+    });
+  } catch(e) { namesSpeakFallback(n, fin); return true; }
+  NAMES_PLAYER.audio = ctl;
+  /* watchdog: a stalled clip must not freeze the sequence */
+  setTimeout(function(){ if(!finished && tok===NAMES_PLAYER.token && ctl.el && ctl.el.ended) fin(); }, 15000);
   return true;
 }
 
@@ -6071,7 +6076,7 @@ function namesStep(){
   namesStatus('Name '+NAMES_PLAYER.i+' of '+list.length+' — '+n.en);
   /* warm the next clip so playback is continuous */
   const next=list[NAMES_PLAYER.i];
-  if(next){ try { NAMES_PLAYER.preload = new Audio(namesSrc(ALLAH_NAMES.indexOf(next))); NAMES_PLAYER.preload.preload='auto'; } catch(e) {} }
+  if(next){ try { nqAudioBlob(namesSrc(ALLAH_NAMES.indexOf(next))).catch(function(){}); } catch(e) {} }
   namesPlayClip(appIdx, function(){
     if(!NAMES_PLAYER.on) return;
     const tok=NAMES_PLAYER.token;
@@ -15830,7 +15835,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v166';
+var NQ_BUILD = 'v167';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
