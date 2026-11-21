@@ -3597,7 +3597,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v167 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v168 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3657,7 +3657,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v167 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v168 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3722,7 +3722,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v167 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v168 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -11697,24 +11697,25 @@ function tjRepeatAfter() {
   const url = eyUrl(rec, String(tjSurahData.id).padStart(3, '0'), String(tjVerseIdx + 1).padStart(3, '0'));
   const lbl = document.getElementById('tj-mic-lbl');
   if (lbl) lbl.textContent = '🎧 Listen to the Qari...';
-  const a = new Audio(url);
-  attachEyFallback(a);
-  a.playbackRate = spd;
-  a.onended = function () {
-    setTimeout(function () {
-      if (lbl) lbl.textContent = '🎤 Now repeat after him!';
-      tjStartRecord();
-    }, 600);
-  };
-  a.onerror = function () {
-    if (lbl) lbl.textContent = 'Tap to Record';
-    toast('⚠️ Could not load reciter audio. Check your connection.');
-  };
-  tjAudio = a;
-  a.play().catch(function () {
-    if (lbl) lbl.textContent = 'Tap to Record';
-    toast('⚠️ Tap again to play audio');
+  /* Cache first: the verse is kept on the phone, so the second listen is
+     instant and a wobble cannot break the listen-then-repeat loop. */
+  const a = nqAudioPlay(url, {
+    rate: spd,
+    maxTries: 4,
+    onended: function () {
+      setTimeout(function () {
+        if (lbl) lbl.textContent = '🎤 Now repeat after him!';
+        tjStartRecord();
+      }, 600);
+    },
+    onretry: function (n) { if (lbl) lbl.textContent = 'Reconnecting… (' + n + ')'; },
+    onfail: function () {
+      if (lbl) lbl.textContent = 'Tap to Record';
+      toast('⚠️ Could not load reciter audio. Check your connection.');
+    }
   });
+  if (lbl) lbl.textContent = '🎧 Listen to the Qari...';
+  tjAudio = a;
 }
 
 // AI Lesson: meaning, transliteration, how to say it, memorization plan.
@@ -15835,7 +15836,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v167';
+var NQ_BUILD = 'v168';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
