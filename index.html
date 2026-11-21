@@ -3597,7 +3597,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v169 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v170 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3657,7 +3657,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v169 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v170 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3722,7 +3722,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v169 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v170 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -4931,7 +4931,13 @@ function nqAudioPlay(urls, opts) {
       if (opts.onplay) { try { opts.onplay(); } catch (e) {} }
     }).catch(fail);
   }
-  el.onended = function () { if (opts.onended) { try { opts.onended(); } catch (e) {} } };
+  let userEnded = opts.onended || null;
+  el.onended = function () { if (userEnded) { try { userEnded(); } catch (e) {} } };
+  Object.defineProperty(ctl, 'onended', {
+    get: function () { return userEnded; },
+    set: function (fn) { userEnded = fn; },
+    configurable: true
+  });
   el.onerror = fail;
   onlineH = function () { if (want && el.paused) { tries = 0; start(); } };
   window.addEventListener('online', onlineH);
@@ -13771,9 +13777,12 @@ function qcPlacePtrAtCurrent() {
 function qcListen(n) {
   const j = qcLoad();
   try {
-    if (qcAudio) { qcAudio.pause(); qcAudio = null; }
-    qcAudio = new Audio(eyUrl('Alafasy_128kbps', qcPad(j.surah), qcPad(n)));
-    qcAudio.play().catch(function(){ toast('Audio unavailable — check connection'); });
+    if (qcAudio) { try { qcAudio.stop(); } catch (e) { try { qcAudio.pause(); } catch (e2) {} } qcAudio = null; }
+    qcAudio = nqAudioPlay(eyUrl('Alafasy_128kbps', qcPad(j.surah), qcPad(n)), {
+      maxTries: 4,
+      onretry: function (t) { toast('Reconnecting… (' + t + ')'); },
+      onfail: function () { toast('Audio unavailable — check connection'); }
+    });
   } catch (e) {}
 }
 
@@ -15842,7 +15851,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v169';
+var NQ_BUILD = 'v170';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
