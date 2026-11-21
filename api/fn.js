@@ -4,7 +4,7 @@
 // causing "Failed to fetch" on Room Hub / My Rooms / Join Room / AI chat
 // even though the device has a working connection. Routing through the
 // app's own domain fixes it — same pattern as the audio/text fixes.
-const ALLOWED = new Set(['getAppConfig', 'islamicAiProxy', 'groupVoiceHub']);
+const ALLOWED = new Set(['getAppConfig', 'islamicAiProxy', 'groupVoiceHub', 'adminAuth', 'saveAppConfig']);
 const BASE = 'https://elara-c85c9ecb.base44.app/functions/';
 
 export default async function handler(req, res) {
