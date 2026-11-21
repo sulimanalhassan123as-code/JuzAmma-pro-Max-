@@ -3597,7 +3597,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v168 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v169 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3657,7 +3657,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v168 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v169 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3722,7 +3722,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v168 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v169 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -10087,11 +10087,17 @@ function gsPlayClassAudio() {
   const surah = qData.find(s => s.id === gsCurrentSurah);
   if (!surah) return;
   const url = eyUrl('Alafasy_128kbps', String(gsCurrentSurah).padStart(3,'0'), String(gsCurrentVerse).padStart(3,'0'));
-  const audio = new Audio(url);
-  attachEyFallback(audio);
-  audio.play().catch(() => toast('⚠️ Could not load audio'));
-  toast('🔊 Playing verse ' + gsCurrentVerse);
+  /* Same engine as the read player: the verse is kept on the phone, so a
+     wobbly connection in a room does not cut the class off mid-verse. */
+  if (gsClassAudio) { try { gsClassAudio.stop(); } catch (e) {} }
+  gsClassAudio = nqAudioPlay(url, {
+    maxTries: 4,
+    onplay: function () { toast('🔊 Playing verse ' + gsCurrentVerse); },
+    onretry: function (n) { toast('Reconnecting… (' + n + ')'); },
+    onfail: function () { toast('⚠️ Could not load audio — tap again'); }
+  });
 }
+let gsClassAudio = null;
 
 // ═══ VERSE LOADING (uses qData) ═══
 function gsLoadVerses() {
@@ -15836,7 +15842,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v168';
+var NQ_BUILD = 'v169';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
