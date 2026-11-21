@@ -327,9 +327,23 @@ body{overflow-x:hidden;}
 <script>
 // ── CONFIG ──
 const APP_ORIGIN = 'https://juz-amma-pro-max.vercel.app';
-const AUTH_URL = 'https://elara-c85c9ecb.base44.app/functions/adminAuth';
-const GET_CONFIG_URL = 'https://elara-c85c9ecb.base44.app/functions/getAppConfig';
-const SAVE_CONFIG_URL = 'https://elara-c85c9ecb.base44.app/functions/saveAppConfig';
+/* Same-origin first. Calling elara-c85c9ecb.base44.app directly failed on
+   carriers that block it, which surfaced as "Server unreachable" on login
+   even with working data. The app's own domain proxies these functions. */
+const NQ_PROXY = '/api/fn?name=';
+const NQ_DIRECT = 'https://elara-c85c9ecb.base44.app/functions/';
+const AUTH_URL = NQ_PROXY + 'adminAuth';
+const GET_CONFIG_URL = NQ_PROXY + 'getAppConfig';
+const SAVE_CONFIG_URL = NQ_PROXY + 'saveAppConfig';
+async function nqFetch(name, init) {
+  try {
+    const r = await fetch(NQ_PROXY + name, init);
+    if (r.status === 400 || r.status === 404) throw new Error('proxy miss');
+    return r;
+  } catch (e) {
+    return await fetch(NQ_DIRECT + name, init);
+  }
+}
 let attempts = 0;
 const MAX_ATTEMPTS = 5;
 
@@ -348,7 +362,7 @@ async function chkAdm() {
   btn.disabled = true;
   btn.textContent = '⏳ Verifying...';
   try {
-    const res = await fetch(AUTH_URL, {
+    const res = await nqFetch('adminAuth', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password: p })
@@ -419,7 +433,7 @@ async function loadDash() {
   } catch(e) {}
   // Content fields — load from server
   try {
-    const res = await fetch(GET_CONFIG_URL);
+    const res = await nqFetch('getAppConfig');
     const data = await res.json();
     if (data.ok && data.config) {
       document.getElementById('banner-txt').value = data.config.banner_text || '';
@@ -444,7 +458,7 @@ function switchTab(id, el) {
 const ADMIN_KEY = 'juzamma2024';
 async function saveToServer(payload, successMsg) {
   try {
-    const res = await fetch(SAVE_CONFIG_URL, {
+    const res = await nqFetch('saveAppConfig', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-admin-key': ADMIN_KEY },
       body: JSON.stringify(payload)
