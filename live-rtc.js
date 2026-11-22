@@ -58,7 +58,7 @@
   /* ── relay credentials (no-op until a TURN server is configured) ── */
   function loadTurn() {
     if (TURN || !window.fetch) return Promise.resolve();
-    return fetch('/api/turn', { method: 'GET' })
+    return fetch('/api/live-hub?turn=1', { method: 'GET' })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
         if (d && d.iceServers && d.iceServers.length) {
