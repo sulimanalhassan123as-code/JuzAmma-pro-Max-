@@ -3597,7 +3597,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v173 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v174 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3657,7 +3657,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v173 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v174 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3722,7 +3722,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v173 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v174 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -15278,7 +15278,8 @@ const GS_LIVE = {
   session:null, lastVerse:0, micOn:false, micStream:null, micCtx:null, procNode:null,
   view:(function(){ try { return localStorage.getItem('gsLiveView') || 'ar'; } catch (e) { return 'ar'; } })(),
   sendBuf:null, sendCount:0, playCtx:null, playNextT:0, lastSpeaker:null, muted:false,
-  pullTimer:null, pullBusy:false, lastSeq:0, quietBusy:false, logLines:[]
+  pullTimer:null, pullBusy:false, lastSeq:0, quietBusy:false, logLines:[],
+  rtcActive:false, rtcTried:false
 };
 /* 16000 samples at 16kHz = 1 second per chunk, which costs the reciter 60
    requests a minute on its own. Measured 2026-11-15: two phones on one live
@@ -15509,7 +15510,13 @@ async function gsLiveNextVerse(){
 async function gsLiveToggleMic(){
   if (GS_LIVE.micOn) { gsLiveStopMic(); gsLiveLog('🎙️ Mic OFF'); gsLiveRender(false); return; }
   const ok = await gsLiveStartMic();
-  if (ok) gsLiveLog('🎙️ Mic ON — everyone hears you live');
+  if (ok) {
+    gsLiveLog('🎙️ Mic ON — everyone hears you live');
+    if (window.GsLiveRTC) {
+      GsLiveRTC.enableMic();
+      GsLiveRTC.setMuted(false);
+    }
+  }
   gsLiveRender(false);
 }
 async function gsLiveStartMic(){
@@ -15525,6 +15532,7 @@ async function gsLiveStartMic(){
     node.onaudioprocess = function(e) {
       const s = GS_LIVE.session;
       if (!s || s.floor_user !== gsLiveUser()) { GS_LIVE.sendCount = 0; return; }
+      if (GS_LIVE.rtcActive) { GS_LIVE.sendCount = 0; return; }   /* direct link carries it */
       const inp = e.inputBuffer.getChannelData(0);
       let off = 0;
       while (off < inp.length) {
@@ -15687,8 +15695,25 @@ function gsLiveSchedule(ms){
   if (!GS_LIVE.session) return;
   GS_LIVE.pullTimer = setTimeout(gsLivePull, Math.max(800, ms || GS_LIVE.pollMs || GS_LIVE_BASE_MS));
 }
+/* Voice goes phone-to-phone where the networks allow it (see live-rtc.js).
+   The relay below stays alive as the automatic fallback, so a room never
+   depends on the direct link succeeding. */
+function gsLiveMaybeStartRTC(){
+  if (GS_LIVE.rtcTried || !window.GsLiveRTC || !GS_LIVE.session) return;
+  GS_LIVE.rtcTried = true;
+  GsLiveRTC.start({
+    room: gsLiveRoom(), user: gsLiveUser(), send: gsLiveApi, mic: false,
+    onStatus: function (st) {
+      if (st === 'connected') { GS_LIVE.rtcActive = true; gsLiveLog('⚡ Direct voice link — phone to phone'); }
+      else if (st === 'failed') { GS_LIVE.rtcActive = false; gsLiveLog('↩ Direct link blocked here — using the room relay'); }
+      else if (st === 'reconnecting') { gsLiveLog('🔄 Rebuilding the voice link…'); }
+      gsLiveRender(false);
+    }
+  });
+}
 function gsLiveEnsurePoll(){
   if (GS_LIVE.pullTimer) return;
+  gsLiveMaybeStartRTC();
   GS_LIVE.pollMs = GS_LIVE.pollMs || GS_LIVE_BASE_MS;
   /* A live stream is the only thing that needs the wire. Park the room and chat
      pollers while it runs so all three do not spend the same request budget. */
@@ -15758,6 +15783,7 @@ async function gsLivePull(){
         const c = d.chunks[i];
         if (c.seq > GS_LIVE.lastSeq) GS_LIVE.lastSeq = c.seq;
         if (c.userName === gsLiveUser()) continue;
+        if (GS_LIVE.rtcActive) continue;      /* already hearing them directly */
         gsLivePlayChunk(c);
       }
     }
@@ -15809,6 +15835,8 @@ async function gsLiveEnd(){
 }
 function gsLiveSessionOver(){
   GS_LIVE.gen = (GS_LIVE.gen || 0) + 1;   /* invalidate any in-flight pull */
+  try { if (window.GsLiveRTC) GsLiveRTC.stop(); } catch (e) {}
+  GS_LIVE.rtcActive = false; GS_LIVE.rtcTried = false;
   gsLiveStopMic();
   clearTimeout(GS_LIVE.pullTimer); GS_LIVE.pullTimer = null;
   GS_LIVE.pullBusy = false; GS_LIVE.failStreak = 0;
@@ -15851,7 +15879,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v173';
+var NQ_BUILD = 'v174';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
@@ -15914,5 +15942,6 @@ function nqInstallVersionStamp(){
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', nqInstallVersionStamp);
 else nqInstallVersionStamp();
 </script>
+<script src="live-rtc.js"></script>
 </body>
 </html>
