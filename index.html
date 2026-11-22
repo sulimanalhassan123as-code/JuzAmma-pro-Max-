@@ -2759,9 +2759,9 @@ body { font-family:'Poppins',sans-serif;
 
   <!-- APK v15 UPDATE BANNER (only shown inside the old Android APK) -->
   <div class="install-card hc-stagger-1" id="apk-update-banner" style="display:none;flex-direction:column;align-items:stretch;gap:8px;border:1px solid #f5b041">
-    <div style="font-weight:800;font-size:.9rem;color:var(--txt)">🆕 Update Available — Version 15</div>
+    <div style="font-weight:800;font-size:.9rem;color:var(--txt)">🆕 Update Available — Version 16</div>
     <div style="font-size:.75rem;color:var(--txt2);line-height:1.5">A smoother, faster Naba Quran. This free update improves stability and makes the app lighter on your phone.</div>
-    <div style="font-size:.72rem;color:var(--txt2);line-height:1.5">How to update: tap Download, then remove the old app and open the downloaded file to install. Android may ask you to allow installs from this source first — this is normal. Note: saved settings will start fresh.</div>
+    <div style="font-size:.72rem;color:var(--txt2);line-height:1.5">How to update: tap Download, then open the downloaded file and install it straight over the old app. Do NOT remove the old app first, that is what wipes your streak, bookmarks and settings. Android may ask you to allow installs from this source; that is normal. Your progress stays exactly as it is.</div>
     <button class="install-pill install-btn" onclick="downloadNewApk()">⬇️ Download New Version</button>
     <button class="install-pill daily-btn" onclick="dismissApkBanner()">Later</button>
   </div>
@@ -3597,7 +3597,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v175 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v176 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3657,7 +3657,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v175 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v176 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3722,7 +3722,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v175 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v176 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -14551,6 +14551,8 @@ function updateFsapBtn() {
 // mirrored from the already-public GitHub repo file, so nothing new to
 // host or maintain.
 function downloadNewApk(){
+  try{ localStorage.setItem(apkBannerKey(),'1'); }catch(e){}
+  var _b=document.getElementById('apk-update-banner'); if(_b) _b.style.display='none';
   var url = 'https://github.com/sulimanalhassan123as-code/JuzAmma-pro-Max-/releases/download/apk-v16/JuzAmmaProMax-v16-play.apk';
   try {
     if (window.AndroidBridge && typeof window.AndroidBridge.openExternalUrl === 'function') {
@@ -14560,13 +14562,22 @@ function downloadNewApk(){
     }
   } catch(e) { location.href = url; }
 }
+/* Which update has this install already been told about. Keyed by version so a
+   future release can prompt again, and it survives because an in-place update
+   keeps the app's storage (an uninstall wipes it, which is why the old banner
+   kept coming back for Safa). */
+var NQ_APK_LATEST = 16;
+function apkBannerKey(){ return 'nqApkBanner_v' + NQ_APK_LATEST; }
+function apkBannerDone(){
+  try{ return localStorage.getItem(apkBannerKey()) === '1'; }catch(e){ return false; }
+}
 function dismissApkBanner(){
   var b=document.getElementById('apk-update-banner'); if(b) b.style.display='none';
-  try{ localStorage.setItem('apkV15BannerDismissed','1'); }catch(e){}
+  try{ localStorage.setItem(apkBannerKey(),'1'); }catch(e){}
 }
 document.addEventListener('DOMContentLoaded',function(){
   try{
-    if(window.AndroidBridge && !localStorage.getItem('apkV15BannerDismissed')){
+    if(window.AndroidBridge && !apkBannerDone()){
       var b=document.getElementById('apk-update-banner'); if(b) b.style.display='flex';
     }
   }catch(e){}
@@ -15879,7 +15890,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v175';
+var NQ_BUILD = 'v176';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
