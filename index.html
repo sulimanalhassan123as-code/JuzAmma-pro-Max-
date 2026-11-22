@@ -3597,7 +3597,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v177 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v178 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3657,7 +3657,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v177 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v178 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3722,7 +3722,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v177 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v178 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3996,6 +3996,14 @@ function goBack() {
   if (viewStack.length) { history.back(); }
   else if (curView !== 'home') { switchView('home'); curView = 'home'; }
 }
+document.addEventListener('visibilitychange', function () {
+  if (document.visibilityState === 'hidden' && typeof gsLiveTeardown === 'function') {
+    try { gsLiveTeardown('the app went to the background'); } catch (e) {}
+  }
+});
+window.addEventListener('pagehide', function () {
+  if (typeof gsLiveTeardown === 'function') { try { gsLiveTeardown('the app closed'); } catch (e) {} }
+});
 window.addEventListener('popstate', function() {
   // Android back button / browser back. Pop our stack and show the
   // previous view without pushing new history.
@@ -4007,6 +4015,11 @@ function switchView(v) {
   // Stop the wudu demo video if it's playing when navigating away (prevents
   // audio continuing to play in the background off-screen)
   if (typeof closeWuduVideo === 'function') closeWuduVideo();
+  // Same reason as the wudu video: a live room must not keep playing audio
+  // once its screen is gone.
+  if (v !== 'groupstudy' && typeof gsLiveTeardown === 'function') {
+    try { gsLiveTeardown('you left the room'); } catch (e) {}
+  }
 
   // 1. Hide every single view — remove active class
   document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
@@ -15867,7 +15880,33 @@ async function gsLiveEnd(){
   if (d.ok) gsLiveLog('⏹ Session ended');
   gsLiveSessionOver();
 }
+/* Leaving the room, ending the session or leaving the app must all stop the
+   voice. Before this, only the polling loop tore down, so a listener who left
+   the screen kept hearing the room with nothing running to stop it. */
+function gsLiveTeardown(why){
+  var wasLive = !!(GS_LIVE.session || GS_LIVE.micOn || GS_LIVE.relayChain || GS_LIVE.pullTimer ||
+                   GS_LIVE.rtcActive || (window.GsLiveRTC && GsLiveRTC.isOn && GsLiveRTC.isOn()));
+  GS_LIVE.gen = (GS_LIVE.gen || 0) + 1;          /* invalidate in-flight pulls */
+  try { if (window.GsLiveRTC) GsLiveRTC.stop(); } catch (e) {}
+  try { gsLiveStopRelayChain(); } catch (e) {}
+  try { if (GS_LIVE.procNode) { GS_LIVE.procNode.onaudioprocess = null; GS_LIVE.procNode.disconnect(); } } catch (e) {}
+  try { if (GS_LIVE.micStream) GS_LIVE.micStream.getTracks().forEach(function(t){ t.stop(); }); } catch (e) {}
+  try { if (GS_LIVE.micCtx) GS_LIVE.micCtx.close(); } catch (e) {}
+  try { if (GS_LIVE.playCtx) GS_LIVE.playCtx.close(); } catch (e) {}
+  GS_LIVE.procNode = null; GS_LIVE.micCtx = null; GS_LIVE.micStream = null; GS_LIVE.playCtx = null;
+  GS_LIVE.micOn = false; GS_LIVE.relayChain = false; GS_LIVE.sendCount = 0;
+  GS_LIVE.rtcActive = false; GS_LIVE.rtcTried = false;
+  clearTimeout(GS_LIVE.pullTimer); GS_LIVE.pullTimer = null;
+  GS_LIVE.pullBusy = false; GS_LIVE.failStreak = 0;
+  GS_LIVE.playNextT = 0; GS_LIVE.lastSpeaker = null;
+  GS_LIVE.session = null; GS_LIVE.lastSeq = 0;
+  var act = document.getElementById('gs-live-active'); if (act) act.style.display = 'none';
+  if (wasLive) { try { gsLiveLog('⏹ Live audio stopped — ' + why); } catch (e) {} }
+  return wasLive;
+}
+
 function gsLiveSessionOver(){
+  gsLiveTeardown('the session ended');
   GS_LIVE.gen = (GS_LIVE.gen || 0) + 1;   /* invalidate any in-flight pull */
   try { if (window.GsLiveRTC) GsLiveRTC.stop(); } catch (e) {}
   GS_LIVE.rtcActive = false; GS_LIVE.rtcTried = false;
@@ -15913,7 +15952,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v177';
+var NQ_BUILD = 'v178';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){

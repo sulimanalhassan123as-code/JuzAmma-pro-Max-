@@ -298,13 +298,20 @@
   }
 
   function stop() {
-    if (!S.on) return;
+    var wasOn = S.on;
     S.on = false;
     clearTimeout(S.sigTimer); clearInterval(S.pingTimer); clearTimeout(S.fallbackTimer);
-    say('bye', '*', {});
+    if (wasOn) { try { say('bye', '*', {}); } catch (e) {} }
     Object.keys(S.peers).forEach(function (n) { drop(n, false); });
     S.peers = {};
-    emit('stopped');
+    /* Always release the hardware, even if start() bailed halfway: leaving
+       the room with the microphone still open is exactly what made audio
+       carry on after the user walked away. */
+    try { if (S.playCtx) S.playCtx.close(); } catch (e) {}
+    S.playCtx = null;
+    try { if (S.stream) S.stream.getTracks().forEach(function (t) { try { t.stop(); } catch (e) {} }); } catch (e) {}
+    S.stream = null; S.micWanted = false; S.muted = false;
+    if (wasOn) emit('stopped');
   }
 
   window.GsLiveRTC = {
