@@ -66,6 +66,37 @@
     return navigator.mediaDevices.getUserMedia(micConstraints()).then(function (st) { S.stream = st; return st; });
   }
 
+
+  /* Remote voice goes through a limiter so a loud or glitching stream can
+     never blast the speaker (that is what made the second phone screech).
+     Falls back to a plain audio element if Web Audio is unavailable. */
+  function playRemote(p, stream) {
+    try {
+      if (!S.playCtx) S.playCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (S.playCtx.state === 'suspended') { try { S.playCtx.resume(); } catch (e) {} }
+      var src = S.playCtx.createMediaStreamSource(stream);
+      var comp = S.playCtx.createDynamicsCompressor();
+      comp.threshold.value = -20; comp.knee.value = 12; comp.ratio.value = 12;
+      comp.attack.value = 0.003; comp.release.value = 0.25;
+      var g = S.playCtx.createGain(); g.gain.value = 0.9;
+      src.connect(comp); comp.connect(g); g.connect(S.playCtx.destination);
+      p.src = src;
+      return;
+    } catch (e) {
+      try {
+        if (!p.el) {
+          p.el = new Audio();
+          p.el.autoplay = true;
+          p.el.setAttribute('playsinline', '');
+        }
+        p.el.volume = 0.9;
+        p.el.srcObject = stream;
+        var pr = p.el.play();
+        if (pr && pr.catch) pr.catch(function () {});
+      } catch (e2) {}
+    }
+  }
+
   function anyConnected() {
     for (var k in S.peers) if (S.peers[k] && S.peers[k].connected) return true;
     return false;
@@ -110,15 +141,7 @@
     };
     pc.ontrack = function (e) {
       var stream = (e.streams && e.streams[0]) ? e.streams[0] : null;
-      if (!p.el) {
-        p.el = new Audio();
-        p.el.autoplay = true;
-        p.el.setAttribute('playsinline', '');
-        p.el.volume = 1;
-      }
-      if (stream) p.el.srcObject = stream;
-      var pr = p.el.play();
-      if (pr && pr.catch) pr.catch(function () {});
+      if (stream) playRemote(p, stream);
     };
     pc.onconnectionstatechange = function () {
       var st = pc.connectionState;
