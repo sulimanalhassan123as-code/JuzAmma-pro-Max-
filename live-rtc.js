@@ -57,9 +57,15 @@
 
   /* ── relay credentials (no-op until a TURN server is configured) ── */
   function loadTurn() {
-    if (TURN || !window.fetch) return Promise.resolve();
-    return fetch('/api/live-hub?turn=1', { method: 'GET' })
-      .then(function (r) { return r.ok ? r.json() : null; })
+    if (TURN) return Promise.resolve();
+    var f = null;
+    try { f = window.fetch || (typeof fetch === 'function' ? fetch : null); } catch (e) { f = null; }
+    if (!f) return Promise.resolve();
+    /* Never let relay discovery hold up the room: a failed or slow request
+       just means STUN-only, exactly as before. */
+    return Promise.resolve()
+      .then(function () { return f('/api/live-hub?turn=1', { method: 'GET' }); })
+      .then(function (r) { return r && r.ok ? r.json() : null; })
       .then(function (d) {
         if (d && d.iceServers && d.iceServers.length) {
           TURN = d.iceServers;
