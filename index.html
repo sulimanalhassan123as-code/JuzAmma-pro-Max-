@@ -3597,7 +3597,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v176 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v177 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3657,7 +3657,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v176 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v177 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3722,7 +3722,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v176 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v177 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -15520,20 +15520,24 @@ async function gsLiveNextVerse(){
 
 async function gsLiveToggleMic(){
   if (GS_LIVE.micOn) { gsLiveStopMic(); gsLiveLog('🎙️ Mic OFF'); gsLiveRender(false); return; }
-  const ok = await gsLiveStartMic();
-  if (ok) {
-    gsLiveLog('🎙️ Mic ON — everyone hears you live');
-    if (window.GsLiveRTC) {
-      GsLiveRTC.enableMic();
-      GsLiveRTC.setMuted(false);
-    }
+  GS_LIVE.micOn = true;
+  GS_LIVE.relayChain = false;
+  /* Direct link first: one mic consumer only, which is what keeps the
+     audio clean. The relay chain is built only if the link is blocked. */
+  if (window.GsLiveRTC && window.RTCPeerConnection) {
+    gsLiveLog('🎙️ Mic ON — opening the direct link');
+    GsLiveRTC.enableMic().then(function () { GsLiveRTC.setMuted(false); }).catch(function () {});
+    gsLiveRender(false);
+    return;
   }
+  const ok = await gsLiveStartMic();
+  if (ok) gsLiveLog('🎙️ Mic ON — everyone hears you live');
   gsLiveRender(false);
 }
 async function gsLiveStartMic(){
-  if (GS_LIVE.micOn) return true;
+  if (GS_LIVE.relayChain) return true;
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation:true, noiseSuppression:true, autoGainControl:true } });
+    const stream = GS_LIVE.micStream || await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation:true, noiseSuppression:true, autoGainControl:true } });
     GS_LIVE.micStream = stream;
     GS_LIVE.micCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: GS_LIVE_SR });
     const msrc = GS_LIVE.micCtx.createMediaStreamSource(stream);
@@ -15595,11 +15599,21 @@ async function gsLiveStartMic(){
     muteGain.connect(GS_LIVE.micCtx.destination);
     GS_LIVE.procNode = node;
     GS_LIVE.micOn = true;
+    GS_LIVE.relayChain = true;
     return true;
   } catch (err) {
     toast('🎤 Microphone unavailable — check the app permissions');
     return false;
   }
+}
+function gsLiveStopRelayChain(){
+  /* Stop the 16 kHz relay capture WITHOUT killing the mic track, because
+     WebRTC is still using it. Running both at once is what produced the
+     harsh noise: two audio clients on one mic at different rates. */
+  try { if (GS_LIVE.procNode) { GS_LIVE.procNode.onaudioprocess = null; GS_LIVE.procNode.disconnect(); } } catch (e) {}
+  try { if (GS_LIVE.micCtx) GS_LIVE.micCtx.close(); } catch (e) {}
+  GS_LIVE.procNode = null; GS_LIVE.micCtx = null; GS_LIVE.sendCount = 0;
+  GS_LIVE.relayChain = false;
 }
 function gsLiveStopMic(){
   try { if (GS_LIVE.procNode) { GS_LIVE.procNode.onaudioprocess = null; GS_LIVE.procNode.disconnect(); } } catch (e) {}
@@ -15715,8 +15729,17 @@ function gsLiveMaybeStartRTC(){
   GsLiveRTC.start({
     room: gsLiveRoom(), user: gsLiveUser(), send: gsLiveApi, mic: false,
     onStatus: function (st) {
-      if (st === 'connected') { GS_LIVE.rtcActive = true; gsLiveLog('⚡ Direct voice link — phone to phone'); }
-      else if (st === 'failed') { GS_LIVE.rtcActive = false; gsLiveLog('↩ Direct link blocked here — using the room relay'); }
+      if (st === 'connected') {
+        GS_LIVE.rtcActive = true;
+        gsLiveLog('⚡ Direct voice link — phone to phone');
+        gsLiveStopRelayChain();
+        try { if (GS_LIVE.playCtx) { GS_LIVE.playCtx.close(); GS_LIVE.playCtx = null; GS_LIVE.playNextT = 0; } } catch (e) {}
+      }
+      else if (st === 'failed') {
+        GS_LIVE.rtcActive = false;
+        gsLiveLog('↩ Direct link blocked here — using the room relay');
+        if (GS_LIVE.micOn) { gsLiveStartMic(); }
+      }
       else if (st === 'reconnecting') { gsLiveLog('🔄 Rebuilding the voice link…'); }
       gsLiveRender(false);
     }
@@ -15890,7 +15913,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v176';
+var NQ_BUILD = 'v177';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
