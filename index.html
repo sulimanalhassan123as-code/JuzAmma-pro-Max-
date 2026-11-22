@@ -1573,11 +1573,13 @@ body { font-family:'Poppins',sans-serif;
 .gs-live-enverse .env-en{font-size:.88rem;line-height:1.6;margin-top:3px}
 .gs-live-enverse.active .env-num{color:#10b981}
 #gs-live-verses{position:relative}
-/* v179 · the live room scrolls itself. Before this the panel was
+/* NOTE: no -webkit-overflow-scrolling:touch here — it is the documented
+   cause of the blank-until-scroll paint bug on this WebView (see .gs-hw-list).
+   v179 · the live room scrolls itself. Before this the panel was
    overflow:hidden with no inner scroller, so verses could not be scrolled
    and every update yanked the whole page around. */
-#gs-live-active{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;min-height:0;flex:1;overscroll-behavior:contain;padding-bottom:26px}
-#gs-live-empty{overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0;flex:1;overscroll-behavior:contain;padding-bottom:26px}
+#gs-live-active{overflow-y:auto;overflow-x:hidden;min-height:0;flex:1;overscroll-behavior:contain;padding-bottom:26px}
+#gs-live-empty{overflow-y:auto;min-height:0;flex:1;overscroll-behavior:contain;padding-bottom:26px}
 #gs-panel-live{overflow:hidden}
 .gs-live-rail{position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:linear-gradient(180deg,rgba(16,185,129,.08),rgba(16,185,129,.25));border-radius:2px}
 .gs-live-marker{position:absolute;left:0;width:18px;height:18px;margin-left:-8px;border-radius:50%;background:#10b981;box-shadow:0 0 0 4px rgba(16,185,129,.22),0 2px 8px rgba(16,185,129,.5);transition:top .65s cubic-bezier(.22,.9,.3,1.1),left .65s cubic-bezier(.22,.9,.3,1.1);display:flex;align-items:center;justify-content:center;font-size:.6rem;z-index:2}
