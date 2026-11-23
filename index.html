@@ -3605,7 +3605,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v180 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v181 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3665,7 +3665,7 @@ body { font-family:'Poppins',sans-serif;
     </div>
 
     <div style="text-align:center;padding:10px 0 30px">
-      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v180 · © 2026 Suliyman Alhassan</div>
+      <div id="verfoot" style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v181 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -3730,7 +3730,7 @@ body { font-family:'Poppins',sans-serif;
     <div class="help-card" id="admin-result" style="display:none"></div>
 
     <div style="text-align:center;padding:6px 0 30px">
-      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v180 · © 2026 Suliyman Alhassan</div>
+      <div style="font-size:.7rem;color:var(--txt2)" data-nq-ver>Naba Quran v181 · © 2026 Suliyman Alhassan</div>
     </div>
   </div>
 </div>
@@ -14993,7 +14993,7 @@ document.addEventListener('DOMContentLoaded',function(){
         <div class="gs-live-hero">🎙️</div>
         <div class="gs-live-title">Live Recitation Classroom</div>
         <div class="gs-live-sub">One person takes the mic and recites. Everyone hears LIVE, like a radio host. If there is a mistake, anyone can jump in and correct immediately. A green tracker shows the exact verse being recited, on everyone's screen.</div>
-        <div class="gs-live-sub" id="gs-live-voice-mark" style="margin-top:10px;font-size:.72rem;color:#10b981;font-weight:700">🎙️ Voice engine v180 · smoother group audio</div>
+        <div class="gs-live-sub" id="gs-live-voice-mark" style="margin-top:10px;font-size:.72rem;color:#10b981;font-weight:700">🎙️ Voice engine v181 · smoother group audio</div>
         <button class="gs-live-start-btn" id="gs-live-start-btn" onclick="gsLiveStart()">🎙️ Start Live Recitation</button>
       </div>
       <div id="gs-live-active" style="display:none">
@@ -15312,7 +15312,7 @@ const GS_LIVE = {
   view:(function(){ try { return localStorage.getItem('gsLiveView') || 'ar'; } catch (e) { return 'ar'; } })(),
   sendBuf:null, sendCount:0, playCtx:null, playNextT:0, lastSpeaker:null, muted:false,
   pullTimer:null, pullBusy:false, lastSeq:0, quietBusy:false, logLines:[],
-  rtcActive:false, rtcTried:false, follow:true, progUntil:0
+  rtcActive:false, rtcTried:false, follow:true, progUntil:0, rtcRetryT:null, rtcRetryN:0
 };
 /* 16000 samples at 16kHz = 1 second per chunk, which costs the reciter 60
    requests a minute on its own. Measured 2026-11-15: two phones on one live
@@ -15793,12 +15793,39 @@ function gsLiveMaybeStartRTC(){
         GS_LIVE.rtcActive = false;
         gsLiveLog('↩ Direct link blocked here — using the room relay');
         if (GS_LIVE.micOn) { gsLiveStartMic(); }
+        /* Networks change under us (wifi <-> 4G, signal drops, a relay may
+           come online later). Old code gave up for the rest of the session;
+           now we quietly re-attempt with backoff so the room upgrades itself
+           to a direct link as soon as the path allows. */
+        if (!GS_LIVE.rtcRetryT) {
+          GS_LIVE.rtcRetryN = (GS_LIVE.rtcRetryN || 0) + 1;
+          var delay = Math.min(300000, 45000 * Math.pow(2, Math.min(GS_LIVE.rtcRetryN - 1, 3)));
+          GS_LIVE.rtcRetryT = setTimeout(function () {
+            GS_LIVE.rtcRetryT = null;
+            if (!GS_LIVE.session || GS_LIVE.rtcActive) return;
+            try { window.GsLiveRTC.stop(); } catch (e) {}
+            GS_LIVE.rtcTried = false;
+            gsLiveMaybeStartRTC();
+          }, delay);
+        }
       }
       else if (st === 'reconnecting') { gsLiveLog('🔄 Rebuilding the voice link…'); }
       gsLiveRender(false);
     }
   });
 }
+/* When the phone comes back online, try the direct link immediately
+   instead of waiting for the backoff timer. */
+try {
+  window.addEventListener('online', function () {
+    if (!GS_LIVE.session || GS_LIVE.rtcActive) return;
+    if (GS_LIVE.rtcRetryT) { clearTimeout(GS_LIVE.rtcRetryT); GS_LIVE.rtcRetryT = null; }
+    try { window.GsLiveRTC.stop(); } catch (e) {}
+    GS_LIVE.rtcTried = false;
+    gsLiveMaybeStartRTC();
+  });
+} catch (e) {}
+
 function gsLiveEnsurePoll(){
   if (GS_LIVE.pullTimer) return;
   gsLiveMaybeStartRTC();
@@ -15937,6 +15964,8 @@ function gsLiveTeardown(why){
   GS_LIVE.procNode = null; GS_LIVE.micCtx = null; GS_LIVE.micStream = null; GS_LIVE.playCtx = null;
   GS_LIVE.micOn = false; GS_LIVE.relayChain = false; GS_LIVE.sendCount = 0;
   GS_LIVE.rtcActive = false; GS_LIVE.rtcTried = false;
+  if (GS_LIVE.rtcRetryT) { clearTimeout(GS_LIVE.rtcRetryT); GS_LIVE.rtcRetryT = null; }
+  GS_LIVE.rtcRetryN = 0;
   clearTimeout(GS_LIVE.pullTimer); GS_LIVE.pullTimer = null;
   GS_LIVE.pullBusy = false; GS_LIVE.failStreak = 0;
   GS_LIVE.playNextT = 0; GS_LIVE.lastSpeaker = null;
@@ -15951,6 +15980,8 @@ function gsLiveSessionOver(){
   GS_LIVE.gen = (GS_LIVE.gen || 0) + 1;   /* invalidate any in-flight pull */
   try { if (window.GsLiveRTC) GsLiveRTC.stop(); } catch (e) {}
   GS_LIVE.rtcActive = false; GS_LIVE.rtcTried = false;
+  if (GS_LIVE.rtcRetryT) { clearTimeout(GS_LIVE.rtcRetryT); GS_LIVE.rtcRetryT = null; }
+  GS_LIVE.rtcRetryN = 0;
   gsLiveStopMic();
   clearTimeout(GS_LIVE.pullTimer); GS_LIVE.pullTimer = null;
   GS_LIVE.pullBusy = false; GS_LIVE.failStreak = 0;
@@ -15993,7 +16024,7 @@ setInterval(function(){
    drops the cached shell, keeps the user's own data, and reloads from network.
    It never clears localStorage, so tasbih counts, streak and bookmarks survive.
 */
-var NQ_BUILD = 'v180';
+var NQ_BUILD = 'v181';
 var NQ_COPY  = '© 2026 Suliyman Alhassan';
 
 function nqStampVersion(){
